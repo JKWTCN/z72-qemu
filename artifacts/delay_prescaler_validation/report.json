@@ -1,0 +1,108 @@
+{
+  "format": 1,
+  "events": [
+    {
+      "name": "divided-counter-callback",
+      "pc": "0x102d6e92",
+      "notification": "0x42181808",
+      "status": 1,
+      "channel": 7,
+      "irq": 179,
+      "divider": 49,
+      "terminal": "0xfffffffe"
+    }
+  ],
+  "firmware_modified": false,
+  "experimental_parameters": true,
+  "factory_calibration": false,
+  "synthetic_verification": {
+    "passed": true,
+    "divider49": true,
+    "reserved_bits": true,
+    "previous_counter_checks": true
+  },
+  "system": {
+    "mode_context": "0xb1819988",
+    "current_mode": 2,
+    "previous_mode": 1,
+    "power_input": 1,
+    "configuration_flags": 8,
+    "configuration_secondary_flags": 40,
+    "transition_inhibitors": [
+      0,
+      1,
+      1
+    ],
+    "deferred_transition_flags": 0,
+    "deferred_target_mode": null,
+    "control_ready_bitmap": 15,
+    "pending_settings_bitmap": 15
+  },
+  "graphics": {
+    "successful_uploads": 16,
+    "render_requests": 0,
+    "rendered_commands": 9,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 0,
+    "target_address": 3410653184,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3412049920
+  },
+  "engine_faults": [
+    {
+      "thread": 1,
+      "registers": {
+        "DFAR_S": "0x20061004",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x808",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "next_boundary": {
+    "address": "0x20061004",
+    "instruction": "0x10295bd4",
+    "operation": "word-write",
+    "saved_pc_verified": true
+  },
+  "normal_startup_verified": false,
+  "menu_verified": false,
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  }
+}

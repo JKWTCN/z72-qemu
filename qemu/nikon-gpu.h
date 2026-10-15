@@ -210,11 +210,11 @@ static void nikon_gpu_flatten(NikonGPUPath *p)
         case 10: n = 4; break;
         case 12: n = 6; break;
         default:
-            fprintf(stderr, "Z6_GPU_PATH_OPCODE unsupported=%u index=%u\n", op, i);
+            fprintf(stderr, "Z72_GPU_PATH_OPCODE unsupported=%u index=%u\n", op, i);
             p->valid = false; return;
         }
         if (at + n > nc) {
-            fprintf(stderr, "Z6_GPU_PATH_COORDINATES at=%u need=%u count=%u\n", at, n, nc);
+            fprintf(stderr, "Z72_GPU_PATH_COORDINATES at=%u need=%u count=%u\n", at, n, nc);
             p->valid = false; return;
         }
         double v[6];
@@ -370,7 +370,7 @@ static bool nikon_gpu_draw(NikonGPU *g, const uint32_t *r, NikonGPUPath *p)
         }
         tex = g_malloc(texbytes); nikon_gpu_read(g, r[0x155], tex, texbytes);
         /* Opt-in, bounded read-only capture of original small icon textures. */
-        const char *icon_dir = getenv("Z6_GPU_ICON_DUMP_DIR");
+        const char *icon_dir = getenv("Z72_GPU_ICON_DUMP_DIR");
         if (icon_dir && tw <= 256 && th <= 256 && g->icon_samples < 512) {
             unsigned sample = g->icon_samples++;
             g_autofree char *prefix = g_strdup_printf("%s/%04u", icon_dir, sample);
@@ -495,7 +495,7 @@ static void nikon_gpu_present(NikonGPU *g)
         }
     }
     dpy_gfx_update(g->console, 0, 0, W, H);
-    const char *dir = getenv("Z6_GRAPHICS_DUMP_DIR");
+    const char *dir = getenv("Z72_GRAPHICS_DUMP_DIR");
     if (dir) {
         g_autofree char *path = g_strdup_printf("%s/gui-latest.ppm", dir);
         GString *ppm = g_string_new("P6\n720 480\n255\n");
@@ -504,7 +504,7 @@ static void nikon_gpu_present(NikonGPU *g)
         }
         g_file_set_contents(path, ppm->str, ppm->len, NULL); g_string_free(ppm, true);
     }
-    fprintf(stderr, "Z6_GRAPHICS_FRAME source=0x%08x size=720x480 format=RGBA8888 view=GUI-probe rendered=%u unsupported=%u\n", g->present_address, g->rendered, g->unsupported);
+    fprintf(stderr, "Z72_GRAPHICS_FRAME source=0x%08x size=720x480 format=RGBA8888 view=GUI-probe rendered=%u unsupported=%u\n", g->present_address, g->rendered, g->unsupported);
 }
 
 static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, unsigned length)
@@ -548,7 +548,7 @@ static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, uns
                     if (!g->active || g_hash_table_size(g->paths) > 4096) { goto bad; }
                     if (g->active->valid) { nikon_gpu_flatten(g->active); }
                     if (!g->active->valid) {
-                        fprintf(stderr, "Z6_GPU_PATH_INVALID key=%08x segments=%08x/%08x coordinates=%08x/%08x type=%08x\n",
+                        fprintf(stderr, "Z72_GPU_PATH_INVALID key=%08x segments=%08x/%08x coordinates=%08x/%08x type=%08x\n",
                                 r[reg], g->active->regs[2], g->active->regs[3],
                                 g->active->regs[4], g->active->regs[5], g->active->regs[0x65]);
                     }
@@ -561,25 +561,25 @@ static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, uns
                             NikonGPUEdge e=g_array_index(p->edges,NikonGPUEdge,j);
                             lo=MIN(lo,MIN(e.y0,e.y1)); hi=MAX(hi,MAX(e.y0,e.y1));
                         }
-                        fprintf(stderr, "Z6_GPU_YUV_DRAW target=%08x format=%08x color=%08x blend=%08x clip=%08x/%08x flags=%08x key=%08x\n",
+                        fprintf(stderr, "Z72_GPU_YUV_DRAW target=%08x format=%08x color=%08x blend=%08x clip=%08x/%08x flags=%08x key=%08x\n",
                                 r[0x1a4], r[0x1a2], r[0x185], r[0x186], r[0xc0], r[0xc1], r[0x1a0], r[0xa6]);
-                        fprintf(stderr,"Z6_GPU_GEOMETRY target=%08x size=%08x state=%08x path_y=%g..%g source=%08x source_size=%08x source_flags=%08x target_flags=%08x\n",
+                        fprintf(stderr,"Z72_GPU_GEOMETRY target=%08x size=%08x state=%08x path_y=%g..%g source=%08x source_size=%08x source_flags=%08x target_flags=%08x\n",
                                 r[0x1a4],r[0x1a3],p?p->regs[0x65]:0,lo,hi,r[0x155],r[0x152],r[0x153],r[0x1a7]);
                     }
                     if (p && !(p->regs[0x65]&0x100) && g->stroke_samples++ < 24) {
-                        fprintf(stderr,"Z6_GPU_STROKE state=%08x params=%08x/%08x/%08x/%08x scale=%g/%g color=%08x paint=%08x target=%08x\n",
+                        fprintf(stderr,"Z72_GPU_STROKE state=%08x params=%08x/%08x/%08x/%08x scale=%g/%g color=%08x paint=%08x target=%08x\n",
                             p->regs[0x65],p->regs[0x5a],p->regs[0x5b],p->regs[0x5c],p->regs[0x5d],
                             nikon_gpu_f32(p->regs[0x41]),nikon_gpu_f32(p->regs[0x45]),r[0x185],r[0x184],r[0x1a4]);
                     }
                     if (nikon_gpu_draw(g, r, p)) { g->rendered++; }
                     else {
                         g->unsupported++;
-                        fprintf(stderr, "Z6_GRAPHICS_UNSUPPORTED target=0x%08x format=0x%x mode=0x%x path=%s key=%08x\n", r[0x1a4], r[0x1a2], r[0x184]&255, p ? p->valid ? "valid" : "invalid" : "missing", r[0xa6]);
-                        fprintf(stderr, "Z6_GRAPHICS_FORMAT target_size=%08x target_1a5=%08x source=%08x source_format=%08x source_size=%08x source_158=%08x\n",
+                        fprintf(stderr, "Z72_GRAPHICS_UNSUPPORTED target=0x%08x format=0x%x mode=0x%x path=%s key=%08x\n", r[0x1a4], r[0x1a2], r[0x184]&255, p ? p->valid ? "valid" : "invalid" : "missing", r[0xa6]);
+                        fprintf(stderr, "Z72_GRAPHICS_FORMAT target_size=%08x target_1a5=%08x source=%08x source_format=%08x source_size=%08x source_158=%08x\n",
                                 r[0x1a3], r[0x1a5], r[0x155], r[0x156], r[0x152], r[0x158]);
                         /* 10453858..74 emits 1b5 for target formats105/107;
                          * 104539a0..b2 emits15a from image+a0 for textures. */
-                        fprintf(stderr, "Z6_GRAPHICS_PLANES target_second=%08x source_second=%08x target_flags=%08x source_flags=%08x target_ch0_second=%08x\n",
+                        fprintf(stderr, "Z72_GRAPHICS_PLANES target_second=%08x source_second=%08x target_flags=%08x source_flags=%08x target_ch0_second=%08x\n",
                                 r[0x1b5], r[0x15a], r[0x1a7], r[0x153], g->regs[0][0x1b5]);
                     }
                     g_hash_table_remove(g->paths, GUINT_TO_POINTER(r[0xa6]));
@@ -592,7 +592,7 @@ static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, uns
     return;
 bad:
     g->unsupported++;
-    fprintf(stderr, "Z6_GRAPHICS_UNSUPPORTED malformed-command ch=%u offset=%u\n", ch, at);
+    fprintf(stderr, "Z72_GRAPHICS_UNSUPPORTED malformed-command ch=%u offset=%u\n", ch, at);
 }
 
 static const GraphicHwOps nikon_gpu_ops = { 0 };

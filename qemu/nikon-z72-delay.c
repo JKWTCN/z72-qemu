@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Experimental internal delay mode of the twelve-channel block.
- * Other clock selections and capture/compare modes retain register storage;
- * they do not produce synthetic events. See research/z7ii/delay_counter.md. */
+ * The byte divider scales the internal clock; capture/compare modes retain
+ * register storage without external events. See research/z7ii/delay_counter.md. */
 #include "qemu/osdep.h"
 #include "qemu/timer.h"
 #include "hw/sysbus.h"
@@ -42,7 +42,12 @@ static bool delay_enabled(Z72DelayChannel *ch)
 
     return !(REG(s, 0) & 1) && (REG(s, 4) & 1) &&
         (REG(s, 0x1000) & (1u << i)) &&
-        !(REG(s, B(i)) & 1) && REG(s, B(i) + 4) == 0;
+        !(REG(s, B(i)) & 1) && REG(s, B(i) + 4) <= UINT8_MAX;
+}
+
+static uint64_t delay_tick_ns(Z72DelayChannel *ch)
+{
+    return ((uint64_t)REG(ch->owner, B(ch->index) + 4) + 1) * 20;
 }
 
 static void delay_irq(Z72DelayChannel *ch)
@@ -57,7 +62,8 @@ static void delay_irq(Z72DelayChannel *ch)
 static uint32_t delay_count(Z72DelayChannel *ch)
 {
     if (ch->clocked) {
-        uint64_t elapsed = (qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) - ch->epoch) / 20;
+        uint64_t elapsed = (qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) - ch->epoch) /
+                           delay_tick_ns(ch);
         uint32_t remaining = REG(ch->owner, B(ch->index) + 8) - ch->counter;
         return ch->counter + MIN(elapsed, remaining);
     }
@@ -84,7 +90,7 @@ static void delay_schedule(Z72DelayChannel *ch)
         /* Firmware converts delay units to ticks by multiplying by 50.
          * A 50 MHz clock and terminal-count semantics are laboratory timing
          * assumptions, not a measured physical clock specification. */
-        uint64_t ns = ((uint64_t)terminal - ch->counter + 1) * 20;
+        uint64_t ns = ((uint64_t)terminal - ch->counter + 1) * delay_tick_ns(ch);
         ch->epoch = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
         ch->clocked = true;
         timer_mod(ch->timer, ch->epoch + ns);

@@ -112,12 +112,30 @@ def check(qemu):
                         access(thread, 0x2c011a0c) > count,
                         'Restart repeated the preset or failed to count')
                 access(thread, 0x2c011000, 0)
-                # External clock selection must not acquire an internal clock.
-                access(thread, 0x2c011104, 1)
+                # Divider 49 gives one microsecond per tick. The initial
+                # preset is cleared so the 500000 ticks span 500 ms.
+                access(thread, 0x2c011100, 1)
+                access(thread, 0x2c011104, 49)
+                access(thread, 0x2c011108, 499999)
+                access(thread, 0x2c011100, 0)
+                access(thread, 0x2c011000, 1)
+                run(0.01)
+                require(access(thread, 0x2c010110) == 0 and
+                        0 < access(thread, 0x2c01110c) < 100000,
+                        'Prescaler did not slow the counter')
+                run(0.6)
+                require(access(thread, 0x2c010110) == 1 and pending(thread, 0),
+                        'Divided counter did not reach its terminal')
+                access(thread, 0x2c011000, 0)
+                acknowledge(thread, 0)
+                # Bits above the byte field have no established clock meaning.
+                access(thread, 0x2c011104, 0x100)
+                count = access(thread, 0x2c01110c)
                 access(thread, 0x2c011000, 1)
                 run(0.15)
-                require(access(thread, 0x2c010110) == 0,
-                        'Unsupported clock selection fabricated an event')
+                require(access(thread, 0x2c010110) == 0 and
+                        access(thread, 0x2c01110c) == count,
+                        'Reserved divider bits fabricated a clock')
                 access(thread, 0x2c011000, 0)
 
             # Channel reset clears the preset and holds the count at zero.

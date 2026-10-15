@@ -190,7 +190,8 @@ needs its work producer. Menus remain unverified.
 
 The [internal delay counter](research/z7ii/delay_counter.md) now delivers
 the observed channel 9 interrupt and lets the original configuration task
-return from its delay wait. Other clock and capture modes remain passive;
+return from its delay wait. Byte prescalers also support divided delays;
+external capture events remain unmodeled, and
 normal startup and menus are still unverified.
 
 ## Firmware input
