@@ -38,6 +38,16 @@ def linux(path):
                             m[0][3:].replace('\\', '/'), text)
 
 
+def shooting_active(observation):
+    application, graphics = observation['application'], observation['graphics']
+    return (application['initialization_complete'] == 1 and
+            application['current_index'] == 3 and
+            graphics['surface_address'] != 0 and
+            graphics['rendered_commands'] > 0 and
+            graphics['failed_requests'] == 0 and
+            graphics['unsupported_commands'] == 0)
+
+
 def run(args):
     require(0 < args.seconds <= 60 and 0 < args.windows <= 24,
             'Observation bounds must be in (0, 60] and (0, 24]')
@@ -166,7 +176,7 @@ def run(args):
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                 frequency = int.from_bytes(remote.read(0x04266010, 4), 'little')
                 require(frequency > 0, 'Counter frequency is unavailable')
-                if observation['system']['current_mode'] == 3:
+                if shooting_active(observation):
                     if shooting_start is None:
                         shooting_start = ticks
                 else:
@@ -210,9 +220,7 @@ def run(args):
                     'Application timeout policy did not clear the boot limit')
             require(bytes.fromhex(final['power_record'])[2] != 9,
                     'Power record still reports the serial failure class')
-            require(final['system']['current_mode'] == 3 and
-                    final['graphics']['rendered_commands'] > 0 and
-                    final['graphics']['failed_requests'] == 0,
+            require(shooting_active(final),
                     'Original shooting interface did not remain active')
             require(final['shooting_elapsed_seconds'] >= args.shooting_seconds,
                     'Shooting interface observation was too short')

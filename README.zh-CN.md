@@ -10,6 +10,11 @@ Z72 QEMU 是面向 Nikon Z7 II C 1.70 固件分析的实验性 QEMU 环境，提
 完整相机启动、通信握手、菜单绘制、LCD 实时取景和输入事件处理仍待完成。
 最新验证边界见[运行时门控](research/z7ii/runtime_gate.md)。
 
+后续实验电池串行对端已解除启动后的五秒供电限制。完整采样确认原厂
+拍摄应用与图形表面持续约 11.50 个虚拟秒；内部模式 3 → 1 没有使
+前台应用退出。当前画面仍有 `Err`，菜单交互和正常完整启动尚未验证，见
+[界面持续运行观察](artifacts/shooting_persistence_validation/report.json)。
+
 另外支持独立 slave 初始化实验：分析并验证两份 EG 的启动入口、栈、初始化表和
 任务记录，分别执行原厂复制及清零例程。详细地址和验证边界见
 [启动结构](research/z7ii/startup_structure.md)。

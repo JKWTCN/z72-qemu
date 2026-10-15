@@ -1,0 +1,691 @@
+{
+  "format": 1,
+  "observation_verified": true,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "firmware_modified": false,
+  "experimental_nonce_bridge": true,
+  "factory_calibration": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "original_report_sha256": "d93f91ccd19b65b6123359feb25b9c3d73e94f261f60fcb3e590cc4b63ae9b1a",
+  "historical_result": "The original mode-3-only predicate reported failure; this report re-evaluates its complete saved observations.",
+  "predicate": "Initialization complete; foreground index 3 (APPLV); nonzero surface; rendered commands > 0; failed and unsupported commands == 0.",
+  "sampled_window_count": 24,
+  "qualifying_window_count": 23,
+  "maximum_contiguous_sampled_seconds": 11.502877333333334,
+  "samples": [
+    {
+      "window": 0,
+      "active": false,
+      "counter_ticks": 27498441,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 0,
+      "system_mode": 0,
+      "foreground_index": 0,
+      "graphics": {
+        "successful_uploads": 6,
+        "render_requests": 0,
+        "rendered_commands": 3,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 0,
+        "target_address": 3089394432,
+        "target_dimensions": 2097184,
+        "target_format": 0,
+        "target_second_plane": 0
+      }
+    },
+    {
+      "window": 1,
+      "active": true,
+      "counter_ticks": 52069331,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 0.0,
+      "system_mode": 2,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 104,
+        "render_requests": 0,
+        "rendered_commands": 108,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 2,
+      "active": true,
+      "counter_ticks": 77306214,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 0.5257683958333333,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 318,
+        "render_requests": 0,
+        "rendered_commands": 361,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 3,
+      "active": true,
+      "counter_ticks": 102168269,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 1.043727875,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 496,
+        "render_requests": 0,
+        "rendered_commands": 575,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 4,
+      "active": true,
+      "counter_ticks": 127132948,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 1.5638253541666667,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 632,
+        "render_requests": 0,
+        "rendered_commands": 741,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 5,
+      "active": true,
+      "counter_ticks": 153024752,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 2.1032379375,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 760,
+        "render_requests": 0,
+        "rendered_commands": 891,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 6,
+      "active": true,
+      "counter_ticks": 177614633,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 2.615527125,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 896,
+        "render_requests": 0,
+        "rendered_commands": 1057,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 7,
+      "active": true,
+      "counter_ticks": 202544341,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 3.1348960416666665,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1024,
+        "render_requests": 0,
+        "rendered_commands": 1207,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 8,
+      "active": true,
+      "counter_ticks": 226866816,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 3.6416142708333332,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1160,
+        "render_requests": 0,
+        "rendered_commands": 1373,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 9,
+      "active": true,
+      "counter_ticks": 251730708,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 4.159612020833333,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1304,
+        "render_requests": 0,
+        "rendered_commands": 1543,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 10,
+      "active": true,
+      "counter_ticks": 277416898,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 4.694740979166666,
+      "system_mode": 3,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1424,
+        "render_requests": 0,
+        "rendered_commands": 1689,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 11,
+      "active": true,
+      "counter_ticks": 301577236,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 5.198081354166667,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1574,
+        "render_requests": 0,
+        "rendered_commands": 1863,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3421712384,
+        "target_dimensions": 45089792,
+        "target_format": 261,
+        "target_second_plane": 3422410752
+      }
+    },
+    {
+      "window": 12,
+      "active": true,
+      "counter_ticks": 326880301,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 5.725228541666667,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1780,
+        "render_requests": 0,
+        "rendered_commands": 2097,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 13,
+      "active": true,
+      "counter_ticks": 352020216,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 6.248976770833333,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 1904,
+        "render_requests": 0,
+        "rendered_commands": 2243,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 14,
+      "active": true,
+      "counter_ticks": 377909714,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 6.7883413125,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2024,
+        "render_requests": 0,
+        "rendered_commands": 2389,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 15,
+      "active": true,
+      "counter_ticks": 402462714,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 7.299862145833333,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2148,
+        "render_requests": 0,
+        "rendered_commands": 2535,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 16,
+      "active": true,
+      "counter_ticks": 427690439,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 7.82543975,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2294,
+        "render_requests": 0,
+        "rendered_commands": 2714,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 17,
+      "active": true,
+      "counter_ticks": 452543141,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 8.343204375,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2400,
+        "render_requests": 0,
+        "rendered_commands": 2837,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "window": 18,
+      "active": true,
+      "counter_ticks": 477904837,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 8.871573041666666,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2562,
+        "render_requests": 0,
+        "rendered_commands": 3038,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3200643584,
+        "target_dimensions": 31458000,
+        "target_format": 0,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 19,
+      "active": true,
+      "counter_ticks": 502960929,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 9.393574958333334,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2672,
+        "render_requests": 0,
+        "rendered_commands": 3163,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 20,
+      "active": true,
+      "counter_ticks": 528034811,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 9.9159475,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2840,
+        "render_requests": 0,
+        "rendered_commands": 3367,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 21,
+      "active": true,
+      "counter_ticks": 553556489,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 10.447649125,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 2916,
+        "render_requests": 0,
+        "rendered_commands": 3455,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 22,
+      "active": true,
+      "counter_ticks": 578707776,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 10.971634270833333,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 3084,
+        "render_requests": 0,
+        "rendered_commands": 3659,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    },
+    {
+      "window": 23,
+      "active": true,
+      "counter_ticks": 604207443,
+      "counter_frequency": 48000000,
+      "elapsed_seconds": 11.502877333333334,
+      "system_mode": 1,
+      "foreground_index": 3,
+      "graphics": {
+        "successful_uploads": 3160,
+        "render_requests": 0,
+        "rendered_commands": 3747,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      }
+    }
+  ],
+  "independent_reset_trace": [
+    {
+      "source_mode": 0,
+      "event": "0x1",
+      "argument2": "0x0",
+      "argument3": "0x1",
+      "return_address": "0x10247bff",
+      "counter_ticks": 44077557
+    },
+    {
+      "source_mode": 1,
+      "event": "0x2",
+      "argument2": "0x0",
+      "argument3": "0x1",
+      "return_address": "0x10246fa1",
+      "counter_ticks": 44079081
+    },
+    {
+      "source_mode": 2,
+      "event": "0x3",
+      "argument2": "0x6",
+      "argument3": "0x9",
+      "return_address": "0x10247e17",
+      "counter_ticks": 58076735
+    },
+    {
+      "source_mode": 3,
+      "event": "0x1",
+      "argument2": "0x6",
+      "argument3": "0x9",
+      "return_address": "0x10246919",
+      "counter_ticks": 300165495
+    }
+  ],
+  "independent_post_transition_observation": {
+    "system": {
+      "mode_context": "0xb18194ec",
+      "current_mode": 1,
+      "previous_mode": 3,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        0
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "application": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 3,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "graphics": {
+      "successful_uploads": 1780,
+      "render_requests": 0,
+      "rendered_commands": 2097,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 3200643584,
+      "target_address": 3414339584,
+      "target_dimensions": 45089792,
+      "target_format": 263,
+      "target_second_plane": 3415736320
+    },
+    "idle": {
+      "policy_context": "0xb1819aa0",
+      "application_kind": 9,
+      "timeout_seconds": 30,
+      "policy_flags": 0,
+      "five_second_policy": false,
+      "timer_object": "0xb1f80168",
+      "timer_handle": "0x100001f",
+      "callback": "0x102a7c85",
+      "last_start_milliseconds": 30000,
+      "destination_context": "0xb1818bd0",
+      "message": "0x3000003",
+      "event_slot": 0
+    },
+    "ticks": 321841321,
+    "target_after_publish": "06",
+    "engine_faults": [
+      {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      },
+      {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      },
+      {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      },
+      {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    ],
+    "controller_faults": "0000000000000000",
+    "battery_status": "02"
+  },
+  "screenshot": {
+    "private_file": "persistent-shooting.png",
+    "sha256": "8b71afef8e568036e651a6efd1a34db756e60189ee32d9a076820cb47016e63a",
+    "width": 720,
+    "height": 480,
+    "observed": "Original shooting status bars remain visible in system mode 1; black image area and Err indication remain."
+  },
+  "limitations": [
+    "Sampled application and rendering persistence does not prove complete camera startup.",
+    "No menu input or menu display has been verified.",
+    "The mode publication arguments 6 / 9 differ from the earlier power-policy exit arguments 1 / 9."
+  ]
+}

@@ -221,8 +221,10 @@ five-second power policy; stable startup and menu interaction remain pending.
 The optional [experimental battery serial peer](research/z7ii/battery_serial.md)
 now completes startup exchanges and parameter queries, clearing the five-second
 power policy. It uses a documented controller-memory bridge and fixed laboratory
-measurements. A separate mode transition still interrupts the shooting interface;
-stable startup and menu interaction remain pending.
+measurements. The original shooting application and rendering remain active across
+the internal mode 3 → 1 transition for 11.50 sampled virtual seconds; see the
+[persistence observation](artifacts/shooting_persistence_validation/report.json).
+The visible `Err` indication and menu interaction remain unresolved.
 
 ## Firmware input
 
