@@ -218,6 +218,12 @@ now completes its original handshake and uses bounded checksummed records
 with receive/transmit DMA. Zero-filled experimental records still retain the
 five-second power policy; stable startup and menu interaction remain pending.
 
+The optional [experimental battery serial peer](research/z7ii/battery_serial.md)
+now completes startup exchanges and parameter queries, clearing the five-second
+power policy. It uses a documented controller-memory bridge and fixed laboratory
+measurements. A separate mode transition still interrupts the shooting interface;
+stable startup and menu interaction remain pending.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:

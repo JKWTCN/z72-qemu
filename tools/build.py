@@ -19,6 +19,7 @@ SOURCES = ['qemu/nikon-z72.c', 'qemu/nikon-z72-counter.c', 'qemu/nikon-z72-uart.
            'qemu/nikon-z72-controller-rtc.c',
            'qemu/nikon-z72-controller-i2c.c',
            'qemu/nikon-z72-controller-supply.c',
+           'qemu/nikon-z72-controller-battery.c',
            'qemu/nikon-z72-controller-dma.c',
            'qemu/nikon-z72-controller-timer.c',
            'qemu/nikon-z72-controller-adc.c',

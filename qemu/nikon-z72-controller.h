@@ -12,6 +12,7 @@ typedef struct Z72ControllerInputs {
     bool battery_contact;
     bool supply_input;
     bool auxiliary_input;
+    bool battery_peer;
     char *flash_data;
     char *supply_data;
     qemu_irq switch_input;
@@ -26,5 +27,8 @@ typedef struct Z72ControllerInputs {
 DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
                                        Z72ControllerInputs *inputs,
                                        const char *cpu_type, const char *firmware);
+
+/* Connect the synthetic battery serial peer to a controller memory root. */
+void nikon_z72_controller_battery_attach(MemoryRegion *root);
 
 #endif

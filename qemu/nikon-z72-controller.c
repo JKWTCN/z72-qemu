@@ -176,6 +176,16 @@ static void controller_battery_set(Object *obj, bool value, Error **errp)
     }
 }
 
+static bool controller_battery_peer_get(Object *obj, Error **errp)
+{
+    return Z72_CONTROLLER_MACHINE(obj)->inputs.battery_peer;
+}
+
+static void controller_battery_peer_set(Object *obj, bool value, Error **errp)
+{
+    Z72_CONTROLLER_MACHINE(obj)->inputs.battery_peer = value;
+}
+
 static bool controller_supply_get(Object *obj, Error **errp)
 {
     return Z72_CONTROLLER_MACHINE(obj)->inputs.supply_input;
@@ -596,6 +606,13 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
     sysbus_realize_and_unref(SYS_BUS_DEVICE(rng), &error_fatal);
     controller_map(domain, root, rng, 0, 0x50060800);
     sysbus_connect_irq(SYS_BUS_DEVICE(rng), 0, qdev_get_gpio_in(core, 80));
+    if (s->battery_peer) {
+        if (qemu_chr_find("controller-battery")) {
+            error_setg(&error_fatal, "Battery peer conflicts with controller-battery backend");
+        }
+        /* Synthetic battery peer; reads the nonce from the controller root. */
+        nikon_z72_controller_battery_attach(root);
+    }
     DeviceState *uart = qdev_new("stm32f2xx-usart");
     qdev_prop_set_chr(uart, "chardev", qemu_chr_find("controller-console"));
     sysbus_realize_and_unref(SYS_BUS_DEVICE(uart), &error_fatal);
@@ -784,6 +801,10 @@ static void nikon_z72_controller_class_init(ObjectClass *klass, const void *data
                                  controller_supply_data_set);
     object_class_property_set_description(klass, "supply-data",
         "Experimental supply response records on controller-i2c1 address 0x38");
+    object_class_property_add_bool(klass, "battery-peer", controller_battery_peer_get,
+                                   controller_battery_peer_set);
+    object_class_property_set_description(klass, "battery-peer",
+        "Answer original battery serial exchanges with a synthetic peer");
 }
 
 static void controller_machine_init(Object *obj)

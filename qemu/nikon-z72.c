@@ -72,6 +72,16 @@ static void dual_controller_supply_data_set(Object *obj, const char *value, Erro
     s->supply_data = g_strdup(value);
 }
 
+static bool dual_controller_battery_peer_get(Object *obj, Error **errp)
+{
+    return NIKON_Z72_DUAL(obj)->controller_inputs.battery_peer;
+}
+
+static void dual_controller_battery_peer_set(Object *obj, bool value, Error **errp)
+{
+    NIKON_Z72_DUAL(obj)->controller_inputs.battery_peer = value;
+}
+
 /* Exact configuration words observed in stock startup. Firmware pairs command
  * writes with bit-0 polls and acknowledgements. The laboratory assumes
  * synchronous completion and zero command results; real timing and hardware
@@ -1794,6 +1804,9 @@ static void nikon_z72_dual_init(MachineState *machine)
     if (s->controller_inputs.supply_data && !s->controller_firmware) {
         error_setg(&error_fatal, "Controller supply data requires a controller firmware image");
     }
+    if (s->controller_inputs.battery_peer && !s->controller_firmware) {
+        error_setg(&error_fatal, "Controller battery peer requires a controller firmware image");
+    }
     if (s->controller_firmware) {
         /* The embedded core adds an execution slot beyond the engine topology. */
         machine->smp.max_cpus = MAX(machine->smp.max_cpus, 5);
@@ -1950,6 +1963,11 @@ static void dual_machine_class_init(ObjectClass *klass, const void *data)
                                   dual_controller_link_set);
     object_class_property_set_description(klass, "controller-link",
         "Experimental serial peers and controller readiness inputs");
+    object_class_property_add_bool(klass, "controller-battery-peer",
+                                  dual_controller_battery_peer_get,
+                                  dual_controller_battery_peer_set);
+    object_class_property_set_description(klass, "controller-battery-peer",
+        "Answer original battery serial exchanges with a synthetic peer");
 }
 
 static void dual_machine_instance_init(Object *obj)
