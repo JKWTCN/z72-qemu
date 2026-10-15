@@ -8,7 +8,7 @@ def prepare(root):
     if (root / 'VERSION').read_text().strip() != '10.2.4':
         raise ValueError('Expected QEMU 10.2.4')
     project = Path(__file__).resolve().parent
-    for name in ('nikon-z72.c', 'nikon-z72-counter.c', 'nikon-z72-uart.c',
+    for name in ('nikon-z72.c', 'nikon-z72-counter.c', 'nikon-z72-delay.c', 'nikon-z72-uart.c',
                  'nikon-z72-notify.c', 'nikon-z72-timer.c', 'nikon-z72-spi.c', 'nikon-z72-i2c.c', 'nikon-z72-memory.c', 'nikon-z72-controller.c',
                  'nikon-z72-controller-gpio.c', 'nikon-z72-controller-rtc.c',
                  'nikon-z72-controller-i2c.c', 'nikon-z72-controller-dma.c',
@@ -44,6 +44,9 @@ def prepare(root):
                         data = data.replace(previous_config, addition, 1)
                         break
         if name == 'hw/arm/meson.build':
+            delay = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-delay.c'))\n"
+            if delay.strip() not in data:
+                data += delay
             engine_i2c = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-i2c.c'))\n"
             if engine_i2c.strip() not in data:
                 data += engine_i2c

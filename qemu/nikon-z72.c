@@ -1683,6 +1683,14 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         sysbus_connect_irq(SYS_BUS_DEVICE(spi), channel * 2 + 1,
                            qdev_get_gpio_in(gic, 192 + channel * 2 - 32));
     }
+    DeviceState *delay = qdev_new("nikon-z72-delay");
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(delay), &error_fatal);
+    memory_region_add_subregion_overlap(view, 0x2c010000,
+        sysbus_mmio_get_region(SYS_BUS_DEVICE(delay), 0), 1);
+    for (unsigned channel = 0; channel < 12; channel++) {
+        sysbus_connect_irq(SYS_BUS_DEVICE(delay), channel,
+                           qdev_get_gpio_in(gic, 172 + channel - 32));
+    }
     DeviceState *i2c = qdev_new("nikon-z72-i2c");
     qdev_prop_set_string(i2c, "bus-name", slave ? "slave-i2c" : "master-i2c");
     sysbus_realize_and_unref(SYS_BUS_DEVICE(i2c), &error_fatal);

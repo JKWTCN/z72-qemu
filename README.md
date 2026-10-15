@@ -188,6 +188,11 @@ unchanged readiness byte and local resource bitmap updates. Sub-state zero
 returns before checking readiness; the pending device initialization still
 needs its work producer. Menus remain unverified.
 
+The [internal delay counter](research/z7ii/delay_counter.md) now delivers
+the observed channel 9 interrupt and lets the original configuration task
+return from its delay wait. Other clock and capture modes remain passive;
+normal startup and menus are still unverified.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:
