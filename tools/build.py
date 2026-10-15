@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 VERSION = '10.2.4'
 SHA256 = '821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746'
 SOURCES = ['qemu/nikon-z72.c', 'qemu/nikon-z72-counter.c', 'qemu/nikon-z72-uart.c',
+           'qemu/nikon-z72-input-config.c',
            'qemu/nikon-z72-notify.c', 'qemu/nikon-z72-timer.c', 'qemu/nikon-z72-spi.c', 'qemu/nikon-z72-controller.c',
            'qemu/nikon-z72-controller-gpio.c',
            'qemu/nikon-z72-controller-rtc.c',

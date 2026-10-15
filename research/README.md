@@ -35,3 +35,4 @@
 - [串行总线与控制器等待](z7ii/serial_bus.md)
 - [附加控制器的独立启动环境](z7ii/controller_core.md)
 - [控制器 DMA 配置与有界传输](z7ii/controller_dma.md)
+- [输入处理配置与初始拍摄界面](z7ii/input_configuration.md)

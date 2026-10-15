@@ -1674,6 +1674,10 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         sysbus_connect_irq(SYS_BUS_DEVICE(memory), channel,
                            qdev_get_gpio_in(gic, 103 + channel - 32));
     }
+    DeviceState *input_config = qdev_new("nikon-z72-input-config");
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(input_config), &error_fatal);
+    memory_region_add_subregion(view, 0x20068400,
+        sysbus_mmio_get_region(SYS_BUS_DEVICE(input_config), 0));
     DeviceState *counter = qdev_new("nikon-z72-counter");
     if (!slave) {
         DeviceState *graphics = qdev_new("nikon-z72-graphics");

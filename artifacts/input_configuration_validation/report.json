@@ -1,0 +1,212 @@
+{
+  "format": 1,
+  "firmware_modified": false,
+  "experimental_parameters": true,
+  "factory_calibration": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "icount": "shift=0,sleep=off",
+  "source_sha256": {
+    "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+    "qemu/nikon-z72.c": "c21b65ef5411acb7edae814f5922db6183f73ffb39f00cf14bf52083155e8dd6",
+    "qemu/prepare_source.py": "e1a73ef72164519f623387b26c0d93ec6a0d31f54f50f699fbaf7cd004c8ee33"
+  },
+  "synthetic_verification": {
+    "passed": true,
+    "access_bounds": true,
+    "packed_32_bit_fields": true,
+    "engine_isolation": true,
+    "reset": true,
+    "no_pixel_transfer": true,
+    "no_input_event": true
+  },
+  "events": [
+    {
+      "name": "input-format-configured",
+      "pc": "0x1020984a",
+      "value": "00000000",
+      "faults": {
+        "DFAR_S": 0,
+        "DFSR_S": 0,
+        "IFAR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "name": "operation14-completion",
+      "pc": "0x10247dea",
+      "registers": {
+        "r0": "0xb1819988",
+        "r1": "0xb1f7fc78",
+        "lr": "0x1020d26d",
+        "sp": "0xb51e5fc8"
+      },
+      "system": {
+        "mode_context": "0xb1819988",
+        "current_mode": 2,
+        "previous_mode": 1,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 40,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      }
+    }
+  ],
+  "display_observation": {
+    "current_mode": 3,
+    "previous_mode": 2,
+    "successful_uploads": 254,
+    "rendered_commands": 392,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "render_requests": 0,
+    "surface_address": "0xbec5f200",
+    "image_dimensions": [
+      720,
+      480
+    ],
+    "visual_observation": "Black background with the original exposure-mode A glyph; other interface elements had not appeared at this checkpoint.",
+    "view": "GUI surface probe, not LCD scanout"
+  },
+  "after_observation": {
+    "system": {
+      "mode_context": "0xb1819160",
+      "current_mode": 8,
+      "previous_mode": 1,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        64
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 0,
+      "pending_settings_bitmap": 0
+    },
+    "applications": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 0,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "graphics": {
+      "successful_uploads": 1324,
+      "render_requests": 0,
+      "rendered_commands": 1673,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 3200643584,
+      "target_address": 3200643584,
+      "target_dimensions": 31458000,
+      "target_format": 0,
+      "target_second_plane": 3415736320
+    },
+    "faults": [
+      {
+        "thread": 1,
+        "pc": "0x10107094",
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10107070",
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a44",
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a48",
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      }
+    ]
+  },
+  "controller_fault_register_bytes": "0000000000000000",
+  "input_events_injected": false,
+  "guest_code_modified": false,
+  "guest_callbacks_modified": false,
+  "full_boot_verified": false,
+  "stable_shooting_interface_verified": false,
+  "menu_verified": false,
+  "limitations": [
+    "The original operation 14 completion and transition to mode 3 were observed.",
+    "Further execution returned to mode 8 and APPIDLE and cleared the surface.",
+    "Configuration storage does not implement pixel processing or transfer completion.",
+    "Experimental resident and parameter data do not substitute for actual body calibration."
+  ]
+}

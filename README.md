@@ -198,6 +198,14 @@ The [sampling synchronization configuration](research/z7ii/sampling_sync.md)
 adds the recovered format and interface fields, including five indexed groups.
 Configuration storage does not generate received samples or completion events.
 
+The [input processing configuration](research/z7ii/input_configuration.md)
+adds sparse format, geometry, analysis and buffer-address storage for each
+engine. Synthetic checks cover access bounds, packed fields, reset and
+isolation, without manufacturing pixel transfers or input events.
+Original execution now reaches operation 14 completion and starts drawing the
+shooting interface in mode 3. Further observation returns to mode 8 and clears
+the surface; stable startup and menu interaction remain unverified.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:
