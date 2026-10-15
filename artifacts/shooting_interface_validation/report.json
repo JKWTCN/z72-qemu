@@ -1,0 +1,386 @@
+{
+  "format": 1,
+  "firmware_modified": false,
+  "experimental_parameters": true,
+  "factory_calibration": false,
+  "icount": "shift=0,sleep=off",
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "input_configuration_source_sha256": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+  "display_checkpoint": {
+    "system": {
+      "mode_context": "0xb18192b8",
+      "current_mode": 3,
+      "previous_mode": 2,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        1
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "applications": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 3,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "graphics": {
+      "successful_uploads": 258,
+      "render_requests": 0,
+      "rendered_commands": 396,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 3200643584,
+      "target_address": 3414339584,
+      "target_dimensions": 45089792,
+      "target_format": 263,
+      "target_second_plane": 3415736320
+    },
+    "faults": [
+      {
+        "thread": 1,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 2,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 3,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 4,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      }
+    ],
+    "controller_fault": "0000000000000000"
+  },
+  "visual_observation": {
+    "dimensions": [
+      720,
+      480
+    ],
+    "format": "PNG",
+    "sha256": "5bb3646542dd52fc669153daa02f130138d7f073b85e4170dc3c964bd9ed90a0",
+    "description": "Original shooting status interface: exposure mode A, S and MF indicators, white-balance and image-quality icons, plus lower edge symbols.",
+    "view": "GUI surface probe, not LCD scanout",
+    "image_included": false
+  },
+  "mode_transitions": [
+    {
+      "registers": {
+        "pc": "0x1020d384",
+        "r0": "0xb1818bd0",
+        "r1": "0x3",
+        "r2": "0x6",
+        "r3": "0x9",
+        "lr": "0x10247e17",
+        "sp": "0xb51e5fb8"
+      },
+      "system": {
+        "mode_context": "0xb1819988",
+        "current_mode": 2,
+        "previous_mode": 1,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 40,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 16,
+        "render_requests": 0,
+        "rendered_commands": 9,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 0,
+        "target_address": 3410653184,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3412049920
+      }
+    },
+    {
+      "registers": {
+        "pc": "0x1020d384",
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x1",
+        "r3": "0x9",
+        "lr": "0x10246919",
+        "sp": "0xb51e5fb8"
+      },
+      "system": {
+        "mode_context": "0xb18192b8",
+        "current_mode": 3,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 40,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 4,
+        "deferred_target_mode": 3,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1340,
+        "render_requests": 0,
+        "rendered_commands": 1701,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3200643584,
+        "target_dimensions": 31458000,
+        "target_format": 0,
+        "target_second_plane": 3415736320
+      }
+    },
+    {
+      "registers": {
+        "pc": "0x1020d384",
+        "r0": "0xb1818bd0",
+        "r1": "0x8",
+        "r2": "0x1",
+        "r3": "0x3",
+        "lr": "0x1020db6b",
+        "sp": "0xb51e5f50"
+      },
+      "system": {
+        "mode_context": "0xb18194ec",
+        "current_mode": 1,
+        "previous_mode": 3,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 40,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 4,
+        "deferred_target_mode": 3,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1340,
+        "render_requests": 0,
+        "rendered_commands": 1701,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3200643584,
+        "target_dimensions": 31458000,
+        "target_format": 0,
+        "target_second_plane": 3415736320
+      }
+    }
+  ],
+  "native_initial_interface_verified": true,
+  "full_boot_verified": false,
+  "stable_shooting_interface_verified": false,
+  "menu_verified": false,
+  "input_events_injected": false,
+  "guest_callbacks_modified": false,
+  "limitations": [
+    "The shooting interface is displayed before a later transition through modes 1 and 8.",
+    "The mode-3 exit notification is observed at 0x10246914; the initiating request remains to be traced.",
+    "No physical menu key transition or menu application entry has been verified.",
+    "Experimental parameters do not substitute for factory calibration."
+  ],
+  "after_observation": {
+    "system": {
+      "mode_context": "0xb1819160",
+      "current_mode": 8,
+      "previous_mode": 1,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        64
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 0,
+      "pending_settings_bitmap": 0
+    },
+    "applications": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 0,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "graphics": {
+      "successful_uploads": 1352,
+      "render_requests": 0,
+      "rendered_commands": 1707,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 3200643584,
+      "target_address": 3200643584,
+      "target_dimensions": 31458000,
+      "target_format": 0,
+      "target_second_plane": 3419422720
+    },
+    "faults": [
+      {
+        "thread": 1,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 2,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 3,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      },
+      {
+        "thread": 4,
+        "registers": {
+          "DFAR_S": 0,
+          "DFSR_S": 0,
+          "IFAR_S": 0,
+          "IFSR_S": 0
+        }
+      }
+    ],
+    "controller_fault": "0000000000000000"
+  }
+}

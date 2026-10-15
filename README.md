@@ -205,6 +205,9 @@ isolation, without manufacturing pixel transfers or input events.
 Original execution now reaches operation 14 completion and starts drawing the
 shooting interface in mode 3. Further observation returns to mode 8 and clears
 the surface; stable startup and menu interaction remain unverified.
+The [subsequent observation](artifacts/shooting_interface_validation/report.json)
+confirms the visible original shooting status bar and records the later
+3 → 1 → 8 transition sequence.
 
 ## Firmware input
 
