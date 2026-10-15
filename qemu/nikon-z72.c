@@ -60,6 +60,18 @@ static void dual_controller_flash_data_set(Object *obj, const char *value, Error
     s->flash_data = g_strdup(value);
 }
 
+static char *dual_controller_supply_data_get(Object *obj, Error **errp)
+{
+    return g_strdup(NIKON_Z72_DUAL(obj)->controller_inputs.supply_data);
+}
+
+static void dual_controller_supply_data_set(Object *obj, const char *value, Error **errp)
+{
+    Z72ControllerInputs *s = &NIKON_Z72_DUAL(obj)->controller_inputs;
+    g_free(s->supply_data);
+    s->supply_data = g_strdup(value);
+}
+
 /* Exact configuration words observed in stock startup. Firmware pairs command
  * writes with bit-0 polls and acknowledgements. The laboratory assumes
  * synchronous completion and zero command results; real timing and hardware
@@ -1779,6 +1791,9 @@ static void nikon_z72_dual_init(MachineState *machine)
     if (s->controller_inputs.flash_data && !s->controller_firmware) {
         error_setg(&error_fatal, "Controller flash data requires a controller firmware image");
     }
+    if (s->controller_inputs.supply_data && !s->controller_firmware) {
+        error_setg(&error_fatal, "Controller supply data requires a controller firmware image");
+    }
     if (s->controller_firmware) {
         /* The embedded core adds an execution slot beyond the engine topology. */
         machine->smp.max_cpus = MAX(machine->smp.max_cpus, 5);
@@ -1927,6 +1942,10 @@ static void dual_machine_class_init(ObjectClass *klass, const void *data)
                                  dual_controller_flash_data_set);
     object_class_property_set_description(klass, "controller-flash-data",
         "Explicit resident data for the controller empty flash window");
+    object_class_property_add_str(klass, "controller-supply-data", dual_controller_supply_data_get,
+                                 dual_controller_supply_data_set);
+    object_class_property_set_description(klass, "controller-supply-data",
+        "Experimental supply response records for the controller");
     object_class_property_add_bool(klass, "controller-link", dual_controller_link_get,
                                   dual_controller_link_set);
     object_class_property_set_description(klass, "controller-link",
@@ -1942,6 +1961,7 @@ static void dual_machine_finalize(Object *obj)
 {
     g_free(NIKON_Z72_DUAL(obj)->controller_firmware);
     g_free(NIKON_Z72_DUAL(obj)->controller_inputs.flash_data);
+    g_free(NIKON_Z72_DUAL(obj)->controller_inputs.supply_data);
 }
 
 static void dual_machine_register(void)

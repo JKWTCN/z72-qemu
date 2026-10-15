@@ -42,6 +42,18 @@ static void controller_flash_data_set(Object *obj, const char *value, Error **er
     s->flash_data = g_strdup(value);
 }
 
+static char *controller_supply_data_get(Object *obj, Error **errp)
+{
+    return g_strdup(Z72_CONTROLLER_MACHINE(obj)->inputs.supply_data);
+}
+
+static void controller_supply_data_set(Object *obj, const char *value, Error **errp)
+{
+    Z72ControllerInputs *s = &Z72_CONTROLLER_MACHINE(obj)->inputs;
+    g_free(s->supply_data);
+    s->supply_data = g_strdup(value);
+}
+
 static void controller_load_firmware(Z72ControllerInputs *s, ARMCPU *cpu,
                                      const char *firmware, hwaddr load_base)
 {
@@ -545,6 +557,15 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
         sysbus_realize_and_unref(SYS_BUS_DEVICE(i2c), &error_fatal);
         controller_map(domain, root, i2c, 0, 0x40005400 + port * 0x400);
     }
+    if (s->supply_data) {
+        DeviceState *supply = qdev_new("nikon-z72-controller-supply");
+        qdev_prop_set_uint8(supply, "address", 0x38);
+        qdev_prop_set_string(supply, "initial-state", s->supply_data);
+        qdev_realize_and_unref(supply,
+            qdev_get_child_bus(i2c_devices[1], "controller-i2c1"), &error_fatal);
+        qdev_connect_gpio_out(s->gpio[3], 1, qdev_get_gpio_in(supply, 0));
+        qdev_connect_gpio_out(supply, 0, qdev_get_gpio_in(s->gpio[6], 10));
+    }
 
     Clock *cpuclk = clock_new(owner, "controller-cpuclk");
     Clock *refclk = clock_new(owner, "controller-refclk");
@@ -612,6 +633,11 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
         sysbus_connect_irq(SYS_BUS_DEVICE(i2c_devices[port]), 1,
                            qdev_get_gpio_in(core, 32 + port * 2));
     }
+    /* Supply transfers use DMA1 streams 2 and 7, both on channel 7. */
+    qdev_connect_gpio_out_named(i2c_devices[1], "dma-request", 0,
+                               qdev_get_gpio_in(dma_devices[0], 2 * 8 + 7));
+    qdev_connect_gpio_out_named(i2c_devices[1], "dma-request", 1,
+                               qdev_get_gpio_in(dma_devices[0], 7 * 8 + 7));
     static const hwaddr spi_bases[] = { 0x40013000, 0x40013400, 0x40003c00, 0x40003800 };
     static const unsigned spi_irqs[] = { 35, 84, 51, 36 };
     for (unsigned port = 0; port < ARRAY_SIZE(spi_bases); port++) {
@@ -754,6 +780,10 @@ static void nikon_z72_controller_class_init(ObjectClass *klass, const void *data
                                  controller_flash_data_set);
     object_class_property_set_description(klass, "flash-data",
         "Private resident flash data for the empty 0x08004000..0x0800ffff window");
+    object_class_property_add_str(klass, "supply-data", controller_supply_data_get,
+                                 controller_supply_data_set);
+    object_class_property_set_description(klass, "supply-data",
+        "Experimental supply response records on controller-i2c1 address 0x38");
 }
 
 static void controller_machine_init(Object *obj)
@@ -764,6 +794,7 @@ static void controller_machine_init(Object *obj)
 static void controller_machine_finalize(Object *obj)
 {
     g_free(Z72_CONTROLLER_MACHINE(obj)->inputs.flash_data);
+    g_free(Z72_CONTROLLER_MACHINE(obj)->inputs.supply_data);
 }
 
 static void controller_machine_register(void)

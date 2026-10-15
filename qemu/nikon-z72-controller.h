@@ -13,6 +13,7 @@ typedef struct Z72ControllerInputs {
     bool supply_input;
     bool auxiliary_input;
     char *flash_data;
+    char *supply_data;
     qemu_irq switch_input;
     qemu_irq wake_signal;
     qemu_irq battery_signal;

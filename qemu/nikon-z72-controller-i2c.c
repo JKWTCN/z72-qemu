@@ -27,6 +27,7 @@ struct Z72ControllerI2C {
     uint8_t final_byte;
     qemu_irq event_irq;
     qemu_irq error_irq;
+    qemu_irq requests[2];
 };
 
 static void i2c_update_irq(Z72ControllerI2C *s)
@@ -37,6 +38,12 @@ static void i2c_update_irq(Z72ControllerI2C *s)
                                    (s->registers[5] & 0xc0)))));
     qemu_set_irq(s->error_irq, !!((s->registers[1] & 0x100) &&
                                  (s->registers[5] & 0xf00)));
+    bool dma = s->active && (s->registers[0] & 1) &&
+               (s->registers[1] & 0x800) && !(s->registers[5] & 2);
+    qemu_set_irq(s->requests[0], dma && s->receiving &&
+                 (s->registers[5] & 0x40));
+    qemu_set_irq(s->requests[1], dma && !s->receiving &&
+                 (s->registers[5] & 0x80));
 }
 
 static void i2c_clear(Z72ControllerI2C *s)
@@ -56,7 +63,8 @@ static void i2c_clear(Z72ControllerI2C *s)
 
 static bool i2c_register(hwaddr offset, unsigned size)
 {
-    return size == 4 && !(offset & 3) && offset <= 0x24;
+    return !(offset & 3) && offset <= 0x24 &&
+           (size == 4 || (offset == 0x10 && size == 1));
 }
 
 static void i2c_receive_status(Z72ControllerI2C *s)
@@ -191,8 +199,6 @@ static MemTxResult i2c_write(void *opaque, hwaddr offset, uint64_t value,
         }
     } else if (offset == 0x14) {
         s->registers[5] &= value | ~0xf00u;
-    } else if (offset == 4 && (value & 0x1800)) {
-        return MEMTX_ERROR;
     } else {
         s->registers[offset / 4] = value;
     }
@@ -264,6 +270,7 @@ static void i2c_init(Object *obj)
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
     sysbus_init_irq(SYS_BUS_DEVICE(s), &s->event_irq);
     sysbus_init_irq(SYS_BUS_DEVICE(s), &s->error_irq);
+    qdev_init_gpio_out_named(DEVICE(s), s->requests, "dma-request", 2);
 }
 
 static void i2c_class_init(ObjectClass *klass, const void *data)

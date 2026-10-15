@@ -213,6 +213,11 @@ the five-second application timer. The observed battery communication status
 is 9 and the power-policy flag is 2; complete battery serial replies remain
 pending.
 
+The optional [controller supply interface](research/z7ii/controller_supply.md)
+now completes its original handshake and uses bounded checksummed records
+with receive/transmit DMA. Zero-filled experimental records still retain the
+five-second power policy; stable startup and menu interaction remain pending.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:

@@ -13,6 +13,7 @@ def prepare(root):
                  'nikon-z72-notify.c', 'nikon-z72-timer.c', 'nikon-z72-spi.c', 'nikon-z72-i2c.c', 'nikon-z72-memory.c', 'nikon-z72-controller.c',
                  'nikon-z72-controller-gpio.c', 'nikon-z72-controller-rtc.c',
                  'nikon-z72-controller-i2c.c', 'nikon-z72-controller-dma.c',
+                 'nikon-z72-controller-supply.c',
                  'nikon-z72-controller-timer.c',
                  'nikon-z72-controller-adc.c',
                  'nikon-z72-controller-rng.c',
@@ -45,6 +46,9 @@ def prepare(root):
                         data = data.replace(previous_config, addition, 1)
                         break
         if name == 'hw/arm/meson.build':
+            supply = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-controller-supply.c'))\n"
+            if supply.strip() not in data:
+                data += supply
             input_config = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-input-config.c'))\n"
             if input_config.strip() not in data:
                 data += input_config
