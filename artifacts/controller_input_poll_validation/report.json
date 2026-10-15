@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "observation_verified": true,
+  "firmware_modified": false,
+  "experimental_nonce_bridge": true,
+  "factory_calibration": false,
+  "menu_verified": false,
+  "full_boot_verified": false,
+  "foreground_application": "APPLV",
+  "system_mode": 1,
+  "input": {
+    "device": "nikon-z72-controller-expander",
+    "bus": "controller-i2c0",
+    "address": 34,
+    "gpio": "pins",
+    "pin": 1,
+    "idle_level": 1,
+    "asserted_level": 0,
+    "physical_button_identity": null
+  },
+  "native_path": {
+    "poll_entry": "0x080306f8",
+    "poll_return_address": "0x080304d3",
+    "input_expand_entry": "0x0803e51c",
+    "debounce_entry": "0x0803e428",
+    "logical_byte": "0x2001867d",
+    "aggregate_entry": "0x0803d8c8",
+    "aggregate_event": "0x0203008c",
+    "aggregate_byte": "0x200114f2"
+  },
+  "pressed": {
+    "raw": "fdffff",
+    "logical": 1,
+    "aggregate": 1,
+    "counter_ticks": 367210389
+  },
+  "released": {
+    "raw": "ffffff",
+    "logical": 0,
+    "aggregate": 0,
+    "counter_ticks": 412421135
+  },
+  "limitations": [
+    "This verifies polling, original debounce and controller aggregation only.",
+    "No capture interrupt wiring is inferred from this polling path.",
+    "Physical button identity and engine-side menu delivery remain unverified."
+  ]
+}
