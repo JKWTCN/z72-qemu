@@ -1,0 +1,138 @@
+{
+  "offset_space": "decoded_member_file_unless_explicitly_marked",
+  "packages": {
+    "Z_30_0120.bin": {
+      "size": 34496798,
+      "sha256": "1a5449ef505f1f347ed4e066a6a3f588ea542240680e83f4ebcae3b16da3434a",
+      "decoded_body_size": 34496766,
+      "decoded_body_sha256": "303c2382d18efca38b24470c5503ca0a207c48fed4d90170be81f6a43f869ad4",
+      "container_crc_verified": true,
+      "members": [
+        {
+          "container_name": "ex2090_012000.bi",
+          "decoded_body_offset": "0x90",
+          "size": 524290,
+          "sha256": "733559b1fbfa0754cc166a479888128c811e12fe0263f3c99c1925f109698a26",
+          "crc_stored": "6c4d",
+          "crc_verified": true
+        },
+        {
+          "container_name": "_tpj04_v10a5.bin",
+          "decoded_body_offset": "0x80092",
+          "size": 32802,
+          "sha256": "7a6b56050c06ca04ede95109ad724410209f05043ee458869e761d898d9b9627",
+          "crc_stored": "0592",
+          "crc_verified": true
+        },
+        {
+          "container_name": "eg2090_0120a0.bi",
+          "decoded_body_offset": "0x880b4",
+          "size": 33939514,
+          "sha256": "8a99ced2d8220729ba067587b0624bf30c81757abc5d728768134b1c7fd457fa",
+          "crc_stored": "5bd5",
+          "crc_verified": true
+        }
+      ]
+    },
+    "Z7_2_0170.bin": {
+      "size": 48494024,
+      "sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "decoded_body_size": 48493992,
+      "decoded_body_sha256": "f53ab7dd6eb417adaac98d617bbf95f89b09f9176ba93a48853e3d825a24fe17",
+      "container_crc_verified": true,
+      "members": [
+        {
+          "container_name": "ex1840_013000.bi",
+          "decoded_body_offset": "0xd0",
+          "size": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc_stored": "eb60",
+          "crc_verified": true
+        },
+        {
+          "container_name": "_tpj01_v140.bin",
+          "decoded_body_offset": "0x800d2",
+          "size": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc_stored": "a0f2",
+          "crc_verified": true
+        },
+        {
+          "container_name": "eg1840_mas_01700",
+          "decoded_body_offset": "0x8e0d4",
+          "size": 38239098,
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "crc_stored": "9d06",
+          "crc_verified": true
+        },
+        {
+          "container_name": "vr1840_010100.bi",
+          "decoded_body_offset": "0x2505c4e",
+          "size": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc_stored": "1394",
+          "crc_verified": true
+        },
+        {
+          "container_name": "eg1840_sla_01700",
+          "decoded_body_offset": "0x25d2856",
+          "size": 8834370,
+          "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+          "crc_stored": "b691",
+          "crc_verified": true
+        }
+      ]
+    }
+  },
+  "verified_windows": {
+    "note": "窗口以解码文件偏移、字节长度和观察字节的 SHA-256 记录；原始字节摘录不随本仓库分发。",
+    "z30_master": {
+      "0x23ccec": {
+        "length": 4,
+        "sha256": "ce55c640f10d1e726e5720313c750dce05a01e32e5d28d8e9bbc1aff4eb42305"
+      },
+      "0x30464c": {
+        "length": 4,
+        "sha256": "d219db04706679d2642a97d3b0b4b6778ec2169913a2ba8c3844c3364c6427fe"
+      },
+      "0x68235c": {
+        "length": 4,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      },
+      "0x682364": {
+        "length": 8,
+        "sha256": "ab11f7723afd7bf146343259841cf25b12bdec1c5876431e68768becbaeb471d"
+      },
+      "0x17e528": {
+        "length": 33,
+        "sha256": "d970b9b64c617c3df7572f6438fb5f5dfe035600985059185fdc46f50c2d798c"
+      },
+      "0x42ff70": {
+        "length": 16,
+        "sha256": "e0819d63b7f42b4fe4ae9ca9abee5d813c31684f2c5193b46bff1e94c6e99d61"
+      },
+      "0x34e8b4": {
+        "length": 16,
+        "sha256": "625559dda8cb42711209ee6ad6302a7df852bc7d1999312b76550b58d238c19d"
+      }
+    },
+    "z7ii_master": {
+      "0x2415d8": {
+        "length": 8,
+        "sha256": "8c61f90fbd9e0016649c8b055f05ff81e18da7f99a6a1e8153ad183ccf28fd04"
+      },
+      "0x18d6218": {
+        "length": 40,
+        "sha256": "bf33a67a15397554ef7e843cdb677319490e950f192190e575a21c49531c9ae0"
+      },
+      "0x109ed14": {
+        "length": 62,
+        "sha256": "479af2a735b8ef1298b2b6190bcb7ca092e91c75369121811a65202725a54e28"
+      },
+      "0x73f554": {
+        "length": 40,
+        "sha256": "6d741c3333fad845777b1b592826ae40a6f6f9b48c88dc85c554fce38264aeb3"
+      }
+    }
+  }
+}

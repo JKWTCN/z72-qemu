@@ -1,0 +1,491 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "service_returns": [
+            {
+              "entry": 945868,
+              "return_offset": 954352,
+              "r0": 0
+            },
+            {
+              "entry": 1049876,
+              "return_offset": 954372,
+              "r0": 0
+            },
+            {
+              "entry": 1049664,
+              "return_offset": 954392,
+              "r0": 0
+            },
+            {
+              "entry": 951444,
+              "return_offset": 954412,
+              "r0": 0
+            },
+            {
+              "entry": 953172,
+              "return_offset": 954432,
+              "r0": 0
+            }
+          ],
+          "first_service_group_completed": true,
+          "gic_original_configuration_verified": true,
+          "original_irq_handler_verified": false,
+          "heap_start": 2998927360,
+          "heap_end": 3052404736,
+          "pool_count": 26010,
+          "pool_end": 2999136256,
+          "native_heap_sections": 51,
+          "firmware_target_word": 16843009,
+          "single_cpu_spi_target_readback": 0,
+          "pool_headers_and_guards_verified": true,
+          "empty_heap_lists": [
+            {
+              "flags": 0,
+              "address": 2998166384
+            },
+            {
+              "flags": 16,
+              "address": 2998166352
+            },
+            {
+              "flags": 768,
+              "address": 2998166440
+            },
+            {
+              "flags": 784,
+              "address": 2998166408
+            }
+          ],
+          "return_offset": 932956,
+          "counter_device_supported": false,
+          "next_mmio_offset": 308,
+          "next_mmio_address": 69623808,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 954268,
+            "full_prefix_sha256": "47ed79fcec853db6d2ce0369d8c834c532f3a116a61ceb4b49ddcbe2d09cacc3"
+          }
+        },
+        "invalid-heap-section": {
+          "service_returns": [
+            {
+              "entry": 945868,
+              "return_offset": 954352,
+              "r0": 0
+            },
+            {
+              "entry": 1049876,
+              "return_offset": 954372,
+              "r0": 0
+            },
+            {
+              "entry": 1049664,
+              "return_offset": 954392,
+              "r0": 0
+            }
+          ],
+          "invalid_heap_section_data_abort": true,
+          "descriptor_restored": true,
+          "fault_offset": 951592,
+          "heap_start": 2998927360,
+          "first_service_group_completed": false,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 954268,
+            "full_prefix_sha256": "47ed79fcec853db6d2ce0369d8c834c532f3a116a61ceb4b49ddcbe2d09cacc3"
+          }
+        },
+        "counter-access-fault": {
+          "service_returns": [
+            {
+              "entry": 945868,
+              "return_offset": 954352,
+              "r0": 0
+            },
+            {
+              "entry": 1049876,
+              "return_offset": 954372,
+              "r0": 0
+            },
+            {
+              "entry": 1049664,
+              "return_offset": 954392,
+              "r0": 0
+            },
+            {
+              "entry": 951444,
+              "return_offset": 954412,
+              "r0": 0
+            },
+            {
+              "entry": 953172,
+              "return_offset": 954432,
+              "r0": 0
+            }
+          ],
+          "first_service_group_completed": true,
+          "gic_original_configuration_verified": true,
+          "original_irq_handler_verified": false,
+          "heap_start": 2998927360,
+          "heap_end": 3052404736,
+          "pool_count": 26010,
+          "pool_end": 2999136256,
+          "native_heap_sections": 51,
+          "firmware_target_word": 16843009,
+          "single_cpu_spi_target_readback": 0,
+          "pool_headers_and_guards_verified": true,
+          "empty_heap_lists": [
+            {
+              "flags": 0,
+              "address": 2998166384
+            },
+            {
+              "flags": 16,
+              "address": 2998166352
+            },
+            {
+              "flags": 768,
+              "address": 2998166440
+            },
+            {
+              "flags": 784,
+              "address": 2998166408
+            }
+          ],
+          "return_offset": 932956,
+          "counter_device_supported": false,
+          "next_mmio_offset": 308,
+          "next_mmio_address": 69623808,
+          "unsupported_counter_data_abort_verified": true,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 954268,
+            "full_prefix_sha256": "47ed79fcec853db6d2ce0369d8c834c532f3a116a61ceb4b49ddcbe2d09cacc3"
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "service_returns": [
+            {
+              "entry": 100512,
+              "return_offset": 108996,
+              "r0": 0
+            },
+            {
+              "entry": 204520,
+              "return_offset": 109016,
+              "r0": 0
+            },
+            {
+              "entry": 204308,
+              "return_offset": 109036,
+              "r0": 0
+            },
+            {
+              "entry": 106088,
+              "return_offset": 109056,
+              "r0": 0
+            },
+            {
+              "entry": 107816,
+              "return_offset": 109076,
+              "r0": 0
+            }
+          ],
+          "first_service_group_completed": true,
+          "gic_original_configuration_verified": true,
+          "original_irq_handler_verified": false,
+          "heap_start": 3247702016,
+          "heap_end": 3305111552,
+          "pool_count": 27922,
+          "pool_end": 3247927296,
+          "native_heap_sections": 55,
+          "firmware_target_word": 16843009,
+          "single_cpu_spi_target_readback": 0,
+          "pool_headers_and_guards_verified": true,
+          "empty_heap_lists": [
+            {
+              "flags": 0,
+              "address": 3247140280
+            },
+            {
+              "flags": 16,
+              "address": 3247140248
+            },
+            {
+              "flags": 768,
+              "address": 3247140336
+            },
+            {
+              "flags": 784,
+              "address": 3247140304
+            }
+          ],
+          "return_offset": 87820,
+          "counter_device_supported": false,
+          "next_mmio_offset": 308,
+          "next_mmio_address": 69623808,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 108912,
+            "full_prefix_sha256": "a5295cf17eb90f6f583d3dc5504d4a618cd293185a34455da7d3242ce3d64c84"
+          }
+        },
+        "invalid-heap-section": {
+          "service_returns": [
+            {
+              "entry": 100512,
+              "return_offset": 108996,
+              "r0": 0
+            },
+            {
+              "entry": 204520,
+              "return_offset": 109016,
+              "r0": 0
+            },
+            {
+              "entry": 204308,
+              "return_offset": 109036,
+              "r0": 0
+            }
+          ],
+          "invalid_heap_section_data_abort": true,
+          "descriptor_restored": true,
+          "fault_offset": 106236,
+          "heap_start": 3247702016,
+          "first_service_group_completed": false,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 108912,
+            "full_prefix_sha256": "a5295cf17eb90f6f583d3dc5504d4a618cd293185a34455da7d3242ce3d64c84"
+          }
+        },
+        "counter-access-fault": {
+          "service_returns": [
+            {
+              "entry": 100512,
+              "return_offset": 108996,
+              "r0": 0
+            },
+            {
+              "entry": 204520,
+              "return_offset": 109016,
+              "r0": 0
+            },
+            {
+              "entry": 204308,
+              "return_offset": 109036,
+              "r0": 0
+            },
+            {
+              "entry": 106088,
+              "return_offset": 109056,
+              "r0": 0
+            },
+            {
+              "entry": 107816,
+              "return_offset": 109076,
+              "r0": 0
+            }
+          ],
+          "first_service_group_completed": true,
+          "gic_original_configuration_verified": true,
+          "original_irq_handler_verified": false,
+          "heap_start": 3247702016,
+          "heap_end": 3305111552,
+          "pool_count": 27922,
+          "pool_end": 3247927296,
+          "native_heap_sections": 55,
+          "firmware_target_word": 16843009,
+          "single_cpu_spi_target_readback": 0,
+          "pool_headers_and_guards_verified": true,
+          "empty_heap_lists": [
+            {
+              "flags": 0,
+              "address": 3247140280
+            },
+            {
+              "flags": 16,
+              "address": 3247140248
+            },
+            {
+              "flags": 768,
+              "address": 3247140336
+            },
+            {
+              "flags": 784,
+              "address": 3247140304
+            }
+          ],
+          "return_offset": 87820,
+          "counter_device_supported": false,
+          "next_mmio_offset": 308,
+          "next_mmio_address": 69623808,
+          "unsupported_counter_data_abort_verified": true,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 108912,
+            "full_prefix_sha256": "a5295cf17eb90f6f583d3dc5504d4a618cd293185a34455da7d3242ce3d64c84"
+          }
+        },
+        "shared-path": {
+          "service_returns": [
+            {
+              "entry": 100512,
+              "return_offset": 108996,
+              "r0": 0
+            },
+            {
+              "entry": 204520,
+              "return_offset": 109016,
+              "r0": 0
+            },
+            {
+              "entry": 204308,
+              "return_offset": 109036,
+              "r0": 0
+            },
+            {
+              "entry": 106088,
+              "return_offset": 109056,
+              "r0": 0
+            },
+            {
+              "entry": 107816,
+              "return_offset": 109076,
+              "r0": 0
+            }
+          ],
+          "first_service_group_completed": true,
+          "gic_original_configuration_verified": true,
+          "original_irq_handler_verified": false,
+          "heap_start": 3247702016,
+          "heap_end": 3305111552,
+          "pool_count": 27922,
+          "pool_end": 3247927296,
+          "native_heap_sections": 55,
+          "firmware_target_word": 16843009,
+          "single_cpu_spi_target_readback": 0,
+          "pool_headers_and_guards_verified": true,
+          "empty_heap_lists": [
+            {
+              "flags": 0,
+              "address": 3247140280
+            },
+            {
+              "flags": 16,
+              "address": 3247140248
+            },
+            {
+              "flags": 768,
+              "address": 3247140336
+            },
+            {
+              "flags": 784,
+              "address": 3247140304
+            }
+          ],
+          "return_offset": 87820,
+          "counter_device_supported": false,
+          "next_mmio_offset": 308,
+          "next_mmio_address": 69623808,
+          "bootstrap_validation": {
+            "passed": true,
+            "random_words_verified": 55,
+            "copied_table_bytes": 16384,
+            "stop_offset": 108912,
+            "full_prefix_sha256": "9df576833acb9b4957e863ddb86dc97a78b43481e9bfb25e963287ccc9b772c1"
+          }
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "assumptions": [
+    "Original reset and instructions, stock images preloaded.",
+    "Experimental Cortex-A7/GIC layout and platform completion remain unchanged.",
+    "Heap RAM covers the decoded bounds; physical hardware capacity is unconfirmed.",
+    "Header poison/guards affect instance RAM; negative control changes one copied descriptor.",
+    "Counter device 0x04266000 is unimplemented; startup stops before its first read."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "2c0af5bb20695613d4a95e7e51247168b3e68ec453974f691c77f445aaf5644c",
+    "sources": {
+      "qemu/nikon-z72.c": "dc174dd2723810f61fb02d50b2585a2c2f9f5aeeb5fe2614cc0acc384898c893",
+      "qemu/nikon-z72-profile.h": "497f727b0ce0d5211c6f0ecffd9d35b663ef75a5a40fd1a4c52a14495723d593",
+      "qemu/prepare_source.py": "28c9939edca635c3542e1b4b04bbf392719344114f3937e15900db34ae676cdf"
+    }
+  },
+  "raw_report_sha256": "01f85b8929222f5d0482c8e8f0b58052cb6882e7d38930da573b4fc7fcbf0669",
+  "hash_encoding": "UTF-8 JSON, sorted keys, compact separators",
+  "validation": {
+    "native_boards": 2,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "native_structure": {
+      "passed": true,
+      "raw_report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "native_display": {
+      "passed": true,
+      "raw_report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    },
+    "virt_display": {
+      "passed": true,
+      "raw_report_sha256": "85ac424dd1ae650688c976b938bbce6614639b3d74b83d98c2f68cce00dc2a81"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "dc174dd2723810f61fb02d50b2585a2c2f9f5aeeb5fe2614cc0acc384898c893",
+    "qemu/nikon-z72-profile.h": "497f727b0ce0d5211c6f0ecffd9d35b663ef75a5a40fd1a4c52a14495723d593",
+    "qemu/prepare_source.py": "28c9939edca635c3542e1b4b04bbf392719344114f3937e15900db34ae676cdf",
+    "analyze/firmware_structure.py": "d60097e0494b4070f3c7f103f8cc507c78287a3cd9c5dd180389d8697d586221",
+    "analyze/runtime_services.py": "0a014e5989b3be9638a97b64ac691222a04180bcde216dece20cf7adb543d02b",
+    "analyze/runtime_bootstrap.py": "2d6386fdccfa7fd5b04b875eba69a09a9a0144885b74401788216bdfb678a522",
+    "tools/service_boot_probe.py": "f62b49ecb0e293434b0786a7cb3cd708551737cf777bf88f326052d360c7ea59",
+    "tools/runtime_boot_probe.py": "78fea1f4532b084b1a5d867250ba4e1776e2bd82529b43e0fd7a10e2350d424f",
+    "tests/test_board.py": "e3ea0e5edb438b1f99aff62338beccbf51f4781a503c08b437bb1c8c1dbefe25",
+    "tests/test_platform.py": "9c664eeae7166e2bd0b827db158b99eee8616add4c899c916abda2cf0fbfb158",
+    "tests/test_structure.py": "6e5db9e85c8f96797e8dec8337d7151e078c6030ddecea6d6723eab8bd6aed70"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "firmware": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "full_boot_verified": false,
+  "controller_link_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Isolated Cortex-M4 controller with fixed experimental clocks.",
+    "Explicit register bank at address 0x6b; no default attached target.",
+    "Identity byte 1 and analog samples 3001/1800 are experimental inputs.",
+    "The register bank is storage, not a physical power device model.",
+    "The optional auxiliary bank supplies an experimental four-byte status response.",
+    "Stock reset and runtime; breakpoints and reads, no debugger guest state writes.",
+    "Power readiness, controller-to-engine wiring and menu output remain unverified."
+  ],
+  "scenarios": {
+    "disconnected": {
+      "attached": false,
+      "address": 107,
+      "experimental_identity": null,
+      "identity_read": {
+        "value": 0,
+        "success": 0,
+        "tick": 1323
+      },
+      "original_disconnected_transfer_preserved": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "attached-register-bank": {
+      "attached": true,
+      "address": 107,
+      "experimental_identity": 1,
+      "identity_read": {
+        "value": 1,
+        "success": 1,
+        "tick": 1323
+      },
+      "configuration_write_and_readback": {
+        "return_value": 1,
+        "tick": 1324
+      },
+      "original_register_validation_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "attached-with-auxiliary-bank": {
+      "attached": true,
+      "address": 107,
+      "experimental_identity": 1,
+      "auxiliary_status_read": {
+        "address": 13,
+        "experimental_response": "080000c9",
+        "original_status": "010002",
+        "success": 1,
+        "return_value": 2,
+        "tick": 820
+      },
+      "original_four_byte_receive_verified": true,
+      "identity_read": {
+        "value": 1,
+        "success": 1,
+        "tick": 1324
+      },
+      "configuration_write_and_readback": {
+        "return_value": 1,
+        "tick": 1325
+      },
+      "original_register_validation_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    }
+  }
+}

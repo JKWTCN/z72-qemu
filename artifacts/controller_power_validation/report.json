@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "firmware": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "full_boot_verified": false,
+  "controller_link_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Isolated Cortex-M4 controller with fixed experimental clocks.",
+    "C5 is an externally driven contact level; physical contact identity is inferred.",
+    "Channel 1 sample 3001 is an experimental twelve-bit input, not measured battery data.",
+    "Only software-triggered independent regular single conversions; fixed 1 us completion.",
+    "Stock reset and runtime; breakpoints and reads, no debugger guest state writes.",
+    "Attached power devices and controller-to-engine wiring remain incomplete."
+  ],
+  "scenarios": {
+    "contact-low": {
+      "battery_contact": false,
+      "conversion_completion": true,
+      "channel1_sample": 3001,
+      "original_battery_result": "000000000000000000000000",
+      "original_disconnected_path_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "contact-high": {
+      "battery_contact": true,
+      "conversion_completion": true,
+      "channel1_sample": 3001,
+      "original_conversion_values": [
+        3001,
+        3001,
+        3001
+      ],
+      "original_average": 3001,
+      "original_regular_conversions_verified": true,
+      "original_average_and_disable_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "conversion-disabled": {
+      "battery_contact": true,
+      "conversion_completion": false,
+      "channel1_sample": 3001,
+      "wait_state": {
+        "tick_before": 820,
+        "tick_after": 853,
+        "status": 16,
+        "control": 1,
+        "data": 0,
+        "callback": 134448121
+      },
+      "original_conversion_wait_preserved": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    }
+  }
+}

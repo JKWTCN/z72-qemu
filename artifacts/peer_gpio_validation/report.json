@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "firmware": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Board readiness wiring inferred from complementary firmware paths.",
+    "Original reset and pin writes; no debugger state writes."
+  ],
+  "scenarios": {
+    "connected": {
+      "link_enabled": true,
+      "output_thread": 3,
+      "continued_thread": 1,
+      "passed": true,
+      "wait_resumed": true
+    },
+    "disconnected": {
+      "link_enabled": false,
+      "output_thread": 3,
+      "passed": true,
+      "wait_resumed": false
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "format": 1,
+  "date": "2026-10-10",
+  "offset_space": "decoded_member_file",
+  "structures": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "communication": {
+        "local_address": 3083796480,
+        "zero_size": 50712,
+        "entry_offset": 3571232,
+        "stop_offset": 3571248,
+        "instruction_state": "Thumb",
+        "writes": [
+          {
+            "offset": 0,
+            "value": 12583176
+          },
+          {
+            "offset": 4,
+            "value": 2857697281
+          },
+          {
+            "offset": 8,
+            "value": 0
+          },
+          {
+            "offset": 16,
+            "value": 0
+          }
+        ],
+        "untouched_word_offsets": [
+          12,
+          20
+        ],
+        "full_initializer_verified": false,
+        "inter_engine_transport_verified": false
+      }
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "communication": {
+        "local_address": 3322871808,
+        "zero_size": 50712,
+        "entry_offset": 265432,
+        "stop_offset": 265448,
+        "instruction_state": "Thumb",
+        "writes": [
+          {
+            "offset": 0,
+            "value": 12583176
+          },
+          {
+            "offset": 4,
+            "value": 2857697281
+          },
+          {
+            "offset": 8,
+            "value": 0
+          },
+          {
+            "offset": 16,
+            "value": 0
+          }
+        ],
+        "untouched_word_offsets": [
+          12,
+          20
+        ],
+        "full_initializer_verified": false,
+        "inter_engine_transport_verified": false
+      }
+    }
+  ],
+  "runs": [
+    {
+      "backend": "virt",
+      "qemu_version": "QEMU emulator version 10.0.0 (v10.0.0-12080-g252feb9469-dirty)",
+      "passed": true,
+      "assumptions": [
+        "Each image runs in a separate one-CPU QEMU instance.",
+        "Synthetic MMU/vector setup with native section attributes; generic-loader preload.",
+        "Communication windows are plain RAM; no inter-engine transport is modeled.",
+        "Only one bounded zero-table record per role is executed; full clearing is not attempted.",
+        "Communication header stores run after OS calls and stop before the return POP."
+      ],
+      "contexts": [
+        {
+          "role": "master",
+          "communication_header": {
+            "local_address": 3083796480,
+            "entry_offset": 3571232,
+            "stop_offset": 3571248,
+            "trials": [
+              {
+                "fill": 165,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  2779096485,
+                  0,
+                  2779096485
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              },
+              {
+                "fill": 90,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  1515870810,
+                  0,
+                  1515870810
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              }
+            ],
+            "full_initializer_verified": false,
+            "inter_engine_transport_verified": false
+          }
+        },
+        {
+          "role": "slave",
+          "communication_header": {
+            "local_address": 3322871808,
+            "entry_offset": 265432,
+            "stop_offset": 265448,
+            "trials": [
+              {
+                "fill": 165,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  2779096485,
+                  0,
+                  2779096485
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              },
+              {
+                "fill": 90,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  1515870810,
+                  0,
+                  1515870810
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              }
+            ],
+            "full_initializer_verified": false,
+            "inter_engine_transport_verified": false
+          }
+        }
+      ],
+      "natural_boot_verified": false,
+      "dual_engine_execution_verified": false
+    },
+    {
+      "backend": "nikon-z72-lab",
+      "qemu_version": "QEMU emulator version 10.2.4",
+      "passed": true,
+      "assumptions": [
+        "Each image runs in a separate one-CPU QEMU instance.",
+        "Synthetic MMU/vector setup with native section attributes; generic-loader preload.",
+        "Communication windows are plain RAM; no inter-engine transport is modeled.",
+        "Only one bounded zero-table record per role is executed; full clearing is not attempted.",
+        "Communication header stores run after OS calls and stop before the return POP."
+      ],
+      "contexts": [
+        {
+          "role": "master",
+          "communication_header": {
+            "local_address": 3083796480,
+            "entry_offset": 3571232,
+            "stop_offset": 3571248,
+            "trials": [
+              {
+                "fill": 165,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  2779096485,
+                  0,
+                  2779096485
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              },
+              {
+                "fill": 90,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  1515870810,
+                  0,
+                  1515870810
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              }
+            ],
+            "full_initializer_verified": false,
+            "inter_engine_transport_verified": false
+          }
+        },
+        {
+          "role": "slave",
+          "communication_header": {
+            "local_address": 3322871808,
+            "entry_offset": 265432,
+            "stop_offset": 265448,
+            "trials": [
+              {
+                "fill": 165,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  2779096485,
+                  0,
+                  2779096485
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              },
+              {
+                "fill": 90,
+                "words": [
+                  12583176,
+                  2857697281,
+                  0,
+                  1515870810,
+                  0,
+                  1515870810
+                ],
+                "untouched_words_preserved": true,
+                "guards_preserved": true
+              }
+            ],
+            "full_initializer_verified": false,
+            "inter_engine_transport_verified": false
+          }
+        }
+      ],
+      "natural_boot_verified": false,
+      "dual_engine_execution_verified": false
+    }
+  ]
+}

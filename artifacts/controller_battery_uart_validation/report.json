@@ -1,0 +1,54 @@
+{
+  "format": 1,
+  "passed": true,
+  "build_verified": true,
+  "synthetic_checks": {
+    "windows": ["0x40004400", "0x40011000"],
+    "separate_console_and_battery_output": true,
+    "battery_receive_byte": "0xa5",
+    "console_receive_isolation": true,
+    "receive_interrupt": 37,
+    "receive_mask_and_reenable": true,
+    "receive_read_acknowledgement": true,
+    "transmit_status_and_interrupts": true,
+    "configuration_reset": true
+  },
+  "stock_observation": {
+    "instruction_time_shift": 0,
+    "resident_header": "MAKE",
+    "resident_bytes": 49152,
+    "explicit_gpio_high": ["C5", "D13", "E9", "G7", "B11"],
+    "adc_codes": {"0": 1800, "1": 3001, "3": 3001},
+    "battery_backend": "file output without a responding peer",
+    "transmitted_bytes": 64,
+    "transmitted_sha256": "ca8f99da39fd2b3605693850f71692c2ab5526ac2c8873cde654501294cb2e5e",
+    "initial_zero_byte": true,
+    "repeated_requests": 3,
+    "request_bytes": 21,
+    "request_prefix": "020111",
+    "expected_response_bytes": 29,
+    "failure_argument": 8,
+    "status_write_pc": "0x08024b1e",
+    "status_address": "0x2001fa79",
+    "previous_status": 2,
+    "failure_status": 9
+  },
+  "alternate_input_observation": {
+    "only_changed_input": "D13 low",
+    "observation_windows": 7,
+    "seconds_per_window": 15,
+    "foreground_application": "APPIDLE",
+    "system_mode": 0,
+    "cached_input": -1,
+    "pending_settings_bitmap": 2,
+    "menu_start_observed": false
+  },
+  "limitations": [
+    "Resident data, register targets, GPIO levels and ADC codes are experimental inputs.",
+    "The character backend transports bytes; no battery response or battery state is generated.",
+    "Original response reception and validation remain unverified.",
+    "Serial DMA requests and exact line timing remain unmodeled."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false
+}

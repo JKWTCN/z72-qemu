@@ -1,0 +1,168 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "assumptions": [
+    "Two execution cores per isolated role; original reset and startup task.",
+    "Original images preloaded; no register, instruction, table or handshake patches.",
+    "Snapshot words are passive storage; register reset values are assumed zero.",
+    "Existing experimental console, pin-group and controller contracts remain in use.",
+    "The 512-word source table has no startup writer; zero content is assumed."
+  ],
+  "build": {
+    "binary": "/var/tmp/z72-qemu-build/build/qemu-system-arm",
+    "binary_sha256": "49568da2ad56fc0e88e4cf011e2316f1289dc773d0a214c6e556f1974bcb4700",
+    "qemu_version": "10.2.4"
+  },
+  "contexts": [
+    {
+      "dereferences": 19,
+      "passed": true,
+      "role": "master",
+      "scenarios": {
+        "snapshot-disabled": {
+          "bulk_copy_verified": null,
+          "dereference_count": null,
+          "fault": {
+            "cpsr": 1073742231,
+            "lr": 270562080,
+            "pc": 269484048,
+            "r0": 0,
+            "r1": 1,
+            "r2": 536936448,
+            "r3": 1262,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 536936516,
+          "fault_status": 2056,
+          "gate_restored_verified": null,
+          "next_address": null,
+          "pointer_provenance_verified": null,
+          "snapshot_completed": false,
+          "snapshot_disabled_data_abort_verified": true,
+          "tail_landed_words": null
+        },
+        "stock": {
+          "bulk_copy_verified": true,
+          "dereference_count": 19,
+          "fault": {
+            "cpsr": 2147484055,
+            "lr": 270561510,
+            "pc": 269484048,
+            "r0": 2978650096,
+            "r1": 536948736,
+            "r2": 1,
+            "r3": 2978649772,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 536948736,
+          "fault_status": 2056,
+          "gate_restored_verified": true,
+          "next_address": 536948736,
+          "pointer_provenance_verified": true,
+          "snapshot_completed": true,
+          "snapshot_disabled_data_abort_verified": null,
+          "tail_landed_words": 0
+        }
+      },
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "source": "0x20014800",
+      "source_model": "zero table",
+      "tail_fault": "0x20013000"
+    },
+    {
+      "dereferences": 19,
+      "passed": true,
+      "role": "slave",
+      "scenarios": {
+        "snapshot-disabled": {
+          "bulk_copy_verified": null,
+          "dereference_count": null,
+          "fault": {
+            "cpsr": 1073742231,
+            "lr": 268778280,
+            "pc": 268648720,
+            "r0": 0,
+            "r1": 1,
+            "r2": 536936448,
+            "r3": 1262,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 536936516,
+          "fault_status": 2056,
+          "gate_restored_verified": null,
+          "next_address": null,
+          "pointer_provenance_verified": null,
+          "snapshot_completed": false,
+          "snapshot_disabled_data_abort_verified": true,
+          "tail_landed_words": null
+        },
+        "stock": {
+          "bulk_copy_verified": true,
+          "dereference_count": 19,
+          "fault": {
+            "cpsr": 2147484055,
+            "lr": 268777690,
+            "pc": 268648720,
+            "r0": 3238084120,
+            "r1": 536948736,
+            "r2": 1,
+            "r3": 3238083724,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 536948736,
+          "fault_status": 2056,
+          "gate_restored_verified": true,
+          "next_address": 536948736,
+          "pointer_provenance_verified": true,
+          "snapshot_completed": true,
+          "snapshot_disabled_data_abort_verified": null,
+          "tail_landed_words": 0
+        }
+      },
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "source": "0x20014800",
+      "source_model": "zero table",
+      "tail_fault": "0x20013000"
+    }
+  ],
+  "date": "2026-10-10",
+  "format": 1,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "raw_report_sha256": "37ea50719d6206386f7e8878d6f142f06efa97326aab8f154c518a4c39d56dd0",
+  "regressions": {
+    "board_tests": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "console_boundary": {
+      "passed": true,
+      "raw_report_sha256": "d75982b9e5c104ca02d9bb00d9d54f44cb306e74f075fdf7dbace24393579653"
+    },
+    "controller_boundary": {
+      "passed": true,
+      "raw_report_sha256": "facd4f76252a7245ff7fedf26e4bf21940fe6bab6cad029b90c7125d499423a6"
+    },
+    "library_boundary": {
+      "passed": true,
+      "raw_report_sha256": "3c6a4c90e563a459b51d53f180a487d71559dca0de6c0289f3a808c1726efe68"
+    },
+    "python_checks": {
+      "input_guards": 3,
+      "passed": true
+    }
+  },
+  "sources": {
+    "analyze/snapshot_boot.py": "923ad8b5a49b792cab3005d5a1d8f057c39574608061847c405f97e30bec0fb9",
+    "qemu/nikon-z72.c": "a7b55e492360d3a7f37a7d256e5d79fc07879d62627440b879490f30a3adb563",
+    "tools/snapshot_boot_probe.py": "9a40278c3dedfcf352e382be1016c86e84ee1afe58fb064f95c4569352fce5eb"
+  }
+}

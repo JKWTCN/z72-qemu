@@ -1,0 +1,260 @@
+# Z72 QEMU
+
+[中文](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Development status](docs/porting.md) · [Firmware](docs/firmware.md) · [Testing](docs/testing.md) · [Publication](docs/publication.md) · [Research](research/README.md)
+
+Z72 QEMU is an experimental QEMU environment for Nikon Z7 II C 1.70 firmware
+research. It provides a dedicated ARM machine, strict firmware input validation,
+and reproducible experiments for memory initialization, MMU permissions and
+display-state predicates. Stock reset, shared dual-engine message RAM, scheduler
+ticks and runtime gate completion are implemented. The original gate interrupt
+handler resumes the startup task; a disabled-completion control retains its wait.
+Full camera startup, communication handshakes, menu rendering, LCD live view and
+input routing remain pending. See the latest
+[runtime gate contracts](research/z7ii/runtime_gate.md).
+
+## Startup structure
+
+Stock master and slave startup structures can be inspected and their
+initialization routines executed in isolated contexts. See
+[startup structure](research/z7ii/startup_structure.md) for recovered addresses
+and validation limits. Run with owned, unmodified C1.70 EG images:
+
+```sh
+python tools/structure_probe.py --master /path/to/eg1840_mas_01700.bin --slave /path/to/eg1840_sla_01700.bin --destination .local/structure-run
+```
+
+The default backend is `virt`. Use `--backend nikon-z72-lab --qemu ...` for the
+compiled master and slave machines. Communication windows provide ordinary RAM;
+inter-engine transport and natural boot remain unimplemented.
+
+The native machines can also execute the stock reset prefix with the original
+page table, checking all six mode stacks and stopping before the first MMIO
+store. See [reset prefix](research/z7ii/reset_prefix.md) for the command and
+negative control. This does not yet reach the RTOS or menus.
+
+The [early-configuration stage](research/z7ii/early_configuration.md) adds four
+configuration words and temporary stack RAM. Stock reset executes both original
+delay loops and reaches system initialization offset `0x394`. Stock, register-bit
+preservation and invalid-stack scenarios are checked; full boot and menus remain pending.
+
+The [first system-configuration batch](research/z7ii/system_configuration.md)
+continues through `0x394`, checking 58 stock configuration stores, both slave
+selection paths and invalid-section data aborts. Execution stops before the
+first readiness poll; the RTOS and menus are still pending.
+
+The [completion stage](research/z7ii/system_completion.md) adds experimental
+synchronous completion and acknowledgement behavior. The first configuration
+call returns through seven original polls and five commands, reaching master
+`0x5354` or the slave's next initialization entry. Disabled-completion controls
+execute the original full timeout bound. Full boot and menus remain pending.
+
+The [platform-initialization stage](research/z7ii/platform_initialization.md)
+completes all four configuration calls across both channels: 360 stores, 48
+original polls and six result reads. Stock reset reaches boot continuation
+`0xBDC4` (master) or `0xBE10` (slave). A selectively blocked command executes
+the original timeout. RTOS startup and menus remain pending.
+
+The [boot-continuation stage](research/z7ii/boot_continuation.md) adds 24 exact
+configuration words, restores the original SVC stack and executes all three
+early copy loops continuously from reset. It reaches the memory-initialization
+completion-wait entry.
+
+The [boot memory stage](research/z7ii/boot_memory.md) supplies an experimental
+bounded zero fill and completion/error status. Stock reset now reaches master
+`0x416C60` or slave `0x1474A8` after the original completion wait. Whole-range
+poison/guard checks and the stock fatal-error loop are verified. Those next
+entry points are continued by the next stage; full RTOS startup and menus remain pending.
+
+The [runtime bootstrap](research/z7ii/runtime_bootstrap.md) executes ARM/Thumb
+interworking, library state initialization, original cache maintenance and the
+16 KiB page-table copy/switch. It prepares the initial RTOS configuration and
+reaches master `0xE8F9C` / slave `0x1A970`. The native boards now provide a
+standard GICv2 and wired CPU timers at an experimental CBAR layout. Synthetic
+checks verify actual interrupt delivery; stock interrupt handlers and scheduling
+remain unverified.
+
+The [initial services](research/z7ii/runtime_services.md) now complete original
+GIC setup and runtime heap initialization. RAM covers both decoded heap bounds;
+stock reset returns to master `0xE3C5C` / slave `0x1570C` and continues to the
+first access of counter device `0x04266000`. Pool headers,
+empty lists and heap-section data-abort controls are verified. Full startup
+and menu rendering remain pending.
+
+The [counter stage](research/z7ii/runtime_counter.md) supplies a running MMIO
+counter and the original 48 MHz CPU frequency declaration. Stock reset completes
+18 further kernel module calls and creates/starts the startup task, then waits
+at master `0xFE660` / slave `0x30034` for another core in the default single-core context.
+
+The [secondary-core stage](research/z7ii/smp_startup.md) adds optional `-smp 2`
+within each isolated role. Both original reset paths run, the secondary publishes
+readiness with the original exclusive store, and the scheduler enters the startup
+task. Execution then faults on the unsupported byte register `0x2C090001`.
+Directed SGIs and each core's physical timer are verified with synthetic code.
+Full camera startup, stock IRQ handling and menus remain unverified.
+
+The [console stage](research/z7ii/console_boot.md) now completes all ten original
+mixed-width configuration stores at `0x2C090000` and restores the caller.
+A bounded transmitter can send bytes to an optional QEMU character backend.
+Native console text, receive and UART interrupts remain unverified.
+
+The [pin-group stage](research/z7ii/library_boot.md) executes the next library
+initializer: one configuration word at `0x04280030` and twelve five-word groups
+copied from early-copy RAM into five banks at `0x04282000`, plus the original
+read-modify-write pairs on the master. Stock reset returns to the initialization
+chain and stops at the first `0x04281000` store; pin electrical behavior is
+unmodeled.
+
+The [controller-chain stage](research/z7ii/controller_boot.md) executes that
+sequence: six constant words and setup stores at `0x04281000`, the original
+counter delay, derived words at `0x04280000` and a polled gate at `0x04287000`
+(master three phases, slave five). The [snapshot stage](research/z7ii/snapshot_boot.md)
+then executes the next initializer: it gates `0x20010044`, dereferences nineteen
+recovered pointers into `0x2001xxxx` register words and copies their values into
+RAM from a zero-initialized 512-word source table at `0x20014800` (no writer
+exists in startup; treated as read-only controller content). The
+[parameter stage](research/z7ii/parameter_boot.md) then executes the tail
+restore: twelve segments into `0x20013000`/`0x20016A00`, a polled register
+ready bit, the original nineteen-word register restore, a mirror copy into the
+eight-region window at `0x24074000`, the completion stores and the return to
+the initializer chain. The master then copies its `0x21538`-byte payload into the new one-miB
+staging window at `0xBAB00000` (verified byte-exact).
+
+The [kernel-handoff stage](research/z7ii/kernel_handoff.md) explains those long
+compute paths: the payload is the firmware's exception/service block (the
+exception base has pointed at its `0x10100000` runtime address since the runtime
+stage). The master then issues `svc #6` with descriptor `0x010B0211`, the slave
+chain with `0x80430200`; both dispatch through the vector block (master
+`0x10100008`, slave veneer `0x14108` into the `0x15010` dispatcher) and stay
+inside the service implementation, never returning to the staging continuation
+or the initializer chain within the bound. The descriptors match the firmware's
+inter-engine command family; the completion source is judged to be the peer
+engine's acknowledgement, which remains unmodeled. Access watchpoints recover the
+wait itself: the slave polls a zeroed stack wait-block (`cmp`/`bhi` until
+nonzero at file `0x19038`), the master re-enters a payload store veneer at file
+`0x100430`; the wait words never change and both mailbox windows stay zero, so
+the boundary is an RTOS event that no producer posts in isolation: a laboratory
+interrupt injector sweeping every shared line found no interrupt that releases
+the wait by itself. A single debugger write of the recovered wait word stands in
+for the peer response (master heap word `0xB2C59A90`, slave stack block
+`0xC19B4FC8`); the kernel then restarts (433 recorded exception events in one
+run; the chain re-entry at `0x1E004A` is recorded from exploration), and both
+roles converge on the same next boundary - the store to `0x04281058` faults
+(DFSR `0x8`) and the original self-loop data-abort vector parks the arriving
+core. Registering what stock execution actually touches on that path keeps the
+run advancing - the controller bit-banks (`0x04281034/58/5C`), a companion
+serial-adjacent page at `0x2C0A0000`, the counter-adjacent register file
+`0x0426F000..14`, and the indexed `0x04280004`-relative register-file window at
+`0x04280000` (single words plus `+0x30[idx]`/`+0x60[idx]` arrays) - until
+structural boundaries appear: a firmware page-table gap at `0x2C020000`, the
+stand-in value dereferenced as a pointer (`1+0x33`), and a response-derived
+buffer pointer `0xB7F6A0EC`; one freed slave run records 590+ events, a master
+run 20,130. Access watchpoints over the file recover the first descriptor
+fields: the kernel polls the peer-ready word `0x0428002C` after posting its own
+`+0x30=0x410` descriptor, so the machine now models the peer's readiness
+(the file answers ready once the local descriptor is posted) and a freed master
+run reaches ~25,000 events with only the single wait-word stand-in; the
+remaining `NULL+0x33` dereference comes from a heap-object field of the peer
+response structure - its field table is the next entry point.
+The staging window becomes
+a switchable device block whose negative control keeps the copy store faulting.
+
+The [timer-tick stage](research/z7ii/kernel_handoff.md) then unblocks the idle
+scheduler. Firmware analysis recovered the whole interrupt plumbing - the
+payload IRQ entry at `0x101036A8`, the runtime handler tables and the timer
+block at `0x2B000000` serviced through dispatch line 237 - so the machine
+models the armed event mask as a periodic contract. With the tick enabled, the
+freed master acknowledges ticks through the original dispatcher, picks up its
+first real task (current-task table nonzero, thousands of interrupt entries,
+zero data aborts) and keeps executing kernel work while the secondary core
+idles. The isolated slave never arms this timer; menu-visible output still
+awaits the inter-engine transport.
+
+The [dual-engine machine](research/z7ii/kernel_handoff.md) then removes the
+stand-ins: both original images run in one machine through private
+address-space views over shared communication RAM, and the real slave answers
+the master handoff naturally. Both engines boot from reset to their schedulers
+with zero data aborts and no debugger writes anywhere, master tasks advance
+into main-image modules, and the slave communication stack stays active. The
+remaining boundary is the transport handshake retry loop (cross-engine
+doorbell interrupts are unmodeled) and the display chain beyond it.
+
+Later stages recovered the foreground wait chain up to live view: the
+[waiting interface services](research/z7ii/message_wait.md), the experimental
+[temperature parameters](research/z7ii/temperature_parameters.md), the
+[input path and capture buffers](research/z7ii/input_path.md) and finally the
+[capture-readiness boundary](research/z7ii/capture_readiness.md) - the
+operation completion-callback table, the capture sub-state machine, the
+unchanged readiness byte and local resource bitmap updates. Sub-state zero
+returns before checking readiness; the pending device initialization still
+needs its work producer. Menus remain unverified.
+
+## Firmware input
+
+Supply your own legally obtained, extracted, unmodified C1.70 master EG:
+**38,239,098 bytes**, SHA256
+`478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe`.
+An update container cannot substitute for the extracted master image, and
+update-package decoding, extraction and repacking tools are not part of this
+repository. No firmware binaries are included or downloaded by the project,
+and firmware copyright remains with its rights holders. Every probe verifies
+length, SHA-256, CRC and structure before the guest starts; see
+[firmware input](docs/firmware.md).
+
+## Quick start
+
+Requires Python 3.10+, QEMU ARM, Clang and LLVM linker. From the project root:
+
+```sh
+python tools/structure_probe.py --master /path/to/eg1840_mas_01700.bin --slave /path/to/eg1840_sla_01700.bin --destination .local/structure-run
+```
+
+The default `virt` backend works with stock QEMU. All harnesses, logs and the
+JSON report stay in the new run directory; the source is untouched. The
+recorded run executed the original early copy loops, Thumb table copies, the
+bounded communication-RAM zero record and the communication header store
+block in both roles, with poisoned destinations and trailing guards.
+See [startup structure](research/z7ii/startup_structure.md) and the
+[structure validation](artifacts/structure_validation/summary.json).
+
+## Build the Z72 machine
+
+Build the `nikon-z72-lab` board on Linux/WSL with Python 3.12+, a C compiler,
+Ninja, pkg-config, GLib/Pixman/zlib/libfdt development packages and python3-venv.
+The boot probes additionally need Clang and LLVM linker:
+
+```sh
+python3 tools/build.py --jobs 4
+python3 tests/test_board.py --qemu .build/build/qemu-system-arm
+python3 tools/boot_probe.py --qemu .build/build/qemu-system-arm --master /path/to/eg1840_mas_01700.bin --slave /path/to/eg1840_sla_01700.bin --destination .local/native-run
+```
+
+Builds pin QEMU 10.2.4 and its source hash, accept an offline `--archive`, and
+record build metadata in `.local/build-manifest.json`. The lab board supplies the studied master
+RAM windows and one experimental CPU by default, with optional two-core execution.
+The master graphics upload window is connected to the shared GPU command
+executor. Stock initialization uploads and their completion callback are verified;
+menu output and LCD scanout remain unverified.
+
+## Testing
+
+```sh
+sh tests/run.sh
+python tools/verify_release.py
+```
+
+CI runs the firmware-free checks and the pinned QEMU build; see
+[testing](docs/testing.md) and the [publication inventory](docs/publication.md).
+
+## Acknowledgements
+
+We thank [WonderLantern Z6 QEMU](https://github.com/WonderLantern/z6-qemu) and
+[WonderLantern Z7 QEMU](https://github.com/WonderLantern/z7-qemu), including
+R3tr0ooo and the project contributors, for their open-source camera emulation
+work, graphics and image-processing implementations, and research tools.
+
+## License
+
+The project is licensed under [GPL-2.0-or-later](COPYING), unless an individual
+file states otherwise. Attribution and licensing information are in
+[NOTICE](NOTICE.md). Upstream QEMU retains its per-file licenses. Nikon is not
+affiliated with this project; no project license grants rights in Nikon firmware.

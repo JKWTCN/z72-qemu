@@ -1,0 +1,35 @@
+{
+  "synthetic_test": "tests/test_controller_embedded.py",
+  "synthetic_scenarios_passed": ["explicit serial peers", "automatic board link"],
+  "local_reset_checks_passed": [
+    "controller reset vectors and stack",
+    "DMA and timer control cleared",
+    "NVIC and SysTick control cleared",
+    "backup register and SRAM preserved",
+    "all four engine CPU register sentinels preserved",
+    "engine serial configuration preserved"
+  ],
+  "host_board_reset_check_passed": true,
+  "native_observation": {
+    "icount": "shift=0,sleep=off",
+    "inputs": "temporary storage markers, period 81, blank register targets and explicit GPIO levels",
+    "wake_edges": ["G7 high to low", "G7 low to high"],
+    "before_fix": {
+      "guest_reset_events": 2,
+      "controller_returned_to_reset_vector": true,
+      "engine_application_initialization_cleared": true
+    },
+    "after_fix": {
+      "guest_reset_events": 0,
+      "controller_returned_to_reset_vector": true,
+      "engine_application_initialization_complete": 1,
+      "application_ready_flags": [1, 1, 1, 1, 1],
+      "sampling_ready": true,
+      "current_mode": 0,
+      "pending_settings_bitmap": 11,
+      "control_ready_bitmap": 0
+    }
+  },
+  "full_boot_verified": false,
+  "menu_display_verified": false
+}

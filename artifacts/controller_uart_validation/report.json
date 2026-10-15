@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "passed": true,
+  "prior_fault": {
+    "cfsr": "0x8200",
+    "bfar": "0x4001100c",
+    "reset_entry": "0x08049088",
+    "guest_reset_observed": true
+  },
+  "synthetic_checks": {
+    "windows": ["0x40004400", "0x40011000"],
+    "interrupts": [38, 37],
+    "console_bytes": "Z72",
+    "transmit_status": true,
+    "interrupt_masks": true,
+    "completion_acknowledgement": true,
+    "configuration_reset": true
+  },
+  "stock_observation": {
+    "instruction_time_shift": 0,
+    "resident_header": "MAKE",
+    "resident_bytes": 49152,
+    "explicit_gpio_high": ["C5", "D13", "E9"],
+    "explicit_register_targets": ["0x4f", "0x22", "0x6b", "0x0d"],
+    "adc_codes": {"0": 1800, "1": 3001, "3": 3001},
+    "configuration_handler": "0x10247ae4",
+    "configuration_completion": "0x10247b5e",
+    "controller_fault_registers": "0000000000000000",
+    "guest_reset_observed": false,
+    "initialized_applications": 5,
+    "foreground_application": "APPIDLE"
+  },
+  "input_observation": {
+    "changed_after_configuration_completion": "C5 high to low",
+    "cached_input_before": 0,
+    "cached_input_after": 1,
+    "current_system_mode": 0,
+    "foreground_application": "APPIDLE"
+  },
+  "limitations": [
+    "Resident data, analog samples and register targets are experimental fixtures.",
+    "C5 maps to the cached system input; its physical control identity remains unverified.",
+    "No reset was observed during bounded runs; this does not establish indefinite stability.",
+    "Native serial reception and DMA requests remain unverified."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false
+}

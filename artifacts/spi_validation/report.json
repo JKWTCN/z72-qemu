@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "channels": [
+        0,
+        1,
+        6,
+        8,
+        9,
+        10
+      ],
+      "fifo_bounds": true,
+      "completion": true,
+      "access_faults": true,
+      "reset": true,
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "channels": [
+        0,
+        1,
+        6,
+        8,
+        9,
+        10
+      ],
+      "fifo_bounds": true,
+      "completion": true,
+      "access_faults": true,
+      "reset": true,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "controller_reply_verified": false,
+  "panel_verified": false,
+  "menu_verified": false
+}

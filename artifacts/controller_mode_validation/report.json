@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "passed": true,
+  "observed_entry": "0x103e7d9c",
+  "native_ready_result": 0,
+  "system_controller": {
+    "mode_context": "0xb1819848",
+    "current_mode": 0,
+    "previous_mode": 255,
+    "power_input": 0,
+    "configuration_flags": 72,
+    "configuration_secondary_flags": 40,
+    "transition_inhibitors": [2, 0, 64],
+    "deferred_transition_flags": 0,
+    "deferred_target_mode": null,
+    "control_ready_bitmap": 0,
+    "pending_settings_bitmap": 1
+  },
+  "later_original_input_observation": {
+    "pending_settings_bitmap": 5,
+    "foreground_application": "APPIDLE"
+  },
+  "alternate_input_observation": {
+    "gpio_low": ["C5"],
+    "gpio_high": ["D13", "E9", "G7", "B11"],
+    "configuration_flags": 8,
+    "pending_settings_bitmap": 9,
+    "current_application_index": 0,
+    "next_application_index": 3,
+    "application_state": 3
+  },
+  "controller_fault_registers": "0000000000000000",
+  "runtime_state_modified": false,
+  "limitations": [
+    "GPIO, resident data, analog samples and register targets are explicit experimental inputs.",
+    "This checks diagnostic fields and bounded execution, not completion of a foreground transition.",
+    "The physical meaning of the missing settings update remains unverified."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false
+}

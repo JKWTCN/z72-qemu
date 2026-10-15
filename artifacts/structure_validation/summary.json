@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-10",
+  "checks": {
+    "python_checks_passed": 18,
+    "renderer_sanitizer_checks_passed": 270,
+    "synthetic_boards_passed": [
+      "nikon-z72-lab",
+      "nikon-z72-slave-lab"
+    ]
+  },
+  "structure_backends_passed": [
+    "virt",
+    "nikon-z72-lab"
+  ],
+  "per_role_per_backend": {
+    "early_arm_loops": 3,
+    "thumb_table_copies": 4,
+    "thumb_zero_samples": 1
+  },
+  "display_regression_gate_checks": {
+    "display_virt": 1024,
+    "display_native": 1024
+  },
+  "evidence": [
+    "build.json",
+    "display_native.json",
+    "display_virt.json",
+    "native.json",
+    "structures.json",
+    "virt.json"
+  ],
+  "source_sha256": {
+    "analyze/firmware_structure.py": "b41c7395f9600b519cd095106e2cf46241a2773ac1ffdbf88618cc9fa9a70221",
+    "analyze/qemu_display.py": "e476954428f4491d38d569a6944cf363abee2bc4585f64a98c6ae73da26bdbf8",
+    "analyze/qemu_harness.S": "a57c7f03866217e9b0effd5ec5009ff8fd65327c8581442e07a1b56ce34979a6",
+    "qemu/nikon-z72.c": "a5c8599ae1e2cf5bc1afbc38b776c8c79b02787d23f02fc74ef736e188b3fc90",
+    "qemu/nikon-z72-profile.h": "c67da1c24a6eb11832533c35e85b6fd7dcf3236ed19395b9e7bd0fbc00dc41f0",
+    "tools/structure_probe.py": "504cf53bc2e58159b5739a85aed80e7e3e6d462e10a33fbbf415a8b2a775c8b9",
+    "tests/test_structure.py": "12433e143b0849d41c210bc4e243ee9bf615db63e0b3a21093f9658fce93d509",
+    "tests/test_board.py": "7b7008143258a8121914b9d5d32796265f26571bae23cb18861c261c43faec66",
+    "tests/run.sh": "530b6f7b1a4e46796fb8da67afcef4fee2a5e674c5778f6bc78ae80cc161207c"
+  },
+  "natural_boot_verified": false,
+  "dual_engine_execution_verified": false,
+  "firmware_included": false,
+  "passed": true
+}

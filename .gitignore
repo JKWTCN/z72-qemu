@@ -1,0 +1,40 @@
+# Generated runtime and build directories
+.local/
+.build/
+.qemu-cache/
+
+# Python environments and caches
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Firmware and extracted payloads
+*.[bB][iI][nN]
+*.[bB][iI]
+*_decoded/
+/analyze/decoded/
+
+# Compiler and linker output
+*.o
+*.obj
+*.elf
+*.exe
+*.dll
+*.so
+*.so.*
+*.a
+*.lib
+qemu-*.tar.xz
+*.deb
+
+# RAW stimuli, diagnostic images and logs
+*.raw
+*.raw12
+*.wav
+*.ppm
+*.pgm
+*.log
+
+# Editor settings
+.vscode/

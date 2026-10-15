@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "firmware": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Original reset, waits and interrupt handlers; no debugger state writes.",
+    "Experimental GIC v1 and instruction-count virtual clock.",
+    "Synchronous incrementing memory transfer; peripheral modes remain unmodeled."
+  ],
+  "scenarios": {
+    "completion": {
+      "completion_enabled": true,
+      "interrupt_id": 45,
+      "command_thread": 1,
+      "transfer": {
+        "source": "0x12449e00",
+        "destination": "0xb2bb1080",
+        "length": 289748,
+        "sha256": "f6cabe552b64da050f22f608dda48fe9a54f15009bfec835a7df2cc3c45d5bc9"
+      },
+      "handler_thread": 1,
+      "resumed_thread": 1,
+      "task_resumed": true,
+      "passed": true,
+      "faults": []
+    },
+    "completion-disabled": {
+      "completion_enabled": false,
+      "interrupt_id": 45,
+      "command_thread": 1,
+      "transfer": {
+        "source": "0x12449e00",
+        "destination": "0xb2bb1080",
+        "length": 289748
+      },
+      "task_resumed": false,
+      "passed": true,
+      "faults": []
+    }
+  }
+}

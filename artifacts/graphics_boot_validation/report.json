@@ -1,0 +1,171 @@
+{
+  "format": 1,
+  "passed": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "original_commands": [
+    {
+      "channel": 0,
+      "address": "0xbd0dff90",
+      "words": 56,
+      "bytes": 224,
+      "operations": {
+        "4": 10,
+        "6": 3,
+        "2": 2
+      },
+      "sha256": "dfab760ac62e7517cd579df15f45f8f9b77ba701ddd16db336c667ac2d65965c"
+    },
+    {
+      "channel": 1,
+      "address": "0xbd15ff90",
+      "words": 422,
+      "bytes": 1688,
+      "operations": {
+        "4": 54,
+        "6": 4
+      },
+      "sha256": "230a6b145f165a123d8f3234d8422df6eca00429def03b3e63c591d64756e01d"
+    }
+  ],
+  "original_completion_callback_verified": true,
+  "both_upload_channels_completed": true,
+  "completion_interrupt": 129,
+  "callback_context": {
+    "thread": 1,
+    "cpsr": "0x800001b3",
+    "caller": "0x10107274"
+  },
+  "engine_fault_registers": [
+    {
+      "thread": 1,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 2,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 3,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 4,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    }
+  ],
+  "original_acknowledgement_verified": true,
+  "observation_wall_seconds": 20.0,
+  "cores": [
+    {
+      "thread": 1,
+      "pc": 269512820,
+      "mode": 19
+    },
+    {
+      "thread": 2,
+      "pc": 269549700,
+      "mode": 19
+    },
+    {
+      "thread": 3,
+      "pc": 268667460,
+      "mode": 19
+    },
+    {
+      "thread": 4,
+      "pc": 268667460,
+      "mode": 19
+    }
+  ],
+  "menu_table_pointers": [
+    "0x0",
+    "0x0",
+    "0xb2bb720c",
+    "0xb2bc3f64",
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "graphics": {
+    "successful_uploads": 6,
+    "render_requests": 0,
+    "rendered_commands": 3,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 0,
+    "target_address": 3089394432,
+    "target_dimensions": 2097184,
+    "target_format": 0,
+    "target_second_plane": 0
+  },
+  "application_manager": {
+    "initialization_complete": 1,
+    "start_notification_sent": 1,
+    "current_index": 0,
+    "next_index": 5,
+    "state": 2,
+    "applications": [
+      {
+        "index": 0,
+        "name": "APPIDLE",
+        "getter": "0x104377b5",
+        "context": "0xb181d8a4",
+        "ready": 1
+      },
+      {
+        "index": 1,
+        "name": "APPMENU",
+        "getter": "0x1044e301",
+        "context": "0xb1824ea0",
+        "ready": 1
+      },
+      {
+        "index": 2,
+        "name": "APPPLAY",
+        "getter": "0x1073ed91",
+        "context": "0xb1828108",
+        "ready": 1
+      },
+      {
+        "index": 3,
+        "name": "APPLV",
+        "getter": "0x1053cf35",
+        "context": "0xb181d9b8",
+        "ready": 1
+      },
+      {
+        "index": 4,
+        "name": "APPMSG",
+        "getter": "0x1043dccd",
+        "context": "0xb1828064",
+        "ready": 1
+      }
+    ]
+  },
+  "full_boot_verified": false,
+  "menu_verified": false
+}

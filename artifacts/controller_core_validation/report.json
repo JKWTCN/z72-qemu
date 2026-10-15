@@ -1,0 +1,113 @@
+{
+  "format": 1,
+  "firmware": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "full_boot_verified": false,
+  "controller_link_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Experimental Cortex-M4 execution core, 96 external interrupt lines.",
+    "Fixed 100 MHz CPU clock, 12.5 MHz reference and 1 MiB flash window.",
+    "Synchronous clock completion and passive power/flash configuration storage.",
+    "Existing timer model at 0x40000c00, fixed 100 MHz clock, interrupt 50.",
+    "Eight isolated pin ports; no external controller-to-engine wiring.",
+    "Experimental external switch on port G pin 5 is tested at both levels; physical switch identity is inferred.",
+    "Clock initialization status is synchronous; calendar advancement and alarms are absent.",
+    "Two disconnected buses support START, address NACK and event/error interrupts; data transfers are absent.",
+    "Sixteen routed pad edges deliver seven external interrupt groups; event-only wake and remapping are absent.",
+    "Experimental external G7 input exercises native edge acknowledgement; its physical signal identity is unconfirmed.",
+    "Bounded DMA supports equal widths and linear buffers; peripheral request lines are disconnected.",
+    "Two bounded 16-bit timers use a fixed 100 MHz clock and shared interrupt 26; capture and PWM wiring are absent.",
+    "Original kernel-loaded vectors; no debugger guest state writes."
+  ],
+  "scenarios": {
+    "completion": {
+      "clock_completion": true,
+      "power_switch": false,
+      "original_reset_verified": true,
+      "original_clock_return_verified": true,
+      "original_vector_copy_verified": true,
+      "original_runtime_interrupt_verified": true,
+      "original_timer_setup_verified": true,
+      "original_pin_setup_entry_verified": true,
+      "original_pin_setup_return_verified": true,
+      "output_latches_verified": [
+        0,
+        0,
+        2048,
+        35360,
+        0,
+        8336,
+        512,
+        0
+      ],
+      "original_clock_access_setup_return_verified": true,
+      "original_bus_configuration_return_verified": true,
+      "original_pin_cleanup_return_verified": true,
+      "native_bus_interrupts": {
+        "event": 17,
+        "error": 17
+      },
+      "original_dma_configuration_return_verified": true,
+      "original_compare_timer_start_verified": true,
+      "original_compare_timer_interrupt_verified": true,
+      "external_switch_input_verified": true,
+      "original_external_edges_verified": {
+        "pin": "G7",
+        "irq": 23,
+        "exception": 39,
+        "rising": true,
+        "falling": true,
+        "native_acknowledgement": true
+      },
+      "passed": true
+    },
+    "completion-disabled": {
+      "clock_completion": false,
+      "power_switch": false,
+      "original_reset_verified": true,
+      "original_wait_preserved": true,
+      "passed": true
+    },
+    "power-switch-on": {
+      "clock_completion": true,
+      "power_switch": true,
+      "original_reset_verified": true,
+      "original_clock_return_verified": true,
+      "original_vector_copy_verified": true,
+      "original_runtime_interrupt_verified": true,
+      "original_timer_setup_verified": true,
+      "original_pin_setup_entry_verified": true,
+      "original_pin_setup_return_verified": true,
+      "output_latches_verified": [
+        0,
+        0,
+        2048,
+        35360,
+        0,
+        8336,
+        512,
+        0
+      ],
+      "original_clock_access_setup_return_verified": true,
+      "original_bus_configuration_return_verified": true,
+      "original_pin_cleanup_return_verified": true,
+      "native_bus_interrupts": {
+        "event": 17,
+        "error": 17
+      },
+      "original_dma_configuration_return_verified": true,
+      "original_compare_timer_start_verified": true,
+      "original_compare_timer_interrupt_verified": true,
+      "external_switch_input_verified": true,
+      "original_external_edges_verified": {
+        "pin": "G7",
+        "irq": 23,
+        "exception": 39,
+        "rising": true,
+        "falling": true,
+        "native_acknowledgement": true
+      },
+      "passed": true
+    }
+  }
+}

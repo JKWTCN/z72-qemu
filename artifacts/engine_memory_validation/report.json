@@ -1,0 +1,52 @@
+{
+  "synthetic_tests_passed": [
+    "master: both channels",
+    "slave: both channels",
+    "row fill and copy with padding guards",
+    "masked completion and interrupt acknowledgement",
+    "stop control reads idle state 2",
+    "adjacent RAM regions",
+    "invalid source and late invalid destination preserve memory",
+    "non-word access rejection",
+    "reset cancels pending transfer",
+    "existing master and slave board checks"
+  ],
+  "native_observation": {
+    "inputs": "experimental sampling storage, blank register targets, resident data and explicit GPIO levels",
+    "icount": "shift=0,sleep=off",
+    "clear_request": {
+      "destination": "0xbec5f200",
+      "width_bytes": 2880,
+      "stride_bytes": 2880,
+      "rows": 480,
+      "total_bytes": 1382400
+    },
+    "before": {"current_application": 0, "next_application": 3, "state": 3},
+    "after_live_view_start": {
+      "start_address": "0x1053cfb8",
+      "current_application": 3,
+      "state": 2,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "final": {
+      "current_application": 4,
+      "state": 2,
+      "current_mode": 8,
+      "successful_uploads": 32,
+      "rendered_commands": 19,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": "0xbec5f200"
+    }
+  },
+  "visual_observation": {
+    "size": [720, 480],
+    "content": "yellow hourglass on black background",
+    "waiting_interface_verified": true,
+    "menu_visible": false,
+    "image_included_in_public_sources": false
+  },
+  "full_boot_verified": false,
+  "menu_display_verified": false
+}

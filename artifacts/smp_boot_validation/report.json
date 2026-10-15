@@ -1,0 +1,647 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "profile": {
+        "frequency": 48000000,
+        "common_entry": 937348,
+        "task_descriptor": 269620416,
+        "task_entry": 269499336,
+        "task_priority": 1,
+        "task_stack_bytes": 8192,
+        "task_create_call": 938380,
+        "task_start_call": 938396,
+        "core_setup_call": 938420,
+        "barrier_entry": 1041976,
+        "barrier_wait": 1042016,
+        "peer_count_word": 2978672016,
+        "secondary_entry": 49052,
+        "secondary_wait": 49060,
+        "release_word": 67145724,
+        "release_value": 3133061822,
+        "secondary_ready_entry": 1042060,
+        "ready_store": 1052960,
+        "secondary_stack": 2998419456,
+        "copied_table": 2998353920,
+        "peripheral_base": 738787328,
+        "peripheral_fault_offset": 412,
+        "peripheral_fault_address": 738787329
+      },
+      "scenarios": {
+        "single-core": {
+          "scenario": "single-core",
+          "events": [
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 0,
+              "thread": 1,
+              "pc": 269608544,
+              "sp": 2998435816,
+              "lr": 269498480,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 2978672016,
+              "r2": 10,
+              "r3": 0
+            }
+          ],
+          "inactive_peer_wait_verified": true,
+          "startup_task_execution_verified": false
+        },
+        "held-secondary": {
+          "scenario": "held-secondary",
+          "events": [
+            {
+              "name": "secondary-reset-wait",
+              "thread": 2,
+              "pc": 268615588,
+              "sp": 2998419456,
+              "lr": 0,
+              "cpsr": 536871379,
+              "r0": 67145724,
+              "r1": 2998419456,
+              "r2": 3133061822,
+              "r3": 0
+            },
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 0,
+              "thread": 1,
+              "pc": 269608544,
+              "sp": 2998435816,
+              "lr": 269498480,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 2978672016,
+              "r2": 10,
+              "r3": 0
+            },
+            {
+              "name": "secondary-ready-store",
+              "thread": 2,
+              "pc": 269619488,
+              "sp": 2998419424,
+              "lr": 269608612,
+              "cpsr": 536871379,
+              "r0": 2978672016,
+              "r1": 1,
+              "r2": 2978666580,
+              "r3": 4290855970
+            },
+            {
+              "name": "startup-task-entry",
+              "thread": 1,
+              "pc": 269499336,
+              "sp": 2999390216,
+              "lr": 0,
+              "cpsr": 19,
+              "r0": 0,
+              "r1": 0,
+              "r2": 0,
+              "r3": 0
+            },
+            {
+              "name": "startup-device-data-abort",
+              "address": 738787329,
+              "thread": 1,
+              "pc": 269484048,
+              "sp": 2998566912,
+              "lr": 268566948,
+              "cpsr": 536871319,
+              "r0": 738787328,
+              "r1": 0,
+              "r2": 1,
+              "r3": 738787328
+            }
+          ],
+          "inactive_peer_wait_verified": true,
+          "original_ready_store_verified": true,
+          "startup_task_execution_verified": true,
+          "next_device_boundary_verified": true,
+          "fault_status": 2056,
+          "fault_address": 738787329
+        },
+        "concurrent": {
+          "scenario": "concurrent",
+          "events": [
+            {
+              "name": "secondary-reset-wait",
+              "thread": 2,
+              "pc": 268615588,
+              "sp": 2998419456,
+              "lr": 0,
+              "cpsr": 536871379,
+              "r0": 67145724,
+              "r1": 2998419456,
+              "r2": 3133061822,
+              "r3": 0
+            },
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 1,
+              "thread": 1,
+              "pc": 269608544,
+              "sp": 2998435816,
+              "lr": 269498480,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 2978672016,
+              "r2": 10,
+              "r3": 0
+            },
+            {
+              "name": "startup-task-entry",
+              "thread": 1,
+              "pc": 269499336,
+              "sp": 2999390216,
+              "lr": 0,
+              "cpsr": 19,
+              "r0": 0,
+              "r1": 0,
+              "r2": 0,
+              "r3": 0
+            },
+            {
+              "name": "startup-device-data-abort",
+              "address": 738787329,
+              "thread": 1,
+              "pc": 269484048,
+              "sp": 2998566912,
+              "lr": 268566948,
+              "cpsr": 536871319,
+              "r0": 738787328,
+              "r1": 0,
+              "r2": 1,
+              "r3": 738787328
+            }
+          ],
+          "startup_task_execution_verified": true,
+          "next_device_boundary_verified": true,
+          "fault_status": 2056,
+          "fault_address": 738787329
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "profile": {
+        "frequency": 48000000,
+        "common_entry": 91992,
+        "task_descriptor": 268775096,
+        "task_entry": 268654200,
+        "task_priority": 1,
+        "task_stack_bytes": 8192,
+        "task_create_call": 93024,
+        "task_start_call": 93040,
+        "core_setup_call": 93064,
+        "barrier_entry": 196620,
+        "barrier_wait": 196660,
+        "peer_count_word": 3238100288,
+        "secondary_entry": 49128,
+        "secondary_wait": 49136,
+        "release_word": 67145724,
+        "release_value": 3133061822,
+        "secondary_ready_entry": 196704,
+        "ready_store": 207640,
+        "secondary_stack": 3247390720,
+        "copied_table": 3247325184,
+        "peripheral_base": 738787328,
+        "peripheral_fault_offset": 412,
+        "peripheral_fault_address": 738787329
+      },
+      "scenarios": {
+        "single-core": {
+          "scenario": "single-core",
+          "events": [
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 0,
+              "thread": 1,
+              "pc": 268763188,
+              "sp": 3247407080,
+              "lr": 268653344,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 3238100288,
+              "r2": 10,
+              "r3": 0
+            }
+          ],
+          "inactive_peer_wait_verified": true,
+          "startup_task_execution_verified": false
+        },
+        "held-secondary": {
+          "scenario": "held-secondary",
+          "events": [
+            {
+              "name": "secondary-reset-wait",
+              "thread": 2,
+              "pc": 268615664,
+              "sp": 3247390720,
+              "lr": 0,
+              "cpsr": 536871379,
+              "r0": 67145724,
+              "r1": 3247390720,
+              "r2": 3133061822,
+              "r3": 0
+            },
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 0,
+              "thread": 1,
+              "pc": 268763188,
+              "sp": 3247407080,
+              "lr": 268653344,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 3238100288,
+              "r2": 10,
+              "r3": 0
+            },
+            {
+              "name": "secondary-ready-store",
+              "thread": 2,
+              "pc": 268774168,
+              "sp": 3247390688,
+              "lr": 268763256,
+              "cpsr": 536871379,
+              "r0": 3238100288,
+              "r1": 1,
+              "r2": 3238094880,
+              "r3": 4290855970
+            },
+            {
+              "name": "startup-task-entry",
+              "thread": 1,
+              "pc": 268654200,
+              "sp": 3248181256,
+              "lr": 0,
+              "cpsr": 19,
+              "r0": 0,
+              "r1": 0,
+              "r2": 0,
+              "r3": 0
+            },
+            {
+              "name": "startup-device-data-abort",
+              "address": 738787329,
+              "thread": 1,
+              "pc": 268648720,
+              "sp": 3247538176,
+              "lr": 268566948,
+              "cpsr": 536871319,
+              "r0": 738787328,
+              "r1": 0,
+              "r2": 1,
+              "r3": 738787328
+            }
+          ],
+          "inactive_peer_wait_verified": true,
+          "original_ready_store_verified": true,
+          "startup_task_execution_verified": true,
+          "next_device_boundary_verified": true,
+          "fault_status": 2056,
+          "fault_address": 738787329
+        },
+        "concurrent": {
+          "scenario": "concurrent",
+          "events": [
+            {
+              "name": "secondary-reset-wait",
+              "thread": 2,
+              "pc": 268615664,
+              "sp": 3247390720,
+              "lr": 0,
+              "cpsr": 536871379,
+              "r0": 67145724,
+              "r1": 3247390720,
+              "r2": 3133061822,
+              "r3": 0
+            },
+            {
+              "name": "primary-barrier",
+              "peers_arrived": 1,
+              "thread": 1,
+              "pc": 268763188,
+              "sp": 3247407080,
+              "lr": 268653344,
+              "cpsr": 1610613203,
+              "r0": 1,
+              "r1": 3238100288,
+              "r2": 10,
+              "r3": 0
+            },
+            {
+              "name": "startup-task-entry",
+              "thread": 1,
+              "pc": 268654200,
+              "sp": 3248181256,
+              "lr": 0,
+              "cpsr": 19,
+              "r0": 0,
+              "r1": 0,
+              "r2": 0,
+              "r3": 0
+            },
+            {
+              "name": "startup-device-data-abort",
+              "address": 738787329,
+              "thread": 1,
+              "pc": 268648720,
+              "sp": 3247538176,
+              "lr": 268566948,
+              "cpsr": 536871319,
+              "r0": 738787328,
+              "r1": 0,
+              "r2": 1,
+              "r3": 738787328
+            }
+          ],
+          "startup_task_execution_verified": true,
+          "next_device_boundary_verified": true,
+          "fault_status": 2056,
+          "fault_address": 738787329
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "assumptions": [
+    "One or two experimental Cortex-A7 execution cores per isolated role.",
+    "Original images preloaded; each initial PC supplied only at reset by the loader.",
+    "No instruction, register, page-table or readiness writes by the probe.",
+    "Experimental platform completion, RAM and counter contracts remain in use.",
+    "CPU SMP does not supply communication between master and slave machines."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "raw_report_sha256": "c709c2f82612236448b6e261ab2d006d4ec09af23d03308e9cc12b1d3eac03f7",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "c960c8e69975a64525ab5a57eddd50f4634f21393023a68b45bf77d676c3ddab",
+    "sources": {
+      "qemu/nikon-z72.c": "5c12181be3b0e700a145a1df793215c300dc73b6a5f3a6c76eb8052c48a8b58c",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+      "qemu/prepare_source.py": "45155ceb04448d9a1daded0ab4dc0eab358986c14b418a50b1478128c3115eb4"
+    }
+  },
+  "synthetic_smp": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "cpu_affinities": [
+          0,
+          1
+        ],
+        "sgi_acknowledgements": [
+          1,
+          1025
+        ],
+        "local_timer_ids": [
+          29,
+          29
+        ],
+        "directed_sgis_verified": true,
+        "private_timers_verified": true,
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "cpu_affinities": [
+          0,
+          1
+        ],
+        "sgi_acknowledgements": [
+          1,
+          1025
+        ],
+        "local_timer_ids": [
+          29,
+          29
+        ],
+        "directed_sgis_verified": true,
+        "private_timers_verified": true,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "stock_irq_handler_verified": false,
+    "raw_report_sha256": "d6fc708e2992e7e2f55e3d4d828a7524fc8dc1ec0c2b3604215048fb1dc8bc85"
+  },
+  "single_core_interrupts": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "stock_irq_handler_verified": false,
+    "raw_report_sha256": "2e20f3a2067171aec4404a45b1a782922c54a8675c31a1e0dc242b63f6bc1ace"
+  },
+  "single_core_counter": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "frequency": 48000000,
+        "samples": [
+          {
+            "physical": 1047082,
+            "mmio": 0
+          },
+          {
+            "physical": 1056654,
+            "mmio": 0
+          },
+          {
+            "physical": 1092004,
+            "mmio": 4294973070
+          },
+          {
+            "physical": 1099105,
+            "mmio": 4294980108
+          }
+        ],
+        "carry_verified": true,
+        "freeze_resume_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          {
+            "offset": 4,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 20,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 264,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 268,
+            "value": 0
+          },
+          {
+            "offset": 1,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 8,
+            "instruction_offset": 256,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 256,
+            "value": 4
+          },
+          {
+            "offset": 16,
+            "instruction_offset": 256,
+            "value": 48000000
+          }
+        ],
+        "invalid_frequency_rejected": true,
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "frequency": 48000000,
+        "samples": [
+          {
+            "physical": 1209647,
+            "mmio": 0
+          },
+          {
+            "physical": 1221112,
+            "mmio": 0
+          },
+          {
+            "physical": 1261849,
+            "mmio": 4294976221
+          },
+          {
+            "physical": 1271333,
+            "mmio": 4294985769
+          }
+        ],
+        "carry_verified": true,
+        "freeze_resume_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          {
+            "offset": 4,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 20,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 264,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 268,
+            "value": 0
+          },
+          {
+            "offset": 1,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 8,
+            "instruction_offset": 256,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 256,
+            "value": 4
+          },
+          {
+            "offset": 16,
+            "instruction_offset": 256,
+            "value": 48000000
+          }
+        ],
+        "invalid_frequency_rejected": true,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cpu_counter_gating_verified": false,
+    "hardware_timing_verified": false,
+    "raw_report_sha256": "c938a8429239d9ac88562ab0f937a10ff2e614dd0dddafd8ce286ba37dacaa42"
+  },
+  "regressions": {
+    "single_core_board": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "source_suite": {
+      "python_checks": 22,
+      "renderer_checks": 270,
+      "asan_ubsan": true,
+      "passed": true
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "5c12181be3b0e700a145a1df793215c300dc73b6a5f3a6c76eb8052c48a8b58c",
+    "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+    "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+    "qemu/prepare_source.py": "45155ceb04448d9a1daded0ab4dc0eab358986c14b418a50b1478128c3115eb4",
+    "analyze/runtime_smp.py": "0298b268cc8de035bfab95242ea6c318fdacbd6b920d547dfe7661ce43bf510b",
+    "analyze/qemu_display.py": "8433d550efc8ee66be3f16155853ed0592f7836307223bc3e5ab6dd64fbc7e95",
+    "tools/smp_boot_probe.py": "1f605d7c52429ee9bab498d416889022c770b781b63dc3ede01d70bbb156cb42",
+    "tools/boot_probe.py": "abc719393f1f72b0d60ef2a5b42051e51a8b45353b0ef4192b89fb8e164a4776",
+    "tests/test_smp.py": "542d598604b2688f5572fbd06684bfd31b06b65a7e3c8429018b674807acf2eb",
+    "tests/smp_harness.S": "2d289aee3c32d3e59be893df313a7c34b5d47f4f2be21abc41b48665ed80ba41",
+    "tests/test_interrupts.py": "04ef88a382283f2fbcea84bc7c0dfca113dd4cdfbca2245deb471e367b16d19c",
+    "tests/test_counter.py": "aafe9d24631cb089090b567aa4f3edccdb281ca02d965d8f5f5ce8c87ad2ec02",
+    "tests/test_board.py": "e3ea0e5edb438b1f99aff62338beccbf51f4781a503c08b437bb1c8c1dbefe25"
+  }
+}

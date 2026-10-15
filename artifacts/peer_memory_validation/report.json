@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-14",
+  "qemu_version": "10.2.4",
+  "build_passed": true,
+  "checks": {
+    "board_master": "passed",
+    "board_slave": "passed",
+    "peer_arm_doubleword_load_store": "passed",
+    "writes_reach_owner_ram": "passed",
+    "slave_local_ram_isolation": "passed",
+    "source_ram_gap_aborts": "passed"
+  },
+  "original_observation": {
+    "experimental_inputs": true,
+    "icount": "shift=0,sleep=off",
+    "slave_translation_row": {
+      "role": 0,
+      "length": "0x10000000",
+      "bus_base": "0x40000000",
+      "software_base": "0xb0000000"
+    },
+    "copy_source": "0x42920f40",
+    "copy_owner_address": "0xb2920f40",
+    "copy_bytes": 32784,
+    "copy_return": 1,
+    "copy_caller_resumed": "0x101356c6",
+    "card_request_handler_reached": "0x100b5d22",
+    "startup_zero_record": {
+      "start": "0xc5004000",
+      "length": "0x00fbf140",
+      "end": "0xc5fc3140"
+    },
+    "next_fault_pc": "0x1008a3b4",
+    "next_device_base": "0x2b200000",
+    "normal_boot_verified": false,
+    "menu_verified": false
+  },
+  "limitations": [
+    "The alias is limited to the observed peer software-address family.",
+    "RAM extents are laboratory mappings, not physical chip capacities.",
+    "The next peripheral contract remains unimplemented."
+  ]
+}

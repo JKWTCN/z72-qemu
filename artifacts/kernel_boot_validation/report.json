@@ -1,0 +1,502 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "date": "2026-10-11",
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "build": {
+    "binary": "/var/tmp/z72-qemu-build/build/qemu-system-arm",
+    "binary_sha256": "e95cebeb86ff31680846b7530ee1d5401c40dff14f8ec6b2f9f5c2e467997bd7",
+    "qemu_version": "10.2.4"
+  },
+  "sources": {
+    "analyze/kernel_boot.py": "668e2de3d18b31b1aad115c0febc9805017ed20202b20a3672c67fd8539a079c",
+    "qemu/nikon-z72.c": "e70cac72b20fab8fa2350528059f441cd4b8d5c55754e41411d1f716336b2259",
+    "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+    "qemu/nikon-z72-timer.c": "b964e896e016e10f052a158b39e192ce2260c1d0c7fba21b633d9ed78deb7d6a",
+    "qemu/nikon-z72-profile.h": "6e6399e77090c023d1f70637fff6b3f554942890ebae5ad163b3263f3f0bd203",
+    "qemu/prepare_source.py": "3d88489c11157cea365d745bedebcbf9a397489c2112b2db83e6aaaab4460ef8",
+    "tools/boot_probe.py": "85f155269927e8e007685581702e0835c633193a6ff38f3b3db043ff58de82ef",
+    "tools/kernel_boot_probe.py": "e2c66a1db5a2197653d6f5e7a5e42ade8e36eb739dee4df962d28b3f132417a7"
+  },
+  "raw_report_sha256": "bfabccf91f2c35f11b02ae30073ea15636de87dfaf7e9ad59e1607d7f4050951",
+  "regressions": {
+    "parameter-regression": {
+      "passed": true,
+      "raw_report_sha256": "b7babe39e831e436838d0bcd7873793af5030e2c1145e5af0469767c3f092195"
+    },
+    "console-regression": {
+      "passed": true,
+      "raw_report_sha256": "9fc72beb595de63139238c7244480e8459d9cd44ac5dd18d3a13fb7e5636b4fc"
+    },
+    "library-regression": {
+      "passed": true,
+      "raw_report_sha256": "fda6eb83cc474b832f6aced16091186bd35b498f0bc1cf642a2362e1a0d7758a"
+    },
+    "snapshot-regression": {
+      "passed": true,
+      "raw_report_sha256": "03f1260679d0f1687d8b5e473a3d3c9ca4aad5630824efe202091bedd4e524ad"
+    },
+    "controller-regression": {
+      "passed": true,
+      "raw_report_sha256": "facd4f76252a7245ff7fedf26e4bf21940fe6bab6cad029b90c7125d499423a6"
+    },
+    "board_tests": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "python_checks": {
+      "passed": true,
+      "input_guards": 3
+    }
+  },
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615588,
+                "sp": 2998419456,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 2998419456,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 269608544,
+                "sp": 2998435816,
+                "lr": 269498480,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 2978672016,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 269499336,
+                "sp": 2999390216,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "payload_copy_verified": true,
+          "syscall_descriptor": 17498641,
+          "syscall_state": {
+            "thread": 1,
+            "pc": 269500404,
+            "sp": 2999390140,
+            "lr": 272007849,
+            "cpsr": 19,
+            "r0": 2999390144,
+            "r1": 2,
+            "r2": 4294967288,
+            "r3": 1
+          },
+          "dispatch_verified": true,
+          "wait": {
+            "settled_pcs": 239,
+            "candidates": [
+              "0xb2c33008",
+              "0xb2c59a90",
+              "0xb2b42258",
+              "0xb2b415f4"
+            ],
+            "watched": 4,
+            "hits": 6,
+            "repeat_pc": "0x10109da0",
+            "repeat_count": 6,
+            "wait_words_unchanged": true,
+            "mailbox_word": 0
+          },
+          "full_startup_verified": false,
+          "timed_out": true
+        },
+        "peer-release": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615588,
+                "sp": 2998419456,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 2998419456,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 269608544,
+                "sp": 2998435816,
+                "lr": 269498480,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 2978672016,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 269499336,
+                "sp": 2999390216,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "released": [
+            "0xb2c59a90"
+          ],
+          "chain_stops": 0,
+          "scheduler_parked": [
+            {
+              "thread": 1,
+              "pc": "0x10107070",
+              "cpsr": 19
+            },
+            {
+              "thread": 2,
+              "pc": "0x10107070",
+              "cpsr": 19
+            }
+          ],
+          "full_startup_verified": false,
+          "exception_events": 2435,
+          "observed_faults": []
+        },
+        "stage-disabled": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615588,
+                "sp": 2998419456,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 2998419456,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 269608544,
+                "sp": 2998435816,
+                "lr": 269498480,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 2978672016,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 269499336,
+                "sp": 2999390216,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "fault_status": 2056,
+          "fault_address": 3132096512,
+          "fault": {
+            "thread": 1,
+            "pc": 269484048,
+            "sp": 2998566912,
+            "lr": 271978336,
+            "cpsr": 536871319,
+            "r0": 3132096512,
+            "r1": 269484048,
+            "r2": 136440,
+            "r3": 3852464152
+          }
+        },
+        "tick-release": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615588,
+                "sp": 2998419456,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 2998419456,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 269608544,
+                "sp": 2998435816,
+                "lr": 269498480,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 2978672016,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 269499336,
+                "sp": 2999390216,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "samples": [
+            {
+              "ready": [
+                "0xb2c335f0",
+                "0x0"
+              ],
+              "event": "0x300"
+            },
+            {
+              "ready": [
+                "0xb2c335f0",
+                "0x0"
+              ],
+              "event": "0x300"
+            },
+            {
+              "ready": [
+                "0xb2c335f0",
+                "0x0"
+              ],
+              "event": "0x300"
+            }
+          ],
+          "dispatched_samples": 3,
+          "scheduler_parked": [
+            {
+              "thread": 1,
+              "pc": "0x101073a8"
+            },
+            {
+              "thread": 2,
+              "pc": "0x10107070"
+            }
+          ],
+          "full_startup_verified": false,
+          "menu_verified": false,
+          "irq_entries": 10475,
+          "exception_events": 33841,
+          "observed_faults": []
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615664,
+                "sp": 3247390720,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 3247390720,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 268763188,
+                "sp": 3247407080,
+                "lr": 268653344,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 3238100288,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 268654200,
+                "sp": 3248181256,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "syscall_descriptor": 2151875072,
+          "syscall_state": {
+            "thread": 1,
+            "pc": 268656556,
+            "sp": 3248181184,
+            "lr": 268823139,
+            "cpsr": 19,
+            "r0": 32,
+            "r1": 3248181192,
+            "r2": 536946600,
+            "r3": 536946576
+          },
+          "dispatch_verified": true,
+          "dispatcher_verified": true,
+          "wait": {
+            "settled_pcs": 227,
+            "candidates": [
+              "0xc19b4fc8"
+            ],
+            "watched": 1,
+            "hits": 6,
+            "repeat_pc": "0x1004f044",
+            "repeat_count": 6,
+            "wait_words_unchanged": true,
+            "mailbox_word": 0
+          },
+          "full_startup_verified": false,
+          "timed_out": true
+        },
+        "peer-release": {
+          "prefix": {
+            "scenario": "concurrent",
+            "events": [
+              {
+                "name": "secondary-reset-wait",
+                "thread": 2,
+                "pc": 268615664,
+                "sp": 3247390720,
+                "lr": 0,
+                "cpsr": 536871379,
+                "r0": 67145724,
+                "r1": 3247390720,
+                "r2": 3133061822,
+                "r3": 0
+              },
+              {
+                "name": "primary-barrier",
+                "peers_arrived": 1,
+                "thread": 1,
+                "pc": 268763188,
+                "sp": 3247407080,
+                "lr": 268653344,
+                "cpsr": 1610613203,
+                "r0": 1,
+                "r1": 3238100288,
+                "r2": 10,
+                "r3": 0
+              },
+              {
+                "name": "startup-task-entry",
+                "thread": 1,
+                "pc": 268654200,
+                "sp": 3248181256,
+                "lr": 0,
+                "cpsr": 19,
+                "r0": 0,
+                "r1": 0,
+                "r2": 0,
+                "r3": 0
+              }
+            ],
+            "startup_task_execution_verified": true
+          },
+          "released": [
+            "0xc19b4fc8"
+          ],
+          "chain_stops": 0,
+          "scheduler_parked": [
+            {
+              "thread": 1,
+              "pc": "0x10038a44",
+              "cpsr": 19
+            },
+            {
+              "thread": 2,
+              "pc": "0x10038a4c",
+              "cpsr": 19
+            }
+          ],
+          "full_startup_verified": false,
+          "exception_events": 990,
+          "observed_faults": []
+        }
+      },
+      "passed": true
+    }
+  ],
+  "assumptions": [
+    "Two execution cores per isolated role; original reset and startup task.",
+    "Original images preloaded; no register, instruction, table or handshake patches.",
+    "Existing experimental platform, console, pin, controller, snapshot and parameter contracts remain in use.",
+    "The stock handoff boundary is observed only; no completion source is modeled.",
+    "Debugger stops at original instruction addresses never modify firmware state.",
+    "The peer-release scenario performs one stand-in write of the recovered zero wait word, substituting the unmodeled peer-engine shared-memory response; firmware code, registers and tables stay unmodified. Exploratory sweeps through the laboratory interrupt injector found no shared line that releases the wait by itself.",
+    "The tick-release scenario additionally enables the experimental timer contract at 0x2B000000: the armed event mask latches at a selectable period and raises dispatch line 237 until the original dispatcher writes the bits back. The period unit and real channel timing remain unconfirmed; the isolated slave never arms this timer, so its scenarios keep it disabled."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true
+}

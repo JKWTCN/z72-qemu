@@ -1,0 +1,391 @@
+{
+  "format": 1,
+  "passed": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "operation14_callback": {
+    "address": "0xb23f701c",
+    "value": "0x10204d47",
+    "registration": "0x10228284",
+    "notification_family": "0x04100000 | operation"
+  },
+  "capture_control": {
+    "address": "0xb23f6a7c",
+    "armed": 1,
+    "substate": 0,
+    "state_machine": "0x103e5190",
+    "readiness_gate": {
+      "address": "0xb23f6848",
+      "mask": 1,
+      "value_stayed_zero": true
+    }
+  },
+  "loop_membership": {
+    "window_seconds": 8.0,
+    "counts": {
+      "state-machine": 2,
+      "resource-query": 16,
+      "state-transition": 0,
+      "completion": 0,
+      "capture-resource-query": 14
+    },
+    "selectors": [
+      {
+        "r2": "0x60000013",
+        "lr": "0x103e7de9"
+      },
+      {
+        "r2": "0x203a",
+        "lr": "0x103f1b8f"
+      },
+      {
+        "r2": "0x2036",
+        "lr": "0x103f1b8f"
+      },
+      {
+        "r2": "0x60000013",
+        "lr": "0x103e7de9"
+      },
+      {
+        "r2": "0x60000013",
+        "lr": "0x103e7de9"
+      },
+      {
+        "r2": "0x60000013",
+        "lr": "0x103e7de9"
+      },
+      {
+        "r2": "0x0",
+        "lr": "0x103e7de9"
+      },
+      {
+        "r2": "0x60000013",
+        "lr": "0x103e7de9"
+      }
+    ]
+  },
+  "master_dispatch": {
+    "address": "0xb2b5df20",
+    "default_handler": "0x103a04e9",
+    "registered": {
+      "0": "0x1011fd78",
+      "2": "0x1011fd7c",
+      "45": "0x10294bfb",
+      "46": "0x10294d3f",
+      "47": "0x10294d43",
+      "48": "0x10294d47",
+      "49": "0x103861d1",
+      "50": "0x103861cb",
+      "51": "0x103861c5",
+      "52": "0x103861bf",
+      "53": "0x103861b9",
+      "54": "0x103861b3",
+      "55": "0x103861ad",
+      "56": "0x103861a7",
+      "57": "0x103861a1",
+      "58": "0x1038619b",
+      "59": "0x10386195",
+      "60": "0x1038618f",
+      "61": "0x10386189",
+      "62": "0x10386183",
+      "63": "0x1038617d",
+      "64": "0x10386177",
+      "65": "0x1038602d",
+      "66": "0x10386033",
+      "67": "0x10386039",
+      "68": "0x1038603f",
+      "69": "0x10386045",
+      "70": "0x1038604b",
+      "71": "0x10386051",
+      "72": "0x10386057",
+      "73": "0x1038605d",
+      "74": "0x10386063",
+      "75": "0x10386069",
+      "76": "0x1038606f",
+      "77": "0x10386075",
+      "78": "0x1038607b",
+      "79": "0x10386081",
+      "80": "0x10386087",
+      "86": "0x102dc5eb",
+      "87": "0x102dc5c1",
+      "88": "0x102dc5ad",
+      "89": "0x10295753",
+      "90": "0x10295739",
+      "91": "0x102956f7",
+      "92": "0x102956df",
+      "93": "0x102956a1",
+      "94": "0x1020a9b3",
+      "95": "0x1020a961",
+      "96": "0x1020a8fb",
+      "97": "0x1020a897",
+      "98": "0x1020a837",
+      "99": "0x103699a5",
+      "100": "0x10369969",
+      "101": "0x10242ba9",
+      "102": "0x103bce39",
+      "103": "0x102db8f7",
+      "104": "0x102db8b5",
+      "105": "0x103bdfeb",
+      "106": "0x1036939f",
+      "110": "0x1051c4fd",
+      "111": "0x1046bcb5",
+      "112": "0x1046bcbb",
+      "114": "0x1046e2e1",
+      "115": "0x1029474d",
+      "116": "0x10294365",
+      "118": "0x10203331",
+      "121": "0x103b0021",
+      "122": "0x102dbc45",
+      "123": "0x10368dfd",
+      "124": "0x1036cab1",
+      "125": "0x1020384f",
+      "126": "0x102037fd",
+      "127": "0x102dcca5",
+      "128": "0x103a06ad",
+      "129": "0x106ee3cb",
+      "130": "0x106ee3d7",
+      "131": "0x106ee3e3",
+      "132": "0x1047f049",
+      "133": "0x1047eee9",
+      "142": "0x102dc56d",
+      "143": "0x102dc573",
+      "144": "0x102dc579",
+      "145": "0x102dc57f",
+      "146": "0x102dc585",
+      "147": "0x102dc58b",
+      "148": "0x102dc591",
+      "149": "0x102dc597",
+      "150": "0x102dc543",
+      "151": "0x102dc339",
+      "152": "0x102dc549",
+      "153": "0x102dc54f",
+      "154": "0x102dc555",
+      "155": "0x102dc55b",
+      "156": "0x102dc561",
+      "157": "0x102dc567",
+      "158": "0x10385aa5",
+      "167": "0x1036d7d7",
+      "168": "0x1036d7b7",
+      "169": "0x10208933",
+      "170": "0x1020892d",
+      "171": "0x10208927",
+      "172": "0x1036ea2d",
+      "173": "0x1036ea33",
+      "174": "0x1036ea3b",
+      "175": "0x1036ea43",
+      "176": "0x1036ea4b",
+      "177": "0x1036ea53",
+      "178": "0x1036ea5b",
+      "179": "0x1036ea63",
+      "180": "0x1036ea6b",
+      "181": "0x1036ea73",
+      "182": "0x1036ea7b",
+      "183": "0x1036ea83",
+      "186": "0x10202cdb",
+      "187": "0x10202cd3",
+      "188": "0x10202ccb",
+      "189": "0x10202cc3",
+      "190": "0x10202cbd",
+      "191": "0x10202c51",
+      "192": "0x10243691",
+      "193": "0x10243657",
+      "194": "0x10243695",
+      "195": "0x1024365b",
+      "196": "0x1024369b",
+      "197": "0x10243661",
+      "198": "0x102436a1",
+      "199": "0x10243667",
+      "200": "0x102436a5",
+      "201": "0x1024366b",
+      "202": "0x102436ab",
+      "203": "0x10243671",
+      "204": "0x102436b1",
+      "205": "0x10243677",
+      "208": "0x102436bb",
+      "209": "0x10243681",
+      "210": "0x102436c1",
+      "211": "0x10243687",
+      "214": "0x1036d5fd",
+      "215": "0x1036d745",
+      "216": "0x1036d749",
+      "217": "0x1036d74f",
+      "218": "0x102085d5",
+      "227": "0x10386171",
+      "228": "0x1038616b",
+      "229": "0x10243939",
+      "236": "0x105189ff",
+      "237": "0x105165d5",
+      "242": "0x10517a7f",
+      "243": "0x10517a19",
+      "244": "0x105179f1",
+      "246": "0x10517981",
+      "247": "0x10386165",
+      "248": "0x1038615f",
+      "250": "0x103865a9"
+    }
+  },
+  "slave_registrations": {
+    "resource_3f": {
+      "observed_near": "0xc19c9bcc",
+      "found": [
+        "0xc19c9bc8"
+      ],
+      "message": "0x100003f",
+      "handler": "0x1006a7ed"
+    },
+    "resource_43": {
+      "observed_near": "0xc16cd0b8",
+      "found": [
+        "0xc16cd0b8"
+      ],
+      "message": "0x1000043",
+      "handler": "0x1012f8b9"
+    },
+    "level_one": {
+      "address": "0xc18b2948",
+      "line": 223,
+      "handler": "0x10167ec0"
+    }
+  },
+  "engine_fault_registers": [
+    {
+      "thread": 1,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 2,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 3,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 4,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    }
+  ],
+  "system_controller": {
+    "mode_context": "0xb1819988",
+    "current_mode": 2,
+    "previous_mode": 1,
+    "power_input": 1,
+    "configuration_flags": 8,
+    "configuration_secondary_flags": 40,
+    "transition_inhibitors": [
+      0,
+      1,
+      1
+    ],
+    "deferred_transition_flags": 0,
+    "deferred_target_mode": null,
+    "control_ready_bitmap": 15,
+    "pending_settings_bitmap": 15
+  },
+  "application_manager": {
+    "initialization_complete": 1,
+    "start_notification_sent": 1,
+    "current_index": 3,
+    "next_index": 5,
+    "state": 2,
+    "applications": [
+      {
+        "index": 0,
+        "name": "APPIDLE",
+        "getter": "0x104377b5",
+        "context": "0xb181d8a4",
+        "ready": 1
+      },
+      {
+        "index": 1,
+        "name": "APPMENU",
+        "getter": "0x1044e301",
+        "context": "0xb1824ea0",
+        "ready": 1
+      },
+      {
+        "index": 2,
+        "name": "APPPLAY",
+        "getter": "0x1073ed91",
+        "context": "0xb1828108",
+        "ready": 1
+      },
+      {
+        "index": 3,
+        "name": "APPLV",
+        "getter": "0x1053cf35",
+        "context": "0xb181d9b8",
+        "ready": 1
+      },
+      {
+        "index": 4,
+        "name": "APPMSG",
+        "getter": "0x1043dccd",
+        "context": "0xb1828064",
+        "ready": 1
+      }
+    ]
+  },
+  "graphics": {
+    "successful_uploads": 16,
+    "render_requests": 0,
+    "rendered_commands": 9,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 0,
+    "target_address": 3410653184,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3412049920
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": 269512816,
+      "mode": 19
+    },
+    {
+      "thread": 2,
+      "pc": 269512820,
+      "mode": 19
+    },
+    {
+      "thread": 3,
+      "pc": 268667492,
+      "mode": 19
+    },
+    {
+      "thread": 4,
+      "pc": 268667460,
+      "mode": 19
+    }
+  ],
+  "boot_attempts": 2,
+  "experimental_parameters": true,
+  "firmware_modified": false,
+  "full_boot_verified": false,
+  "menu_verified": false
+}

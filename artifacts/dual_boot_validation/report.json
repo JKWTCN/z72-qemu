@@ -1,0 +1,105 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "date": "2026-10-11",
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "build": {
+    "binary": "/var/tmp/z72-qemu-build/build/qemu-system-arm",
+    "binary_sha256": "b02bc5478c8ae7b4b82e2da4c974de16bffddab97a9ca44b1322473882c020b6",
+    "qemu_version": "10.2.4"
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "6c093c2adf66597a89795a26ca4e73bf271e6d94f36ee8c376e6cccbae3f55a0",
+    "qemu/nikon-z72-timer.c": "b964e896e016e10f052a158b39e192ce2260c1d0c7fba21b633d9ed78deb7d6a",
+    "qemu/nikon-z72-profile.h": "6e6399e77090c023d1f70637fff6b3f554942890ebae5ad163b3263f3f0bd203",
+    "qemu/prepare_source.py": "3d88489c11157cea365d745bedebcbf9a397489c2112b2db83e6aaaab4460ef8",
+    "tools/dual_boot_probe.py": "48b74beaf9dc8198cfcc287a31931085530abf3a34021526bcdfbc0a6183d458"
+  },
+  "raw_report_sha256": "16f8ed983a76d5362e6c86a2d36a6b65d238f4d175ea18484e638b8663d1ed18",
+  "regressions": {
+    "board_tests": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave",
+        "dual-machine-smoke"
+      ]
+    },
+    "kernel_probe": {
+      "passed": true,
+      "scenarios": [
+        "master-stock",
+        "master-peer-release",
+        "master-stage-disabled",
+        "master-tick-release",
+        "slave-stock",
+        "slave-peer-release"
+      ],
+      "raw_report_sha256": "2ea7e2f05b4d41a2e8326d3d9fb2953b8e11bc971e5b9cc790023263d8800709"
+    },
+    "parameter_probe": {
+      "passed": true,
+      "raw_report_sha256": "b7babe39e831e436838d0bcd7873793af5030e2c1145e5af0469767c3f092195"
+    },
+    "checks": {
+      "passed": true
+    }
+  },
+  "contexts": [
+    {
+      "role": "dual",
+      "passed": true,
+      "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "dual-natural-boot": {
+          "timed_out": true,
+          "cores": [
+            {
+              "thread": 1,
+              "pc": "0x10107238",
+              "mode": 19
+            },
+            {
+              "thread": 2,
+              "pc": "0x10107074",
+              "mode": 19
+            },
+            {
+              "thread": 3,
+              "pc": "0x10038a48",
+              "mode": 19
+            },
+            {
+              "thread": 4,
+              "pc": "0x10038a48",
+              "mode": 19
+            }
+          ],
+          "master_comm_header": "0801c000010055aa",
+          "slave_comm_header": "0801c000010055aa",
+          "ready_tasks": [
+            "0xb2c335f0",
+            "0x0"
+          ],
+          "comm_active": false,
+          "full_startup_verified": false,
+          "menu_verified": false,
+          "exception_events": 18574,
+          "irqs": 5059,
+          "observed_faults": [],
+          "console_bytes": 0
+        }
+      }
+    }
+  ],
+  "assumptions": [
+    "Both engines execute in one machine through private address-space views; communication RAMs are shared at native addresses (each image references the peer area directly).",
+    "Original images and reset paths; no stand-in writes, register patches or table edits anywhere in this scenario.",
+    "The recovered timer tick (line 237) runs on both engines; cross-engine doorbell interrupts remain unmodeled.",
+    "Full startup, display initialization and menus remain pending."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true
+}

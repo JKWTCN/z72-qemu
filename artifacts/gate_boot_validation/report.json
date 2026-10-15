@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "scenarios": {
+    "completion": {
+      "command_thread": 2,
+      "command": "0xa1",
+      "interrupt_id": 250,
+      "completion_enabled": true,
+      "handler_thread": 1,
+      "completed_banks": 1,
+      "resumed_thread": 2,
+      "resumed_pc": "0x10369a56",
+      "disable_completed": true,
+      "task_resumed": true,
+      "faults": [],
+      "passed": true
+    },
+    "completion-disabled": {
+      "command_thread": 2,
+      "command": "0xa1",
+      "interrupt_id": 250,
+      "completion_enabled": false,
+      "completed_banks": 0,
+      "task_resumed": false,
+      "faults": [],
+      "passed": true
+    }
+  },
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "assumptions": [
+    "Synchronous runtime gate completion with retained bank status.",
+    "Experimental tick interval of 10 ms to bound interrupt load.",
+    "Original reset paths and handlers; no debugger writes to guest state.",
+    "Hardware timing remains unconfirmed."
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true
+}

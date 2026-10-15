@@ -1,0 +1,36 @@
+{
+  "method": "Original firmware with explicit temporary storage markers and register targets",
+  "icount": "shift=4,sleep=off",
+  "storage_groups": [
+    {"parameter": 21, "group": 17, "address": "0x132c0000", "size": 131072, "marker_address": "0x132dfffc"},
+    {"parameter": 57, "group": 18, "address": "0x132e0000", "size": 655360, "marker_address": "0x1337fffc"}
+  ],
+  "without_markers": {
+    "first_group_check_result": 0,
+    "parameter_wait_flags": 0,
+    "parameter_descriptors": ["0x0", "0x0"],
+    "pending_settings_bitmap": 5,
+    "controller_reset_breakpoint_observed": false
+  },
+  "temporary_marker_experiment": {
+    "marker": "ENDM",
+    "remaining_storage_bytes": "zero",
+    "register_target": "0x68 on master-i2c0 through master-i2c3",
+    "parameter_wait_flags": 3,
+    "sampling_service": {
+      "context": "0xb1cf7a0c",
+      "sample_ready": true,
+      "parameter_descriptors": ["0xb7f54400", "0xb7f6a0fc"]
+    },
+    "sampling_observation_assertion_passed": true,
+    "classification_notification": 0,
+    "pending_settings_bitmap_at_final_observation": 3,
+    "control_ready_bitmap_at_final_observation": 0,
+    "current_mode_at_final_observation": 0,
+    "menu_start_breakpoint_observed": false
+  },
+  "valid_body_parameters_verified": false,
+  "sd_settings_file_mapping_verified": false,
+  "full_boot_verified": false,
+  "menu_display_verified": false
+}

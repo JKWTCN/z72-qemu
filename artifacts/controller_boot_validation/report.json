@@ -1,0 +1,190 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "assumptions": [
+    "Two execution cores per isolated role; original reset and startup task.",
+    "Original images preloaded; no register, instruction, table or handshake patches.",
+    "Controller words are passive storage; no bus, clock or gate behavior is modeled.",
+    "The existing counter device provides the original delay reference.",
+    "Existing experimental console and pin-group contracts remain in use."
+  ],
+  "build": {
+    "binary": "/var/tmp/z72-qemu-build/build/qemu-system-arm",
+    "binary_sha256": "bfb01e3bfd9f75f591d9e7f4a9cfb91f51a625d6043ffb10bdb054596d040ebf",
+    "qemu_version": "10.2.4"
+  },
+  "contexts": [
+    {
+      "gate_calls": [
+        0,
+        1,
+        3
+      ],
+      "gate_final": 12288,
+      "passed": true,
+      "role": "master",
+      "scenarios": {
+        "controller-disabled": {
+          "caller_stack_restored": null,
+          "chain_completed": false,
+          "controller_disabled_data_abort_verified": true,
+          "delay_verified": null,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 270536134,
+            "pc": 269484048,
+            "r0": 69734400,
+            "r1": 8784752,
+            "r2": 522125393,
+            "r3": 3717950335,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 69734712,
+          "fault_status": 2056,
+          "gate_calls": null,
+          "gate_final": null,
+          "next_address": null,
+          "word_count": null
+        },
+        "stock": {
+          "caller_stack_restored": true,
+          "chain_completed": true,
+          "controller_disabled_data_abort_verified": null,
+          "delay_verified": true,
+          "fault": {
+            "cpsr": 1073742231,
+            "lr": 270562080,
+            "pc": 269484048,
+            "r0": 0,
+            "r1": 1,
+            "r2": 536936448,
+            "r3": 1262,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 536936516,
+          "fault_status": 2056,
+          "gate_calls": [
+            0,
+            1,
+            3
+          ],
+          "gate_final": 12288,
+          "next_address": 536936516,
+          "word_count": 22
+        }
+      },
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+    },
+    {
+      "gate_calls": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "gate_final": 16384,
+      "passed": true,
+      "role": "slave",
+      "scenarios": {
+        "controller-disabled": {
+          "caller_stack_restored": null,
+          "chain_completed": false,
+          "controller_disabled_data_abort_verified": true,
+          "delay_verified": null,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 268777406,
+            "pc": 268648720,
+            "r0": 69734400,
+            "r1": 8784752,
+            "r2": 522125393,
+            "r3": 3717950335,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 69734712,
+          "fault_status": 2056,
+          "gate_calls": null,
+          "gate_final": null,
+          "next_address": null,
+          "word_count": null
+        },
+        "stock": {
+          "caller_stack_restored": true,
+          "chain_completed": true,
+          "controller_disabled_data_abort_verified": null,
+          "delay_verified": true,
+          "fault": {
+            "cpsr": 1073742231,
+            "lr": 268778280,
+            "pc": 268648720,
+            "r0": 0,
+            "r1": 1,
+            "r2": 536936448,
+            "r3": 1262,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 536936516,
+          "fault_status": 2056,
+          "gate_calls": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "gate_final": 16384,
+          "next_address": 536936516,
+          "word_count": 22
+        }
+      },
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+    }
+  ],
+  "date": "2026-10-10",
+  "format": 1,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "raw_report_sha256": "a866ed5a8f410d078deebb70b81b8212213564974277e4164e1a7a52cf68ba91",
+  "regressions": {
+    "board_tests": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "console_boundary": {
+      "passed": true,
+      "raw_report_sha256": "d75982b9e5c104ca02d9bb00d9d54f44cb306e74f075fdf7dbace24393579653",
+      "scenarios": [
+        "console-disabled",
+        "stock"
+      ]
+    },
+    "library_boundary": {
+      "passed": true,
+      "raw_report_sha256": "3c6a4c90e563a459b51d53f180a487d71559dca0de6c0289f3a808c1726efe68",
+      "scenarios": [
+        "pin-disabled",
+        "stock"
+      ]
+    },
+    "python_checks": {
+      "input_guards": 3,
+      "passed": true
+    }
+  },
+  "sources": {
+    "analyze/controller_boot.py": "5c3b9e007ef7ebc15e2a706820248ad62363161676a94c5aa1366822f3ed0ad8",
+    "qemu/nikon-z72.c": "8c29eac05b74596c94e9d6d2c5a8c5911498e786763625a579484b52d5b12ff5",
+    "tools/boot_probe.py": "c88ea5942fc35ff381dbcce6d6b464c19416a9d4cf7d5e708eebf8facbb6d95a",
+    "tools/controller_boot_probe.py": "73464212db99668b432ac4679d15eb80a4eb0970dc24308dfea79a9514e47ba6",
+    "tools/library_boot_probe.py": "1a5484432f01e4263315aca51429802f511206cea59c8734cbd74e4f365ce230"
+  }
+}

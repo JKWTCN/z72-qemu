@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "passed": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "prior_fault": {
+    "cfsr": "0x8200",
+    "bfar": "0x50060800",
+    "reset_entry": "0x08049088"
+  },
+  "synthetic_checks": {
+    "completion": true,
+    "disabled_completion": true,
+    "interrupt": 80,
+    "data_read_acknowledgement": true,
+    "retained_unread_data": true,
+    "reset": true,
+    "access_bounds": true
+  },
+  "stock_observation": {
+    "instruction_time_shift": 0,
+    "resident_header": "MAKE",
+    "resident_bytes": 49152,
+    "explicit_gpio_high": [
+      "C5",
+      "D13",
+      "E9"
+    ],
+    "power_input_level": "G5 high",
+    "wake_input_level": "G7 low",
+    "explicit_register_targets": [
+      "0x4f",
+      "0x22",
+      "0x6b",
+      "0x0d"
+    ],
+    "adc_codes": {
+      "0": 1800,
+      "1": 3001,
+      "3": 3001
+    },
+    "native_data_read": "0x08044cc6",
+    "control": 4,
+    "status": 1,
+    "native_receive_validation": "0x080342c6",
+    "receive_validation_result": 1,
+    "native_status_decoder": "0x10431380",
+    "status_payload_bytes": 106,
+    "native_configuration_handler": "0x10247ae4",
+    "configuration_flags": "0x48",
+    "controller_fault_registers": "0000000000000000",
+    "initialized_applications": 5,
+    "foreground_application": "APPIDLE",
+    "successful_graphics_uploads": 6,
+    "rendered_graphics_commands": 3
+  },
+  "assumptions": [
+    "Register layout compatibility does not identify the controller chip.",
+    "Resident data, analog samples and register targets are explicit experimental fixtures.",
+    "Generation timing is a fixed experiment; physical entropy and clock failures are not modeled.",
+    "The native path uses polling; native use of interrupt 80 is not verified."
+  ],
+  "migration_roundtrip_verified": false,
+  "full_boot_verified": false,
+  "menu_verified": false
+}

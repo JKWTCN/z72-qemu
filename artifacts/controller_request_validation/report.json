@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "original_images_execute_together": true,
+  "passed": true,
+  "controller_request_verified": true,
+  "controller_link_verified": false,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Four engine cores and one controller core, each execution domain with a private memory view.",
+    "Controller reset vectors use its flash base 0x08000000; the zero alias remains accessible.",
+    "Fixed experimental clocks and an explicit register storage target at address 0x4f.",
+    "Original images and read-only observation; no guest runtime tables or code are replaced.",
+    "Optional link connects two serial peers and three controller outputs; GPIO interrupt wakeup and reverse acknowledgement remain pending.",
+    "Full controller response exchange, external capture and menus remain pending."
+  ],
+  "observation": {
+    "timed_out": true,
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10107074",
+        "mode": 19
+      },
+      {
+        "thread": 2,
+        "pc": "0x1010e154",
+        "mode": 19
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a68",
+        "mode": 19
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a4c",
+        "mode": 19
+      }
+    ],
+    "master_comm_header": "0801c000010055aa",
+    "slave_comm_header": "0801c000010055aa",
+    "ready_tasks": [
+      "0x0",
+      "0xb2c33368"
+    ],
+    "comm_active": false,
+    "full_startup_verified": false,
+    "menu_verified": false,
+    "controller": {
+      "thread": 5,
+      "original_reset_verified": true,
+      "post_power_initialization_verified": true,
+      "initialization_pc": 134353858,
+      "initial_tick": 659,
+      "final_tick": 1120,
+      "native_faults_absent": true,
+      "stop_pc": 134349200,
+      "original_engine_request": {
+        "frame_bytes": 256,
+        "channel": 1,
+        "route": 1,
+        "payload_bytes": 28,
+        "checksum_verified": true,
+        "original_checker_result": 1,
+        "receive_dma_completed": true,
+        "frame_sha256": "8aedb8b77613358218b8b5be795bfd083bd65ade7e7128e50f1591c6bc190e39"
+      }
+    },
+    "exception_events": 12113,
+    "irqs": 3010,
+    "observed_faults": [],
+    "console_bytes": 0
+  }
+}

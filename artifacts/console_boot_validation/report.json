@@ -1,0 +1,650 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "profile": {
+        "base": 738787328,
+        "initializer": 384,
+        "initializer_return": 488,
+        "caller_return": 680,
+        "transmitter": 492,
+        "tx_poll": 508,
+        "tx_ready_mask": 2,
+        "stores": [
+          {
+            "offset": 412,
+            "register": 1,
+            "size": 1,
+            "value": 0
+          },
+          {
+            "offset": 420,
+            "register": 1,
+            "size": 1,
+            "value": 128
+          },
+          {
+            "offset": 428,
+            "register": 0,
+            "size": 1,
+            "value": 1
+          },
+          {
+            "offset": 432,
+            "register": 2,
+            "size": 1,
+            "value": 0
+          },
+          {
+            "offset": 436,
+            "register": 3,
+            "size": 1,
+            "value": 128
+          },
+          {
+            "offset": 440,
+            "register": 12,
+            "size": 2,
+            "value": 0
+          },
+          {
+            "offset": 448,
+            "register": 6,
+            "size": 2,
+            "value": 867
+          },
+          {
+            "offset": 456,
+            "register": 12,
+            "size": 2,
+            "value": 12
+          },
+          {
+            "offset": 468,
+            "register": 12,
+            "size": 2,
+            "value": 1029
+          },
+          {
+            "offset": 480,
+            "register": 1,
+            "size": 1,
+            "value": 129
+          }
+        ],
+        "final_bytes": [
+          1,
+          129,
+          0,
+          130
+        ],
+        "divisor": 867,
+        "format": 1029,
+        "next_fault_offset": 1969904,
+        "next_fault_address": 69730352,
+        "next_fault_value": 1040
+      },
+      "scenarios": {
+        "stock": {
+          "initializer_completed": true,
+          "original_stores": [
+            {
+              "offset": 412,
+              "register": 1,
+              "size": 1,
+              "value": 0
+            },
+            {
+              "offset": 420,
+              "register": 1,
+              "size": 1,
+              "value": 128
+            },
+            {
+              "offset": 428,
+              "register": 0,
+              "size": 1,
+              "value": 1
+            },
+            {
+              "offset": 432,
+              "register": 2,
+              "size": 1,
+              "value": 0
+            },
+            {
+              "offset": 436,
+              "register": 3,
+              "size": 1,
+              "value": 128
+            },
+            {
+              "offset": 440,
+              "register": 12,
+              "size": 2,
+              "value": 0
+            },
+            {
+              "offset": 448,
+              "register": 6,
+              "size": 2,
+              "value": 867
+            },
+            {
+              "offset": 456,
+              "register": 12,
+              "size": 2,
+              "value": 12
+            },
+            {
+              "offset": 468,
+              "register": 12,
+              "size": 2,
+              "value": 1029
+            },
+            {
+              "offset": 480,
+              "register": 1,
+              "size": 1,
+              "value": 129
+            }
+          ],
+          "caller_stack_restored": true,
+          "next_library_boundary_verified": true,
+          "fault": {
+            "thread": 1,
+            "pc": 269484048,
+            "sp": 2998566912,
+            "lr": 270536440,
+            "cpsr": 1610613143,
+            "r0": 0,
+            "r1": 1040,
+            "r2": 69730304,
+            "r3": 738787328
+          },
+          "next_address": 69730352,
+          "native_console_output_verified": false,
+          "fault_status": 2056,
+          "fault_address": 69730352,
+          "startup_task_execution_verified": true,
+          "startup_task_entry": {
+            "name": "startup-task-entry",
+            "thread": 1,
+            "pc": 269499336,
+            "sp": 2999390216,
+            "lr": 0,
+            "cpsr": 19,
+            "r0": 0,
+            "r1": 0,
+            "r2": 0,
+            "r3": 0
+          }
+        },
+        "console-disabled": {
+          "console_disabled_data_abort_verified": true,
+          "initializer_completed": false,
+          "fault": {
+            "thread": 1,
+            "pc": 269484048,
+            "sp": 2998566912,
+            "lr": 268566948,
+            "cpsr": 536871319,
+            "r0": 738787328,
+            "r1": 0,
+            "r2": 1,
+            "r3": 738787328
+          },
+          "fault_status": 6152,
+          "fault_address": 738787329,
+          "startup_task_execution_verified": true,
+          "startup_task_entry": {
+            "name": "startup-task-entry",
+            "thread": 1,
+            "pc": 269499336,
+            "sp": 2999390216,
+            "lr": 0,
+            "cpsr": 19,
+            "r0": 0,
+            "r1": 0,
+            "r2": 0,
+            "r3": 0
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "profile": {
+        "base": 738787328,
+        "initializer": 384,
+        "initializer_return": 488,
+        "caller_return": 680,
+        "transmitter": 492,
+        "tx_poll": 508,
+        "tx_ready_mask": 2,
+        "stores": [
+          {
+            "offset": 412,
+            "register": 1,
+            "size": 1,
+            "value": 0
+          },
+          {
+            "offset": 420,
+            "register": 1,
+            "size": 1,
+            "value": 128
+          },
+          {
+            "offset": 428,
+            "register": 0,
+            "size": 1,
+            "value": 1
+          },
+          {
+            "offset": 432,
+            "register": 2,
+            "size": 1,
+            "value": 0
+          },
+          {
+            "offset": 436,
+            "register": 3,
+            "size": 1,
+            "value": 128
+          },
+          {
+            "offset": 440,
+            "register": 12,
+            "size": 2,
+            "value": 0
+          },
+          {
+            "offset": 448,
+            "register": 6,
+            "size": 2,
+            "value": 867
+          },
+          {
+            "offset": 456,
+            "register": 12,
+            "size": 2,
+            "value": 12
+          },
+          {
+            "offset": 468,
+            "register": 12,
+            "size": 2,
+            "value": 1029
+          },
+          {
+            "offset": 480,
+            "register": 1,
+            "size": 1,
+            "value": 129
+          }
+        ],
+        "final_bytes": [
+          1,
+          129,
+          0,
+          130
+        ],
+        "divisor": 867,
+        "format": 1029,
+        "next_fault_offset": 211924,
+        "next_fault_address": 69730352,
+        "next_fault_value": 3255
+      },
+      "scenarios": {
+        "stock": {
+          "initializer_completed": true,
+          "original_stores": [
+            {
+              "offset": 412,
+              "register": 1,
+              "size": 1,
+              "value": 0
+            },
+            {
+              "offset": 420,
+              "register": 1,
+              "size": 1,
+              "value": 128
+            },
+            {
+              "offset": 428,
+              "register": 0,
+              "size": 1,
+              "value": 1
+            },
+            {
+              "offset": 432,
+              "register": 2,
+              "size": 1,
+              "value": 0
+            },
+            {
+              "offset": 436,
+              "register": 3,
+              "size": 1,
+              "value": 128
+            },
+            {
+              "offset": 440,
+              "register": 12,
+              "size": 2,
+              "value": 0
+            },
+            {
+              "offset": 448,
+              "register": 6,
+              "size": 2,
+              "value": 867
+            },
+            {
+              "offset": 456,
+              "register": 12,
+              "size": 2,
+              "value": 12
+            },
+            {
+              "offset": 468,
+              "register": 12,
+              "size": 2,
+              "value": 1029
+            },
+            {
+              "offset": 480,
+              "register": 1,
+              "size": 1,
+              "value": 129
+            }
+          ],
+          "caller_stack_restored": true,
+          "next_library_boundary_verified": true,
+          "fault": {
+            "thread": 1,
+            "pc": 268648720,
+            "sp": 3247538176,
+            "lr": 268778460,
+            "cpsr": 1610613143,
+            "r0": 0,
+            "r1": 3255,
+            "r2": 69730304,
+            "r3": 3238087516
+          },
+          "next_address": 69730352,
+          "native_console_output_verified": false,
+          "fault_status": 2056,
+          "fault_address": 69730352,
+          "startup_task_execution_verified": true,
+          "startup_task_entry": {
+            "name": "startup-task-entry",
+            "thread": 1,
+            "pc": 268654200,
+            "sp": 3248181256,
+            "lr": 0,
+            "cpsr": 19,
+            "r0": 0,
+            "r1": 0,
+            "r2": 0,
+            "r3": 0
+          }
+        },
+        "console-disabled": {
+          "console_disabled_data_abort_verified": true,
+          "initializer_completed": false,
+          "fault": {
+            "thread": 1,
+            "pc": 268648720,
+            "sp": 3247538176,
+            "lr": 268566948,
+            "cpsr": 536871319,
+            "r0": 738787328,
+            "r1": 0,
+            "r2": 1,
+            "r3": 738787328
+          },
+          "fault_status": 6152,
+          "fault_address": 738787329,
+          "startup_task_execution_verified": true,
+          "startup_task_entry": {
+            "name": "startup-task-entry",
+            "thread": 1,
+            "pc": 268654200,
+            "sp": 3248181256,
+            "lr": 0,
+            "cpsr": 19,
+            "r0": 0,
+            "r1": 0,
+            "r2": 0,
+            "r3": 0
+          }
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "assumptions": [
+    "Two execution cores per isolated role; original reset and startup task.",
+    "Original images preloaded; no register, instruction, table or handshake patches.",
+    "Bounded console TX completes synchronously; receive, IRQ and baud timing unmodeled.",
+    "Existing experimental platform, memory and counter contracts remain in use."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "raw_report_sha256": "0f876c898dd7ed21b94cd71af7a247f32f394a43916ca2ee6a5243a67a71ccfd",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "ad3bccde450126c9a35d388caf2843e7b6312e46a32d14460b9b7d92310f22b1",
+    "sources": {
+      "qemu/nikon-z72.c": "225d8e3133621901297b8957bf03732365485764ca61853624dc7e0be3493e13",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "bdc2d30bc63d2c15f81d8e68bd34126dec1968a2a9699948f3c97dedfd97c9ff",
+      "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+      "qemu/prepare_source.py": "32fc8659b90f01f606de5a1d46d02c16c9334d00ad091cc574fb036c8e4908dd"
+    }
+  },
+  "synthetic_uart": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "tx_hex": "5a37320d0a",
+        "tx_verified": true,
+        "mixed_widths_verified": true,
+        "ninth_bit_latch_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            16,
+            1
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            2
+          ]
+        ],
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "tx_hex": "5a37320d0a",
+        "tx_verified": true,
+        "mixed_widths_verified": true,
+        "ninth_bit_latch_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            16,
+            1
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            2
+          ]
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "receive_verified": false,
+    "uart_irq_verified": false,
+    "raw_report_sha256": "3553de728406c5f560903c3a417664cb97129119b6055616eef178cd46ee3aeb"
+  },
+  "synthetic_smp_regression": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "cpu_affinities": [
+          0,
+          1
+        ],
+        "sgi_acknowledgements": [
+          1,
+          1025
+        ],
+        "local_timer_ids": [
+          29,
+          29
+        ],
+        "directed_sgis_verified": true,
+        "private_timers_verified": true,
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "cpu_affinities": [
+          0,
+          1
+        ],
+        "sgi_acknowledgements": [
+          1,
+          1025
+        ],
+        "local_timer_ids": [
+          29,
+          29
+        ],
+        "directed_sgis_verified": true,
+        "private_timers_verified": true,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "stock_irq_handler_verified": false,
+    "raw_report_sha256": "d6fc708e2992e7e2f55e3d4d828a7524fc8dc1ec0c2b3604215048fb1dc8bc85"
+  },
+  "regressions": {
+    "stock_smp": {
+      "passed": true,
+      "scenario_count": 6,
+      "raw_report_sha256": "71392eb7f247a1cc22ba0d98c879f0fd835ab57514ff781f185dc79885d6d992",
+      "console_disabled": true,
+      "fault_status": 6152
+    },
+    "single_core_board": {
+      "roles": [
+        "master",
+        "slave"
+      ],
+      "passed": true
+    },
+    "source_suite": {
+      "python_checks": 22,
+      "renderer_checks": 270,
+      "asan_ubsan": true,
+      "passed": true
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "225d8e3133621901297b8957bf03732365485764ca61853624dc7e0be3493e13",
+    "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+    "qemu/nikon-z72-uart.c": "bdc2d30bc63d2c15f81d8e68bd34126dec1968a2a9699948f3c97dedfd97c9ff",
+    "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+    "qemu/prepare_source.py": "32fc8659b90f01f606de5a1d46d02c16c9334d00ad091cc574fb036c8e4908dd",
+    "tools/build.py": "f68d51d235a7ad6158423c342146befa61953d51bff0dff97b29f3240b739813",
+    "tools/boot_probe.py": "7f911fc5fe82036bf9f42a69b51e003d4b3bf1c11a2859fa0902d3b81d52e69e",
+    "tools/smp_boot_probe.py": "9531ae375d74e18e56cd0a2f9ec43a16ed3987fe502724d055afae2311fdb512",
+    "tools/console_boot_probe.py": "a53ffbd7f1b886a0fb79f5a6ad2adb1c763a8ed532e5e54b3d5d6bc4281f2534",
+    "analyze/console_boot.py": "43ca8df11a1d17d54facebee3337855d69372c8827844db807207f7198539e0d",
+    "tests/test_uart.py": "abd50fca89a4590ef734f9b4218111f3bfbf1c76baa596aac03c839ae5e09369",
+    "tests/test_smp.py": "542d598604b2688f5572fbd06684bfd31b06b65a7e3c8429018b674807acf2eb",
+    "tests/test_board.py": "e3ea0e5edb438b1f99aff62338beccbf51f4781a503c08b437bb1c8c1dbefe25"
+  }
+}

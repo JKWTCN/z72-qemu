@@ -1,0 +1,113 @@
+{
+  "format": 1,
+  "firmware": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Functional command exchange and quiescent stop states; lane payload transfers remain unmodeled.",
+    "Original reset and pin writes; no debugger state writes."
+  ],
+  "scenarios": {
+    "connected": {
+      "link_enabled": true,
+      "request_thread": 1,
+      "continued_thread": 1,
+      "reset_thread": 1,
+      "initialized_thread": 1,
+      "message_receiver_thread": 3,
+      "message_indices": {
+        "written": 1,
+        "consumed": 1
+      },
+      "main_initialized_thread": 1,
+      "controller_callback_table": "0xb18a7a78",
+      "passed": true,
+      "wait_resumed": true,
+      "fault_status": [
+        {
+          "thread": 1,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 2,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 3,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 4,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        }
+      ]
+    },
+    "disconnected": {
+      "link_enabled": false,
+      "request_thread": 1,
+      "passed": true,
+      "wait_resumed": false,
+      "fault_status": [
+        {
+          "thread": 1,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 2,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 3,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        },
+        {
+          "thread": 4,
+          "status": {
+            "DFSR_S": 0,
+            "IFSR_S": 0,
+            "DFSR": 0,
+            "IFSR": 0
+          }
+        }
+      ]
+    }
+  }
+}

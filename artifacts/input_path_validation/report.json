@@ -1,0 +1,270 @@
+{
+  "format": 1,
+  "configuration_and_buffer_access_verified": true,
+  "firmware_modified": false,
+  "experimental_parameters": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "before_input_mapping": {
+    "fault_registers": {
+      "DFAR_S": "0x20068000",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x808",
+      "IFSR_S": "0x0"
+    },
+    "fault_pc": "0x1020aae2",
+    "write_address": "0x20068000",
+    "write_value": "0xfff",
+    "full_boot_verified": false
+  },
+  "before_capture_mapping": {
+    "fault_registers": {
+      "DFAR_S": "0x36d59800",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x808",
+      "IFSR_S": "0x0"
+    },
+    "cached_pointer": "0x62059800",
+    "bus_pointer": "0x36d59800",
+    "cached_base": "0x5f900000",
+    "bus_base": "0x34600000",
+    "size": "0x2e00000",
+    "clear_bytes": "0x1c8000",
+    "page_section": "0x62014422"
+  },
+  "before_cached_buffer_mapping": [
+    {
+      "thread": 1,
+      "pc": "0xb2bb06f0",
+      "sp": "0xb5359688",
+      "registers": {
+        "DFAR_S": "0x50560000",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x8",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x1010000c",
+      "sp": "0xb2ba4000",
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x1010000c",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x1d"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "sp": "0xc18b3d84",
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a64",
+      "sp": "0xc18b4d84",
+      "registers": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "after": {
+    "initial": {
+      "engines": [
+        {
+          "thread": 1,
+          "pc": "0x1010707c",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10107090",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a4c",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a50",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "controller": {
+        "fault_registers": "0000000000000000"
+      }
+    },
+    "after": {
+      "engines": [
+        {
+          "thread": 1,
+          "pc": "0x10107078",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10107078",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a50",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a64",
+          "registers": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "controller": {
+        "fault_registers": "0000000000000000"
+      }
+    },
+    "system": {
+      "mode_context": "0xb1819988",
+      "current_mode": 2,
+      "previous_mode": 1,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        1
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "applications": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 3,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "graphics": {
+      "successful_uploads": 16,
+      "render_requests": 0,
+      "rendered_commands": 9,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 0,
+      "target_address": 3410653184,
+      "target_dimensions": 45089792,
+      "target_format": 263,
+      "target_second_plane": 3412049920
+    },
+    "capture_control_state": "00000000010000000000000000000000",
+    "operation14_callback": "0x10204d47"
+  },
+  "observation_after_mode2_wall_seconds": 15,
+  "board_check_roles": [
+    "master",
+    "slave"
+  ],
+  "board_checks": [
+    "configuration readback",
+    "set/clear masks preserve unrelated bits",
+    "software cannot create input data or events",
+    "reset clears state",
+    "reserved, unaligned and byte accesses abort",
+    "CPU bus alias stores share cached RAM and preserve adjacent guards"
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false
+}

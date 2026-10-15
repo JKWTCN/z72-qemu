@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-14",
+  "qemu_version": "10.2.4",
+  "build_passed": true,
+  "state_version": 27,
+  "old_state_versions_supported": false,
+  "migration_verified": false,
+  "synthetic_validation": {
+    "tool": "tests/test_board.py",
+    "roles": ["master", "slave"],
+    "passed": true,
+    "configuration_readback": true,
+    "link_status_read_only": true,
+    "region_bank_isolation": true,
+    "highest_region_index": true,
+    "viewport_reserved_bits_masked": true,
+    "configuration_does_not_transfer_data": true,
+    "invalid_accesses_abort": true,
+    "reset_clears_configuration": true
+  },
+  "original_observation": {
+    "experimental_inputs": true,
+    "icount": "shift=0,sleep=off",
+    "slave_reply_entry": "0x100677da",
+    "reply_resource": 8,
+    "reply_operation": 2,
+    "reply_bytes": 48,
+    "reply_slot": 1,
+    "reply_result": -821,
+    "final_foreground": "APPMSG",
+    "final_mode": 8,
+    "normal_boot_verified": false,
+    "menu_verified": false
+  },
+  "limitations": [
+    "The model stores root configuration and region descriptors only.",
+    "No PCIe endpoint, address forwarding, DMA or MSI is implemented.",
+    "The observed reply is a failure result; the fallback path still needs analysis."
+  ]
+}

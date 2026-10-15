@@ -1,0 +1,4337 @@
+{
+  "format": 1,
+  "offset_space": "decoded_member_file",
+  "runtime_addresses": "explicit image_base, source, destination and startup addresses",
+  "images": [
+    {
+      "role": "master",
+      "size": 38239098,
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "crc_verified": true,
+      "version": "Ver.01.70.02",
+      "image_base": 268566528,
+      "startup": {
+        "entry_offset": 48264,
+        "instruction_state": "ARM",
+        "ttbr": 268632064,
+        "domain_access": 1431655765,
+        "vector_address": 269484032,
+        "stack_modes": [
+          "UND",
+          "ABT",
+          "FIQ",
+          "IRQ",
+          "SYS",
+          "SVC"
+        ],
+        "core_zero_stack_tops": [
+          2998599680,
+          2998566912,
+          2998534144,
+          2998501376,
+          2998468608,
+          2998435840
+        ],
+        "per_core_stack_stride": 16384,
+        "secondary_release_address": 67145724,
+        "secondary_release_value": 3133061822,
+        "early_copies": [
+          {
+            "entry_offset": 48756,
+            "stop_offset": 48844,
+            "source": 305766292,
+            "destination": 2977955840,
+            "size": 716216
+          },
+          {
+            "entry_offset": 48848,
+            "stop_offset": 48936,
+            "source": 306482560,
+            "destination": 2998599680,
+            "size": 4188
+          },
+          {
+            "entry_offset": 48940,
+            "stop_offset": 49028,
+            "source": 306486784,
+            "destination": 2998603904,
+            "size": 0
+          }
+        ]
+      },
+      "initialization": {
+        "table_offset": 81920,
+        "record_size": 16,
+        "copy_handler_offset": 108,
+        "zero_handler_offset": 136,
+        "handler_instruction_state": "Thumb",
+        "records": [
+          {
+            "table_offset": 81920,
+            "kind": "copy",
+            "source": 305766292,
+            "destination": 2977955840,
+            "size": 716216,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81936,
+            "kind": "copy",
+            "source": 306482560,
+            "destination": 2998599680,
+            "size": 4188,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81952,
+            "kind": "copy",
+            "source": 306486784,
+            "destination": 2998603904,
+            "size": 289748,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81968,
+            "kind": "copy",
+            "source": 306776576,
+            "destination": 3052404736,
+            "size": 29048,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81984,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 67145696,
+            "size": 32,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82000,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1073741824,
+            "size": 65536,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82016,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1345323008,
+            "size": 3407872,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82032,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1349517312,
+            "size": 68624640,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82048,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1418723328,
+            "size": 184361984,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82064,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1603272704,
+            "size": 48109568,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82080,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 1651507200,
+            "size": 1236029440,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82096,
+            "kind": "zero",
+            "source": 305766292,
+            "destination": 2946498560,
+            "size": 5692416,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82112,
+            "kind": "zero",
+            "source": 306482560,
+            "destination": 2978672064,
+            "size": 19593040,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82128,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3052433784,
+            "size": 30674760,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82144,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3083796480,
+            "size": 50712,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82160,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3140485120,
+            "size": 14286848,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82176,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3155165184,
+            "size": 17694720,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82192,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3172990976,
+            "size": 113030144,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82208,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3286237184,
+            "size": 142848000,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82224,
+            "kind": "zero",
+            "source": 306805624,
+            "destination": 3429892096,
+            "size": 863917056,
+            "handler": 268566664
+          }
+        ],
+        "copy_bytes": 1039200,
+        "zero_bytes": 2748386768
+      },
+      "tasks": {
+        "record_size": 28,
+        "fields_semantics_verified": false,
+        "records": [
+          {
+            "offset": 37901576,
+            "name": "CVSRV",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901604,
+            "name": "CVSTST00",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901632,
+            "name": "CVSTST10",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901660,
+            "name": "CVSTST20",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901688,
+            "name": "CVSTST30",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901716,
+            "name": "CVSTST01",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901744,
+            "name": "CVSTST11",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901772,
+            "name": "CVSTST21",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901800,
+            "name": "CVSTST31",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901828,
+            "name": "CVSTST02",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901856,
+            "name": "CVSTST12",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901884,
+            "name": "CVSTST22",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901912,
+            "name": "CVSTST32",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901940,
+            "name": "CVSTST03",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901968,
+            "name": "CVSTST13",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37901996,
+            "name": "CVSTST23",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902024,
+            "name": "CVSTST33",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902052,
+            "name": "CVSTLV00",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902080,
+            "name": "CVSTLV10",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902108,
+            "name": "CVSTLV20",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902136,
+            "name": "CVSTLV30",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902164,
+            "name": "CVSTLV01",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902192,
+            "name": "CVSTLV11",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902220,
+            "name": "CVSTLV21",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902248,
+            "name": "CVSTLV31",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902276,
+            "name": "CVSTLV02",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902304,
+            "name": "CVSTLV12",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902332,
+            "name": "CVSTLV22",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902360,
+            "name": "CVSTLV32",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902388,
+            "name": "CVSTLV03",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902416,
+            "name": "CVSTLV13",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902444,
+            "name": "CVSTLV23",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902472,
+            "name": "CVSTLV33",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902500,
+            "name": "MOVS_RM",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902528,
+            "name": "MOVS_RF",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902556,
+            "name": "MOVS_RA",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902584,
+            "name": "MOVS_RW",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902612,
+            "name": "MOVS_PM",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902640,
+            "name": "MOVS_PD",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902668,
+            "name": "MOVS_FM",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902696,
+            "name": "MOVS_UT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902724,
+            "name": "MOVS_CM",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902752,
+            "name": "MOVFS_R",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902780,
+            "name": "MOVFS_P",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902808,
+            "name": "MOVFS_F",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902836,
+            "name": "PIPEST",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902864,
+            "name": "PIPELV",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902892,
+            "name": "PIPECVST",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902920,
+            "name": "PIPECVLV",
+            "fields": [
+              1,
+              26,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37902948,
+            "name": "BATTSVC",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37902976,
+            "name": "CARDSRV",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903004,
+            "name": "CARDDTC",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903032,
+            "name": "CARDCOM",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903060,
+            "name": "DATETIME",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903088,
+            "name": "GPS",
+            "fields": [
+              1,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903116,
+            "name": "GUISRV",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903144,
+            "name": "IA_SYNC",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903172,
+            "name": "IMGEFCT",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903200,
+            "name": "PTPSIC",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903228,
+            "name": "PTPPOS",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903256,
+            "name": "PTPPIP",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903284,
+            "name": "IAPONUSB",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903312,
+            "name": "IAP2CTRL",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903340,
+            "name": "IAP2LL",
+            "fields": [
+              1,
+              20,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903368,
+            "name": "REMOTE",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903396,
+            "name": "SNDSRV",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903424,
+            "name": "SWSRV",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903452,
+            "name": "TPIS",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903480,
+            "name": "ISCSRV",
+            "fields": [
+              2,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903508,
+            "name": "WDP_MAIN",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903536,
+            "name": "TIMECODE",
+            "fields": [
+              0,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903564,
+            "name": "GRAPHIC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903592,
+            "name": "CVPFDM",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903620,
+            "name": "CVPFDS",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903648,
+            "name": "CVPHBD",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903676,
+            "name": "CVPED",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903704,
+            "name": "CVPLD",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903732,
+            "name": "AUBUFF",
+            "fields": [
+              1,
+              20,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903760,
+            "name": "AUBUFBRD",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903788,
+            "name": "AUCODEC",
+            "fields": [
+              1,
+              20,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903816,
+            "name": "AUDDTCT",
+            "fields": [
+              1,
+              20,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903844,
+            "name": "AUDDCTBR",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903872,
+            "name": "AUCTRL",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37903900,
+            "name": "BPSNDPLY",
+            "fields": [
+              2,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903928,
+            "name": "TEMPSRV",
+            "fields": [
+              2,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903956,
+            "name": "POSTSERV",
+            "fields": [
+              2,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37903984,
+            "name": "POSTLOG",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904012,
+            "name": "TFTTILT",
+            "fields": [
+              1,
+              10,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904040,
+            "name": "DISPVDSR",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904068,
+            "name": "TFTEVFSR",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904096,
+            "name": "TFTBACK",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904124,
+            "name": "EVFTEMP",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904152,
+            "name": "HDMISRV",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904180,
+            "name": "HDMIDETE",
+            "fields": [
+              1,
+              8,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37904208,
+            "name": "EXPRTSND",
+            "fields": [
+              1,
+              8,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37904236,
+            "name": "EXPRTRCV",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904264,
+            "name": "FILESRV",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904292,
+            "name": "FILESVP",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904320,
+            "name": "CARDPS0",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904348,
+            "name": "CARDPS1",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904376,
+            "name": "FILECOM",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904404,
+            "name": "FILEWM",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904432,
+            "name": "FILEWP",
+            "fields": [
+              1,
+              34,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37904460,
+            "name": "ISCDEV",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904488,
+            "name": "MOV_CDC",
+            "fields": [
+              1,
+              30,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37904516,
+            "name": "EYEDEV",
+            "fields": [
+              2,
+              30,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37904544,
+            "name": "ARM926Ma",
+            "fields": [
+              1,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904572,
+            "name": "GENADC",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904600,
+            "name": "GENNORSV",
+            "fields": [
+              2,
+              38,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37904628,
+            "name": "GENNORBK",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904656,
+            "name": "GENBDEC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904684,
+            "name": "GENDAFI",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904712,
+            "name": "IMGIIP",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904740,
+            "name": "IMGIIPLK",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904768,
+            "name": "IMPIIP0",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904796,
+            "name": "IMPIIPW1",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904824,
+            "name": "IMPIIPW2",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904852,
+            "name": "IMPIIPW3",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904880,
+            "name": "IMPIIPW4",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904908,
+            "name": "IMPIIPW5",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904936,
+            "name": "IMPIIPW6",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904964,
+            "name": "IMPIIPW7",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37904992,
+            "name": "IMPIIPW8",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905020,
+            "name": "IMPIIPW9",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905048,
+            "name": "IMPJPGCO",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905076,
+            "name": "IMPJPGEN",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905104,
+            "name": "IMPMIPU0",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905132,
+            "name": "IMPMIPU1",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905160,
+            "name": "IMPMVD",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905188,
+            "name": "IMPPSPR",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905216,
+            "name": "IMPRAWRS",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905244,
+            "name": "IMPRAW",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905272,
+            "name": "IMPSFLT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905300,
+            "name": "IMPTM",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905328,
+            "name": "IMPTRAN0",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905356,
+            "name": "IMPTRAN1",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905384,
+            "name": "IPUS",
+            "fields": [
+              1,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905412,
+            "name": "AAC_CDC",
+            "fields": [
+              1,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905440,
+            "name": "TPL",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905468,
+            "name": "WTDG",
+            "fields": [
+              1,
+              22,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37905496,
+            "name": "WTDG_C1",
+            "fields": [
+              2,
+              22,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37905524,
+            "name": "WTDG_C2",
+            "fields": [
+              0,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905552,
+            "name": "OPENVG",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905580,
+            "name": "IPUDRV",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905608,
+            "name": "EXSUSBCB",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905636,
+            "name": "EXSUSBEV",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905664,
+            "name": "EXSUSBDP",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905692,
+            "name": "EXSUSBDE",
+            "fields": [
+              2,
+              4,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905720,
+            "name": "H264DINT",
+            "fields": [
+              0,
+              40,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905748,
+            "name": "DBGCMD",
+            "fields": [
+              0,
+              40,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905776,
+            "name": "DBGUART",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905804,
+            "name": "SYSCTL",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905832,
+            "name": "SYSCTIM",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905860,
+            "name": "APPCTL",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905888,
+            "name": "APPCDRT",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905916,
+            "name": "APPCTIM",
+            "fields": [
+              1,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37905944,
+            "name": "AUTOOP",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37905972,
+            "name": "APPIDLE",
+            "fields": [
+              1,
+              28,
+              8704,
+              0
+            ]
+          },
+          {
+            "offset": 37906000,
+            "name": "APPMENU",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906028,
+            "name": "APPPLAY",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906056,
+            "name": "APPINFO",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906084,
+            "name": "APPLV",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906112,
+            "name": "APPMSG",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906140,
+            "name": "APPTHUMB",
+            "fields": [
+              2,
+              18,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906168,
+            "name": "AF_AREA",
+            "fields": [
+              1,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906196,
+            "name": "APP_OBS",
+            "fields": [
+              1,
+              28,
+              8192,
+              0
+            ]
+          },
+          {
+            "offset": 37906224,
+            "name": "APPCOMM",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906252,
+            "name": "DISPINFO",
+            "fields": [
+              2,
+              34,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37906280,
+            "name": "TimeLoc",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906308,
+            "name": "FIRMWARE",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906336,
+            "name": "WTMAIN",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906364,
+            "name": "WTSCHE",
+            "fields": [
+              2,
+              36,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906392,
+            "name": "WTDEL",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906420,
+            "name": "LSMAIN",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906448,
+            "name": "LSMARK",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906476,
+            "name": "LSBTC",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906504,
+            "name": "LSWIFI",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906532,
+            "name": "LSPTP",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906560,
+            "name": "NETAMAIN",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906588,
+            "name": "LSBLE",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906616,
+            "name": "LSBLEEVT",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906644,
+            "name": "WDCC",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906672,
+            "name": "WDCBLE",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906700,
+            "name": "WDCBTC",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906728,
+            "name": "WDCWIFI",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906756,
+            "name": "BLEInfo",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906784,
+            "name": "DPSMAIN",
+            "fields": [
+              2,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906812,
+            "name": "PTPCMAIN",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906840,
+            "name": "PTPCBRG",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906868,
+            "name": "PTPCMSG",
+            "fields": [
+              2,
+              36,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906896,
+            "name": "PTPCCYC",
+            "fields": [
+              2,
+              8,
+              4608,
+              0
+            ]
+          },
+          {
+            "offset": 37906924,
+            "name": "CAPST",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906952,
+            "name": "MPAP_M",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37906980,
+            "name": "MPAP_V",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907008,
+            "name": "MRAP_A",
+            "fields": [
+              1,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907036,
+            "name": "PBAPMSG",
+            "fields": [
+              1,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907064,
+            "name": "PBAPSUB",
+            "fields": [
+              1,
+              34,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37907092,
+            "name": "ACCSTAT",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907120,
+            "name": "CAPSVC",
+            "fields": [
+              2,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907148,
+            "name": "RCNT",
+            "fields": [
+              2,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907176,
+            "name": "BLKOUT",
+            "fields": [
+              1,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907204,
+            "name": "PBPMAIN",
+            "fields": [
+              1,
+              32,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37907232,
+            "name": "PBPSUB",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907260,
+            "name": "MRAP_M",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907288,
+            "name": "AUDIOAPL",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907316,
+            "name": "AUDAPMVR",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907344,
+            "name": "FRONTEND",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907372,
+            "name": "PREPRO",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907400,
+            "name": "FE_CALC",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907428,
+            "name": "BACKEND",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907456,
+            "name": "BE_LV",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907484,
+            "name": "LVMVCLC3",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907512,
+            "name": "BE_REC",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907540,
+            "name": "BE_RECPC",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907568,
+            "name": "STGCAPP",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907596,
+            "name": "STGPIXDT",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907624,
+            "name": "STGBAYER",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907652,
+            "name": "STGSFLT",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907680,
+            "name": "STGIMP",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907708,
+            "name": "STGRS_A",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907736,
+            "name": "STGRS_A2",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907764,
+            "name": "STGEN_A",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907792,
+            "name": "STGEN_A2",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907820,
+            "name": "STGRAW",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907848,
+            "name": "STGCHK",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907876,
+            "name": "STGTAG",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907904,
+            "name": "STGTAGPC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907932,
+            "name": "STGREC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907960,
+            "name": "STGRECPC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37907988,
+            "name": "STGEND",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908016,
+            "name": "STGFLRC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908044,
+            "name": "STGXDMAC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908072,
+            "name": "STGCV",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908100,
+            "name": "STGSNB",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908128,
+            "name": "LVMVCALC",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908156,
+            "name": "LVMVCLC2",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908184,
+            "name": "LVDAFC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908212,
+            "name": "LVDAFI",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908240,
+            "name": "LVSFLT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908268,
+            "name": "LVMIPU",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908296,
+            "name": "LVIIP",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908324,
+            "name": "LVVMAP",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908352,
+            "name": "LVENC",
+            "fields": [
+              2,
+              11,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908380,
+            "name": "LVNTFY",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908408,
+            "name": "LVEND",
+            "fields": [
+              2,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908436,
+            "name": "LVSTCALC",
+            "fields": [
+              2,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908464,
+            "name": "LVSTCLC2",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908492,
+            "name": "LVSTCLC3",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908520,
+            "name": "BE_COM",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908548,
+            "name": "BE_COMLV",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908576,
+            "name": "IMGCALC",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908604,
+            "name": "IFMTCOM",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908632,
+            "name": "IFMTPC",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908660,
+            "name": "IMGBCOM",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908688,
+            "name": "CAPSEQ",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908716,
+            "name": "CAPTG",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908744,
+            "name": "SHUTTER",
+            "fields": [
+              2,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908772,
+            "name": "AWB",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908800,
+            "name": "VRCALC",
+            "fields": [
+              1,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908828,
+            "name": "AESVC",
+            "fields": [
+              2,
+              12,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908856,
+            "name": "AFSVC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908884,
+            "name": "PDAF",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908912,
+            "name": "CONTAF",
+            "fields": [
+              2,
+              16,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37908940,
+            "name": "AFLENS",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908968,
+            "name": "ISCCTL",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37908996,
+            "name": "SCN_ANLZ",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909024,
+            "name": "SCN_DTCT",
+            "fields": [
+              1,
+              28,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 37909052,
+            "name": "BATTCHK",
+            "fields": [
+              2,
+              14,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909080,
+            "name": "LENSCMDS",
+            "fields": [
+              2,
+              14,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909108,
+            "name": "BVRCOM",
+            "fields": [
+              1,
+              32,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909136,
+            "name": "STOMAIN",
+            "fields": [
+              1,
+              38,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909164,
+            "name": "STOEYEFI",
+            "fields": [
+              2,
+              14,
+              4608,
+              0
+            ]
+          },
+          {
+            "offset": 37909192,
+            "name": "SBCMDSVC",
+            "fields": [
+              1,
+              26,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909220,
+            "name": "DS",
+            "fields": [
+              1,
+              36,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909248,
+            "name": "LNKMAIN",
+            "fields": [
+              1,
+              36,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909276,
+            "name": "LNKWORK",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909304,
+            "name": "PCW_MAIN",
+            "fields": [
+              2,
+              30,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909332,
+            "name": "PCW_SEND",
+            "fields": [
+              2,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909360,
+            "name": "PCW_EVT",
+            "fields": [
+              1,
+              36,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909388,
+            "name": "PKST",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909416,
+            "name": "CAPCOM",
+            "fields": [
+              1,
+              30,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909444,
+            "name": "EXMCUSRV",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909472,
+            "name": "EXMCUFUP",
+            "fields": [
+              1,
+              14,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909500,
+            "name": "LENSSVC",
+            "fields": [
+              1,
+              14,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909528,
+            "name": "BVRSVC",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909556,
+            "name": "LIGHTCOM",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909584,
+            "name": "INSPECT",
+            "fields": [
+              1,
+              32,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909612,
+            "name": "NVMEM",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909640,
+            "name": "DUALEG",
+            "fields": [
+              2,
+              7,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 37909668,
+            "name": "LENSPRTS",
+            "fields": [
+              2,
+              6,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909696,
+            "name": "LENSPOSI",
+            "fields": [
+              2,
+              14,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 37909724,
+            "name": "BVRPRO",
+            "fields": [
+              1,
+              4,
+              5524,
+              0
+            ]
+          },
+          {
+            "offset": 37909752,
+            "name": "PKGB1",
+            "fields": [
+              2,
+              4,
+              5524,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "role": "slave",
+      "size": 8834370,
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "crc_verified": true,
+      "version": "Ver.01.70.02",
+      "image_base": 268566528,
+      "startup": {
+        "entry_offset": 48340,
+        "instruction_state": "ARM",
+        "ttbr": 268632064,
+        "domain_access": 1431655765,
+        "vector_address": 268648704,
+        "stack_modes": [
+          "UND",
+          "ABT",
+          "FIQ",
+          "IRQ",
+          "SYS",
+          "SVC"
+        ],
+        "core_zero_stack_tops": [
+          3247570944,
+          3247538176,
+          3247505408,
+          3247472640,
+          3247439872,
+          3247407104
+        ],
+        "per_core_stack_stride": 16384,
+        "secondary_release_address": 67145724,
+        "secondary_release_value": 3133061822,
+        "early_copies": [
+          {
+            "entry_offset": 48832,
+            "stop_offset": 48920,
+            "source": 277202132,
+            "destination": 3238002688,
+            "size": 97632
+          },
+          {
+            "entry_offset": 48924,
+            "stop_offset": 49012,
+            "source": 277299776,
+            "destination": 3247570944,
+            "size": 2772
+          },
+          {
+            "entry_offset": 49016,
+            "stop_offset": 49104,
+            "source": 277302592,
+            "destination": 3247573760,
+            "size": 0
+          }
+        ]
+      },
+      "initialization": {
+        "table_offset": 81920,
+        "record_size": 16,
+        "copy_handler_offset": 108,
+        "zero_handler_offset": 136,
+        "handler_instruction_state": "Thumb",
+        "records": [
+          {
+            "table_offset": 81920,
+            "kind": "copy",
+            "source": 277202132,
+            "destination": 3238002688,
+            "size": 97632,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81936,
+            "kind": "copy",
+            "source": 277299776,
+            "destination": 3247570944,
+            "size": 2772,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81952,
+            "kind": "copy",
+            "source": 277302592,
+            "destination": 3247573760,
+            "size": 81896,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81968,
+            "kind": "copy",
+            "source": 277384512,
+            "destination": 3305111552,
+            "size": 16384,
+            "handler": 268566636
+          },
+          {
+            "table_offset": 81984,
+            "kind": "zero",
+            "source": 277202132,
+            "destination": 67145696,
+            "size": 32,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82000,
+            "kind": "zero",
+            "source": 277202132,
+            "destination": 2147483648,
+            "size": 65536,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82016,
+            "kind": "zero",
+            "source": 277202132,
+            "destination": 2155872256,
+            "size": 50656768,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82032,
+            "kind": "zero",
+            "source": 277202132,
+            "destination": 2207252480,
+            "size": 995647488,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82048,
+            "kind": "zero",
+            "source": 277202132,
+            "destination": 3220176896,
+            "size": 669696,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82064,
+            "kind": "zero",
+            "source": 277299776,
+            "destination": 3238100352,
+            "size": 9138644,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82080,
+            "kind": "zero",
+            "source": 277400896,
+            "destination": 3305127936,
+            "size": 16511296,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82096,
+            "kind": "zero",
+            "source": 277400896,
+            "destination": 3322871808,
+            "size": 50712,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82112,
+            "kind": "zero",
+            "source": 277400896,
+            "destination": 3322937088,
+            "size": 8,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82128,
+            "kind": "zero",
+            "source": 277400896,
+            "destination": 3364880384,
+            "size": 31531520,
+            "handler": 268566664
+          },
+          {
+            "table_offset": 82144,
+            "kind": "zero",
+            "source": 277400896,
+            "destination": 3397386240,
+            "size": 895903744,
+            "handler": 268566664
+          }
+        ],
+        "copy_bytes": 198684,
+        "zero_bytes": 2000175444
+      },
+      "tasks": {
+        "record_size": 28,
+        "fields_semantics_verified": false,
+        "records": [
+          {
+            "offset": 8724612,
+            "name": "MOVS_RM",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724640,
+            "name": "MOVS_RF",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724668,
+            "name": "MOVS_RW",
+            "fields": [
+              2,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724696,
+            "name": "MOVS_UT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724724,
+            "name": "MOVS_CM",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724752,
+            "name": "PIPEST",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724780,
+            "name": "PIPELV",
+            "fields": [
+              2,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724808,
+            "name": "PIPECVST",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724836,
+            "name": "CARDSRV",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724864,
+            "name": "CARDCOM",
+            "fields": [
+              1,
+              20,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724892,
+            "name": "IMGEFCT",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724920,
+            "name": "FILESRV",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724948,
+            "name": "FILESVP",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8724976,
+            "name": "CARDPS0",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725004,
+            "name": "CARDPS1",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725032,
+            "name": "FILECOM",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725060,
+            "name": "FILEWM",
+            "fields": [
+              2,
+              28,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725088,
+            "name": "FILEWP",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725116,
+            "name": "MOV_CDC",
+            "fields": [
+              1,
+              34,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 8725144,
+            "name": "GENNORSV",
+            "fields": [
+              2,
+              38,
+              2048,
+              0
+            ]
+          },
+          {
+            "offset": 8725172,
+            "name": "GENNORBK",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725200,
+            "name": "GENBDEC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725228,
+            "name": "GENDAFI",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725256,
+            "name": "IMGIIP",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725284,
+            "name": "IMGIIPLK",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725312,
+            "name": "IMPIIP0",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725340,
+            "name": "IMPIIPW1",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725368,
+            "name": "IMPIIPW2",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725396,
+            "name": "IMPIIPW3",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725424,
+            "name": "IMPIIPW4",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725452,
+            "name": "IMPIIPW5",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725480,
+            "name": "IMPIIPW6",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725508,
+            "name": "IMPIIPW7",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725536,
+            "name": "IMPIIPW8",
+            "fields": [
+              2,
+              13,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725564,
+            "name": "IMPIIPW9",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725592,
+            "name": "IMPJPGCO",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725620,
+            "name": "IMPJPGEN",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725648,
+            "name": "IMPMIPU0",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725676,
+            "name": "IMPMIPU1",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725704,
+            "name": "IMPMVD",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725732,
+            "name": "IMPPSPR",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725760,
+            "name": "IMPRAWRS",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725788,
+            "name": "IMPRAW",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725816,
+            "name": "IMPSFLT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725844,
+            "name": "IMPTM",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725872,
+            "name": "IMPTRAN0",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725900,
+            "name": "IMPTRAN1",
+            "fields": [
+              1,
+              8,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8725928,
+            "name": "WTDG",
+            "fields": [
+              1,
+              22,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 8725956,
+            "name": "WTDG_C1",
+            "fields": [
+              2,
+              22,
+              1024,
+              0
+            ]
+          },
+          {
+            "offset": 8725984,
+            "name": "WTDG_C2",
+            "fields": [
+              2,
+              4,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726012,
+            "name": "H264DINT",
+            "fields": [
+              0,
+              40,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726040,
+            "name": "DBGCMD",
+            "fields": [
+              0,
+              40,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726068,
+            "name": "DBGUART",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726096,
+            "name": "MRAP_M",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726124,
+            "name": "BACKEND",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726152,
+            "name": "BE_REC",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726180,
+            "name": "BE_RECPC",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726208,
+            "name": "STGCAPP",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726236,
+            "name": "STGPIXDT",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726264,
+            "name": "STGBAYER",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726292,
+            "name": "STGSFLT",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726320,
+            "name": "STGIMP",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726348,
+            "name": "STGRS_A",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726376,
+            "name": "STGRS_A2",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726404,
+            "name": "STGEN_A",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726432,
+            "name": "STGEN_A2",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726460,
+            "name": "STGRAW",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726488,
+            "name": "STGCHK",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726516,
+            "name": "STGTAG",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726544,
+            "name": "STGTAGPC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726572,
+            "name": "STGREC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726600,
+            "name": "STGRECPC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726628,
+            "name": "STGEND",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726656,
+            "name": "STGFLRC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726684,
+            "name": "STGXDMAC",
+            "fields": [
+              1,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726712,
+            "name": "STGCV",
+            "fields": [
+              1,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726740,
+            "name": "STGSNB",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726768,
+            "name": "LVMVCALC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726796,
+            "name": "LVDAFC",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726824,
+            "name": "LVDAFI",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726852,
+            "name": "LVSFLT",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726880,
+            "name": "LVMIPU",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726908,
+            "name": "LVIIP",
+            "fields": [
+              2,
+              16,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726936,
+            "name": "LVENC",
+            "fields": [
+              2,
+              11,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726964,
+            "name": "LVNTFY",
+            "fields": [
+              2,
+              22,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8726992,
+            "name": "LVEND",
+            "fields": [
+              1,
+              18,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727020,
+            "name": "BE_COM",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727048,
+            "name": "BE_COMLV",
+            "fields": [
+              2,
+              24,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727076,
+            "name": "IMGCALC",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727104,
+            "name": "IFMTCOM",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727132,
+            "name": "IFMTPC",
+            "fields": [
+              1,
+              10,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727160,
+            "name": "IMGBCOM",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727188,
+            "name": "FIRMWARE",
+            "fields": [
+              1,
+              34,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727216,
+            "name": "DUALEG",
+            "fields": [
+              1,
+              4,
+              5012,
+              0
+            ]
+          },
+          {
+            "offset": 8727244,
+            "name": "PKGB1",
+            "fields": [
+              2,
+              4,
+              5012,
+              0
+            ]
+          },
+          {
+            "offset": 8727272,
+            "name": "PKGB2",
+            "fields": [
+              1,
+              4,
+              4096,
+              0
+            ]
+          },
+          {
+            "offset": 8727300,
+            "name": "PKGBCOPY",
+            "fields": [
+              1,
+              12,
+              1024,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "natural_boot_verified": false,
+  "dual_engine_execution_verified": false
+}

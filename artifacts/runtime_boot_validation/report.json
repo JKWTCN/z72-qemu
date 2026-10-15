@@ -1,0 +1,1069 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "prefix": {
+            "platform": {
+              "results": [
+                {
+                  "offset": 23568,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23712,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23772,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 24448,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24592,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24652,
+                  "address": 537198956,
+                  "value": 0
+                }
+              ],
+              "calls": [
+                {
+                  "offset": 19564,
+                  "channel": 1,
+                  "r0": 0,
+                  "r1": 1
+                },
+                {
+                  "offset": 21332,
+                  "channel": 1,
+                  "r0": 1,
+                  "r1": 1
+                },
+                {
+                  "offset": 19564,
+                  "channel": 2,
+                  "r0": 0,
+                  "r1": 2
+                },
+                {
+                  "offset": 21332,
+                  "channel": 2,
+                  "r0": 2,
+                  "r1": 1
+                }
+              ],
+              "returns": [
+                {
+                  "offset": 936,
+                  "result": 0
+                },
+                {
+                  "offset": 944,
+                  "result": 0
+                },
+                {
+                  "offset": 956,
+                  "result": 0
+                },
+                {
+                  "offset": 48580,
+                  "result": 0
+                }
+              ],
+              "stop_offset": 48580,
+              "temporary_stack_restored": true,
+              "pending_status_words": [
+                537060096,
+                537191168
+              ],
+              "stock_page_table_preserved": true,
+              "boot_continuation_executed": false,
+              "trace_count": 1154,
+              "trace_sha256": "c71f309c2337e8db7bb90735ef6c44200ccde6e4f75fdec47dd763bfc6dc188b",
+              "stores_count": 360,
+              "stores_sha256": "bfb9a4db5d0ff4eb7d680d77744f68bc7277b3a63b99d0d2e515d708e9eed3db",
+              "polls_count": 48,
+              "polls_sha256": "4af4e2f62599553078c8e4d31db072183f37a1f5776a7d9142eab9da3bc098f3"
+            },
+            "reads": [
+              {
+                "offset": 48728,
+                "address": 305766272,
+                "value": 0
+              },
+              {
+                "offset": 49732,
+                "address": 537329684,
+                "value": 0
+              },
+              {
+                "offset": 49744,
+                "address": 537329696,
+                "value": 0
+              },
+              {
+                "offset": 49760,
+                "address": 537329700,
+                "value": 0
+              }
+            ],
+            "copies": [
+              {
+                "source": 305766292,
+                "destination": 2977955840,
+                "size": 716216,
+                "copied_sha256": "6a651ef520c697baa3f773bc987b52dfa5b4c9757821dfadc71f94e10d70a4db",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 306482560,
+                "destination": 2998599680,
+                "size": 4188,
+                "copied_sha256": "0991682b9f6951bda59926ebf407d78d7a1d036c04c2cfa58ec1b3594e73f3ce",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 306486784,
+                "destination": 2998603904,
+                "size": 0,
+                "copied_sha256": null,
+                "zero_length_preserved": true,
+                "trailing_guard_preserved": true
+              }
+            ],
+            "stop_offset": 49824,
+            "original_svc_stack_restored": true,
+            "stock_page_table_preserved": true,
+            "memory_initialization_setup": {
+              "destination": 2978672064,
+              "size": 19593040,
+              "blocks": 1196,
+              "block_size": 16384
+            },
+            "memory_initialization_completion_verified": false,
+            "completion_wait_executed": false,
+            "trace_count": 76,
+            "trace_sha256": "3dcc43ad2135de07eaf7200d84f22ed30906d597c135be4eb1acadee06e5e3f6",
+            "stores_count": 24,
+            "stores_sha256": "0f4183441a234ba7151b0a291825fd0e40bab31552b44cab190d7c70afa10b3b"
+          },
+          "caches": [
+            {
+              "entry": 49356,
+              "return_offset": 196,
+              "preserved_registers": true
+            },
+            {
+              "entry": 49356,
+              "return_offset": 648,
+              "preserved_registers": true
+            }
+          ],
+          "copied_table": 2998353920,
+          "copied_table_bytes": 16384,
+          "source_table_preserved": true,
+          "installed_table_preserved": true,
+          "random_words_verified": 55,
+          "default_data_pointers": [
+            305765984,
+            305766256
+          ],
+          "config_address": 2998149784,
+          "config_words": [
+            268567092,
+            268567136,
+            0,
+            268567124,
+            268567228,
+            268567188,
+            67117056,
+            67112960,
+            29,
+            256,
+            2998927360,
+            3052404736
+          ],
+          "state_address": 2998149704,
+          "state_array": 2998148680,
+          "zeroed_state_bytes": 1040,
+          "state_guards_preserved": true,
+          "cache_counts": [
+            256,
+            2304
+          ],
+          "secondary_release_marker": 3133061822,
+          "stop_offset": 954268,
+          "rtos_bootstrap_ready": true,
+          "next_service_executed": false,
+          "trace_count": 1714,
+          "trace_sha256": "0592d7162a26d9d66e80a3418c22929b4c815c731a0b40979fe407659b415733"
+        },
+        "invalid-copied-table": {
+          "prefix": {
+            "platform": {
+              "results": [
+                {
+                  "offset": 23568,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23712,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23772,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 24448,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24592,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24652,
+                  "address": 537198956,
+                  "value": 0
+                }
+              ],
+              "calls": [
+                {
+                  "offset": 19564,
+                  "channel": 1,
+                  "r0": 0,
+                  "r1": 1
+                },
+                {
+                  "offset": 21332,
+                  "channel": 1,
+                  "r0": 1,
+                  "r1": 1
+                },
+                {
+                  "offset": 19564,
+                  "channel": 2,
+                  "r0": 0,
+                  "r1": 2
+                },
+                {
+                  "offset": 21332,
+                  "channel": 2,
+                  "r0": 2,
+                  "r1": 1
+                }
+              ],
+              "returns": [
+                {
+                  "offset": 936,
+                  "result": 0
+                },
+                {
+                  "offset": 944,
+                  "result": 0
+                },
+                {
+                  "offset": 956,
+                  "result": 0
+                },
+                {
+                  "offset": 48580,
+                  "result": 0
+                }
+              ],
+              "stop_offset": 48580,
+              "temporary_stack_restored": true,
+              "pending_status_words": [
+                537060096,
+                537191168
+              ],
+              "stock_page_table_preserved": true,
+              "boot_continuation_executed": false,
+              "trace_count": 1154,
+              "trace_sha256": "c71f309c2337e8db7bb90735ef6c44200ccde6e4f75fdec47dd763bfc6dc188b",
+              "stores_count": 360,
+              "stores_sha256": "bfb9a4db5d0ff4eb7d680d77744f68bc7277b3a63b99d0d2e515d708e9eed3db",
+              "polls_count": 48,
+              "polls_sha256": "4af4e2f62599553078c8e4d31db072183f37a1f5776a7d9142eab9da3bc098f3"
+            },
+            "reads": [
+              {
+                "offset": 48728,
+                "address": 305766272,
+                "value": 0
+              },
+              {
+                "offset": 49732,
+                "address": 537329684,
+                "value": 0
+              },
+              {
+                "offset": 49744,
+                "address": 537329696,
+                "value": 0
+              },
+              {
+                "offset": 49760,
+                "address": 537329700,
+                "value": 0
+              }
+            ],
+            "copies": [
+              {
+                "source": 305766292,
+                "destination": 2977955840,
+                "size": 716216,
+                "copied_sha256": "6a651ef520c697baa3f773bc987b52dfa5b4c9757821dfadc71f94e10d70a4db",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 306482560,
+                "destination": 2998599680,
+                "size": 4188,
+                "copied_sha256": "0991682b9f6951bda59926ebf407d78d7a1d036c04c2cfa58ec1b3594e73f3ce",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 306486784,
+                "destination": 2998603904,
+                "size": 0,
+                "copied_sha256": null,
+                "zero_length_preserved": true,
+                "trailing_guard_preserved": true
+              }
+            ],
+            "stop_offset": 49824,
+            "original_svc_stack_restored": true,
+            "stock_page_table_preserved": true,
+            "memory_initialization_setup": {
+              "destination": 2978672064,
+              "size": 19593040,
+              "blocks": 1196,
+              "block_size": 16384
+            },
+            "memory_initialization_completion_verified": false,
+            "completion_wait_executed": false,
+            "trace_count": 76,
+            "trace_sha256": "3dcc43ad2135de07eaf7200d84f22ed30906d597c135be4eb1acadee06e5e3f6",
+            "stores_count": 24,
+            "stores_sha256": "0f4183441a234ba7151b0a291825fd0e40bab31552b44cab190d7c70afa10b3b"
+          },
+          "copied_table": 2998353920,
+          "fault_offset": 55012,
+          "copied_table_prefetch_abort": true,
+          "invalid_descriptor_restored": true,
+          "source_table_preserved": true,
+          "rtos_entry_reached": false,
+          "trace_count": 471,
+          "trace_sha256": "c7c6cbf1b61e9e1ff2f888cb44ebc97c00335cfc42a877c0497d0fcfbe10c0f8"
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "prefix": {
+            "platform": {
+              "results": [
+                {
+                  "offset": 17864,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18008,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18068,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18744,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 18888,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 18948,
+                  "address": 537198956,
+                  "value": 0
+                }
+              ],
+              "calls": [
+                {
+                  "offset": 13852,
+                  "channel": 1,
+                  "r0": 0,
+                  "r1": 1
+                },
+                {
+                  "offset": 15632,
+                  "channel": 1,
+                  "r0": 1,
+                  "r1": 1
+                },
+                {
+                  "offset": 13852,
+                  "channel": 2,
+                  "r0": 0,
+                  "r1": 2
+                },
+                {
+                  "offset": 15632,
+                  "channel": 2,
+                  "r0": 2,
+                  "r1": 1
+                }
+              ],
+              "returns": [
+                {
+                  "offset": 1004,
+                  "result": 0
+                },
+                {
+                  "offset": 1012,
+                  "result": 0
+                },
+                {
+                  "offset": 1024,
+                  "result": 0
+                },
+                {
+                  "offset": 48656,
+                  "result": 0
+                }
+              ],
+              "stop_offset": 48656,
+              "temporary_stack_restored": true,
+              "pending_status_words": [
+                537060096,
+                537191168
+              ],
+              "stock_page_table_preserved": true,
+              "boot_continuation_executed": false,
+              "trace_count": 1165,
+              "trace_sha256": "35cfac2bd981c26dae3dd8241c06eb00fc3af0b230d6c18b6d0424340ebf0518",
+              "stores_count": 360,
+              "stores_sha256": "4b059d72a81b99650ab5d4daba3356ceca58f21e12274ae7b13ef4260918df70",
+              "polls_count": 48,
+              "polls_sha256": "b624ccbfbabc02522f083493b4576856f0207dcf88dacebc36077247cac6290b"
+            },
+            "reads": [
+              {
+                "offset": 48804,
+                "address": 277202112,
+                "value": 0
+              },
+              {
+                "offset": 49808,
+                "address": 537329684,
+                "value": 0
+              },
+              {
+                "offset": 49820,
+                "address": 537329696,
+                "value": 0
+              },
+              {
+                "offset": 49836,
+                "address": 537329700,
+                "value": 0
+              }
+            ],
+            "copies": [
+              {
+                "source": 277202132,
+                "destination": 3238002688,
+                "size": 97632,
+                "copied_sha256": "2c92983b9bf09f36697b9db0963e60b220fc27fcadedae38ec97a4866b95daaf",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277299776,
+                "destination": 3247570944,
+                "size": 2772,
+                "copied_sha256": "70254a02e00c794e742eee566cef3a24a575943b8883cdcbdfaad3dc4afe650b",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277302592,
+                "destination": 3247573760,
+                "size": 0,
+                "copied_sha256": null,
+                "zero_length_preserved": true,
+                "trailing_guard_preserved": true
+              }
+            ],
+            "stop_offset": 49900,
+            "original_svc_stack_restored": true,
+            "stock_page_table_preserved": true,
+            "memory_initialization_setup": {
+              "destination": 3238100352,
+              "size": 9138644,
+              "blocks": 558,
+              "block_size": 16384
+            },
+            "memory_initialization_completion_verified": false,
+            "completion_wait_executed": false,
+            "trace_count": 76,
+            "trace_sha256": "f71eacce9b9e880d82b51ac23ce69a06a4a13dfab65823b89069eb63be1ed4bd",
+            "stores_count": 24,
+            "stores_sha256": "779029050697d72f08de70315c1fb2fc9511fb101c6a6408ed2af2de5c55bb4f"
+          },
+          "caches": [
+            {
+              "entry": 49432,
+              "return_offset": 196,
+              "preserved_registers": true
+            },
+            {
+              "entry": 49432,
+              "return_offset": 648,
+              "preserved_registers": true
+            }
+          ],
+          "copied_table": 3247325184,
+          "copied_table_bytes": 16384,
+          "source_table_preserved": true,
+          "installed_table_preserved": true,
+          "random_words_verified": 55,
+          "default_data_pointers": [
+            277201764,
+            277202036
+          ],
+          "config_address": 3247123732,
+          "config_words": [
+            268567092,
+            268567136,
+            0,
+            268567124,
+            268567228,
+            268567188,
+            67117056,
+            67112960,
+            29,
+            256,
+            3247702016,
+            3305111552
+          ],
+          "state_address": 3247123652,
+          "state_array": 3247122628,
+          "zeroed_state_bytes": 1040,
+          "state_guards_preserved": true,
+          "cache_counts": [
+            256,
+            2304
+          ],
+          "secondary_release_marker": 3133061822,
+          "stop_offset": 108912,
+          "rtos_bootstrap_ready": true,
+          "next_service_executed": false,
+          "trace_count": 1714,
+          "trace_sha256": "f258854cdb0cb4fbfbdf61dc9e627ae1baecf61981b8cb419df01ee59c5a43a6"
+        },
+        "invalid-copied-table": {
+          "prefix": {
+            "platform": {
+              "results": [
+                {
+                  "offset": 17864,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18008,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18068,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 18744,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 18888,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 18948,
+                  "address": 537198956,
+                  "value": 0
+                }
+              ],
+              "calls": [
+                {
+                  "offset": 13852,
+                  "channel": 1,
+                  "r0": 0,
+                  "r1": 1
+                },
+                {
+                  "offset": 15632,
+                  "channel": 1,
+                  "r0": 1,
+                  "r1": 1
+                },
+                {
+                  "offset": 13852,
+                  "channel": 2,
+                  "r0": 0,
+                  "r1": 2
+                },
+                {
+                  "offset": 15632,
+                  "channel": 2,
+                  "r0": 2,
+                  "r1": 1
+                }
+              ],
+              "returns": [
+                {
+                  "offset": 1004,
+                  "result": 0
+                },
+                {
+                  "offset": 1012,
+                  "result": 0
+                },
+                {
+                  "offset": 1024,
+                  "result": 0
+                },
+                {
+                  "offset": 48656,
+                  "result": 0
+                }
+              ],
+              "stop_offset": 48656,
+              "temporary_stack_restored": true,
+              "pending_status_words": [
+                537060096,
+                537191168
+              ],
+              "stock_page_table_preserved": true,
+              "boot_continuation_executed": false,
+              "trace_count": 1165,
+              "trace_sha256": "35cfac2bd981c26dae3dd8241c06eb00fc3af0b230d6c18b6d0424340ebf0518",
+              "stores_count": 360,
+              "stores_sha256": "4b059d72a81b99650ab5d4daba3356ceca58f21e12274ae7b13ef4260918df70",
+              "polls_count": 48,
+              "polls_sha256": "b624ccbfbabc02522f083493b4576856f0207dcf88dacebc36077247cac6290b"
+            },
+            "reads": [
+              {
+                "offset": 48804,
+                "address": 277202112,
+                "value": 0
+              },
+              {
+                "offset": 49808,
+                "address": 537329684,
+                "value": 0
+              },
+              {
+                "offset": 49820,
+                "address": 537329696,
+                "value": 0
+              },
+              {
+                "offset": 49836,
+                "address": 537329700,
+                "value": 0
+              }
+            ],
+            "copies": [
+              {
+                "source": 277202132,
+                "destination": 3238002688,
+                "size": 97632,
+                "copied_sha256": "2c92983b9bf09f36697b9db0963e60b220fc27fcadedae38ec97a4866b95daaf",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277299776,
+                "destination": 3247570944,
+                "size": 2772,
+                "copied_sha256": "70254a02e00c794e742eee566cef3a24a575943b8883cdcbdfaad3dc4afe650b",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277302592,
+                "destination": 3247573760,
+                "size": 0,
+                "copied_sha256": null,
+                "zero_length_preserved": true,
+                "trailing_guard_preserved": true
+              }
+            ],
+            "stop_offset": 49900,
+            "original_svc_stack_restored": true,
+            "stock_page_table_preserved": true,
+            "memory_initialization_setup": {
+              "destination": 3238100352,
+              "size": 9138644,
+              "blocks": 558,
+              "block_size": 16384
+            },
+            "memory_initialization_completion_verified": false,
+            "completion_wait_executed": false,
+            "trace_count": 76,
+            "trace_sha256": "f71eacce9b9e880d82b51ac23ce69a06a4a13dfab65823b89069eb63be1ed4bd",
+            "stores_count": 24,
+            "stores_sha256": "779029050697d72f08de70315c1fb2fc9511fb101c6a6408ed2af2de5c55bb4f"
+          },
+          "copied_table": 3247325184,
+          "fault_offset": 55076,
+          "copied_table_prefetch_abort": true,
+          "invalid_descriptor_restored": true,
+          "source_table_preserved": true,
+          "rtos_entry_reached": false,
+          "trace_count": 471,
+          "trace_sha256": "5701d7d9c93fe08e6766ae52f7e56b873422789e6f6fca1785fcf4c05b025ea9"
+        },
+        "shared-path": {
+          "prefix": {
+            "platform": {
+              "results": [
+                {
+                  "offset": 23644,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23788,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 23848,
+                  "address": 537067884,
+                  "value": 0
+                },
+                {
+                  "offset": 24524,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24668,
+                  "address": 537198956,
+                  "value": 0
+                },
+                {
+                  "offset": 24728,
+                  "address": 537198956,
+                  "value": 0
+                }
+              ],
+              "calls": [
+                {
+                  "offset": 19640,
+                  "channel": 1,
+                  "r0": 0,
+                  "r1": 1
+                },
+                {
+                  "offset": 21408,
+                  "channel": 1,
+                  "r0": 1,
+                  "r1": 1
+                },
+                {
+                  "offset": 19640,
+                  "channel": 2,
+                  "r0": 0,
+                  "r1": 2
+                },
+                {
+                  "offset": 21408,
+                  "channel": 2,
+                  "r0": 2,
+                  "r1": 1
+                }
+              ],
+              "returns": [
+                {
+                  "offset": 968,
+                  "result": 0
+                },
+                {
+                  "offset": 976,
+                  "result": 0
+                },
+                {
+                  "offset": 988,
+                  "result": 0
+                },
+                {
+                  "offset": 48656,
+                  "result": 0
+                }
+              ],
+              "stop_offset": 48656,
+              "temporary_stack_restored": true,
+              "pending_status_words": [
+                537060096,
+                537191168
+              ],
+              "stock_page_table_preserved": true,
+              "boot_continuation_executed": false,
+              "trace_count": 1162,
+              "trace_sha256": "881fe1f6f4a358a59b354bee4309d125e66105698b501f73bf21e73232602511",
+              "stores_count": 360,
+              "stores_sha256": "9dff8bbd88d46e189007e43415173db843e6b62a99b4399629f7764f229ac822",
+              "polls_count": 48,
+              "polls_sha256": "b63609eda404a1affb7f69b8fffd852fc92107c7800632b63d513fb267a1537e"
+            },
+            "reads": [
+              {
+                "offset": 48804,
+                "address": 277202112,
+                "value": 0
+              },
+              {
+                "offset": 49808,
+                "address": 537329684,
+                "value": 0
+              },
+              {
+                "offset": 49820,
+                "address": 537329696,
+                "value": 0
+              },
+              {
+                "offset": 49836,
+                "address": 537329700,
+                "value": 0
+              }
+            ],
+            "copies": [
+              {
+                "source": 277202132,
+                "destination": 3238002688,
+                "size": 97632,
+                "copied_sha256": "2c92983b9bf09f36697b9db0963e60b220fc27fcadedae38ec97a4866b95daaf",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277299776,
+                "destination": 3247570944,
+                "size": 2772,
+                "copied_sha256": "70254a02e00c794e742eee566cef3a24a575943b8883cdcbdfaad3dc4afe650b",
+                "zero_length_preserved": false,
+                "trailing_guard_preserved": true
+              },
+              {
+                "source": 277302592,
+                "destination": 3247573760,
+                "size": 0,
+                "copied_sha256": null,
+                "zero_length_preserved": true,
+                "trailing_guard_preserved": true
+              }
+            ],
+            "stop_offset": 49900,
+            "original_svc_stack_restored": true,
+            "stock_page_table_preserved": true,
+            "memory_initialization_setup": {
+              "destination": 3238100352,
+              "size": 9138644,
+              "blocks": 558,
+              "block_size": 16384
+            },
+            "memory_initialization_completion_verified": false,
+            "completion_wait_executed": false,
+            "trace_count": 76,
+            "trace_sha256": "f71eacce9b9e880d82b51ac23ce69a06a4a13dfab65823b89069eb63be1ed4bd",
+            "stores_count": 24,
+            "stores_sha256": "779029050697d72f08de70315c1fb2fc9511fb101c6a6408ed2af2de5c55bb4f"
+          },
+          "caches": [
+            {
+              "entry": 49432,
+              "return_offset": 196,
+              "preserved_registers": true
+            },
+            {
+              "entry": 49432,
+              "return_offset": 648,
+              "preserved_registers": true
+            }
+          ],
+          "copied_table": 3247325184,
+          "copied_table_bytes": 16384,
+          "source_table_preserved": true,
+          "installed_table_preserved": true,
+          "random_words_verified": 55,
+          "default_data_pointers": [
+            277201764,
+            277202036
+          ],
+          "config_address": 3247123732,
+          "config_words": [
+            268567092,
+            268567136,
+            0,
+            268567124,
+            268567228,
+            268567188,
+            67117056,
+            67112960,
+            29,
+            256,
+            3247702016,
+            3305111552
+          ],
+          "state_address": 3247123652,
+          "state_array": 3247122628,
+          "zeroed_state_bytes": 1040,
+          "state_guards_preserved": true,
+          "cache_counts": [
+            256,
+            2304
+          ],
+          "secondary_release_marker": 3133061822,
+          "stop_offset": 108912,
+          "rtos_bootstrap_ready": true,
+          "next_service_executed": false,
+          "trace_count": 1714,
+          "trace_sha256": "f258854cdb0cb4fbfbdf61dc9e627ae1baecf61981b8cb419df01ee59c5a43a6"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "assumptions": [
+    "Original reset, instructions and page-table copy/switch; stock EG preloaded.",
+    "Laboratory Cortex-A7 with CBAR 0x04000000 and standard GICv2; hardware layout unconfirmed.",
+    "Poison and guards affect instance RAM; invalid copied-table scenario changes only its code descriptor.",
+    "Platform completion and rounded synchronous memory clearing remain experimental."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "c05a66afdf82afb57226d4ca800c12392834a8b6a9dcda8f56c39a704a8a191c",
+    "sources": {
+      "qemu/nikon-z72.c": "dc174dd2723810f61fb02d50b2585a2c2f9f5aeeb5fe2614cc0acc384898c893",
+      "qemu/nikon-z72-profile.h": "ad9d675fc6e926a148d5e3b91d2083fc7f7ea9e82faad441d5a513f435c367ef",
+      "qemu/prepare_source.py": "28c9939edca635c3542e1b4b04bbf392719344114f3937e15900db34ae676cdf"
+    }
+  },
+  "raw_report_sha256": "8038a00959fd6f86a4f6a1bb5b6233611da24eb8f0a53d9ff8b6a85a4a073e26",
+  "trace_hash_encoding": "UTF-8 JSON, sorted keys, compact separators",
+  "interrupt_validation": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "stock_irq_handler_verified": false,
+    "raw_report_sha256": "2e20f3a2067171aec4404a45b1a782922c54a8675c31a1e0dc242b63f6bc1ace"
+  },
+  "validation": {
+    "native_boards": 2,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "boot_memory": {
+      "passed": true,
+      "report_sha256": "1d7f9fb6b016d45e2d5473cd777f4e12b9efd5d04b70bd3895a0144adee4dea2"
+    },
+    "initialization_and_communication": {
+      "passed": true,
+      "report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "display": {
+      "passed": true,
+      "report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "dc174dd2723810f61fb02d50b2585a2c2f9f5aeeb5fe2614cc0acc384898c893",
+    "qemu/nikon-z72-profile.h": "ad9d675fc6e926a148d5e3b91d2083fc7f7ea9e82faad441d5a513f435c367ef",
+    "qemu/prepare_source.py": "28c9939edca635c3542e1b4b04bbf392719344114f3937e15900db34ae676cdf",
+    "analyze/runtime_bootstrap.py": "2d6386fdccfa7fd5b04b875eba69a09a9a0144885b74401788216bdfb678a522",
+    "tools/runtime_boot_probe.py": "78fea1f4532b084b1a5d867250ba4e1776e2bd82529b43e0fd7a10e2350d424f",
+    "tests/test_interrupts.py": "04ef88a382283f2fbcea84bc7c0dfca113dd4cdfbca2245deb471e367b16d19c",
+    "tests/interrupt_harness.S": "f98ef2ac85668fd9edcb1485b2f7d78e98d2bd1df021945fc6860738aef44147",
+    "tests/test_platform.py": "e3a55305b94fd1d8e135e72af5cdc30a3c87c832074c06087012cc622a91d90a",
+    "tools/continuation_boot_probe.py": "f9d25789a1dc3c78e50930098e46c514e1922abd87dbc1bb2dd38a0e97f449e2",
+    "tools/boot_probe.py": "e746e618bc25a36b2cb6ec770e85663a37eb8ba17a6c23eebf88302e731f6d14"
+  }
+}

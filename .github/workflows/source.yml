@@ -1,0 +1,45 @@
+name: Firmware-free source and board checks
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev
+          python3 -m venv .venv
+      - name: Source and synthetic checks
+        run: |
+          . .venv/bin/activate
+          python tools/verify_release.py
+          sh tests/run.sh
+      - name: Build and execute Z72 board
+        run: |
+          . .venv/bin/activate
+          python tools/build.py --jobs 4
+          python tests/test_board.py --qemu .build/build/qemu-system-arm
+          python tests/test_interrupts.py --qemu .build/build/qemu-system-arm --destination .local/interrupt-check
+          python tests/test_counter.py --qemu .build/build/qemu-system-arm --destination .local/counter-check
+          python tests/test_smp.py --qemu .build/build/qemu-system-arm --destination .local/smp-check
+          python tests/test_dual_interrupts.py --qemu .build/build/qemu-system-arm --destination .local/dual-interrupt-check
+          python tests/test_uart.py --qemu .build/build/qemu-system-arm --destination .local/uart-check
+          python tests/test_spi.py --qemu .build/build/qemu-system-arm --destination .local/spi-check
+          python tests/test_graphics.py --qemu .build/build/qemu-system-arm
+          python tests/test_input_events.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_gpio.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_rtc.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_i2c.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_i2c_targets.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_routing.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_dma.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_spi.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_embedded.py --qemu .build/build/qemu-system-arm
+          python tests/test_engine_memory.py --qemu .build/build/qemu-system-arm
+          python tests/test_peer_memory.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_uart.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_timer.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_switch.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_flash.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_adc.py --qemu .build/build/qemu-system-arm

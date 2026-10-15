@@ -1,0 +1,191 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "stop_offset": 20032,
+          "poll_offset": 2260,
+          "poll_arguments": [
+            537010944,
+            1,
+            40000000
+          ],
+          "status_poll_executed": false,
+          "nested_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "branch_selector": 0,
+          "branch_setup_result": 0,
+          "checkpoint_count": 123,
+          "checkpoint_trace_sha256": "58c7326ad00377c1632bf5a718034acd0d3f8a083a6ddd2f79320f5b33221ed3",
+          "store_count": 58,
+          "store_trace_sha256": "53d484daf0200d9e0895b600b78428f51100e1e0263b86ab87142ee9cb3553a5"
+        },
+        "poisoned-config": {
+          "stop_offset": 20032,
+          "poll_offset": 2260,
+          "poll_arguments": [
+            537010944,
+            1,
+            40000000
+          ],
+          "status_poll_executed": false,
+          "nested_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "branch_selector": 2779054080,
+          "branch_setup_result": 1515847696,
+          "checkpoint_count": 123,
+          "checkpoint_trace_sha256": "58c7326ad00377c1632bf5a718034acd0d3f8a083a6ddd2f79320f5b33221ed3",
+          "store_count": 58,
+          "store_trace_sha256": "53d484daf0200d9e0895b600b78428f51100e1e0263b86ab87142ee9cb3553a5"
+        },
+        "invalid-system-section": {
+          "data_abort_verified": true,
+          "fault_offset": 19612,
+          "fault_pc": 269484048,
+          "checkpoint_count": 18,
+          "checkpoint_trace_sha256": "f75c2509acaa507df50364a4d618e9e56c8d707f1d523030dc676736e4ea1517"
+        }
+      },
+      "passed": true,
+      "mapping_count": 59,
+      "mapping_sha256": "3c371516e63f7fe396299b5c813ed04ca71f39778d10b1eb6c8fde8fe8b2b198",
+      "section_descriptors": [
+        69207090,
+        536871986
+      ]
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "stop_offset": 14320,
+          "poll_offset": 2336,
+          "poll_arguments": [
+            537010944,
+            1,
+            40000000
+          ],
+          "status_poll_executed": false,
+          "nested_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "branch_selector": 0,
+          "branch_setup_result": 4,
+          "checkpoint_count": 131,
+          "checkpoint_trace_sha256": "b658b193c20a06532d910ad313c1a2056b588dd81e3deb231736d563b7a8017e",
+          "store_count": 58,
+          "store_trace_sha256": "fb1f0d95a06b620f2896ff298b96fcda7a824636fc9bceda5c79ccb2ad36a9eb"
+        },
+        "poisoned-config": {
+          "stop_offset": 14320,
+          "poll_offset": 2336,
+          "poll_arguments": [
+            537010944,
+            1,
+            40000000
+          ],
+          "status_poll_executed": false,
+          "nested_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "branch_selector": 2779054080,
+          "branch_setup_result": 1515847700,
+          "checkpoint_count": 131,
+          "checkpoint_trace_sha256": "b658b193c20a06532d910ad313c1a2056b588dd81e3deb231736d563b7a8017e",
+          "store_count": 58,
+          "store_trace_sha256": "fb1f0d95a06b620f2896ff298b96fcda7a824636fc9bceda5c79ccb2ad36a9eb"
+        },
+        "invalid-system-section": {
+          "data_abort_verified": true,
+          "fault_offset": 13900,
+          "fault_pc": 268648720,
+          "checkpoint_count": 26,
+          "checkpoint_trace_sha256": "1709982947e9c6378964406beb9ad671e7eb9cc96fe47ce05e36bedb9f2794f0"
+        },
+        "shared-path": {
+          "stop_offset": 20108,
+          "poll_offset": 2336,
+          "poll_arguments": [
+            537010944,
+            1,
+            40000000
+          ],
+          "status_poll_executed": false,
+          "nested_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "branch_selector": 2779054084,
+          "branch_setup_result": 4,
+          "checkpoint_count": 131,
+          "checkpoint_trace_sha256": "8424f8b6ccb156d3316dfdd35e725ab117cdad16ac254a87bd771ba15e1e1198",
+          "store_count": 58,
+          "store_trace_sha256": "ce59e0e56cb81b5aa66578f8a4112a5ba8b8dc990a101a4537856c3a41ba3b6d"
+        }
+      },
+      "passed": true,
+      "mapping_count": 59,
+      "mapping_sha256": "3c371516e63f7fe396299b5c813ed04ca71f39778d10b1eb6c8fde8fe8b2b198",
+      "section_descriptors": [
+        69207090,
+        536871986
+      ]
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Independent experimental cortex-a7 per role; stock EG preloaded.",
+    "Configuration words provide storage only, with experimental zero reset.",
+    "Stock instructions and page table execute; first readiness poll is not executed.",
+    "Seeded selector, poisoned registers and invalid section are separate controls."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "f1c17a1c98216eb08abc34fe610e1380011f2cccf32aaa9bfd5953b4c68f21dc",
+    "sources": {
+      "qemu/nikon-z72.c": "3b2c99e4732f3d587e34e84571e400bbc39bf4c8f4b2ba6f8930b783d3f602a2",
+      "qemu/nikon-z72-profile.h": "7f862527428a154fbcdb70f31381600193175b3bd1e5064e40d36653a02271a9",
+      "qemu/prepare_source.py": "bac0dbe25ec0fa81fa6e6719466a444778e5ff808e3f89a3f2a0faedfa4b3de4"
+    }
+  },
+  "validation": {
+    "native_boards": 2,
+    "supported_configuration_words": 63,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "early_configuration": {
+      "passed": true,
+      "report_sha256": "87c68b7f69b8eae05d6af5e920160543aa25e172ed2ea4bc7e1240c3ef788485"
+    },
+    "initialization_and_communication": {
+      "passed": true,
+      "report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "display": {
+      "passed": true,
+      "report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "3b2c99e4732f3d587e34e84571e400bbc39bf4c8f4b2ba6f8930b783d3f602a2",
+    "analyze/system_configuration.py": "26de9251b791163bef72a79cef5ccbb2f85ada44c6383037061fae0b777b339c",
+    "tools/system_boot_probe.py": "0adcc04e35a9c6d7e85c770f0834f51d2ef2d7c497a6d5f53f72873e37fa2b06",
+    "tools/early_boot_probe.py": "71fea3313d1f8d9e457ea8326d5e6c29b2a9379ebe4d582cf31ea48828a4080c",
+    "tools/boot_probe.py": "d4151d7787a6b5ea7bda5ab9fdcf3db6b0a9d23e53e0b4c1a35d349448d90fbb",
+    "tests/test_board.py": "5538ac0e6c385917bd9ca273f7d4d7668d22c8ecf46d122945d654049b5c2498"
+  }
+}

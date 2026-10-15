@@ -1,0 +1,360 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "section_mappings": [
+        {
+          "virtual_address": 67145464,
+          "descriptor": 67109938,
+          "physical_address": 67145464,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 67145468,
+          "descriptor": 67109938,
+          "physical_address": 67145468,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69615616,
+          "descriptor": 69207090,
+          "physical_address": 69615616,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69615648,
+          "descriptor": 69207090,
+          "physical_address": 69615648,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69734440,
+          "descriptor": 69207090,
+          "physical_address": 69734440,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69734444,
+          "descriptor": 69207090,
+          "physical_address": 69734444,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        }
+      ],
+      "scenarios": {
+        "stock": {
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false,
+          "checkpoint_count": 41,
+          "checkpoint_trace_sha256": "e82f7cb8f4381d479aea2b6ff5874595d76c102f5a1f9d667642b8f405a951c8"
+        },
+        "seeded-config": {
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 2779115520
+            },
+            {
+              "address": 69734444,
+              "value": 3680754688
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false,
+          "checkpoint_count": 41,
+          "checkpoint_trace_sha256": "e82f7cb8f4381d479aea2b6ff5874595d76c102f5a1f9d667642b8f405a951c8"
+        },
+        "invalid-stack": {
+          "prefix_verified": true,
+          "temporary_stack_data_abort": true,
+          "fault_offset": 55040,
+          "fault_pc": 269484048,
+          "fault_cpsr": 1610613207,
+          "checkpoint_count": 10,
+          "checkpoint_trace_sha256": "07d705eaccfddd8030f62d0d9eea1496b54d56d173f48c013f938f1f59b11ced"
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "section_mappings": [
+        {
+          "virtual_address": 67145464,
+          "descriptor": 67109938,
+          "physical_address": 67145464,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 67145468,
+          "descriptor": 67109938,
+          "physical_address": 67145468,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69615616,
+          "descriptor": 69207090,
+          "physical_address": 69615616,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69615648,
+          "descriptor": 69207090,
+          "physical_address": 69615648,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69734440,
+          "descriptor": 69207090,
+          "physical_address": 69734440,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        },
+        {
+          "virtual_address": 69734444,
+          "descriptor": 69207090,
+          "physical_address": 69734444,
+          "domain": 1,
+          "access_permissions": 1,
+          "execute_never": true
+        }
+      ],
+      "scenarios": {
+        "stock": {
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false,
+          "checkpoint_count": 41,
+          "checkpoint_trace_sha256": "f5ed906115eec867355df91adcaed9056a235d1b2179f96b0e494ee26d4139ff"
+        },
+        "seeded-config": {
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 2779115520
+            },
+            {
+              "address": 69734444,
+              "value": 3680754688
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false,
+          "checkpoint_count": 41,
+          "checkpoint_trace_sha256": "f5ed906115eec867355df91adcaed9056a235d1b2179f96b0e494ee26d4139ff"
+        },
+        "invalid-stack": {
+          "prefix_verified": true,
+          "temporary_stack_data_abort": true,
+          "fault_offset": 55104,
+          "fault_pc": 268648720,
+          "fault_cpsr": 1610613207,
+          "checkpoint_count": 10,
+          "checkpoint_trace_sha256": "c0340a5143a80abf7e90fa6426a6a7ffa55b2ecab6a98ae81f0f9c5b8511ebce"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Stock EG images preloaded at 0x10020000; one independent cortex-a7 per role.",
+    "Four configuration words provide storage; zero reset state is experimental.",
+    "Temporary stack has a 4 KiB RAM window; hardware capacity is unconfirmed.",
+    "Stock entry, page table and delay loops execute unchanged.",
+    "Seeded-register and invalid-stack scenarios modify only instance memory."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "seeded_configuration_inputs": [
+    2779118592,
+    3674135667
+  ],
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "8f6252885d65c9066bf545d2821155ced05e55a0839acc40eb44c450f1a419e0",
+    "sources": {
+      "qemu/nikon-z72.c": "8c09f73c09a463855a54bfb936c2978754e1f1c5cf5dac7d3dc28a092d16e8c8",
+      "qemu/nikon-z72-profile.h": "7f862527428a154fbcdb70f31381600193175b3bd1e5064e40d36653a02271a9",
+      "qemu/prepare_source.py": "bac0dbe25ec0fa81fa6e6719466a444778e5ff808e3f89a3f2a0faedfa4b3de4"
+    }
+  },
+  "validation": {
+    "native_boards": 2,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "reset_prefix": {
+      "passed": true,
+      "report_sha256": "b83115cd5fb7b054e917d6751cc3542cfabca02edc67bf2145667e1d9cff9410"
+    },
+    "initialization_and_communication": {
+      "passed": true,
+      "report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "display": {
+      "passed": true,
+      "report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "8c09f73c09a463855a54bfb936c2978754e1f1c5cf5dac7d3dc28a092d16e8c8",
+    "qemu/nikon-z72-profile.h": "7f862527428a154fbcdb70f31381600193175b3bd1e5064e40d36653a02271a9",
+    "tools/early_boot_probe.py": "71fea3313d1f8d9e457ea8326d5e6c29b2a9379ebe4d582cf31ea48828a4080c",
+    "tools/boot_probe.py": "d4151d7787a6b5ea7bda5ab9fdcf3db6b0a9d23e53e0b4c1a35d349448d90fbb",
+    "tests/test_board.py": "7425909dc2d3b9debc8592a5398af447508c764632d90c96c21efadc2f65326e"
+  }
+}

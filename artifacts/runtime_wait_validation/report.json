@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "firmware": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Original reset, kernel, waits and interrupt handlers; no debugger state writes.",
+    "Experimental GIC v1 interface and per-engine CPU numbering.",
+    "Instruction-count virtual clock: shift=0,sleep=off.",
+    "Synchronous transfer reset completion; data transfer execution is unmodeled."
+  ],
+  "scenarios": {
+    "completion": {
+      "completion_enabled": true,
+      "delay_returns": [
+        {
+          "thread": 2,
+          "pc": "0x1046bd4e"
+        },
+        {
+          "thread": 2,
+          "pc": "0x1046bd4e"
+        }
+      ],
+      "request_thread": 2,
+      "handler_thread": 2,
+      "resumed_thread": 2,
+      "serial_configuration_thread": 1,
+      "serial_format": "0xc07",
+      "task_resumed": true,
+      "passed": true,
+      "faults": []
+    },
+    "completion-disabled": {
+      "completion_enabled": false,
+      "delay_returns": [
+        {
+          "thread": 2,
+          "pc": "0x1046bd4e"
+        },
+        {
+          "thread": 2,
+          "pc": "0x1046bd4e"
+        }
+      ],
+      "request_thread": 2,
+      "task_resumed": false,
+      "passed": true,
+      "faults": []
+    }
+  }
+}

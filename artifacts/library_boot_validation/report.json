@@ -1,0 +1,157 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "assumptions": [
+    "Two execution cores per isolated role; original reset and startup task.",
+    "Original images preloaded; no register, instruction, table or handshake patches.",
+    "Pin words are passive storage; no pin, pad or electrical behavior is modeled.",
+    "Existing experimental console, platform, memory and counter contracts remain in use."
+  ],
+  "build": {
+    "binary": "/var/tmp/z72-qemu-build/build/qemu-system-arm",
+    "binary_sha256": "a48d24e9bbeb9085fe3a5f38f7ff3084cf3d4b2ffd8c3f2a6a606ffc5c99dba3",
+    "qemu_version": "10.2.4"
+  },
+  "contexts": [
+    {
+      "final": [
+        1342177280,
+        6422528
+      ],
+      "passed": true,
+      "role": "master",
+      "scenarios": {
+        "pin-disabled": {
+          "caller_stack_restored": null,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 270536440,
+            "pc": 269484048,
+            "r0": 0,
+            "r1": 1040,
+            "r2": 69730304,
+            "r3": 738787328,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 69730352,
+          "fault_status": 2056,
+          "initializer_completed": false,
+          "next_address": null,
+          "next_controller_boundary_verified": null,
+          "pin_words_disabled_data_abort_verified": true
+        },
+        "stock": {
+          "caller_stack_restored": true,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 270536134,
+            "pc": 269484048,
+            "r0": 69734400,
+            "r1": 8784752,
+            "r2": 522125393,
+            "r3": 3717950335,
+            "sp": 2998566912,
+            "thread": 1
+          },
+          "fault_address": 69734712,
+          "fault_status": 2056,
+          "initializer_completed": true,
+          "next_address": 69734712,
+          "next_controller_boundary_verified": true,
+          "pin_words": 60,
+          "pin_words_disabled_data_abort_verified": null,
+          "table_source": "0xb18aa51c"
+        }
+      },
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "value": 1040
+    },
+    {
+      "final": null,
+      "passed": true,
+      "role": "slave",
+      "scenarios": {
+        "pin-disabled": {
+          "caller_stack_restored": null,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 268778460,
+            "pc": 268648720,
+            "r0": 0,
+            "r1": 3255,
+            "r2": 69730304,
+            "r3": 3238087516,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 69730352,
+          "fault_status": 2056,
+          "initializer_completed": false,
+          "next_address": null,
+          "next_controller_boundary_verified": null,
+          "pin_words_disabled_data_abort_verified": true
+        },
+        "stock": {
+          "caller_stack_restored": true,
+          "fault": {
+            "cpsr": 1610613143,
+            "lr": 268777406,
+            "pc": 268648720,
+            "r0": 69734400,
+            "r1": 8784752,
+            "r2": 522125393,
+            "r3": 3717950335,
+            "sp": 3247538176,
+            "thread": 1
+          },
+          "fault_address": 69734712,
+          "fault_status": 2056,
+          "initializer_completed": true,
+          "next_address": 69734712,
+          "next_controller_boundary_verified": true,
+          "pin_words": 60,
+          "pin_words_disabled_data_abort_verified": null,
+          "table_source": "0xc1014b5c"
+        }
+      },
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "value": 3255
+    }
+  ],
+  "date": "2026-10-10",
+  "format": 1,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "passed": true,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "raw_report_sha256": "2c53031a94e7967ff9cc5cb7cb62dede9baead116b413cd856b128004861e9b7",
+  "regressions": {
+    "board_tests": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "console_boundary": {
+      "passed": true,
+      "raw_report_sha256": "d75982b9e5c104ca02d9bb00d9d54f44cb306e74f075fdf7dbace24393579653",
+      "scenarios": [
+        "console-disabled",
+        "stock"
+      ]
+    },
+    "python_checks": {
+      "analyze_checks": 10,
+      "input_guards": 3,
+      "passed": true
+    }
+  },
+  "sources": {
+    "analyze/library_boot.py": "9c0e0b37cdb11e98766919f2eefa686937d357d6f24d2090eaf778e8376a54e6",
+    "qemu/nikon-z72.c": "30c69ff8d3d7587cef375b5499e2b38bc68a5abe1b1178684c144c0faf6ab246",
+    "tools/boot_probe.py": "c19ea80e9a2ddf76d084d25bc983e0cd71a710f1958d3a82bca0c5f90e733923",
+    "tools/console_boot_probe.py": "89d96404a632a017df04f714738e9f62792ce25f8c1121acbfb7b9b64a5abfd3",
+    "tools/library_boot_probe.py": "d1d9c06e32440057747cc8c4e58067ffcee764854186c4a18c04605267a65c30"
+  }
+}

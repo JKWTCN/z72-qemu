@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "original_images_execute_together": true,
+  "passed": true,
+  "controller_link_verified": false,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Four engine cores and one controller core, each execution domain with a private memory view.",
+    "Controller reset vectors use its flash base 0x08000000; the zero alias remains accessible.",
+    "Fixed experimental clocks and an explicit register storage target at address 0x4f.",
+    "Original images and read-only observation; no guest runtime tables or code are replaced.",
+    "Controller serial and pin links to engines remain unconnected; external capture and menus remain pending."
+  ],
+  "observation": {
+    "timed_out": true,
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x106cf88a",
+        "mode": 19
+      },
+      {
+        "thread": 2,
+        "pc": "0x10106534",
+        "mode": 19
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a44",
+        "mode": 19
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a4c",
+        "mode": 19
+      }
+    ],
+    "master_comm_header": "0801c000010055aa",
+    "slave_comm_header": "0801c000010055aa",
+    "ready_tasks": [
+      "0xb2c3ca70",
+      "0xb2c38468"
+    ],
+    "comm_active": false,
+    "full_startup_verified": false,
+    "menu_verified": false,
+    "controller": {
+      "thread": 5,
+      "original_reset_verified": true,
+      "post_power_initialization_verified": true,
+      "initialization_pc": 134353858,
+      "initial_tick": 659,
+      "final_tick": 992,
+      "native_faults_absent": true,
+      "stop_pc": 134349226
+    },
+    "exception_events": 10401,
+    "irqs": 2535,
+    "observed_faults": [],
+    "console_bytes": 0
+  }
+}

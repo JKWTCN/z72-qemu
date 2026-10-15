@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "firmware": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "full_boot_verified": false,
+  "power_ready_verified": true,
+  "controller_link_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Isolated controller with fixed experimental clocks.",
+    "Explicit experimental flash data; only MAKE header is populated.",
+    "D13 supply selection, E9 auxiliary signal and C5 contact are experimental levels.",
+    "Analog samples and register targets are experimental, not measured hardware data.",
+    "Program bytes and input files are unchanged; no debugger guest state writes.",
+    "Power-ready validation uses an explicit register bank at address 0x4f.",
+    "Transmit initialization entry does not prove serial transfers or menu output."
+  ],
+  "scenarios": {
+    "invalid-header": {
+      "valid_experimental_header": false,
+      "supply_input": true,
+      "auxiliary_input": false,
+      "power_target": false,
+      "power_ready_verified": false,
+      "original_configuration_flags": "0100000000",
+      "original_configuration_path_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "valid-header-low-supply": {
+      "valid_experimental_header": true,
+      "supply_input": false,
+      "auxiliary_input": false,
+      "power_target": false,
+      "power_ready_verified": false,
+      "original_configuration_flags": "0000000000",
+      "original_configuration_path_verified": true,
+      "original_supply_selection": 1,
+      "original_supply_selection_verified": true,
+      "original_alternate_source_result": "010000000000000001000000",
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "valid-header-high-supply": {
+      "valid_experimental_header": true,
+      "supply_input": true,
+      "auxiliary_input": false,
+      "power_target": false,
+      "power_ready_verified": false,
+      "original_configuration_flags": "0000000000",
+      "original_configuration_path_verified": true,
+      "original_supply_selection": 0,
+      "original_supply_selection_verified": true,
+      "original_preparation_gate": {
+        "return_value": 1,
+        "auxiliary_transfer_success": 1,
+        "identity_transfer_success": 1,
+        "configuration_transfer_success": 1,
+        "voltage_sample": 3001,
+        "minimum_sample": 850,
+        "tick": 1369
+      },
+      "original_preparation_gate_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "power-target-disconnected": {
+      "valid_experimental_header": true,
+      "supply_input": true,
+      "auxiliary_input": true,
+      "power_target": false,
+      "power_ready_verified": false,
+      "original_configuration_flags": "0000000000",
+      "original_configuration_path_verified": true,
+      "original_supply_selection": 0,
+      "original_supply_selection_verified": true,
+      "original_battery_result": "000000000000000000000000",
+      "original_failed_power_configuration_preserved": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "power-target-attached": {
+      "valid_experimental_header": true,
+      "supply_input": true,
+      "auxiliary_input": true,
+      "power_target": true,
+      "power_ready_verified": true,
+      "original_configuration_flags": "0000000000",
+      "original_configuration_path_verified": true,
+      "original_supply_selection": 0,
+      "original_supply_selection_verified": true,
+      "original_battery_result": "000000000000000000000000",
+      "original_power_ready_event": {
+        "event": 67502082,
+        "tick": 678
+      },
+      "original_initialization_wait_completed": true,
+      "original_transmit_initialization_entered": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    }
+  }
+}

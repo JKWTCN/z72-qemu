@@ -1,0 +1,177 @@
+{
+  "format": 1,
+  "backend": "nikon-z72-lab",
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "stock": {
+        "instructions_executed": 72,
+        "stack_checkpoints": [
+          {
+            "offset": 48452,
+            "mode": 27,
+            "stack_top": 2998599680,
+            "verified": true
+          },
+          {
+            "offset": 48468,
+            "mode": 23,
+            "stack_top": 2998566912,
+            "verified": true
+          },
+          {
+            "offset": 48484,
+            "mode": 17,
+            "stack_top": 2998534144,
+            "verified": true
+          },
+          {
+            "offset": 48500,
+            "mode": 18,
+            "stack_top": 2998501376,
+            "verified": true
+          },
+          {
+            "offset": 48516,
+            "mode": 31,
+            "stack_top": 2998468608,
+            "verified": true
+          },
+          {
+            "offset": 48532,
+            "mode": 19,
+            "stack_top": 2998435840,
+            "verified": true
+          }
+        ],
+        "first_mmio": {
+          "instruction_offset": 48548,
+          "address": 69615616,
+          "value": 33
+        },
+        "mmio_executed": false,
+        "stock_page_table_preserved": true,
+        "trace_samples": 73,
+        "terminal_state": {
+          "pc": 268615076,
+          "cpsr": 1610613203,
+          "sp": 2998435840
+        },
+        "trace_sha256": "abeedd3b6456ca631dcd721c7055b6b6edc2794c0308297e41f0339bc01189f5"
+      },
+      "negative_control": {
+        "invalid_code_section": true,
+        "prefetch_abort_verified": true,
+        "trace_samples": 39,
+        "terminal_state": {
+          "pc": 12,
+          "cpsr": 1073742295,
+          "sp": 0
+        },
+        "trace_sha256": "c2de90d82028a2a75cee67fd7a9c682c522699885999025f4c25adfe83358161"
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "stock": {
+        "instructions_executed": 72,
+        "stack_checkpoints": [
+          {
+            "offset": 48528,
+            "mode": 27,
+            "stack_top": 3247570944,
+            "verified": true
+          },
+          {
+            "offset": 48544,
+            "mode": 23,
+            "stack_top": 3247538176,
+            "verified": true
+          },
+          {
+            "offset": 48560,
+            "mode": 17,
+            "stack_top": 3247505408,
+            "verified": true
+          },
+          {
+            "offset": 48576,
+            "mode": 18,
+            "stack_top": 3247472640,
+            "verified": true
+          },
+          {
+            "offset": 48592,
+            "mode": 31,
+            "stack_top": 3247439872,
+            "verified": true
+          },
+          {
+            "offset": 48608,
+            "mode": 19,
+            "stack_top": 3247407104,
+            "verified": true
+          }
+        ],
+        "first_mmio": {
+          "instruction_offset": 48624,
+          "address": 69615616,
+          "value": 33
+        },
+        "mmio_executed": false,
+        "stock_page_table_preserved": true,
+        "trace_samples": 73,
+        "terminal_state": {
+          "pc": 268615152,
+          "cpsr": 1610613203,
+          "sp": 3247407104
+        },
+        "trace_sha256": "7bc386e78f6e3002a3800076b4e18f7e916176180c56a1daf920c39c26aa30c7"
+      },
+      "negative_control": {
+        "invalid_code_section": true,
+        "prefetch_abort_verified": true,
+        "trace_samples": 39,
+        "terminal_state": {
+          "pc": 12,
+          "cpsr": 1073742295,
+          "sp": 0
+        },
+        "trace_sha256": "bb124330a01191f07b2c2a0f4f2b69a9c71d10248b923726e398361556400053"
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Stock images preloaded by generic loader at 0x10020000.",
+    "One experimental cortex-a7 CPU per independent role; hardware CPU model unconfirmed.",
+    "Stock reset instructions and page table; no synthetic startup or register setup.",
+    "Execution stops before the first MMIO store; peripherals remain unimplemented."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "regression": {
+    "python_tests": 22,
+    "renderer_synthetic_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "native_structure_probe": {
+      "master_passed": true,
+      "slave_passed": true,
+      "coverage": [
+        "three early copies",
+        "four table copies",
+        "bounded communication zero",
+        "communication header stores"
+      ]
+    }
+  }
+}

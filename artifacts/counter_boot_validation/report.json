@@ -1,0 +1,698 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "initial_counter_control": 0,
+          "stores": [
+            {
+              "offset": 316,
+              "address": 69623808,
+              "value": 0
+            },
+            {
+              "offset": 324,
+              "address": 69623816,
+              "value": 0
+            },
+            {
+              "offset": 328,
+              "address": 69623820,
+              "value": 0
+            },
+            {
+              "offset": 336,
+              "address": 69623824,
+              "value": 48000000
+            }
+          ],
+          "frequency": 48000000,
+          "timer_callbacks": [
+            {
+              "name": "counter-initialize",
+              "offset": 300
+            },
+            {
+              "name": "cpu-timer-initialize",
+              "offset": 212
+            },
+            {
+              "name": "counter-enable",
+              "offset": 344
+            }
+          ],
+          "kernel_modules": [
+            {
+              "entry": 942680,
+              "return_offset": 937376,
+              "result": 0
+            },
+            {
+              "entry": 1047900,
+              "return_offset": 937424,
+              "result": 0
+            },
+            {
+              "entry": 928044,
+              "return_offset": 937468,
+              "result": 0
+            },
+            {
+              "entry": 974576,
+              "return_offset": 937512,
+              "result": 0
+            },
+            {
+              "entry": 986196,
+              "return_offset": 937556,
+              "result": 0
+            },
+            {
+              "entry": 991520,
+              "return_offset": 937600,
+              "result": 0
+            },
+            {
+              "entry": 996512,
+              "return_offset": 937644,
+              "result": 0
+            },
+            {
+              "entry": 1003272,
+              "return_offset": 937688,
+              "result": 0
+            },
+            {
+              "entry": 980208,
+              "return_offset": 937732,
+              "result": 0
+            },
+            {
+              "entry": 1011304,
+              "return_offset": 937776,
+              "result": 0
+            },
+            {
+              "entry": 1018144,
+              "return_offset": 937820,
+              "result": 0
+            },
+            {
+              "entry": 1025108,
+              "return_offset": 937864,
+              "result": 0
+            },
+            {
+              "entry": 1030372,
+              "return_offset": 937908,
+              "result": 0
+            },
+            {
+              "entry": 939980,
+              "return_offset": 937952,
+              "result": 0
+            },
+            {
+              "entry": 942556,
+              "return_offset": 937996,
+              "result": 0
+            },
+            {
+              "entry": 938572,
+              "return_offset": 938040,
+              "result": 0
+            },
+            {
+              "entry": 930652,
+              "return_offset": 938076,
+              "result": 0
+            },
+            {
+              "entry": 1043720,
+              "return_offset": 938340,
+              "result": 0
+            }
+          ],
+          "kernel_module_count": 18,
+          "kernel_module_initialization_completed": true,
+          "created_task_id": 16777217,
+          "task_start_return": 0,
+          "task_entry": 269499336,
+          "task_stack_bytes": 8192,
+          "startup_task_execution_verified": false,
+          "counter_control": 3,
+          "barrier_wait": 1042016,
+          "peer_count_word": 2978672016,
+          "peers_expected": 1,
+          "peers_arrived": 0,
+          "core_barrier_wait_verified": true,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "78663db4f8df26a2848c97925d5736bea5ccf5deaac2c6b3ef063cfd468ae9d6"
+          }
+        },
+        "seeded-counter": {
+          "initial_counter_control": 3,
+          "frequency": 48000000,
+          "timer_callbacks": [
+            {
+              "name": "counter-initialize",
+              "offset": 300
+            },
+            {
+              "name": "cpu-timer-initialize",
+              "offset": 212
+            },
+            {
+              "name": "counter-enable",
+              "offset": 344
+            }
+          ],
+          "kernel_module_count": 18,
+          "kernel_module_initialization_completed": true,
+          "created_task_id": 16777217,
+          "task_start_return": 0,
+          "task_entry": 269499336,
+          "task_stack_bytes": 8192,
+          "startup_task_execution_verified": false,
+          "counter_control": 3,
+          "barrier_wait": 1042016,
+          "peer_count_word": 2978672016,
+          "peers_expected": 1,
+          "peers_arrived": 0,
+          "core_barrier_wait_verified": true,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "78663db4f8df26a2848c97925d5736bea5ccf5deaac2c6b3ef063cfd468ae9d6"
+          },
+          "kernel_modules_sha256": "a03e85f8fc8c5f1aca3a82005c2b781b6cff0f1ad16ee27d83ac1b5065a07b26",
+          "counter_stores_count": 4,
+          "counter_stores_sha256": "af89eec7bd5cb722431d8e5073c60a64f2d8ef26f7337ebea0bdf35883013b38"
+        },
+        "counter-disabled": {
+          "disabled_counter_data_abort_verified": true,
+          "kernel_module_initialization_completed": false,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "78663db4f8df26a2848c97925d5736bea5ccf5deaac2c6b3ef063cfd468ae9d6"
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "initial_counter_control": 0,
+          "stores": [
+            {
+              "offset": 316,
+              "address": 69623808,
+              "value": 0
+            },
+            {
+              "offset": 324,
+              "address": 69623816,
+              "value": 0
+            },
+            {
+              "offset": 328,
+              "address": 69623820,
+              "value": 0
+            },
+            {
+              "offset": 336,
+              "address": 69623824,
+              "value": 48000000
+            }
+          ],
+          "frequency": 48000000,
+          "timer_callbacks": [
+            {
+              "name": "counter-initialize",
+              "offset": 300
+            },
+            {
+              "name": "cpu-timer-initialize",
+              "offset": 212
+            },
+            {
+              "name": "counter-enable",
+              "offset": 344
+            }
+          ],
+          "kernel_modules": [
+            {
+              "entry": 97324,
+              "return_offset": 92020,
+              "result": 0
+            },
+            {
+              "entry": 202544,
+              "return_offset": 92068,
+              "result": 0
+            },
+            {
+              "entry": 82908,
+              "return_offset": 92112,
+              "result": 0
+            },
+            {
+              "entry": 129220,
+              "return_offset": 92156,
+              "result": 0
+            },
+            {
+              "entry": 140840,
+              "return_offset": 92200,
+              "result": 0
+            },
+            {
+              "entry": 146164,
+              "return_offset": 92244,
+              "result": 0
+            },
+            {
+              "entry": 151156,
+              "return_offset": 92288,
+              "result": 0
+            },
+            {
+              "entry": 157916,
+              "return_offset": 92332,
+              "result": 0
+            },
+            {
+              "entry": 134852,
+              "return_offset": 92376,
+              "result": 0
+            },
+            {
+              "entry": 165948,
+              "return_offset": 92420,
+              "result": 0
+            },
+            {
+              "entry": 172788,
+              "return_offset": 92464,
+              "result": 0
+            },
+            {
+              "entry": 179752,
+              "return_offset": 92508,
+              "result": 0
+            },
+            {
+              "entry": 185016,
+              "return_offset": 92552,
+              "result": 0
+            },
+            {
+              "entry": 94624,
+              "return_offset": 92596,
+              "result": 0
+            },
+            {
+              "entry": 97200,
+              "return_offset": 92640,
+              "result": 0
+            },
+            {
+              "entry": 93216,
+              "return_offset": 92684,
+              "result": 0
+            },
+            {
+              "entry": 85516,
+              "return_offset": 92720,
+              "result": 0
+            },
+            {
+              "entry": 198364,
+              "return_offset": 92984,
+              "result": 0
+            }
+          ],
+          "kernel_module_count": 18,
+          "kernel_module_initialization_completed": true,
+          "created_task_id": 16777217,
+          "task_start_return": 0,
+          "task_entry": 268654200,
+          "task_stack_bytes": 8192,
+          "startup_task_execution_verified": false,
+          "counter_control": 3,
+          "barrier_wait": 196660,
+          "peer_count_word": 3238100288,
+          "peers_expected": 1,
+          "peers_arrived": 0,
+          "core_barrier_wait_verified": true,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "988f73d2277536a4d92ffd8c618575446734b173e6aaa08cdd952836737f02c7"
+          }
+        },
+        "seeded-counter": {
+          "initial_counter_control": 3,
+          "frequency": 48000000,
+          "timer_callbacks": [
+            {
+              "name": "counter-initialize",
+              "offset": 300
+            },
+            {
+              "name": "cpu-timer-initialize",
+              "offset": 212
+            },
+            {
+              "name": "counter-enable",
+              "offset": 344
+            }
+          ],
+          "kernel_module_count": 18,
+          "kernel_module_initialization_completed": true,
+          "created_task_id": 16777217,
+          "task_start_return": 0,
+          "task_entry": 268654200,
+          "task_stack_bytes": 8192,
+          "startup_task_execution_verified": false,
+          "counter_control": 3,
+          "barrier_wait": 196660,
+          "peer_count_word": 3238100288,
+          "peers_expected": 1,
+          "peers_arrived": 0,
+          "core_barrier_wait_verified": true,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "988f73d2277536a4d92ffd8c618575446734b173e6aaa08cdd952836737f02c7"
+          },
+          "kernel_modules_sha256": "05c73d3affdff236dcec048e8ecbec4936d2f4a83b2d82774a49032ec4b352c9",
+          "counter_stores_count": 4,
+          "counter_stores_sha256": "af89eec7bd5cb722431d8e5073c60a64f2d8ef26f7337ebea0bdf35883013b38"
+        },
+        "counter-disabled": {
+          "disabled_counter_data_abort_verified": true,
+          "kernel_module_initialization_completed": false,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "988f73d2277536a4d92ffd8c618575446734b173e6aaa08cdd952836737f02c7"
+          }
+        },
+        "shared-path": {
+          "initial_counter_control": 0,
+          "frequency": 48000000,
+          "timer_callbacks": [
+            {
+              "name": "counter-initialize",
+              "offset": 300
+            },
+            {
+              "name": "cpu-timer-initialize",
+              "offset": 212
+            },
+            {
+              "name": "counter-enable",
+              "offset": 344
+            }
+          ],
+          "kernel_module_count": 18,
+          "kernel_module_initialization_completed": true,
+          "created_task_id": 16777217,
+          "task_start_return": 0,
+          "task_entry": 268654200,
+          "task_stack_bytes": 8192,
+          "startup_task_execution_verified": false,
+          "counter_control": 3,
+          "barrier_wait": 196660,
+          "peer_count_word": 3238100288,
+          "peers_expected": 1,
+          "peers_arrived": 0,
+          "core_barrier_wait_verified": true,
+          "service_prefix_validation": {
+            "passed": true,
+            "service_count": 5,
+            "full_prefix_sha256": "ebe43790badb7182e09d3566c64a22735ff6d111f930e2f0fdf7de51facaa117"
+          },
+          "kernel_modules_sha256": "05c73d3affdff236dcec048e8ecbec4936d2f4a83b2d82774a49032ec4b352c9",
+          "counter_stores_count": 4,
+          "counter_stores_sha256": "af89eec7bd5cb722431d8e5073c60a64f2d8ef26f7337ebea0bdf35883013b38"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "assumptions": [
+    "Stock reset and instructions; original images preloaded.",
+    "MMIO counter uses CPU virtual-clock period; CPU counter gating/origin remain unmodeled.",
+    "Declared 48 MHz uses QEMU integer-nanosecond timer rounding.",
+    "Experimental GIC/CPU layout, platform completion and bounded clearing remain unchanged.",
+    "One CPU per role; original peer-ready count is never fabricated."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "87fd1feeff1f3362e277b04cf9fd19a93f4d6a7009f128f6c403ac54e3949452",
+    "sources": {
+      "qemu/nikon-z72.c": "1a7f8ccba6df5598958464aad342b8d39f2ba75b3173e353af5da81a965ff67d",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+      "qemu/prepare_source.py": "45155ceb04448d9a1daded0ab4dc0eab358986c14b418a50b1478128c3115eb4"
+    }
+  },
+  "raw_report_sha256": "0097512c048168ef2ac5257e890f1ee3da52cddbc815325adcc95d8884b330ee",
+  "hash_encoding": "UTF-8 JSON, sorted keys, compact separators",
+  "declared_frequency_hz": 48000000,
+  "cpu_counter_period_ns": 20,
+  "validation": {
+    "native_boards": 2,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "counter_validation": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "frequency": 48000000,
+        "samples": [
+          {
+            "physical": 1832181,
+            "mmio": 0
+          },
+          {
+            "physical": 1841797,
+            "mmio": 0
+          },
+          {
+            "physical": 1873799,
+            "mmio": 4294972633
+          },
+          {
+            "physical": 1879193,
+            "mmio": 4294978007
+          }
+        ],
+        "carry_verified": true,
+        "freeze_resume_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          {
+            "offset": 4,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 20,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 264,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 268,
+            "value": 0
+          },
+          {
+            "offset": 1,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 8,
+            "instruction_offset": 256,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 256,
+            "value": 4
+          },
+          {
+            "offset": 16,
+            "instruction_offset": 256,
+            "value": 48000000
+          }
+        ],
+        "invalid_frequency_rejected": true,
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "frequency": 48000000,
+        "samples": [
+          {
+            "physical": 8956,
+            "mmio": 0
+          },
+          {
+            "physical": 15855,
+            "mmio": 0
+          },
+          {
+            "physical": 45986,
+            "mmio": 4294975278
+          },
+          {
+            "physical": 50123,
+            "mmio": 4294979412
+          }
+        ],
+        "carry_verified": true,
+        "freeze_resume_verified": true,
+        "reset_verified": true,
+        "rejected_accesses": [
+          {
+            "offset": 4,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 20,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 264,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 268,
+            "value": 0
+          },
+          {
+            "offset": 1,
+            "instruction_offset": 260,
+            "value": 0
+          },
+          {
+            "offset": 8,
+            "instruction_offset": 256,
+            "value": 0
+          },
+          {
+            "offset": 0,
+            "instruction_offset": 256,
+            "value": 4
+          },
+          {
+            "offset": 16,
+            "instruction_offset": 256,
+            "value": 48000000
+          }
+        ],
+        "invalid_frequency_rejected": true,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cpu_counter_gating_verified": false,
+    "hardware_timing_verified": false,
+    "raw_report_sha256": "49870190eaa766969993630ce0b8a46654f0dfa9407697634d385a4b9d6ebeca"
+  },
+  "interrupt_regression": {
+    "format": 1,
+    "contexts": [
+      {
+        "role": "master",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      },
+      {
+        "role": "slave",
+        "cbar": 67108864,
+        "interrupts": 256,
+        "delivered_ids": [
+          1,
+          29
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "stock_irq_handler_verified": false,
+    "raw_report_sha256": "2e20f3a2067171aec4404a45b1a782922c54a8675c31a1e0dc242b63f6bc1ace"
+  },
+  "regressions": {
+    "native_services": {
+      "passed": true,
+      "raw_report_sha256": "8f9e377e5c94fae89c2f0f46d214857f16bffcef63ccd7910a2ccf97fe15d88d"
+    },
+    "native_structure": {
+      "passed": true,
+      "raw_report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "native_display": {
+      "passed": true,
+      "raw_report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "1a7f8ccba6df5598958464aad342b8d39f2ba75b3173e353af5da81a965ff67d",
+    "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+    "qemu/nikon-z72-profile.h": "285c8436f93823df78222216928bfe0aa4f74dd956faf766c0f4985296577a00",
+    "qemu/prepare_source.py": "45155ceb04448d9a1daded0ab4dc0eab358986c14b418a50b1478128c3115eb4",
+    "analyze/runtime_counter.py": "c1defb47167a50f1e8586c929fc6056bc33eca4ce3fbf0cd3132e519d4e9a37e",
+    "tools/counter_boot_probe.py": "81aa360f4bf8d2eca2293dbe60467957fc462091febd24ed151637747483f44f",
+    "tools/service_boot_probe.py": "280a185ec7ad8e6daedf42d2858b356a76b3a76346a35e39b7e474eac04cfe6a",
+    "tools/boot_probe.py": "6518d5c32de0c25fe1aa056c4b5c708d37b4159944e63d27b3e5dfd7d3335a91",
+    "tools/build.py": "401768603afc96fac28282b6297afa17c50eba247b9ab07d0f990cbc1f8bac7c",
+    "tests/counter_harness.S": "a84a9d6a3cd7673c6a9a8eeb04f702fc079fcc2cb927f28427ac462a28db6e4c",
+    "tests/test_counter.py": "aafe9d24631cb089090b567aa4f3edccdb281ca02d965d8f5f5ce8c87ad2ec02",
+    "tests/test_platform.py": "5399308abd03edb44f347f6965cc2b0c7e54b2d95ff8ba184c8744b36c530d8a",
+    "tests/test_interrupts.py": "04ef88a382283f2fbcea84bc7c0dfca113dd4cdfbca2245deb471e367b16d19c",
+    "tests/test_board.py": "e3ea0e5edb438b1f99aff62338beccbf51f4781a503c08b437bb1c8c1dbefe25"
+  }
+}

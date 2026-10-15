@@ -1,0 +1,28 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "qemu_version": "10.2.4",
+  "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+  "binary": "/tmp/z72-qemu-build/build/qemu-system-arm",
+  "binary_sha256": "32251f387673c5414aff75de5722331c325bfb7b81ef81a2f1e2fc47cee15d5a",
+  "sources": {
+    "qemu/nikon-z72.c": "a5c8599ae1e2cf5bc1afbc38b776c8c79b02787d23f02fc74ef736e188b3fc90",
+    "qemu/nikon-z72-profile.h": "c67da1c24a6eb11832533c35e85b6fd7dcf3236ed19395b9e7bd0fbc00dc41f0",
+    "qemu/prepare_source.py": "bac0dbe25ec0fa81fa6e6719466a444778e5ff808e3f89a3f2a0faedfa4b3de4"
+  },
+  "configure": [
+    "--target-list=arm-softmmu",
+    "--without-default-devices",
+    "--disable-docs",
+    "--disable-tools",
+    "--disable-user",
+    "--disable-werror",
+    "--disable-gtk",
+    "--disable-sdl",
+    "--disable-vnc",
+    "--disable-opengl",
+    "--disable-guest-agent",
+    "--disable-slirp",
+    "--disable-rust",
+    "--disable-debug-info"
+  ]
+}

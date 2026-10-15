@@ -1,0 +1,311 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "command_results": [
+            {
+              "offset": 23568,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23712,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23772,
+              "address": 537067884,
+              "value": 0
+            }
+          ],
+          "system_return": 0,
+          "return_offset": 936,
+          "stop_offset": 21332,
+          "stock_page_table_preserved": true,
+          "caller_stack_restored": true,
+          "original_timeout_bound_executed": false,
+          "next_initialization_executed": false,
+          "stores_count": 106,
+          "stores_sha256": "194220ccc7f79c31e0383b3727a85cd542bfc432c14efc56cda40662c308669a",
+          "trace_count": 190,
+          "trace_sha256": "353398505f8cb096c19c45a60838fcbabe7e9298a1680416f5ffb217f167d2f1",
+          "poll_count": 7,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537015064,
+            537015064,
+            537015064,
+            537015064
+          ],
+          "poll_results": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_failed_iterations": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_trace_sha256": "fd92edbfeb83c016f19b245b9bad531f0a5b18604145c92e79489c30b3dcfef9"
+        },
+        "no-completion": {
+          "command_results": [],
+          "system_return": 16384,
+          "return_offset": 936,
+          "stop_offset": 21332,
+          "stock_page_table_preserved": true,
+          "caller_stack_restored": true,
+          "original_timeout_bound_executed": true,
+          "next_initialization_executed": false,
+          "stores_count": 94,
+          "stores_sha256": "92a110160fd46fce61d285c6175575e51c79b9351bcbe3e386e02150a292b5cd",
+          "trace_count": 112,
+          "trace_sha256": "eb186364f3e6286390011581a1f31bc88ebc89c36f686505a0523578b7be0cbd",
+          "poll_count": 2,
+          "poll_status_addresses": [
+            537010944,
+            537015040
+          ],
+          "poll_results": [
+            4294967295,
+            4294967295
+          ],
+          "poll_failed_iterations": [
+            40000000,
+            40000000
+          ],
+          "poll_trace_sha256": "7d7c906e067cd15de1ed8828121be183516ca59d515c50f151e186f67689968e"
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "command_results": [
+            {
+              "offset": 17864,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18008,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18068,
+              "address": 537067884,
+              "value": 0
+            }
+          ],
+          "system_return": 0,
+          "return_offset": 1004,
+          "stop_offset": 15632,
+          "stock_page_table_preserved": true,
+          "caller_stack_restored": true,
+          "original_timeout_bound_executed": false,
+          "next_initialization_executed": false,
+          "stores_count": 106,
+          "stores_sha256": "daf54c40ebcd01a6220940b2b5b4d7aed7ada5545e0263bd0db0750796de9cd3",
+          "trace_count": 191,
+          "trace_sha256": "f7ff45a2cb89fb0ef7f3ea0ae05b9ba07d7fbd9566787751e6222e67cab3e98b",
+          "poll_count": 7,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537015064,
+            537015064,
+            537015064,
+            537015064
+          ],
+          "poll_results": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_failed_iterations": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_trace_sha256": "2d0c4cecfd9c379cb7ef6d14c042c6ac594d0ac627b531cc049aaf2868c4df8d"
+        },
+        "no-completion": {
+          "command_results": [],
+          "system_return": 16384,
+          "return_offset": 1004,
+          "stop_offset": 15632,
+          "stock_page_table_preserved": true,
+          "caller_stack_restored": true,
+          "original_timeout_bound_executed": true,
+          "next_initialization_executed": false,
+          "stores_count": 94,
+          "stores_sha256": "a5b836b0234346bb5e7189ed3ead3384ba1ed9aa731a4ef2a5e248fc3cb01d84",
+          "trace_count": 113,
+          "trace_sha256": "0b022a7e3de3a0bee962a0eab8b903e06bb801af4759b0d0d33918d174192410",
+          "poll_count": 2,
+          "poll_status_addresses": [
+            537010944,
+            537015040
+          ],
+          "poll_results": [
+            4294967295,
+            4294967295
+          ],
+          "poll_failed_iterations": [
+            40000000,
+            40000000
+          ],
+          "poll_trace_sha256": "010ee8d5c510039270e66c5eb045ac0b1ea3ec5aafd59321211431faf34ff81f"
+        },
+        "shared-path": {
+          "command_results": [
+            {
+              "offset": 23644,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23788,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23848,
+              "address": 537067884,
+              "value": 0
+            }
+          ],
+          "system_return": 0,
+          "return_offset": 968,
+          "stop_offset": 21408,
+          "stock_page_table_preserved": true,
+          "caller_stack_restored": true,
+          "original_timeout_bound_executed": false,
+          "next_initialization_executed": false,
+          "stores_count": 106,
+          "stores_sha256": "e32983d90167d502017a060d4775a3c6db11016aafe8e0ce03f60486fc2e1108",
+          "trace_count": 190,
+          "trace_sha256": "7dba99b6b9f8622500de49f18b21c5073af17c9cb01b456a5de555229585292a",
+          "poll_count": 7,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537015064,
+            537015064,
+            537015064,
+            537015064
+          ],
+          "poll_results": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_failed_iterations": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "poll_trace_sha256": "20d00754d0d9728c1164ee63872f11c2ba6f8150a9ba754a94f710765014c041"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Synchronous bit-0 completion after selected control/command stores.",
+    "Status acknowledges written bits; command result is read-only zero.",
+    "These are experimental device contracts, not measured hardware timing.",
+    "Stock reset, instructions, page table and timeout bound execute unchanged.",
+    "One independent experimental cortex-a7 per role; stock images preloaded."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "poll_bound": 40000000,
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "3da74b64ba5eebc76496fc718ac8b49c61871d1c15fa1d1184be497bae1f0933",
+    "sources": {
+      "qemu/nikon-z72.c": "8a42d1e68190ebb236d90cf3357b13c731b38bbcb7cebded2f5fcbf34a99236a",
+      "qemu/nikon-z72-profile.h": "7f862527428a154fbcdb70f31381600193175b3bd1e5064e40d36653a02271a9",
+      "qemu/prepare_source.py": "bac0dbe25ec0fa81fa6e6719466a444778e5ff808e3f89a3f2a0faedfa4b3de4"
+    }
+  },
+  "validation": {
+    "native_boards": 2,
+    "supported_configuration_words": 103,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "system_batch": {
+      "passed": true,
+      "report_sha256": "405a2726923131914e8330a9bf6bd8251fac8be240520d7f8d76e54c76da2ffb"
+    },
+    "initialization_and_communication": {
+      "passed": true,
+      "report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "display": {
+      "passed": true,
+      "report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "8a42d1e68190ebb236d90cf3357b13c731b38bbcb7cebded2f5fcbf34a99236a",
+    "analyze/system_configuration.py": "a7b63dd353c6b24a88b8a246f24eb2c51776233a722cb5e119ef4b7ad305b280",
+    "tools/completion_boot_probe.py": "192cec5e028bf215dc00c4e05b75326a59c98726440ab55b33b93f1aa71a6bae",
+    "tools/system_boot_probe.py": "0fa414f4d7e8bec3dd0fcba33ce5b90adfef43117965e2f06ffc81de09da12e6",
+    "tools/early_boot_probe.py": "71fea3313d1f8d9e457ea8326d5e6c29b2a9379ebe4d582cf31ea48828a4080c",
+    "tools/boot_probe.py": "d43e118aabb928083b2db6e435d527ede7aae5cae4dda1ffb73a2d1c8fa92c4e",
+    "tests/test_board.py": "f9823760a45f752c283e11bc53ef9a58f9d4f4388b7f9b07dc64a7aea168c361"
+  }
+}

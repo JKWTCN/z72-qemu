@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-14",
+  "qemu_version": "10.2.4",
+  "build_passed": true,
+  "synthetic_validation": {
+    "tool": "tests/test_board.py",
+    "roles": ["master", "slave"],
+    "passed": true,
+    "checks": [
+      "reset completion status",
+      "interrupt 102 pending",
+      "unrelated acknowledgement preserves status",
+      "write-one acknowledgement",
+      "acknowledgement cannot manufacture status",
+      "system reset clears completion status"
+    ]
+  },
+  "original_observation": {
+    "icount": "shift=0,sleep=off",
+    "experimental_inputs": true,
+    "slave_resource_table_before": "all zero",
+    "slave_resource_8_registered_after": true,
+    "slave_resource_8_handler": "0x100b5d22",
+    "master_query": {
+      "resource": 8,
+      "operation": 1,
+      "payload_words": [1, 1]
+    },
+    "service_states": [5, 1, 5, 5, 5],
+    "next_slave_fault": {
+      "DFAR_S": "0x42920f40",
+      "DFSR_S": "0x8",
+      "pc": "0x10034fac"
+    },
+    "query_reply_verified": false,
+    "normal_boot_verified": false,
+    "menu_verified": false
+  },
+  "limitations": [
+    "Only the existing reset completion contract is mapped to both roles.",
+    "Data transfer operations and migration behavior were not verified.",
+    "Experimental inputs do not represent confirmed body configuration."
+  ]
+}

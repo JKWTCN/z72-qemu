@@ -1,0 +1,156 @@
+{
+  "format": 1,
+  "backend": "virt",
+  "qemu_version": "QEMU emulator version 10.0.0 (v10.0.0-12080-g252feb9469-dirty)",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "early_copies": [
+        {
+          "source": 305766292,
+          "destination": 2977955840,
+          "size": 716216,
+          "copied_sha256": "6a651ef520c697baa3f773bc987b52dfa5b4c9757821dfadc71f94e10d70a4db",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 306482560,
+          "destination": 2998599680,
+          "size": 4188,
+          "copied_sha256": "0991682b9f6951bda59926ebf407d78d7a1d036c04c2cfa58ec1b3594e73f3ce",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 306486784,
+          "destination": 2998603904,
+          "size": 0,
+          "copied_sha256": null,
+          "zero_length_preserved": true,
+          "trailing_guard_preserved": true
+        }
+      ],
+      "table_copies": [
+        {
+          "source": 305766292,
+          "destination": 2977955840,
+          "size": 716216,
+          "copied_sha256": "6a651ef520c697baa3f773bc987b52dfa5b4c9757821dfadc71f94e10d70a4db",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 306482560,
+          "destination": 2998599680,
+          "size": 4188,
+          "copied_sha256": "0991682b9f6951bda59926ebf407d78d7a1d036c04c2cfa58ec1b3594e73f3ce",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 306486784,
+          "destination": 2998603904,
+          "size": 289748,
+          "copied_sha256": "f6cabe552b64da050f22f608dda48fe9a54f15009bfec835a7df2cc3c45d5bc9",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 306776576,
+          "destination": 3052404736,
+          "size": 29048,
+          "copied_sha256": "2dad02defd4c4e1dddef446bf1cb355552a55af02d7ac2b2297aeac5f2df2da3",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        }
+      ],
+      "zero_sample": {
+        "destination": 3083796480,
+        "size": 50712,
+        "guards_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "early_copies": [
+        {
+          "source": 277202132,
+          "destination": 3238002688,
+          "size": 97632,
+          "copied_sha256": "2c92983b9bf09f36697b9db0963e60b220fc27fcadedae38ec97a4866b95daaf",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 277299776,
+          "destination": 3247570944,
+          "size": 2772,
+          "copied_sha256": "70254a02e00c794e742eee566cef3a24a575943b8883cdcbdfaad3dc4afe650b",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 277302592,
+          "destination": 3247573760,
+          "size": 0,
+          "copied_sha256": null,
+          "zero_length_preserved": true,
+          "trailing_guard_preserved": true
+        }
+      ],
+      "table_copies": [
+        {
+          "source": 277202132,
+          "destination": 3238002688,
+          "size": 97632,
+          "copied_sha256": "2c92983b9bf09f36697b9db0963e60b220fc27fcadedae38ec97a4866b95daaf",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 277299776,
+          "destination": 3247570944,
+          "size": 2772,
+          "copied_sha256": "70254a02e00c794e742eee566cef3a24a575943b8883cdcbdfaad3dc4afe650b",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 277302592,
+          "destination": 3247573760,
+          "size": 81896,
+          "copied_sha256": "3254fb84ce2883afff7de5bd9b0bc5c8aa53e500761666ad7bef2ab8006d0f13",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        },
+        {
+          "source": 277384512,
+          "destination": 3305111552,
+          "size": 16384,
+          "copied_sha256": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "zero_length_preserved": false,
+          "trailing_guard_preserved": true
+        }
+      ],
+      "zero_sample": {
+        "destination": 3322871808,
+        "size": 50712,
+        "guards_preserved": true
+      },
+      "passed": true
+    }
+  ],
+  "natural_boot_verified": false,
+  "dual_engine_execution_verified": false,
+  "assumptions": [
+    "Each image runs in a separate one-CPU QEMU instance.",
+    "Synthetic MMU/vector setup with native section attributes; generic-loader preload.",
+    "Communication windows are plain RAM; no inter-engine transport is modeled.",
+    "Only one bounded zero-table record per role is executed; full clearing is not attempted."
+  ],
+  "passed": true
+}

@@ -1,0 +1,769 @@
+{
+  "provenance": "Recorded from a pre-release private research revision; recorded source hashes identify that revision, not this repository's initial public commit.",
+  "format": 1,
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "contexts": [
+    {
+      "role": "master",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scenarios": {
+        "stock": {
+          "results": [
+            {
+              "offset": 23568,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23712,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23772,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 24448,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24592,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24652,
+              "address": 537198956,
+              "value": 0
+            }
+          ],
+          "calls": [
+            {
+              "offset": 19564,
+              "channel": 1,
+              "r0": 0,
+              "r1": 1
+            },
+            {
+              "offset": 21332,
+              "channel": 1,
+              "r0": 1,
+              "r1": 1
+            },
+            {
+              "offset": 19564,
+              "channel": 2,
+              "r0": 0,
+              "r1": 2
+            },
+            {
+              "offset": 21332,
+              "channel": 2,
+              "r0": 2,
+              "r1": 1
+            }
+          ],
+          "returns": [
+            {
+              "offset": 936,
+              "result": 0
+            },
+            {
+              "offset": 944,
+              "result": 0
+            },
+            {
+              "offset": 956,
+              "result": 0
+            },
+            {
+              "offset": 48580,
+              "result": 0
+            }
+          ],
+          "stop_offset": 48580,
+          "temporary_stack_restored": true,
+          "pending_status_words": [
+            537060096,
+            537191168
+          ],
+          "stock_page_table_preserved": true,
+          "boot_continuation_executed": false,
+          "stores_count": 360,
+          "stores_sha256": "bfb9a4db5d0ff4eb7d680d77744f68bc7277b3a63b99d0d2e515d708e9eed3db",
+          "trace_count": 1154,
+          "trace_sha256": "c71f309c2337e8db7bb90735ef6c44200ccde6e4f75fdec47dd763bfc6dc188b",
+          "poll_count": 48,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537019136,
+            537034800,
+            537036848,
+            537037872,
+            537038896,
+            537040944,
+            537041968,
+            537042992,
+            537045040,
+            537046064,
+            537047088,
+            537049136,
+            537050160,
+            537051184,
+            537053232,
+            537054256,
+            537060096,
+            537142016,
+            537146112,
+            537146136,
+            537150208,
+            537165872,
+            537167920,
+            537168944,
+            537169968,
+            537172016,
+            537173040,
+            537174064,
+            537176112,
+            537177136,
+            537178160,
+            537180208,
+            537181232,
+            537182256,
+            537184304,
+            537185328,
+            537191168
+          ],
+          "poll_trace_sha256": "4af4e2f62599553078c8e4d31db072183f37a1f5776a7d9142eab9da3bc098f3",
+          "failed_polls": []
+        },
+        "blocked-group-start": {
+          "results": [
+            {
+              "offset": 23568,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23712,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23772,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 24448,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24592,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24652,
+              "address": 537198956,
+              "value": 0
+            }
+          ],
+          "calls": [
+            {
+              "offset": 19564,
+              "channel": 1,
+              "r0": 0,
+              "r1": 1
+            },
+            {
+              "offset": 21332,
+              "channel": 1,
+              "r0": 1,
+              "r1": 1
+            },
+            {
+              "offset": 19564,
+              "channel": 2,
+              "r0": 0,
+              "r1": 2
+            },
+            {
+              "offset": 21332,
+              "channel": 2,
+              "r0": 2,
+              "r1": 1
+            }
+          ],
+          "returns": [
+            {
+              "offset": 936,
+              "result": 0
+            },
+            {
+              "offset": 944,
+              "result": 16384
+            },
+            {
+              "offset": 956,
+              "result": 0
+            },
+            {
+              "offset": 48580,
+              "result": 0
+            }
+          ],
+          "stop_offset": 48580,
+          "temporary_stack_restored": true,
+          "pending_status_words": [
+            537060096,
+            537191168
+          ],
+          "stock_page_table_preserved": true,
+          "boot_continuation_executed": false,
+          "stores_count": 359,
+          "stores_sha256": "4e004dc15940533312043bc5ef5aa6dca6a78eef248950dab032a248bcd130fa",
+          "trace_count": 1154,
+          "trace_sha256": "c71f309c2337e8db7bb90735ef6c44200ccde6e4f75fdec47dd763bfc6dc188b",
+          "poll_count": 48,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537019136,
+            537034800,
+            537036848,
+            537037872,
+            537038896,
+            537040944,
+            537041968,
+            537042992,
+            537045040,
+            537046064,
+            537047088,
+            537049136,
+            537050160,
+            537051184,
+            537053232,
+            537054256,
+            537060096,
+            537142016,
+            537146112,
+            537146136,
+            537150208,
+            537165872,
+            537167920,
+            537168944,
+            537169968,
+            537172016,
+            537173040,
+            537174064,
+            537176112,
+            537177136,
+            537178160,
+            537180208,
+            537181232,
+            537182256,
+            537184304,
+            537185328,
+            537191168
+          ],
+          "poll_trace_sha256": "09976a6a70857b9713c3e1502501ea6caa83fc661121cd04627f5840e31f010c",
+          "failed_polls": [
+            {
+              "address": 537019136,
+              "result": 4294967295,
+              "failed_iterations": 40000000,
+              "return_offset": 21424
+            }
+          ]
+        }
+      },
+      "passed": true
+    },
+    {
+      "role": "slave",
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scenarios": {
+        "stock": {
+          "results": [
+            {
+              "offset": 17864,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18008,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18068,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18744,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 18888,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 18948,
+              "address": 537198956,
+              "value": 0
+            }
+          ],
+          "calls": [
+            {
+              "offset": 13852,
+              "channel": 1,
+              "r0": 0,
+              "r1": 1
+            },
+            {
+              "offset": 15632,
+              "channel": 1,
+              "r0": 1,
+              "r1": 1
+            },
+            {
+              "offset": 13852,
+              "channel": 2,
+              "r0": 0,
+              "r1": 2
+            },
+            {
+              "offset": 15632,
+              "channel": 2,
+              "r0": 2,
+              "r1": 1
+            }
+          ],
+          "returns": [
+            {
+              "offset": 1004,
+              "result": 0
+            },
+            {
+              "offset": 1012,
+              "result": 0
+            },
+            {
+              "offset": 1024,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stop_offset": 48656,
+          "temporary_stack_restored": true,
+          "pending_status_words": [
+            537060096,
+            537191168
+          ],
+          "stock_page_table_preserved": true,
+          "boot_continuation_executed": false,
+          "stores_count": 360,
+          "stores_sha256": "4b059d72a81b99650ab5d4daba3356ceca58f21e12274ae7b13ef4260918df70",
+          "trace_count": 1165,
+          "trace_sha256": "35cfac2bd981c26dae3dd8241c06eb00fc3af0b230d6c18b6d0424340ebf0518",
+          "poll_count": 48,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537019136,
+            537034800,
+            537036848,
+            537037872,
+            537038896,
+            537040944,
+            537041968,
+            537042992,
+            537045040,
+            537046064,
+            537047088,
+            537049136,
+            537050160,
+            537051184,
+            537053232,
+            537054256,
+            537060096,
+            537142016,
+            537146112,
+            537146136,
+            537150208,
+            537165872,
+            537167920,
+            537168944,
+            537169968,
+            537172016,
+            537173040,
+            537174064,
+            537176112,
+            537177136,
+            537178160,
+            537180208,
+            537181232,
+            537182256,
+            537184304,
+            537185328,
+            537191168
+          ],
+          "poll_trace_sha256": "b624ccbfbabc02522f083493b4576856f0207dcf88dacebc36077247cac6290b",
+          "failed_polls": []
+        },
+        "blocked-group-start": {
+          "results": [
+            {
+              "offset": 17864,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18008,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18068,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 18744,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 18888,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 18948,
+              "address": 537198956,
+              "value": 0
+            }
+          ],
+          "calls": [
+            {
+              "offset": 13852,
+              "channel": 1,
+              "r0": 0,
+              "r1": 1
+            },
+            {
+              "offset": 15632,
+              "channel": 1,
+              "r0": 1,
+              "r1": 1
+            },
+            {
+              "offset": 13852,
+              "channel": 2,
+              "r0": 0,
+              "r1": 2
+            },
+            {
+              "offset": 15632,
+              "channel": 2,
+              "r0": 2,
+              "r1": 1
+            }
+          ],
+          "returns": [
+            {
+              "offset": 1004,
+              "result": 0
+            },
+            {
+              "offset": 1012,
+              "result": 16384
+            },
+            {
+              "offset": 1024,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stop_offset": 48656,
+          "temporary_stack_restored": true,
+          "pending_status_words": [
+            537060096,
+            537191168
+          ],
+          "stock_page_table_preserved": true,
+          "boot_continuation_executed": false,
+          "stores_count": 359,
+          "stores_sha256": "36065f4fbc42971d1c36f04a22bff4c5b90da563bffa6d2928d2f4cebd2521ef",
+          "trace_count": 1165,
+          "trace_sha256": "35cfac2bd981c26dae3dd8241c06eb00fc3af0b230d6c18b6d0424340ebf0518",
+          "poll_count": 48,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537019136,
+            537034800,
+            537036848,
+            537037872,
+            537038896,
+            537040944,
+            537041968,
+            537042992,
+            537045040,
+            537046064,
+            537047088,
+            537049136,
+            537050160,
+            537051184,
+            537053232,
+            537054256,
+            537060096,
+            537142016,
+            537146112,
+            537146136,
+            537150208,
+            537165872,
+            537167920,
+            537168944,
+            537169968,
+            537172016,
+            537173040,
+            537174064,
+            537176112,
+            537177136,
+            537178160,
+            537180208,
+            537181232,
+            537182256,
+            537184304,
+            537185328,
+            537191168
+          ],
+          "poll_trace_sha256": "ff3449fcb54d121dbf38775fa2c56ce3dfee4db3c6766bc9554c9cf3907edd55",
+          "failed_polls": [
+            {
+              "address": 537019136,
+              "result": 4294967295,
+              "failed_iterations": 40000000,
+              "return_offset": 15724
+            }
+          ]
+        },
+        "shared-path": {
+          "results": [
+            {
+              "offset": 23644,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23788,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 23848,
+              "address": 537067884,
+              "value": 0
+            },
+            {
+              "offset": 24524,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24668,
+              "address": 537198956,
+              "value": 0
+            },
+            {
+              "offset": 24728,
+              "address": 537198956,
+              "value": 0
+            }
+          ],
+          "calls": [
+            {
+              "offset": 19640,
+              "channel": 1,
+              "r0": 0,
+              "r1": 1
+            },
+            {
+              "offset": 21408,
+              "channel": 1,
+              "r0": 1,
+              "r1": 1
+            },
+            {
+              "offset": 19640,
+              "channel": 2,
+              "r0": 0,
+              "r1": 2
+            },
+            {
+              "offset": 21408,
+              "channel": 2,
+              "r0": 2,
+              "r1": 1
+            }
+          ],
+          "returns": [
+            {
+              "offset": 968,
+              "result": 0
+            },
+            {
+              "offset": 976,
+              "result": 0
+            },
+            {
+              "offset": 988,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stop_offset": 48656,
+          "temporary_stack_restored": true,
+          "pending_status_words": [
+            537060096,
+            537191168
+          ],
+          "stock_page_table_preserved": true,
+          "boot_continuation_executed": false,
+          "stores_count": 360,
+          "stores_sha256": "9dff8bbd88d46e189007e43415173db843e6b62a99b4399629f7764f229ac822",
+          "trace_count": 1162,
+          "trace_sha256": "881fe1f6f4a358a59b354bee4309d125e66105698b501f73bf21e73232602511",
+          "poll_count": 48,
+          "poll_status_addresses": [
+            537010944,
+            537015040,
+            537015064,
+            537019136,
+            537034800,
+            537036848,
+            537037872,
+            537038896,
+            537040944,
+            537041968,
+            537042992,
+            537045040,
+            537046064,
+            537047088,
+            537049136,
+            537050160,
+            537051184,
+            537053232,
+            537054256,
+            537060096,
+            537142016,
+            537146112,
+            537146136,
+            537150208,
+            537165872,
+            537167920,
+            537168944,
+            537169968,
+            537172016,
+            537173040,
+            537174064,
+            537176112,
+            537177136,
+            537178160,
+            537180208,
+            537181232,
+            537182256,
+            537184304,
+            537185328,
+            537191168
+          ],
+          "poll_trace_sha256": "b63609eda404a1affb7f69b8fffd852fc92107c7800632b63d513fb267a1537e",
+          "failed_polls": []
+        }
+      },
+      "passed": true
+    }
+  ],
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Explicit synchronous completion pairs and zero result words are experimental.",
+    "Stock reset, page table, instructions and poll limits execute unchanged.",
+    "Independent experimental cortex-a7 per role, with preloaded stock EG.",
+    "Shared-path selector changes instance memory; blocked control changes device policy."
+  ],
+  "passed": true,
+  "date": "2026-10-10",
+  "backend": "nikon-z72-lab",
+  "poll_bound": 40000000,
+  "raw_report_sha256": "380f411f5a5a8cda547a5349f74f1efa6133624d33631a970014cadc7c082a08",
+  "trace_hash_encoding": "UTF-8 JSON, sorted keys, compact separators",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "d6cfb725acb46b9a8b31308d66f59f5d4690882454a19367a450692fd948cf3d",
+    "sources": {
+      "qemu/nikon-z72.c": "489899901ce5335757654ba6feccfd970a6aaf13409515e9e48e376eacaeecc1",
+      "qemu/nikon-z72-profile.h": "7f862527428a154fbcdb70f31381600193175b3bd1e5064e40d36653a02271a9",
+      "qemu/prepare_source.py": "bac0dbe25ec0fa81fa6e6719466a444778e5ff808e3f89a3f2a0faedfa4b3de4"
+    }
+  },
+  "validation": {
+    "native_boards": 2,
+    "supported_configuration_words": 348,
+    "completion_pairs": 40,
+    "python_checks": 22,
+    "synthetic_renderer_checks": 270,
+    "sanitizers": [
+      "ASan",
+      "UBSan"
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "system_completion": {
+      "passed": true,
+      "report_sha256": "8b5285c2d20b5ccce42f4f9e4c297067087b5ab1ea6d923e3afd54d7893c9306"
+    },
+    "initialization_and_communication": {
+      "passed": true,
+      "report_sha256": "567b73190d565616542f829a7339756608f19b6d0b1905d3a1d4b1defab24646"
+    },
+    "display": {
+      "passed": true,
+      "report_sha256": "2034f8a50f7ddc93177c6dc5adc8fd83f0818ec69f2c663b6158e23ef5a5456b"
+    }
+  },
+  "sources": {
+    "qemu/nikon-z72.c": "489899901ce5335757654ba6feccfd970a6aaf13409515e9e48e376eacaeecc1",
+    "analyze/platform_configuration.py": "9b612d53f7050bc0a5c9bbcea70a6414c8f989aa40b2786a24771cdf0b479c58",
+    "analyze/system_configuration.py": "a7b63dd353c6b24a88b8a246f24eb2c51776233a722cb5e119ef4b7ad305b280",
+    "tools/platform_boot_probe.py": "92ff6c29fddb24b8648af219bcd7e651d1ea063ec54a402fbb6c9df6fe277c7c",
+    "tools/early_boot_probe.py": "71fea3313d1f8d9e457ea8326d5e6c29b2a9379ebe4d582cf31ea48828a4080c",
+    "tools/boot_probe.py": "cc09953cbc346e2bf1ca81fb63d42118a76d1af3a0797daf6549f4e1d55353f3",
+    "tests/test_board.py": "5a555c122cb5bac5d7af53a290b121b099b203edc526de544c2e1acfcfd6831d"
+  }
+}

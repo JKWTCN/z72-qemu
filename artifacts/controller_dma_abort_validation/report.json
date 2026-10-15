@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "original_images_execute_together": true,
+  "passed": true,
+  "controller_request_verified": true,
+  "controller_link_verified": true,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Four engine cores and one controller core, each execution domain with a private memory view.",
+    "Controller reset vectors use its flash base 0x08000000; the zero alias remains accessible.",
+    "Fixed experimental clocks and an explicit register storage target at address 0x4f.",
+    "Original images and read-only observation; no guest runtime tables or code are replaced.",
+    "Optional link connects two serial peers, readiness edge interrupts and both acknowledgement directions.",
+    "Only the initial request and response exchange is verified; later commands, external capture and menus remain pending."
+  ],
+  "observation": {
+    "timed_out": true,
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10104c00",
+        "mode": 19
+      },
+      {
+        "thread": 2,
+        "pc": "0x102c9bb0",
+        "mode": 19
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a68",
+        "mode": 19
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a48",
+        "mode": 19
+      }
+    ],
+    "master_comm_header": "0801c000010055aa",
+    "slave_comm_header": "0801c000010055aa",
+    "ready_tasks": [
+      "0x0",
+      "0xb2c341c0"
+    ],
+    "comm_active": false,
+    "full_startup_verified": false,
+    "menu_verified": false,
+    "controller": {
+      "thread": 5,
+      "original_reset_verified": true,
+      "post_power_initialization_verified": true,
+      "initialization_pc": 134353858,
+      "initial_tick": 659,
+      "final_tick": 4420,
+      "native_faults_absent": true,
+      "stop_pc": 134534762,
+      "original_dma_abort": {
+        "stream": 5,
+        "base": "0x40026088",
+        "fifo_mask_pc": "0x08043408",
+        "fifo_mask_while_enabled_verified": true,
+        "remaining_count": 1,
+        "cancelled_without_transfer": true,
+        "original_result": 0
+      },
+      "original_engine_request": {
+        "frame_bytes": 256,
+        "channel": 1,
+        "route": 1,
+        "payload_bytes": 28,
+        "checksum_verified": true,
+        "original_checker_result": 1,
+        "receive_dma_completed": true,
+        "frame_sha256": "8aedb8b77613358218b8b5be795bfd083bd65ade7e7128e50f1591c6bc190e39"
+      },
+      "original_controller_response": {
+        "frame_bytes": 256,
+        "channel": 1,
+        "route": 1,
+        "payload_bytes": 28,
+        "checksum_verified": true,
+        "original_engine_acceptance_pc": 270579486,
+        "transmit_dma_completed": true,
+        "controller_acknowledgement_pc": 134432916,
+        "controller_acknowledgement_exception": 39,
+        "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
+        "engine_identity_state_verified": true,
+        "firmware_version": "01.30.00"
+      }
+    },
+    "application_state": {
+      "menu_table_pointer": "0x0",
+      "display_state_byte": 0
+    },
+    "exception_events": 54084,
+    "irqs": 17313,
+    "observed_faults": [],
+    "console_bytes": 0
+  }
+}

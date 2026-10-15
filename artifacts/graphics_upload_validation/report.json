@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "original_graphics_register_writes_observed": true,
+  "observation_after_last_write_seconds": 25,
+  "firmware_code_modified": false,
+  "upload_completed": false,
+  "menu_verified": false,
+  "writes": [
+    {
+      "offset": "0x1020",
+      "value": "0x0"
+    },
+    {
+      "offset": "0x1248",
+      "value": "0x1"
+    },
+    {
+      "offset": "0xc18",
+      "value": "0x0"
+    },
+    {
+      "offset": "0x1c",
+      "value": "0x0"
+    },
+    {
+      "offset": "0x34",
+      "value": "0x0"
+    },
+    {
+      "offset": "0xc1c",
+      "value": "0x8000"
+    },
+    {
+      "offset": "0x151c",
+      "value": "0x1"
+    },
+    {
+      "offset": "0x155c",
+      "value": "0x1"
+    },
+    {
+      "offset": "0x1214",
+      "value": "0x100ffff"
+    },
+    {
+      "offset": "0x1298",
+      "value": "0x0"
+    },
+    {
+      "offset": "0x10d4",
+      "value": "0xbd0dff90"
+    },
+    {
+      "offset": "0x10dc",
+      "value": "0x1c"
+    },
+    {
+      "offset": "0x10d0",
+      "value": "0x1"
+    },
+    {
+      "offset": "0x10e4",
+      "value": "0xbd15ff90"
+    },
+    {
+      "offset": "0x10ec",
+      "value": "0xd3"
+    },
+    {
+      "offset": "0x10e0",
+      "value": "0x1"
+    }
+  ],
+  "observation": {
+    "menu_table_pointers": [
+      "0x0",
+      "0x0",
+      "0xb2bb720c",
+      "0xb2bc3f64",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "upload_control_words": [
+      1,
+      1
+    ],
+    "controller_fault_status_words": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "limits": [
+    "Execution breakpoints and read-only observations of original images.",
+    "Only register writes and retained upload controls were observed; command buffers were not executed or rendered.",
+    "Length register units require command-builder verification.",
+    "No complete boot or menu image is verified."
+  ],
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+}

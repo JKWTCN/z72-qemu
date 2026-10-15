@@ -1,0 +1,310 @@
+{
+  "format": 1,
+  "passed": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "local_wait": {
+    "substate_dispatch": {
+      "table": "0x103e51a2",
+      "entries": [
+        11,
+        10,
+        2,
+        2
+      ],
+      "targets": [
+        "0x103e51b8",
+        "0x103e51b6",
+        "0x103e51a6",
+        "0x103e51a6"
+      ],
+      "state_zero_returns": true,
+      "readiness_check_states": [
+        2,
+        3
+      ]
+    },
+    "local_resource_bitmaps": [
+      {
+        "descriptor": "0xb1869898",
+        "capacity": 124,
+        "storage": "0xb23f7e24",
+        "words": [
+          "0x800030",
+          "0x80021020",
+          "0xc00004",
+          "0x200002"
+        ],
+        "resource_3f_set": true
+      },
+      {
+        "descriptor": "0xb18698a0",
+        "capacity": 124,
+        "storage": "0xb23f7e34",
+        "words": [
+          "0xffffffff",
+          "0xfff57fff",
+          "0xffffffff",
+          "0xfffffff"
+        ],
+        "resource_3f_set": true
+      },
+      {
+        "descriptor": "0xb18698a8",
+        "capacity": 124,
+        "storage": "0xb23f7e44",
+        "words": [
+          "0x0",
+          "0x8000",
+          "0x800000",
+          "0xb0c0000"
+        ],
+        "resource_3f_set": false
+      },
+      {
+        "descriptor": "0xb18698b0",
+        "capacity": 124,
+        "storage": "0xb23f7e54",
+        "words": [
+          "0x800030",
+          "0x80021020",
+          "0xc00004",
+          "0x200002"
+        ],
+        "resource_3f_set": true
+      }
+    ]
+  },
+  "observation": {
+    "requested_seconds": 8,
+    "elapsed_seconds": 8.015999999988708,
+    "counts": {
+      "state-machine": 2,
+      "resource-mark": 16,
+      "state-transition": 0,
+      "completion": 0,
+      "capture-resource-mark": 14
+    },
+    "resources": [
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103f1b8f"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103f1b8f"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103f1b8f"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103f1b8f"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      },
+      {
+        "resource": 63,
+        "lr": "0x103e7de9"
+      }
+    ]
+  },
+  "system": {
+    "mode_context": "0xb1819988",
+    "current_mode": 2,
+    "previous_mode": 1,
+    "power_input": 1,
+    "configuration_flags": 8,
+    "configuration_secondary_flags": 40,
+    "transition_inhibitors": [
+      0,
+      1,
+      1
+    ],
+    "deferred_transition_flags": 4,
+    "deferred_target_mode": 3,
+    "control_ready_bitmap": 15,
+    "pending_settings_bitmap": 15
+  },
+  "application": {
+    "initialization_complete": 1,
+    "start_notification_sent": 1,
+    "current_index": 3,
+    "next_index": 5,
+    "state": 2,
+    "applications": [
+      {
+        "index": 0,
+        "name": "APPIDLE",
+        "getter": "0x104377b5",
+        "context": "0xb181d8a4",
+        "ready": 1
+      },
+      {
+        "index": 1,
+        "name": "APPMENU",
+        "getter": "0x1044e301",
+        "context": "0xb1824ea0",
+        "ready": 1
+      },
+      {
+        "index": 2,
+        "name": "APPPLAY",
+        "getter": "0x1073ed91",
+        "context": "0xb1828108",
+        "ready": 1
+      },
+      {
+        "index": 3,
+        "name": "APPLV",
+        "getter": "0x1053cf35",
+        "context": "0xb181d9b8",
+        "ready": 1
+      },
+      {
+        "index": 4,
+        "name": "APPMSG",
+        "getter": "0x1043dccd",
+        "context": "0xb1828064",
+        "ready": 1
+      }
+    ]
+  },
+  "graphics": {
+    "successful_uploads": 16,
+    "render_requests": 0,
+    "rendered_commands": 9,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 0,
+    "target_address": 3410653184,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3412049920
+  },
+  "engine_fault_registers": [
+    {
+      "thread": 1,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 2,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 3,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 4,
+      "registers": {
+        "DFAR_S": 0,
+        "IFAR_S": 0,
+        "DFSR_S": 0,
+        "IFSR_S": 0
+      }
+    }
+  ],
+  "operation14_callback": "474d2010",
+  "device_operation3_callback": "259d3e10",
+  "device_control": {
+    "length": 32,
+    "sha256": "2c1102826693d61da0e9882dec58baf1cb4708dd7324ada1d6f8e59da7557e46"
+  },
+  "subdriver_control": {
+    "length": 160,
+    "sha256": "8bc4a52e077faa8cf511bd339cb37f18a098fcc87230acb416fddd813761a077"
+  },
+  "subdriver_task": {
+    "length": 128,
+    "sha256": "abebede887f41b2fe6d77abc3a56ed2a03971455528b819b329207735be113a1"
+  },
+  "native_substate_zero_steps": [
+    "0x103e5192",
+    "0x103e5194",
+    "0x103e5196",
+    "0x103e5198",
+    "0x103e519a",
+    "0x103e519c",
+    "0x103e519e",
+    "0x103e51b8"
+  ],
+  "experimental_parameters": true,
+  "firmware_modified": false,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "native_initialization_stops": [
+    {
+      "pc": "0x10322886",
+      "thread": 1,
+      "argument": 0,
+      "lr": "0x1032323f"
+    },
+    {
+      "pc": "0x103d01dc",
+      "thread": 1,
+      "classification": 2,
+      "device_descriptor": "0xb3c78040",
+      "lr": "0x10322a89"
+    },
+    {
+      "pc": "0x10322b3e",
+      "thread": 1,
+      "return_register": "r6",
+      "return_value": 1
+    }
+  ]
+}

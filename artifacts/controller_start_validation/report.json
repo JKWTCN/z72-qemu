@@ -1,0 +1,132 @@
+{
+  "format": 2,
+  "firmware": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "full_boot_verified": false,
+  "controller_link_verified": false,
+  "menu_verified": false,
+  "assumptions": [
+    "Isolated controller with fixed experimental clocks and default inputs.",
+    "Original image, no resident data fixture or analog sample overrides.",
+    "Explicit experimental register storage at address 0x4f; not a physical power device.",
+    "Breakpoints and reads, no debugger guest state writes.",
+    "Two post-power initialization phases, a shared timer interrupt and bounded isolated execution are observed.",
+    "Original controller-link transfers, external capture, full board boot and menu remain unverified."
+  ],
+  "scenarios": {
+    "power-target-disconnected": {
+      "power_target_attached": false,
+      "power_ready_verified": false,
+      "original_failed_power_configuration_preserved": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    },
+    "power-target-attached": {
+      "power_target_attached": true,
+      "power_ready_verified": true,
+      "original_power_ready_event": {
+        "event": 67502082,
+        "tick": 635
+      },
+      "original_initialization_wait": {
+        "ready_bits": 1,
+        "tick": 636
+      },
+      "original_transmit_initialization_entered": true,
+      "original_serial_configuration_verified": true,
+      "serial_ports": [
+        {
+          "configuration_return": 134432116,
+          "serial_base": 1073819648,
+          "driver_ready": 1,
+          "control": 649,
+          "status": 2,
+          "dma_stream": 1073898512,
+          "dma_channel": 3,
+          "dma_direction": 0,
+          "dma_control": 100795392,
+          "tick": 638
+        },
+        {
+          "configuration_return": 134432838,
+          "serial_base": 1073820672,
+          "driver_ready": 1,
+          "control": 649,
+          "status": 2,
+          "dma_stream": 1073898536,
+          "dma_channel": 4,
+          "dma_direction": 1,
+          "dma_control": 134218816,
+          "tick": 639
+        }
+      ],
+      "original_link_timer_configuration": {
+        "configuration_return": 134416808,
+        "timer_base": 1073747968,
+        "driver_ready": 1,
+        "prescaler": 499,
+        "period": 65535,
+        "compare": 65535,
+        "tick": 640
+      },
+      "original_additional_serial_configuration": {
+        "configuration_return": 134458712,
+        "serial_base": 1073757184,
+        "driver_ready": 1,
+        "control": 699,
+        "status": 2,
+        "tick": 641
+      },
+      "original_shared_update_timer_configuration": {
+        "configuration_return": 134467060,
+        "timer_base": 1073824768,
+        "driver_ready": 1,
+        "prescaler": 49,
+        "period": 499,
+        "compare": 65535,
+        "tick": 642
+      },
+      "original_capture_register_configuration": {
+        "configuration_return": 134436616,
+        "timer_base": 1073742848,
+        "driver_ready": 1,
+        "channel_mode": 257,
+        "channel_control": 34,
+        "external_capture_verified": false,
+        "tick": 643
+      },
+      "original_post_power_initialization": {
+        "completion_point": 134353858,
+        "two_phases_completed": true,
+        "timer_bases": [
+          1073741824,
+          1073743872
+        ],
+        "tick": 644
+      },
+      "original_shared_link_timer_interrupt": {
+        "handler": 134485776,
+        "irq": 43,
+        "tick": 649
+      },
+      "original_master_serial_configuration": {
+        "configuration_return": 134403630,
+        "serial_base": 1073756160,
+        "driver_ready": 1,
+        "control": 799,
+        "tick": 675
+      },
+      "bounded_execution": {
+        "start_tick": 675,
+        "end_tick": 1858,
+        "observation_seconds": 2,
+        "stop_pc": 134524884
+      },
+      "post_power_initialization_verified": true,
+      "original_reset_verified": true,
+      "native_faults_absent": true,
+      "passed": true
+    }
+  },
+  "power_ready_verified": true
+}

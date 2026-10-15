@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "passed": true,
+  "register_base": "0x2c018000",
+  "port_stride": 4096,
+  "interrupts": [214, 215, 216, 217],
+  "synthetic_checks": {
+    "roles": ["master", "slave"],
+    "disconnected_targets": true,
+    "interrupt_masks_and_acknowledgement": true,
+    "register_target_transfer": true,
+    "held_fifo_write": true,
+    "held_fifo_read": true,
+    "non_word_access_rejected": true,
+    "reset": true
+  },
+  "native_observation": {
+    "driver_entry": "0x1036d414",
+    "register_base": "0x2c01a000",
+    "target_address": "0x38",
+    "interrupt_entry": "0x1036d748",
+    "interrupt": 216,
+    "guest_runtime_state_modified": false
+  },
+  "connected_experiment": {
+    "targets": ["master-i2c0:0x68", "master-i2c1:0x68", "master-i2c2:0x68", "master-i2c3:0x68"],
+    "register_data": "zero initialized",
+    "sampling_success_observed": false,
+    "current_system_mode": 0,
+    "transition_inhibitors": [2, 0, 64],
+    "deferred_target_mode": 1,
+    "pending_settings_bitmap": 5,
+    "control_ready_bitmap": 0
+  },
+  "migration_verified": false,
+  "full_boot_verified": false,
+  "menu_verified": false
+}
