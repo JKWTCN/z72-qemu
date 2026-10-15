@@ -194,6 +194,10 @@ return from its delay wait. Byte prescalers also support divided delays;
 external capture events remain unmodeled, and
 normal startup and menus are still unverified.
 
+The [sampling synchronization configuration](research/z7ii/sampling_sync.md)
+adds the recovered format and interface fields, including five indexed groups.
+Configuration storage does not generate received samples or completion events.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:

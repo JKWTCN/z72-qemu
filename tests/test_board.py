@@ -23,6 +23,9 @@ CONFIG_WORDS = (0x04264000, 0x04264020, 0x04281028, 0x0428102C,
                 0x2B200300,
                 0x20068008, 0x20068018,
                 0x20068200, 0x200682E0,
+                0x20061000, 0x20061004, 0x20061024,
+                0x200610E8, 0x200610F4, 0x20061134,
+                0x2006128C, 0x20061400, 0x20061470, 0x200614B0,
                 0x2A900078,
                 *SLAVE_BRANCH_WORDS, *PLATFORM_WORDS, *CONTINUATION_WORDS, 0x20070008)
 SPECIAL_WORDS = (*ALL_STATUS_WORDS, *RESULT_WORDS, 0x20070008)
@@ -175,6 +178,11 @@ def smoke(qemu, machine, addresses):
                                     (0x2006801C, 0x40100008),
                                     (0x20068001, 0x40100008),
                                     (0x20068000, 0x40100010),
+                                    (0x20061004, 0x40100010),
+                                    (0x20061005, 0x40100008),
+                                    (0x20061008, 0x40100008),
+                                    (0x20061300, 0x40100008),
+                                    (0x20061480, 0x40100008),
                                     (0x04282030, 0x40100008)):
                     remote.set(r1=address, pc=pc, cpsr=0xD3)
                     remote.command('s')
