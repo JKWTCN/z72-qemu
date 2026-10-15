@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "observation_verified": true,
+  "firmware_modified": false,
+  "experimental_nonce_bridge": true,
+  "factory_calibration": false,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "input": {
+    "device": "nikon-z72-controller-expander",
+    "gpio": "pins",
+    "pin": 1,
+    "idle_level": 1,
+    "asserted_level": 0
+  },
+  "transport": {
+    "route": 2,
+    "payload_length": 124,
+    "descriptor": "0x200115d8",
+    "submit_entry": "0x08032000",
+    "receive_dispatch": "0x10205618",
+    "receive_router": "0x10433e8c",
+    "decoder": "0x10433ebc",
+    "decoder_return": "0x104343c2",
+    "receive_buffer": "0xb25da11c",
+    "decoded_words": "0xb25eaeac",
+    "payload_byte_offset": 16,
+    "switch_word": 1,
+    "switch_mask": "0x08000000"
+  },
+  "pressed": {
+    "ticks": 639088983,
+    "observation": {
+      "expander_mode": 2,
+      "expander_current_sample": "fdffff",
+      "expander_previous_sample": "ffffff",
+      "primary_context": "0x200159a4",
+      "primary_state_prefix": "00000200620000040100000000000300",
+      "controller_menu_aggregate": 0,
+      "decoded_switch_words": [
+        "0xc000200",
+        "0x8000000",
+        "0x0"
+      ],
+      "decoded_menu_bit": false
+    }
+  },
+  "released": {
+    "ticks": 641103823,
+    "observation": {
+      "expander_mode": 2,
+      "expander_current_sample": "ffffff",
+      "expander_previous_sample": "ffffff",
+      "primary_context": "0x200159a4",
+      "primary_state_prefix": "000002004e0000000100000000000300",
+      "controller_menu_aggregate": 0,
+      "decoded_switch_words": [
+        "0xc000200",
+        "0x0",
+        "0x0"
+      ],
+      "decoded_menu_bit": false
+    }
+  },
+  "menu_mapping": {
+    "firmware_label": "ID_SW1_MENU",
+    "switch_word": 1,
+    "mask": "0x1",
+    "payload_offset": 74,
+    "controller_aggregate": "0x2001152c",
+    "secondary_source": "0x20011690",
+    "secondary_source_offset": 70,
+    "source_update": "0x0803d164",
+    "source_snapshot": "0x08037fa8",
+    "source_snapshot_buffer": "0x20015ad0",
+    "physical_input_verified": false
+  },
+  "limitations": [
+    "This verifies one external input through original debounce, controller serial transport and engine decoding.",
+    "The verified external input does not represent the menu bit.",
+    "Menu input sampling, application delivery and menu display remain unverified.",
+    "The primary state prefix is retained without assigning unverified field meanings."
+  ]
+}

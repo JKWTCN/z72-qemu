@@ -79,6 +79,27 @@ def idle_timer_observation(remote):
                 event_slot=timer[5] & 255)
 
 
+def controller_input_observation(remote):
+    """Read controller input samples and the engine's decoded switch words.
+
+    A decoded menu bit does not prove that the foreground accepted the event.
+    """
+    remote.select_thread(5)
+    expander = remote.read(0x2001ff50, 9)
+    primary = remote.read(0x200159a4, 16)
+    menu = remote.read(0x2001152c, 1)[0]
+    remote.select_thread(1)
+    switches = struct.unpack('<3I', remote.read(0xb25eaeac, 12))
+    return dict(expander_mode=expander[0],
+                expander_current_sample=expander[3:6].hex(),
+                expander_previous_sample=expander[6:9].hex(),
+                primary_context='0x200159a4',
+                primary_state_prefix=primary.hex(),
+                controller_menu_aggregate=menu,
+                decoded_switch_words=[hex(value) for value in switches],
+                decoded_menu_bit=bool(switches[1] & 1))
+
+
 def sensor_observation(remote):
     remote.select_thread(1)
     state = remote.read(0xb1807efc, 16)

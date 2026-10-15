@@ -82,3 +82,6 @@
 与此前五秒策略退出时的 `1 / 9` 不同，不能仅凭模式编号推定应用退出。
 画面仍有 `Err`，菜单显示与输入尚未验证，完整启动目标仍未完成。
 证据与修正边界见[界面持续运行观察](../../artifacts/shooting_persistence_validation/report.json)。
+
+持续观察报告还包含 `controller_input`，用于区分外部输入、控制器菜单
+汇总及引擎解码结果，字段边界见[控制器输入消息](controller_keys.md)。

@@ -26,6 +26,7 @@ from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.create_lab_parameters import parameter_images
 from tools.dual_boot_probe import dual_machine
 from tools.graphics_boot_probe import (application_observation,
+                                       controller_input_observation,
                                        graphics_observation,
                                        idle_timer_observation,
                                        system_observation)
@@ -172,6 +173,7 @@ def run(args):
                     application=application_observation(remote),
                     system=system_observation(remote),
                     graphics=graphics_observation(remote))
+                observation['controller_input'] = controller_input_observation(remote)
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                 frequency = int.from_bytes(remote.read(0x04266010, 4), 'little')

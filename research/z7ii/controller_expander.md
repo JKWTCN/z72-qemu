@@ -55,3 +55,6 @@
 及控制器内汇总，不确定此位的实物按键名称，也不证明引擎收到菜单
 事件或显示菜单。记录见
 [原厂输入轮询观察](../../artifacts/controller_input_poll_validation/report.json)。
+
+后续已追踪到路由 2 的原厂输入消息及引擎开关字解码，见
+[控制器输入消息与菜单逻辑位](controller_keys.md)。
