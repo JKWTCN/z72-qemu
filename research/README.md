@@ -36,3 +36,4 @@
 - [附加控制器的独立启动环境](z7ii/controller_core.md)
 - [控制器 DMA 配置与有界传输](z7ii/controller_dma.md)
 - [输入处理配置与初始拍摄界面](z7ii/input_configuration.md)
+- [启动后的五秒时限与供电状态](z7ii/startup_idle_timer.md)

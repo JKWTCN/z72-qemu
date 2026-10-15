@@ -61,6 +61,24 @@ def system_observation(remote):
                 pending_settings_bitmap=int.from_bytes(remote.read(0xb1868170, 4), 'little'))
 
 
+def idle_timer_observation(remote):
+    """Read the application timeout policy and its last timer start request.
+
+    The stored interval is not a remaining-time or timer-active indication.
+    """
+    remote.select_thread(1)
+    policy = remote.read(0xb1819aa0, 0x20)
+    timer = struct.unpack('<6I', remote.read(0xb1f80168, 24))
+    flags = struct.unpack_from('<I', policy, 0x14)[0]
+    return dict(policy_context='0xb1819aa0', application_kind=policy[0],
+                timeout_seconds=struct.unpack_from('<I', policy, 0x10)[0],
+                policy_flags=flags, five_second_policy=bool(flags & 6),
+                timer_object='0xb1f80168', timer_handle=hex(timer[0]),
+                callback=hex(timer[1]), last_start_milliseconds=timer[2],
+                destination_context=hex(timer[3]), message=hex(timer[4]),
+                event_slot=timer[5] & 255)
+
+
 def sensor_observation(remote):
     remote.select_thread(1)
     state = remote.read(0xb1807efc, 16)
@@ -215,6 +233,7 @@ def main():
             graphics=graphics,
             application_manager=applications,
             system_controller=system_observation(remote),
+            idle_timer=idle_timer_observation(remote),
             sampling_service=sensor_observation(remote),
             temperature_checks=temperature_observation(remote),
             controller_expander=expander,

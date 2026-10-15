@@ -416,3 +416,9 @@ used for the resident-data observation. The default remains 4. Reports record
 the selected shift and the system controller mode, configuration flags and
 cached power input alongside application and graphics observations. These fields
 describe current firmware state; they do not establish normal startup or menus.
+
+The graphics report's `idle_timer` records the application timeout policy,
+its destination message and the last timer-start interval. The interval is
+neither remaining time nor proof that the timer is active. Native observation
+correlates slot 0's `0x03000003` message with the subsequent mode request;
+see the [startup timeout evidence](../artifacts/startup_idle_timer_validation/report.json).

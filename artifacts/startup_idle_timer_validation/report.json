@@ -1,0 +1,150 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "experimental_parameters": true,
+  "factory_calibration": false,
+  "firmware_modified": false,
+  "instruction_time": "shift=0,sleep=off",
+  "observation": {
+    "same_instance_resets": 2,
+    "execution_breakpoints": true,
+    "single_instruction_steps": true,
+    "guest_policy_overridden": false,
+    "guest_callbacks_modified": false,
+    "input_events_injected": false
+  },
+  "timer_post": {
+    "registers": {
+      "pc": "0x102a7c48",
+      "r0": "0xb1f7fdf4",
+      "r1": "0xb1f7fdf4",
+      "r4": "0x0",
+      "r6": "0xb1818bd0",
+      "r7": "0x1",
+      "lr": "0x102e6885",
+      "sp": "0xb51e9fa0"
+    },
+    "clock_ticks": 327051769,
+    "message": "0x03000003",
+    "event_slot": 0,
+    "destination_context": "0xb1818bd0",
+    "owner": "0xb1f80168",
+    "last_start_milliseconds": 5000
+  },
+  "request": {
+    "registers": {
+      "pc": "0x102467be",
+      "r0": "0xb18192b8",
+      "r1": "0x3",
+      "r2": "0x102467bf",
+      "r3": "0xb1f7fdf4",
+      "lr": "0x1020cc85",
+      "sp": "0xb51e5fc8"
+    },
+    "system": {
+      "mode_context": "0xb18192b8",
+      "current_mode": 3,
+      "previous_mode": 2,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 40,
+      "transition_inhibitors": [
+        0,
+        1,
+        1
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "message": "0x03000003",
+    "request_value": 3
+  },
+  "idle_timer": {
+    "policy_context": "0xb1819aa0",
+    "application_kind": 0,
+    "timeout_seconds": 5,
+    "policy_flags": 2,
+    "five_second_policy": true,
+    "timer_object": "0xb1f80168",
+    "timer_handle": "0x100001f",
+    "callback": "0x102a7c85",
+    "last_start_milliseconds": 5000,
+    "destination_context": "0xb1818bd0",
+    "message": "0x3000003",
+    "event_slot": 0
+  },
+  "controller": {
+    "battery_state_address": "0x2001fa79",
+    "battery_state": 9,
+    "record_address": "0x20016040",
+    "record_fields": {
+      "classification": 255,
+      "status": 9
+    }
+  },
+  "firmware_analysis": {
+    "policy_update": "0x1020f32c..0x1020f36a",
+    "parameter": "0x1902",
+    "nonzero_parameter_sets_policy_flag": 2,
+    "policy_calculation": "0x102a74ca..0x102a74d4",
+    "policy_mask": 6,
+    "timeout_seconds": 5,
+    "arm_timer": "0x102a7bd0",
+    "event_dispatch": "0x102a7c18",
+    "mode_request_dispatch": "0x1020ccb8"
+  },
+  "observer_verified": true,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "limitations": [
+    "The interval records the last start request, not remaining time or active state.",
+    "Battery serial replies and complete power readiness remain unimplemented in this setup.",
+    "This observation explains the recorded clear-screen sequence, not all possible mode-8 entries."
+  ],
+  "engine_faults": [
+    {
+      "thread": 1,
+      "registers": {
+        "DFAR_S": 0,
+        "DFSR_S": 0,
+        "IFAR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 2,
+      "registers": {
+        "DFAR_S": 0,
+        "DFSR_S": 0,
+        "IFAR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 3,
+      "registers": {
+        "DFAR_S": 0,
+        "DFSR_S": 0,
+        "IFAR_S": 0,
+        "IFSR_S": 0
+      }
+    },
+    {
+      "thread": 4,
+      "registers": {
+        "DFAR_S": 0,
+        "DFSR_S": 0,
+        "IFAR_S": 0,
+        "IFSR_S": 0
+      }
+    }
+  ],
+  "controller_fault_register_bytes": "0000000000000000",
+  "observer_source_sha256": "292ad947997f41c1cce4668d08c9cf1de414b231a49eb36e0e6d54d45b5e1219"
+}

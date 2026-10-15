@@ -208,6 +208,10 @@ the surface; stable startup and menu interaction remain unverified.
 The [subsequent observation](artifacts/shooting_interface_validation/report.json)
 confirms the visible original shooting status bar and records the later
 3 → 1 → 8 transition sequence.
+The [startup timeout](research/z7ii/startup_idle_timer.md) is now traced to
+the five-second application timer. The observed battery communication status
+is 9 and the power-policy flag is 2; complete battery serial replies remain
+pending.
 
 ## Firmware input
 

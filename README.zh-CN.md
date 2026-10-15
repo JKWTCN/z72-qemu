@@ -149,6 +149,9 @@ freed master 经原厂分发器应答节拍、拾起首个真实任务（每核�
 继续观察后又转入模式 8 并清空表面，稳定启动与菜单交互仍待验证。
 后续[拍摄界面观察](artifacts/shooting_interface_validation/report.json)已确认
 原厂状态栏可见，并记录了随后的模式 3 → 1 → 8 切换链。
+[启动时限分析](research/z7ii/startup_idle_timer.md)已确认清屏请求由五秒
+应用计时器产生；同次电池通信状态为 9、供电策略标志为 2，完整电池
+串口回复仍待实现。
 
 ## 固件输入
 
