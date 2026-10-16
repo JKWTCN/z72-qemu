@@ -19,6 +19,7 @@ from analyze.decode_z72 import require
 from analyze.firmware_structure import analyze_eg
 from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.graphics_boot_probe import (application_observation,
+                                       capture_health_observation,
                                        controller_input_observation,
                                        graphics_observation)
 from tools.battery_boot_probe import shooting_active
@@ -158,6 +159,7 @@ def run(args):
                 observation = dict(stage=stage,
                     application=application_observation(remote),
                     graphics=graphics_observation(remote),
+                    capture_health=capture_health_observation(remote),
                     controller_input=controller_input_observation(remote))
                 remote.select_thread(1)
                 observation['counter_ticks'] = int.from_bytes(

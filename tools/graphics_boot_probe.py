@@ -111,6 +111,36 @@ def sensor_observation(remote):
                                        struct.unpack('<2I', descriptors)])
 
 
+def capture_health_observation(remote):
+    """Read native menu inhibition and the resource header used by capture.
+
+    Header acceptance alone does not validate the resource contents or capture.
+    """
+    remote.select_thread(1)
+    size, pointer = struct.unpack('<2I', remote.read(0xb187556c, 8))
+    status = remote.read(pointer, 0x118) if size == 0x118 and pointer else None
+    count = struct.unpack_from('<I', status, 0x110)[0] if status else None
+    codes = (list(struct.unpack_from(f'<{count}I', status))
+             if count is not None and count <= 68 else None)
+    blocking = ([hex(code) for code in codes if 0x3e <= code <= 0x44]
+                if codes is not None else None)
+    resource = int.from_bytes(remote.read(0xb18a77a0, 4), 'little')
+    version_bytes = remote.read(resource + 0xbe014, 2) if resource else None
+    version = ((version_bytes[0] << 4) | (version_bytes[1] >> 4)
+               if version_bytes is not None else None)
+    return dict(status_parameter='0x1921', status_buffer=hex(pointer),
+                status_count=count,
+                status_codes=[hex(code) for code in codes] if codes is not None else None,
+                menu_blocking_status_codes=blocking,
+                menu_inhibited_by_status=bool(blocking) if blocking is not None else None,
+                resource_parameter=80, resource_buffer=hex(resource),
+                resource_storage='0x13e80000', resource_version_offset='0xbe014',
+                resource_version_bytes=version_bytes.hex() if version_bytes is not None else None,
+                resource_version=hex(version) if version is not None else None,
+                resource_header_check_passed=(0x150 <= version <= 0x15f)
+                if version is not None else None)
+
+
 def temperature_observation(remote):
     remote.select_thread(1)
     power = remote.read(0xb1865210, 16)
@@ -256,6 +286,7 @@ def main():
             system_controller=system_observation(remote),
             idle_timer=idle_timer_observation(remote),
             sampling_service=sensor_observation(remote),
+            capture_health=capture_health_observation(remote),
             temperature_checks=temperature_observation(remote),
             controller_expander=expander,
             controller_flash_data_sha256=hashlib.sha256(resident).hexdigest()

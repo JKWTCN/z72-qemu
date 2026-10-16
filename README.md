@@ -228,7 +228,10 @@ The visible `Err` indication and menu interaction remain unresolved.
 
 The [menu key transport](research/z7ii/controller_keys.md) has been traced from
 expander input 9 to bit 15 of the second decoded switch word and the original
-system input callback. Menu display and interaction remain unverified.
+system input callback and application action `0x1c`. Native status codes
+`0x44` and `0x3e` currently inhibit menu processing; boot probes now include
+read-only capture health and resource-header observations. Menu display and
+interaction remain unverified.
 
 ## Firmware input
 
