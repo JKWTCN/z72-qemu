@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-16",
+  "change": "Batch PPM pixel writes and schedule one completed frame request at a time with a 30 FPS target.",
+  "environment": "Windows host, WSL QEMU, frame output on the Windows filesystem",
+  "controlled_screendump": {
+    "fixture": "Paused firmware-free laboratory board with an unchanged blank 720x480 display",
+    "warmup_samples_per_binary": 2,
+    "before": {
+      "samples": 12,
+      "median_ms": 400.26270000089426,
+      "max_ms": 445.16589998966083,
+      "ppm_sha256": [
+        "66013e80092da4bc2fe901840deb9987ead77fd97ae44c4cb0caf65661cb373b"
+      ],
+      "bytes": 1036815,
+      "binary_sha256": "10a4ab5eca1a7eb96511c7e350182322f0cb6327b698eb86d1d76def9428fe6a"
+    },
+    "after": {
+      "samples": 12,
+      "median_ms": 16.585049997956958,
+      "max_ms": 21.40349999535829,
+      "ppm_sha256": [
+        "66013e80092da4bc2fe901840deb9987ead77fd97ae44c4cb0caf65661cb373b"
+      ],
+      "bytes": 1036815,
+      "binary_sha256": "04e0e7aeb2ceb73fe3b63283b42cdf635a6dbd3d21152cd9621f4d09c7a7c84e"
+    },
+    "byte_identical": true
+  },
+  "firmware_http_unpaced": {
+    "samples": 120,
+    "median_ms": 24.125249998178333,
+    "max_ms": 60.69980000029318,
+    "throughput_fps": 35.641905066880334,
+    "bytes": [
+      13393,
+      13560,
+      13673,
+      14264
+    ]
+  },
+  "firmware_http_target_30": {
+    "samples": 150,
+    "elapsed_seconds": 5.143462899999577,
+    "delivery_fps": 29.2317924189579,
+    "median_ms": 23.787949998222757,
+    "max_ms": 46.41789999732282
+  },
+  "checks": [
+    "Incremental QEMU build; repeated preparation leaves no rebuild work",
+    "12 browser transport unit checks",
+    "6 platform checks",
+    "Native graphics upload, IRQ, malformed command, bounds, cancellation and reset check",
+    "JavaScript syntax check"
+  ],
+  "limitations": [
+    "HTTP throughput excludes browser decoding and painting.",
+    "Repeated captures may contain the same display content; delivery FPS is not the firmware rendering rate.",
+    "Timing samples are local short runs, not a guarantee of sustained 30 FPS.",
+    "Guest timing and the existing firmware menu inhibition issue are unchanged."
+  ]
+}

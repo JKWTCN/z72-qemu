@@ -182,6 +182,12 @@ async function status() {
     held.clear(); paintKeys();
   } finally { statusBusy = false; }
 }
-setInterval(frame, 500);
+// Schedule from completion so a slow capture cannot accumulate requests.
+async function refreshFrames() {
+  const started = performance.now();
+  await frame();
+  setTimeout(refreshFrames, Math.max(1, 1000 / 30 - (performance.now() - started)));
+}
+refreshFrames();
 setInterval(status, 1500);
 status();

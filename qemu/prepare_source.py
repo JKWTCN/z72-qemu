@@ -121,5 +121,41 @@ def prepare(root):
             path.write_text(data)
     print('Prepared', root)
 
+def prepare_screendump(root):
+    """Batch RGB output to avoid one filesystem write per display row."""
+    path = root / 'ui/ui-qmp-cmds.c'
+    data = path.read_text()
+    old = '''    linebuf = qemu_pixman_linebuf_create(PIXMAN_BE_r8g8b8, width);
+    for (y = 0; y < height; y++) {
+        qemu_pixman_linebuf_fill(linebuf, image, width, 0, y);
+        if (qio_channel_write_all(QIO_CHANNEL(ioc),
+                                  (char *)pixman_image_get_data(linebuf),
+                                  pixman_image_get_stride(linebuf), errp) < 0) {
+            return false;
+        }
+    }
+
+    return true;'''
+    new = '''    linebuf = qemu_pixman_linebuf_create(PIXMAN_BE_r8g8b8, width);
+    size_t stride = pixman_image_get_stride(linebuf);
+    g_autofree uint8_t *pixels = g_malloc_n(height, stride);
+
+    for (y = 0; y < height; y++) {
+        qemu_pixman_linebuf_fill(linebuf, image, width, 0, y);
+        memcpy(pixels + (size_t)y * stride,
+               pixman_image_get_data(linebuf), stride);
+    }
+
+    return qio_channel_write_all(QIO_CHANNEL(ioc), pixels,
+                                 (size_t)height * stride, errp) >= 0;'''
+    if data.count(new) == 1:
+        return
+    if data.count(old) != 1:
+        raise ValueError('Unexpected QEMU screendump implementation')
+    path.write_text(data.replace(old, new, 1))
+
+
 if __name__ == '__main__':
-    prepare(Path(sys.argv[1]).resolve())
+    root = Path(sys.argv[1]).resolve()
+    prepare(root)
+    prepare_screendump(root)
