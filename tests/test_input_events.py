@@ -39,9 +39,9 @@ def check(qemu):
             devices.sort(key=lambda name: int(re.search(r'\d+', name)[0]))
             require(len(devices) == 2, 'Expected two engine event receivers')
 
-            def signal(role, line, level):
+            def signal(role, line, level, name='input-event'):
                 command = (f'set_irq_in /machine/unattached/{devices[role]} '
-                           f'input-event {line} {level}\n')
+                           f'{name} {line} {level}\n')
                 wire.sendall(command.encode())
                 require(stream.readline().strip() == b'OK', 'Input event signal failed')
 
@@ -119,9 +119,60 @@ def check(qemu):
                 for output in (0x2006807C, 0x20068084, 0x20068140, 0x20068144):
                     require(read(thread, output) == 0, 'Status event manufactured sample data')
 
+                for line in range(11 + 32):
+                    bank = int(line >= 11)
+                    bit = 1 << (line - 11 if bank else line)
+                    mask = 0x20060040 if bank else 0x20060034
+                    status, irq = mask + 4, 86 + bank
+                    store(thread, status, bit)
+                    require(read(thread, status) == 0,
+                            'Software manufactured a synchronization event')
+                    signal(role, line, 1, 'sync-event')
+                    require(read(thread, status) == bit and not pending(thread, irq),
+                            'Masked synchronization event or interrupt differs')
+                    store(thread, mask, bit)
+                    require(pending(thread, irq) and not pending(peer, irq) and
+                            read(peer, status) == 0,
+                            'Synchronization interrupt routing or isolation differs')
+                    store(thread, mask, 0)
+                    clear_pending(thread, irq)
+                    require(read(thread, status) == bit and not pending(thread, irq),
+                            'Synchronization masking lost status or retained the interrupt')
+                    store(thread, mask, bit)
+                    require(pending(thread, irq), 'Synchronization unmask lost the event')
+                    store(thread, status, bit ^ 0xffffffff)
+                    require(read(thread, status) == bit,
+                            'Acknowledgement cleared another synchronization event')
+                    store(thread, status, bit)
+                    clear_pending(thread, irq)
+                    signal(role, line, 1, 'sync-event')
+                    require(read(thread, status) == 0 and not pending(thread, irq),
+                            'Held synchronization input repeated an event')
+                    signal(role, line, 0, 'sync-event')
+                    store(thread, mask, 0)
+
+            for role, thread in ((0, 1), (1, 3)):
+                store(thread, 0x20060034, 1)
+                signal(role, 0, 1, 'sync-event')
+                store(thread, 0x20060040, 1)
+                signal(role, 11, 1, 'sync-event')
             require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK',
                     'Input event reset failed')
             for role, thread in ((0, 1), (1, 3)):
+                require(read(thread, 0x20060034) == 0 and
+                        read(thread, 0x20060038) == 0 and not pending(thread, 86),
+                        'Reset retained synchronization status or interrupt')
+                store(thread, 0x20060034, 1)
+                signal(role, 0, 1, 'sync-event')
+                require(read(thread, 0x20060038) == 1 and pending(thread, 86),
+                        'Reset retained the synchronization edge detector')
+                require(read(thread, 0x20060040) == 0 and
+                        read(thread, 0x20060044) == 0 and not pending(thread, 87),
+                        'Reset retained synchronization condition status or interrupt')
+                store(thread, 0x20060040, 1)
+                signal(role, 11, 1, 'sync-event')
+                require(read(thread, 0x20060044) == 1 and pending(thread, 87),
+                        'Reset retained the synchronization condition edge detector')
                 for bank in range(8):
                     require(read(thread, 0x20068200 + bank * 0x20) == 0 and
                             read(thread, 0x20068210 + bank * 0x20) == 0,
@@ -130,7 +181,7 @@ def check(qemu):
                 signal(role, 0, 1)
                 require(read(thread, 0x20068210) == 1 and pending(thread, 94),
                         'Reset retained the edge detector')
-            print('PASS input events: masks, eight banks, shared IRQs, edges, reset and isolation',
+            print('PASS input events: eight banks, 43 sync lines, masks, IRQs, reset and isolation',
                   flush=True)
         finally:
             if stream is not None:

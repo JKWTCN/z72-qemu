@@ -1,0 +1,692 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "External synchronization event delivery and one native initialization wait",
+  "firmware_modified": false,
+  "guest_state_written": false,
+  "experimental_parameters": true,
+  "experimental_battery_peer": true,
+  "factory_calibration": false,
+  "full_boot_verified": false,
+  "menu_verified": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "qemu_sha256": "ada7f96838f807765ff9b122501b90a7e1f177d7707eea4a0cd034aadd8dd7de",
+  "baseline_qemu_sha256": "aeddca62a6d2dfc64ae763b759e3df1b3a1491c62d63429bc6b2d2f74adc6594",
+  "external_inputs": {
+    "controller_gpio_low": [
+      "C5"
+    ],
+    "controller_gpio_high": [
+      "D13",
+      "E9",
+      "G7",
+      "B11",
+      "G14",
+      "G15"
+    ],
+    "menu_expander_pin": 9,
+    "menu_pressed_level": 0,
+    "sync_event_line": 15,
+    "sync_status_bit": 4,
+    "sync_irq": 87,
+    "sync_pulse_count": 1
+  },
+  "counter_frequency": 48000000,
+  "baseline_returns": [
+    {
+      "pc": "0x102d93ac",
+      "called": "0x102d6c64",
+      "r0": "0x33a20",
+      "r4": "0x0",
+      "ticks": 55655774
+    },
+    {
+      "pc": "0x102d93cc",
+      "called": "0x10371704",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55656835
+    },
+    {
+      "pc": "0x102d93d4",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55657020
+    },
+    {
+      "pc": "0x102d93da",
+      "called": "0x10371a28",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55657176
+    },
+    {
+      "pc": "0x102d93e0",
+      "called": "0x102fe72a",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55657465
+    },
+    {
+      "pc": "0x102d93ec",
+      "called": "0x102fe1ea",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55657644
+    },
+    {
+      "pc": "0x102d93fa",
+      "called": "0x102fe1ea",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55668453
+    },
+    {
+      "pc": "0x102d9408",
+      "called": "0x102fe1ea",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55711806
+    },
+    {
+      "pc": "0x102d9410",
+      "called": "0x102daf94",
+      "r0": "0x1",
+      "r4": "0x0",
+      "ticks": 55711994
+    },
+    {
+      "pc": "0x102d941c",
+      "called": "0x102fe64e",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55712103
+    },
+    {
+      "pc": "0x102d9434",
+      "called": "0x102ff398",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55712656
+    },
+    {
+      "pc": "0x102d9440",
+      "called": "0x102ff398",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55712817
+    },
+    {
+      "pc": "0x102d944c",
+      "called": "0x102fea1e",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55712889
+    },
+    {
+      "pc": "0x102d946c",
+      "called": "0x102fea1e",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55712928
+    },
+    {
+      "pc": "0x102d9474",
+      "called": "0x102daf0c",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55716498
+    },
+    {
+      "pc": "0x102d9482",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55716668
+    },
+    {
+      "pc": "0x102d9488",
+      "called": "0x102fead0",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55716838
+    },
+    {
+      "pc": "0x102d9490",
+      "called": "0x102feaa6",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 55717317
+    },
+    {
+      "pc": "0x102d94a2",
+      "called": "0x10361192",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 58153483
+    },
+    {
+      "pc": "0x102d94b8",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 58153784
+    },
+    {
+      "pc": "0x102d94be",
+      "called": "0x102fead0",
+      "r0": "0x0",
+      "r4": "0x0",
+      "ticks": 58153993
+    },
+    {
+      "pc": "0x102d94d2",
+      "called": "0x102ff398",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58154640
+    },
+    {
+      "pc": "0x102d94e0",
+      "called": "0x102ff398",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58154807
+    },
+    {
+      "pc": "0x102d94ec",
+      "called": "0x102fea1e",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58154927
+    },
+    {
+      "pc": "0x102d94f4",
+      "called": "0x102feae6",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58154962
+    },
+    {
+      "pc": "0x102d94fe",
+      "called": "0x102fea1e",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58154969
+    },
+    {
+      "pc": "0x102d9504",
+      "called": "0x102dae84",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58158535
+    },
+    {
+      "pc": "0x102d9510",
+      "called": "0x103610da",
+      "r0": "0x1",
+      "r4": "0x20",
+      "ticks": 58158738
+    },
+    {
+      "pc": "0x102d9518",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58158822
+    },
+    {
+      "pc": "0x102d951e",
+      "called": "0x10371a3c",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58159282
+    },
+    {
+      "pc": "0x102d9524",
+      "called": "0x102fe744",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58159446
+    },
+    {
+      "pc": "0x102d9538",
+      "called": "0x10371704",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58160120
+    },
+    {
+      "pc": "0x102d9540",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58160245
+    },
+    {
+      "pc": "0x102d9546",
+      "called": "0x10371a28",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58160834
+    },
+    {
+      "pc": "0x102d9550",
+      "called": "0x103610da",
+      "r0": "0x1",
+      "r4": "0x20",
+      "ticks": 58164391
+    },
+    {
+      "pc": "0x102d9558",
+      "called": "0x103610d2",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58164655
+    },
+    {
+      "pc": "0x102d955e",
+      "called": "0x10371a3c",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58164878
+    },
+    {
+      "pc": "0x102d9564",
+      "called": "0x102fe76a",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58164983
+    },
+    {
+      "pc": "0x102d956c",
+      "called": "0x102fe790",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58165026
+    },
+    {
+      "pc": "0x102d957a",
+      "called": "0x102ff398",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58165440
+    },
+    {
+      "pc": "0x102d9584",
+      "called": "0x102feb00",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58166396
+    },
+    {
+      "pc": "0x102d958c",
+      "called": "0x102fead0",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58167028
+    },
+    {
+      "pc": "0x102d9592",
+      "called": "0x0",
+      "r0": "0x0",
+      "r4": "0x20",
+      "ticks": 58167224
+    }
+  ],
+  "native_observation": {
+    "events": [
+      {
+        "pc": "0x102d949e",
+        "r0": "0xb18a764c",
+        "r1": "0x8",
+        "r2": "0xb53a7f68",
+        "r3": "0x32",
+        "r4": "0x0",
+        "lr": "0x102feab1",
+        "sp": "0xb53a7f68",
+        "thread": 1,
+        "stop": "T05thread:01;",
+        "system": {
+          "mode_context": "0xb1819988",
+          "current_mode": 2,
+          "previous_mode": 1,
+          "power_input": 1,
+          "configuration_flags": 8,
+          "configuration_secondary_flags": 8,
+          "transition_inhibitors": [
+            0,
+            1,
+            1
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null,
+          "control_ready_bitmap": 15,
+          "pending_settings_bitmap": 15
+        },
+        "idle": {
+          "policy_context": "0xb1819aa0",
+          "application_kind": 9,
+          "timeout_seconds": 30,
+          "policy_flags": 0,
+          "five_second_policy": false,
+          "timer_object": "0xb1f80168",
+          "timer_handle": "0x100001f",
+          "callback": "0x102a7c85",
+          "last_start_milliseconds": 30000,
+          "destination_context": "0xb1818bd0",
+          "message": "0x3000003",
+          "event_slot": 0
+        },
+        "ticks": 55714475,
+        "registers": {
+          "0x20060034": "0x19",
+          "0x20060038": "0x0",
+          "0x20060040": "0x27feb7",
+          "0x20060044": "0x0"
+        },
+        "callback": "6b6b2d1000000000"
+      },
+      {
+        "pc": "0x102dc5c0",
+        "r0": "0x57",
+        "r1": "0xb2b97ff0",
+        "r2": "0x80000192",
+        "r3": "0x15c",
+        "r4": "0x0",
+        "lr": "0x10107274",
+        "sp": "0xb53a7f5c",
+        "thread": 1,
+        "stop": "T05thread:01;",
+        "system": {
+          "mode_context": "0xb1819988",
+          "current_mode": 2,
+          "previous_mode": 1,
+          "power_input": 1,
+          "configuration_flags": 8,
+          "configuration_secondary_flags": 8,
+          "transition_inhibitors": [
+            0,
+            1,
+            1
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null,
+          "control_ready_bitmap": 15,
+          "pending_settings_bitmap": 15
+        },
+        "idle": {
+          "policy_context": "0xb1819aa0",
+          "application_kind": 9,
+          "timeout_seconds": 30,
+          "policy_flags": 0,
+          "five_second_policy": false,
+          "timer_object": "0xb1f80168",
+          "timer_handle": "0x100001f",
+          "callback": "0x102a7c85",
+          "last_start_milliseconds": 30000,
+          "destination_context": "0xb1818bd0",
+          "message": "0x3000003",
+          "event_slot": 0
+        },
+        "ticks": 55714483,
+        "status": "0x10"
+      },
+      {
+        "pc": "0x102d6bb0",
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000193",
+        "r3": "0x80",
+        "r4": "0x10",
+        "lr": "0x1026d46d",
+        "sp": "0xb53a7f24",
+        "thread": 1,
+        "stop": "T05thread:01;",
+        "system": {
+          "mode_context": "0xb1819988",
+          "current_mode": 2,
+          "previous_mode": 1,
+          "power_input": 1,
+          "configuration_flags": 8,
+          "configuration_secondary_flags": 8,
+          "transition_inhibitors": [
+            0,
+            1,
+            1
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null,
+          "control_ready_bitmap": 15,
+          "pending_settings_bitmap": 15
+        },
+        "idle": {
+          "policy_context": "0xb1819aa0",
+          "application_kind": 9,
+          "timeout_seconds": 30,
+          "policy_flags": 0,
+          "five_second_policy": false,
+          "timer_object": "0xb1f80168",
+          "timer_handle": "0x100001f",
+          "callback": "0x102a7c85",
+          "last_start_milliseconds": 30000,
+          "destination_context": "0xb1818bd0",
+          "message": "0x3000003",
+          "event_slot": 0
+        },
+        "ticks": 55714925,
+        "status": "0x0"
+      },
+      {
+        "pc": "0x102d94a2",
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x32",
+        "r3": "0x0",
+        "r4": "0x0",
+        "lr": "0x103611a9",
+        "sp": "0xb53a7f68",
+        "thread": 1,
+        "stop": "T05thread:01;",
+        "system": {
+          "mode_context": "0xb1819988",
+          "current_mode": 2,
+          "previous_mode": 1,
+          "power_input": 1,
+          "configuration_flags": 8,
+          "configuration_secondary_flags": 8,
+          "transition_inhibitors": [
+            0,
+            1,
+            1
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null,
+          "control_ready_bitmap": 15,
+          "pending_settings_bitmap": 15
+        },
+        "idle": {
+          "policy_context": "0xb1819aa0",
+          "application_kind": 9,
+          "timeout_seconds": 30,
+          "policy_flags": 0,
+          "five_second_policy": false,
+          "timer_object": "0xb1f80168",
+          "timer_handle": "0x100001f",
+          "callback": "0x102a7c85",
+          "last_start_milliseconds": 30000,
+          "destination_context": "0xb1818bd0",
+          "message": "0x3000003",
+          "event_slot": 0
+        },
+        "ticks": 55715109
+      },
+      {
+        "pc": "0x102d9592",
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0x0",
+        "lr": "0x102feab1",
+        "sp": "0xb53a7f68",
+        "thread": 1,
+        "stop": "T05thread:01;",
+        "system": {
+          "mode_context": "0xb1819988",
+          "current_mode": 2,
+          "previous_mode": 1,
+          "power_input": 1,
+          "configuration_flags": 8,
+          "configuration_secondary_flags": 8,
+          "transition_inhibitors": [
+            0,
+            1,
+            1
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null,
+          "control_ready_bitmap": 15,
+          "pending_settings_bitmap": 15
+        },
+        "idle": {
+          "policy_context": "0xb1819aa0",
+          "application_kind": 9,
+          "timeout_seconds": 30,
+          "policy_flags": 0,
+          "five_second_policy": false,
+          "timer_object": "0xb1f80168",
+          "timer_handle": "0x100001f",
+          "callback": "0x102a7c85",
+          "last_start_milliseconds": 30000,
+          "destination_context": "0xb1818bd0",
+          "message": "0x3000003",
+          "event_slot": 0
+        },
+        "ticks": 55728499
+      }
+    ],
+    "after": {
+      "pc": "0x8020188",
+      "r0": "0x10",
+      "r1": "0x1",
+      "r2": "0x20003854",
+      "r3": "0x20021a90",
+      "r4": "0x20021580",
+      "lr": "0x8020189",
+      "sp": "0x20000b98",
+      "thread": 5,
+      "stop": "T02thread:05;",
+      "system": {
+        "mode_context": "0xb18192b8",
+        "current_mode": 3,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "idle": {
+        "policy_context": "0xb1819aa0",
+        "application_kind": 9,
+        "timeout_seconds": 30,
+        "policy_flags": 0,
+        "five_second_policy": false,
+        "timer_object": "0xb1f80168",
+        "timer_handle": "0x100001f",
+        "callback": "0x102a7c85",
+        "last_start_milliseconds": 30000,
+        "destination_context": "0xb1818bd0",
+        "message": "0x3000003",
+        "event_slot": 0
+      },
+      "ticks": 77136025,
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x44"
+        ],
+        "menu_blocking_status_codes": [
+          "0x44"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "0000",
+        "resource_version": "0x0",
+        "resource_header_check_passed": false
+      }
+    }
+  },
+  "checks": [
+    "Build passed with QEMU 10.2.4; binary identity matches build metadata.",
+    "Input event checks passed for both engines, all 43 synchronization lines, masks, acknowledgement, held inputs, reset and IRQ isolation.",
+    "Both board checks passed, including reserved and invalid access faults."
+  ],
+  "limitations": [
+    "One externally supplied synchronization pulse; automatic event production and sensor sampling remain unverified.",
+    "Status 0x44 remains active with zero resource header bytes, so menu and full boot are not verified.",
+    "Migration round-trip has not been checked."
+  ]
+}

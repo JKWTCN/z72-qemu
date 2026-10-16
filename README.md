@@ -236,6 +236,11 @@ state list) keeps the list empty, but the menu application still does not
 start; the action-conversion trigger is the next boundary. Menu display and
 interaction remain unverified.
 
+The [synchronization event path](research/z7ii/sampling_sync.md#同步事件与原厂等待)
+now delivers external events through the native interrupt and callback. One
+supplied pulse removed the observed `0x3e` timeout status; the zero resource
+header still produces `0x44` and inhibits the menu.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:

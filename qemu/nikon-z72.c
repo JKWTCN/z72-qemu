@@ -267,11 +267,11 @@ static const hwaddr boot_config_addresses[] = {
     0x0426F000, 0x0426F004, 0x0426F008, 0x0426F00c,
     0x0426F010, 0x0426F014,
     /* Auxiliary configuration words and six indexed rows recovered from
-     * the original register tables; passive storage only. */
+     * the original register tables; +0x34..+0x44 also carry sync events. */
     0x20060000, 0x20060004, 0x20060008, 0x2006000c,
     0x20060010, 0x20060014, 0x20060018, 0x2006001c,
     0x20060020, 0x20060024, 0x20060028, 0x2006002c,
-    0x20060030, 0x20060034, 0x20060038, 0x20060040,
+    0x20060030, 0x20060034, 0x20060038, 0x20060040, 0x20060044,
     0x2006004c,
     0x20060070, 0x20060074, 0x20060078, 0x2006007c,
     0x20060080, 0x20060084, 0x20060088, 0x2006008c,
@@ -522,6 +522,7 @@ struct NikonZ72BootConfig {
     uint32_t dbi_viewport;
     uint32_t dbi_regions[2 * 16 * 7];
     uint32_t input_levels[8];
+    uint32_t sync_levels[2];
 };
 
 static bool dbi_accepts(void *opaque, hwaddr offset, unsigned size,
@@ -679,6 +680,36 @@ static void input_event(void *opaque, int line, int level)
     input_update_irqs(s);
 }
 
+static void sync_update_irqs(NikonZ72BootConfig *s)
+{
+    if (s->intc && s->release_config) {
+        for (unsigned bank = 0; bank < 2; bank++) {
+            hwaddr mask = bank ? 0x20060040 : 0x20060034;
+            uint32_t pending = *boot_config_value(s, mask) &
+                               *boot_config_value(s, mask + 4);
+            if (!bank) {
+                pending &= 0x7ff;
+            }
+            qemu_set_irq(qdev_get_gpio_in(s->intc, 86 + bank - 32), pending != 0);
+        }
+    }
+}
+
+static void sync_event(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+    unsigned bank = line >= 11;
+    uint32_t bit = 1u << (bank ? line - 11 : line);
+
+    /* External lines identify synchronization status bits, not sensor pins. */
+    if (level && !(s->sync_levels[bank] & bit)) {
+        *boot_config_value(s, bank ? 0x20060044 : 0x20060038) |= bit;
+    }
+    s->sync_levels[bank] = level ? s->sync_levels[bank] | bit :
+                                  s->sync_levels[bank] & ~bit;
+    sync_update_irqs(s);
+}
+
 static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72ConfigWord *word = opaque;
@@ -716,6 +747,11 @@ static void boot_config_write(void *opaque, hwaddr offset,
     NikonZ72BootConfig *s = word->device;
     hwaddr address = boot_config_addresses[word->index];
     uint32_t *stored = &s->values[word->index];
+    if (address == 0x20060038 || address == 0x20060044) {
+        *stored &= ~(uint32_t)value;
+        sync_update_irqs(s);
+        return;
+    }
     if (address == 0x2b200058 || address == 0x2b20005c) {
         return;
     }
@@ -802,6 +838,9 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
+    if (address == 0x20060034 || address == 0x20060040) {
+        sync_update_irqs(s);
+    }
     if (address >= 0x20068200 && address <= 0x200682e0 &&
         (address & 0x1f) == 0) {
         input_update_irqs(s);
@@ -1263,7 +1302,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->dbi_regions, 0, sizeof(s->dbi_regions));
     s->dbi_viewport = 0;
     memset(s->input_levels, 0, sizeof(s->input_levels));
+    memset(s->sync_levels, 0, sizeof(s->sync_levels));
     input_update_irqs(s);
+    sync_update_irqs(s);
     if (s->intc) {
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), 0);
         if (s->release_config) {
@@ -1301,6 +1342,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     qemu_set_irq(s->peer_ready_irq, s->peer_gpio && s->peer_ready_output);
     transport_update_irq(s);
     input_update_irqs(s);
+    sync_update_irqs(s);
     if (s->intc) {
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), s->gate_pending);
         if (s->release_config) {
@@ -1315,8 +1357,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 30,
-    .minimum_version_id = 30,
+    .version_id = 31,
+    .minimum_version_id = 31,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1324,6 +1366,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(dbi_viewport, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(dbi_regions, NikonZ72BootConfig, 2 * 16 * 7),
         VMSTATE_UINT32_ARRAY(input_levels, NikonZ72BootConfig, 8),
+        VMSTATE_UINT32_ARRAY(sync_levels, NikonZ72BootConfig, 2),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -1348,6 +1391,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
+    qdev_init_gpio_in_named(DEVICE(obj), sync_event, "sync-event", 11 + 32);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
     /* Sparse containers keep unsupported words unassigned and avoid the
