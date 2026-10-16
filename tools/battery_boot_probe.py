@@ -9,6 +9,7 @@ across observation windows.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shlex
@@ -69,28 +70,34 @@ def run(args):
         work = Path(folder)
 
         class WslProcess(original):
-            """Launch the Linux binary through WSL and stop it by pid."""
+            """Add the battery peer and qtest ports; wrap for WSL on Windows."""
 
             def __init__(self, command, *extra, **keywords):
-                self.pid_file = work / str(time.monotonic_ns())
                 index = command.index('-M')
                 command[index + 1] += ",controller-battery-peer=on"
                 command += ['-qtest', f'tcp:127.0.0.1:{qtest_port},server=on,wait=off',
                             '-qtest-log', '/dev/null']
-                wrapped = ['wsl.exe', '--exec', 'sh', '-c',
-                           'echo $$ > ' + shlex.quote(linux(self.pid_file)) +
-                           '; exec ' + shlex.join([linux(part) for part in command])]
-                super().__init__(wrapped, *extra, **keywords)
+                if os.name == 'nt':
+                    self.pid_file = work / str(time.monotonic_ns())
+                    wrapped = ['wsl.exe', '--exec', 'sh', '-c',
+                               'echo $$ > ' + shlex.quote(linux(self.pid_file)) +
+                               '; exec ' +
+                               shlex.join([linux(part) for part in command])]
+                    super().__init__(wrapped, *extra, **keywords)
+                else:
+                    super().__init__(command, *extra, **keywords)
                 launched.append(self)
 
             def terminate(self):
-                if self.poll() is None and self.pid_file.exists():
+                if os.name != 'nt' or self.poll() is not None:
+                    super().terminate()
+                    return
+                if self.pid_file.exists():
                     pid = self.pid_file.read_text().strip()
                     if pid.isdecimal():
                         with original(['wsl.exe', '--exec', 'kill', '-TERM', pid],
                                       stdout=subprocess.DEVNULL,
-                                      stderr=subprocess.DEVNULL,
-                                      creationflags=subprocess.CREATE_NO_WINDOW) as reaper:
+                                      stderr=subprocess.DEVNULL) as reaper:
                             reaper.wait(timeout=5)
 
         subprocess.Popen = WslProcess
