@@ -107,6 +107,7 @@ class WebConsoleTests(unittest.TestCase):
         try:
             machine.phase = 'running'
             machine.held = {3, 9}
+            machine.requested_keys = {3, 9}
             machine.key_deadline = 0
             commands = []
 
@@ -125,6 +126,49 @@ class WebConsoleTests(unittest.TestCase):
         finally:
             machine.close()
 
+    def test_short_taps_preserve_both_edges_and_release_gap(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        ticks = [0]
+        commands = []
+        machine._ready = lambda: None
+        machine._key_clock = lambda: (ticks[0], 1000)
+        machine._qtest = commands.append
+        try:
+            for level in (0, 1, 0, 1):
+                machine.set_key(9, level)
+            self.assertEqual(commands, ['set_irq_in /machine/peripheral/keys pins 9 0'])
+            for value in (99, 100, 199, 200, 299, 300):
+                ticks[0] = value
+                with machine.io:
+                    machine._advance_keys()
+                self.assertEqual(len(commands), min(4, value // 100 + 1))
+            self.assertEqual([line[-1] for line in commands], ['0', '1', '0', '1'])
+            self.assertFalse(machine.held)
+            self.assertFalse(machine.key_events)
+        finally:
+            machine.close()
+
+    def test_release_cancels_pending_tap(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        commands = []
+        machine._ready = lambda: None
+        machine._key_clock = lambda: (0, 1000)
+        machine._qtest = commands.append
+        try:
+            machine.set_key(9, 0)
+            machine.set_key(9, 1)
+            machine.release()
+            self.assertEqual([line[-1] for line in commands], ['0', '1'])
+            self.assertFalse(machine.held)
+            self.assertFalse(machine.key_events)
+            self.assertFalse(machine.requested_keys)
+        finally:
+            machine.close()
+
     def test_overlapping_restarts_are_rejected(self):
         machine = Machine(None)
         entered, finish = threading.Event(), threading.Event()
@@ -140,6 +184,32 @@ class WebConsoleTests(unittest.TestCase):
             self.assertFalse(machine.restart())
         finally:
             finish.set()
+            machine.close()
+
+    def test_native_menu_inhibition_is_reported(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        machine.phase = 'running'
+        machine.process = Mock()
+        machine.process.poll.return_value = None
+        machine.qmp = Mock()
+        machine.qmp.command.side_effect = lambda name, *args: (
+            {'status': 'running'} if name == 'query-status' else
+            0 if args[0]['property'] in ('failed-requests', 'unsupported-commands') else 1)
+        codes = [0x3f]
+
+        def words(address, count):
+            return {0xb1811e40: [1, 0, 0, 0, 3], 0xb187556c: [0x118, 0xb25d4714],
+                    0xb25d4824: [len(codes)], 0xb25d4714: codes}[address]
+
+        machine._words = words
+        try:
+            self.assertTrue(machine.status()['menu_inhibited'])
+            codes.clear()
+            self.assertFalse(machine.status()['menu_inhibited'])
+        finally:
+            machine.process = machine.qmp = None
             machine.close()
 
 

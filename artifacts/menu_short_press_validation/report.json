@@ -1,0 +1,309 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Finite menu short presses and guest-clock browser input buffering",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "experimental_parameters": true,
+  "resource_header_only": true,
+  "initial_sync_pulses": 1,
+  "factory_calibration": false,
+  "full_boot_verified": false,
+  "qemu_sha256": "10a4ab5eca1a7eb96511c7e350182322f0cb6327b698eb86d1d76def9428fe6a",
+  "counter_frequency": 48000000,
+  "minimum_edge_window_milliseconds": 100,
+  "host_click_milliseconds": 80,
+  "measured_guest_press_milliseconds": 100.2946875,
+  "native_bounded_press": {
+    "guest_press_milliseconds": 100,
+    "events": [
+      {
+        "stage": "before-press",
+        "ticks": 59780051,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 42,
+          "execution": "running",
+          "index": 3,
+          "held": [],
+          "input_ready": true
+        }
+      },
+      {
+        "stage": "before-release",
+        "ticks": 64599055,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x8000",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 46,
+          "execution": "running",
+          "index": 3,
+          "held": [
+            9
+          ],
+          "input_ready": true
+        }
+      },
+      {
+        "stage": "after-release",
+        "ticks": 207223918,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 152,
+          "execution": "running",
+          "index": 1,
+          "held": [],
+          "input_ready": true
+        }
+      }
+    ],
+    "menu_opened": true,
+    "released_before_menu_observation": true
+  },
+  "bridged_short_click": {
+    "guest_press_milliseconds": 100,
+    "host_press_milliseconds": 80,
+    "events": [
+      {
+        "stage": "before-press",
+        "ticks": 59548647,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 40,
+          "execution": "running",
+          "index": 3,
+          "held": [],
+          "input_ready": true
+        }
+      },
+      {
+        "stage": "before-release",
+        "ticks": 59605609,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 41,
+          "execution": "running",
+          "index": 3,
+          "held": [
+            9
+          ],
+          "input_ready": true
+        }
+      },
+      {
+        "stage": "release-requested",
+        "ticks": 59608959,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 41,
+          "execution": "running",
+          "index": 3,
+          "held": [
+            9
+          ],
+          "input_ready": true
+        }
+      },
+      {
+        "stage": "after-release",
+        "ticks": 206619672,
+        "frequency": 48000000,
+        "switches": [
+          "0x200",
+          "0x0",
+          "0x0"
+        ],
+        "state": {
+          "phase": "running",
+          "error": null,
+          "ready": true,
+          "uptime": 161,
+          "execution": "running",
+          "index": 1,
+          "held": [],
+          "input_ready": true
+        }
+      }
+    ],
+    "input_commands": [
+      {
+        "command": "set_irq_in /machine/peripheral/keys pins 9 0",
+        "ticks": 59558152,
+        "frequency": 48000000
+      },
+      {
+        "command": "set_irq_in /machine/peripheral/keys pins 9 1",
+        "ticks": 64372297,
+        "frequency": 48000000
+      }
+    ],
+    "menu_opened": true,
+    "released_before_menu_observation": true
+  },
+  "checks": {
+    "firmware_free_passed": 12,
+    "javascript_syntax_passed": true
+  },
+  "input_bridge_verified": true,
+  "menu_available_in_all_tested_startup_states": false,
+  "late_http_observation": {
+    "before": {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 81,
+      "execution": "running",
+      "index": 3,
+      "held": [],
+      "input_ready": true
+    },
+    "release_requested": {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 82,
+      "execution": "running",
+      "index": 3,
+      "held": [
+        9
+      ],
+      "input_ready": true
+    },
+    "after": {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 262,
+      "execution": "running",
+      "index": 3,
+      "held": [],
+      "input_ready": true
+    },
+    "passed": false
+  },
+  "late_native_observation": {
+    "health": {
+      "status_parameter": "0x1921",
+      "status_buffer": "0xb25d4714",
+      "status_count": 1,
+      "status_codes": [
+        "0x3f"
+      ],
+      "menu_blocking_status_codes": [
+        "0x3f"
+      ],
+      "menu_inhibited_by_status": true,
+      "resource_parameter": 80,
+      "resource_buffer": "0xb7d00000",
+      "resource_storage": "0x13e80000",
+      "resource_version_offset": "0xbe014",
+      "resource_version_bytes": "1500",
+      "resource_version": "0x150",
+      "resource_header_check_passed": true
+    },
+    "application": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 3,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    }
+  },
+  "conclusions": [
+    "A bounded 100 ms guest-time press opens the original menu after release in the initial window",
+    "The web bridge preserves press and release edges independently of foreground selection",
+    "Consecutive taps preserve a guest-time release interval",
+    "Cancellation releases immediately and discards pending input"
+  ],
+  "limitations": [
+    "A later HTTP click did not open the menu; native status 0x3f was observed",
+    "The input sampling fix does not resolve the later native inhibition",
+    "Cold-start input conditions remain experimental",
+    "Guest execution and visible menu rendering can still be slower than wall time",
+    "Actual browser click automation was not run"
+  ]
+}

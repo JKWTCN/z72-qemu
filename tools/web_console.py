@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Serve a local browser console for the experimental combined machine."""
 import argparse
+from collections import deque
 import json
 import os
 from pathlib import Path
@@ -107,6 +108,9 @@ class Machine:
         self.error = None
         self.process = self.remote = self.wire = self.qmp = self.work = None
         self.held = set()
+        self.requested_keys = set()
+        self.key_events = {}
+        self.next_key_ticks = {}
         self.key_deadline = 0
         self.started_at = None
         self.shutdown = threading.Event()
@@ -254,40 +258,92 @@ class Machine:
     def _ready(self):
         require(self.phase == 'running' and self.process.poll() is None, '机器尚未就绪')
 
+    def _words(self, address, count):
+        text = self.qmp.command('human-monitor-command',
+            {'command-line': f'x /{count}wx {address:#x}', 'cpu-index': 0})
+        words = [int(value, 16) for line in text.splitlines() if ':' in line
+                 for value in re.findall(r'0x[0-9a-fA-F]+', line.split(':', 1)[1])]
+        require(len(words) == count, 'Could not read machine state')
+        return words
+
+    def _key_clock(self):
+        low, high, frequency = self._words(0x04266008, 3)
+        require(frequency > 0, 'Input clock is unavailable')
+        return low | high << 32, frequency
+
+    def _advance_keys(self):
+        if not self.key_events:
+            return
+        ticks, frequency = self._key_clock()
+        for pin, events in tuple(self.key_events.items()):
+            if ticks < self.next_key_ticks.get(pin, 0):
+                continue
+            level = events[0]
+            self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
+            events.popleft()
+            if level == 0:
+                self.held.add(pin)
+            else:
+                self.held.discard(pin)
+            # Preserve each edge for 100 ms of guest time, including the
+            # released interval between taps. Host speed must not erase clicks.
+            self.next_key_ticks[pin] = ticks + (frequency + 9) // 10
+            if not events:
+                del self.key_events[pin]
+            ticks, frequency = self._key_clock()
+            self.next_key_ticks[pin] = ticks + (frequency + 9) // 10
+
     def set_key(self, pin, level):
         require(type(pin) is int and 0 <= pin < 24 and type(level) is int and level in (0, 1),
                 'Invalid key input')
         with self.io:
             self._ready()
-            self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
+            events = self.key_events.setdefault(pin, deque())
+            previous = events[-1] if events else int(pin not in self.held)
+            if level != previous:
+                events.append(level)
+            if not events:
+                del self.key_events[pin]
             if level == 0:
-                self.held.add(pin)
+                self.requested_keys.add(pin)
                 self.key_deadline = time.monotonic() + 5
             else:
-                self.held.discard(pin)
+                self.requested_keys.discard(pin)
+            self._advance_keys()
 
     def release(self):
         with self.io:
             self._release()
 
     def _release(self):
+        self.key_events.clear()
+        self.next_key_ticks.clear()
+        self.requested_keys.clear()
         for pin in tuple(self.held):
             self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} 1')
             self.held.remove(pin)
 
     def heartbeat(self):
         with self.io:
-            if self.held:
+            if self.requested_keys:
                 self.key_deadline = time.monotonic() + 5
 
     def _release_expired(self):
-        while not self.shutdown.wait(0.5):
+        while not self.shutdown.wait(0.05):
             with self.io:
-                if self.phase == 'running' and self.held and time.monotonic() > self.key_deadline:
+                if self.phase == 'running':
                     try:
-                        self._release()
-                    except (OSError, ValueError):
-                        self.held.clear()
+                        if self.requested_keys and time.monotonic() > self.key_deadline:
+                            self._release()
+                        else:
+                            self._advance_keys()
+                    except (OSError, ValueError, RuntimeError) as error:
+                        self.error = str(error)
+                        try:
+                            self._release()
+                        except (OSError, ValueError, RuntimeError):
+                            pass
+                        self.phase = 'failed'
 
     def frame_png(self):
         with self.io:
@@ -298,6 +354,7 @@ class Machine:
 
     def status(self):
         state = dict(phase=self.phase, error=self.error, ready=False,
+                     menu_inhibited=None,
                      uptime=int(time.monotonic() - self.started_at) if self.started_at else 0)
         if self.phase != 'running':
             return state
@@ -307,11 +364,7 @@ class Machine:
             if self.process.poll() is not None:
                 return dict(state, phase='failed', error='模拟器已退出，请重启')
             state['execution'] = self.qmp.command('query-status')['status']
-            text = self.qmp.command('human-monitor-command',
-                                   {'command-line': f'x /5wx {APP_MANAGER:#x}', 'cpu-index': 0})
-            words = [int(value, 16) for line in text.splitlines() if ':' in line
-                     for value in re.findall(r'0x[0-9a-fA-F]+', line.split(':', 1)[1])]
-            require(len(words) == 5, 'Could not read application state')
+            words = self._words(APP_MANAGER, 5)
             state.update(ready=words[0] == 1, index=words[4] & 255,
                          held=sorted(self.held))
             state['input_ready'] = state['ready'] and state['index'] in (1, 2, 4)
@@ -323,6 +376,12 @@ class Machine:
                 state['input_ready'] = (graphics['surface-address'] != 0 and
                     graphics['rendered-commands'] > 0 and graphics['failed-requests'] == 0 and
                     graphics['unsupported-commands'] == 0)
+                size, pointer = self._words(0xb187556c, 2)
+                if size == 0x118 and pointer:
+                    count = self._words(pointer + 0x110, 1)[0]
+                    if count <= 68:
+                        codes = self._words(pointer, count) if count else []
+                        state['menu_inhibited'] = any(0x3e <= code <= 0x44 for code in codes)
         return state
 
     def _cleanup(self):
@@ -342,6 +401,9 @@ class Machine:
         self.process = self.remote = self.qmp = self.wire = self.work = None
         self.started_at = None
         self.held.clear()
+        self.requested_keys.clear()
+        self.key_events.clear()
+        self.next_key_ticks.clear()
 
     def close(self):
         self.shutdown.set()

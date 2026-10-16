@@ -13,7 +13,7 @@ display-state predicates. Both original engine images plus the original
 controller image boot together to their schedulers with zero execution faults:
 a synthetic battery peer completes the original serial authentication, the
 five-second power policy clears, the shooting application renders and persists,
-and holding the menu key runs the original menu start entry with a full
+and a short menu-key input runs the original menu start entry with a full
 structured menu across the screen. Menu item interaction and text semantics,
 LCD live view and the natural production of a few notifications remain pending.
 See the [menu key research](research/z7ii/controller_keys.md) and

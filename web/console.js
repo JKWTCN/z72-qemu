@@ -167,7 +167,9 @@ async function status() {
     $('uptime').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
     if (state.error) notice(state.error, true);
     else if (restarting) notice('正在启动模拟器，冷启动可能需要几分钟…');
-    else if (available) notice(state.index === 1 ? '菜单应用已打开。可继续操作，画面响应以当前固件为准。' : '连接就绪。按住 MENU，待画面切换后再松开。');
+    else if (available && state.index === 1) notice('菜单应用已打开。可继续操作，画面响应以当前固件为准。');
+    else if (available && state.menu_inhibited === true) notice('固件当前状态阻止打开菜单，可重启模拟器重试。', true);
+    else if (available) notice('连接就绪。点击 MENU 打开菜单，方向键移动高亮。');
     else if (running) notice('固件正在初始化显示与输入，请稍候…');
     else notice('模拟器尚未运行，可点击重启。');
     if (running && !seenFrame) frame();

@@ -258,8 +258,8 @@ def run(args):
             baseline = observe('baseline', settled)
             require(int(baseline['controller_input']['decoded_switch_words'][0], 16)
                     & 0x0c000000 == 0, 'External shutter inputs remain asserted')
-            # Hold the menu input: the original pipeline needs the key level
-            # present across its polling cycles to start the menu application.
+            # This probe records held-key behavior; it does not establish
+            # the minimum press duration or require a long press on the camera.
             drive(MENU_PIN, 0)
             pressed = observe('pressed',
                               lambda item: item['controller_input']['decoded_menu_bit'])
