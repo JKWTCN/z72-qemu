@@ -1,11 +1,14 @@
 # Development status
 
-The current runtime gate model completes original bank enable and disable
-requests through interrupt 250 and the original event handler. Each engine's
-GIC uses its own first CPU index; synthetic SGI and private-timer checks verify
-that interrupts stay within the intended engine. The default experimental tick
-interval is 10 ms to allow lower-priority completions to run during software
-execution. Complete startup and menu display remain pending; see the
+The combined machine now boots both original engine images and the original
+controller image to their schedulers with zero execution faults. A synthetic
+battery peer completes the original serial authentication, the five-second
+power policy clears, the shooting application renders and persists, and
+holding the menu key runs the original menu start entry with a full
+structured menu across the screen. Menu item interaction, text semantics and
+LCD live view remain pending; see the
+[menu key research](../research/z7ii/controller_keys.md). Earlier runtime
+gate behaviour is unchanged and still covered by the
 [runtime gate contracts](../research/z7ii/runtime_gate.md).
 
 Z72 QEMU implements isolated master and slave instruction laboratories for Nikon Z7 II C 1.70.

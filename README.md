@@ -5,12 +5,15 @@
 Z72 QEMU is an experimental QEMU environment for Nikon Z7 II C 1.70 firmware
 research. It provides a dedicated ARM machine, strict firmware input validation,
 and reproducible experiments for memory initialization, MMU permissions and
-display-state predicates. Stock reset, shared dual-engine message RAM, scheduler
-ticks and runtime gate completion are implemented. The original gate interrupt
-handler resumes the startup task; a disabled-completion control retains its wait.
-Full camera startup, communication handshakes, menu rendering, LCD live view and
-input routing remain pending. See the latest
-[runtime gate contracts](research/z7ii/runtime_gate.md).
+display-state predicates. Both original engine images plus the original
+controller image boot together to their schedulers with zero execution faults:
+a synthetic battery peer completes the original serial authentication, the
+five-second power policy clears, the shooting application renders and persists,
+and holding the menu key runs the original menu start entry with a full
+structured menu across the screen. Menu item interaction and text semantics,
+LCD live view and the natural production of a few notifications remain pending.
+See the [menu key research](research/z7ii/controller_keys.md) and
+[battery peer](research/z7ii/battery_serial.md) for the current boundaries.
 
 ## Startup structure
 
