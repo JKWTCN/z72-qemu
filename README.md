@@ -228,18 +228,16 @@ The visible `Err` indication and menu interaction remain unresolved.
 
 The [menu key transport](research/z7ii/controller_keys.md) has been traced from
 expander input 9 to bit 15 of the second decoded switch word and the original
-system input callback and application action `0x1c`. Native status codes
-`0x44` and `0x3e` currently inhibit menu processing; boot probes now include
-read-only capture health and resource-header observations. Experimentally
-removing the inhibition (an accepted resource-version fixture plus a cleared
-state list) keeps the list empty, but the menu application still does not
-start; the action-conversion trigger is the next boundary. Menu display and
-interaction remain unverified.
+system input callback and application action `0x1c`. Boot probes include
+read-only capture health and resource-header observations. An experimental
+group-32 header with the storage end marker now loads through the original
+copy path and removes status `0x44`, without changing the runtime status list.
 
 The [synchronization event path](research/z7ii/sampling_sync.md#同步事件与原厂等待)
 now delivers external events through the native interrupt and callback. One
-supplied pulse removed the observed `0x3e` timeout status; the zero resource
-header still produces `0x44` and inhibits the menu.
+supplied pulse removes the observed `0x3e` timeout status. Combined with the
+experimental header, this reaches mode 4 with an empty status list; continued
+execution then adds `0x3f`. Menu display and interaction remain unverified.
 
 ## Firmware input
 

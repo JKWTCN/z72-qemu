@@ -21,10 +21,10 @@ from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.graphics_boot_probe import (application_observation,
                                        capture_health_observation,
                                        controller_input_observation,
-                                       graphics_observation)
+                                       graphics_observation, system_observation)
 from tools.battery_boot_probe import shooting_active
-from tools.create_lab_parameters import parameter_images
-from tools.dual_boot_probe import dual_machine
+from tools.create_lab_parameters import parameter_images, resource_header_image
+from tools.dual_boot_probe import dual_machine, sample_cores
 
 MENU_PIN = 9
 
@@ -91,7 +91,9 @@ def run(args):
                       firmware_sha256=identities, controller_sha256=CONTROLLER_SHA256,
                       firmware_modified=False, experimental_nonce_bridge=True,
                       factory_calibration=False, full_boot_verified=False,
-                      menu_verified=False, observations=[])
+                      menu_verified=False, resource_header_only=args.resource_header,
+                      sync_pulse_requested=args.sync_pulse, sync_pulse_supplied=False,
+                      observations=[])
         try:
             resident = bytearray(0xC000)
             resident[:4] = b'MAKE'
@@ -119,6 +121,10 @@ def run(args):
             devices += tuple(
                 f"nikon-z72-controller-register-bank,bus=master-i2c{i},address=104"
                 for i in range(4))
+            if args.resource_header:
+                (work / 'group32.bin').write_bytes(resource_header_image())
+                devices += (f"loader,file={work / 'group32.bin'},"
+                            "addr=0x13e80000,force-raw=on",)
             process, remote = dual_machine(
                 args.qemu, work,
                 master, slave,
@@ -142,6 +148,13 @@ def run(args):
             gpios = re.findall(r"(device\[\d+\]) \(child<nikon-z72-controller-gpio>\)",
                                listing.decode())
             gpios.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
+            if args.sync_pulse:
+                configs = re.findall(
+                    r"(device\[\d+\]) \(child<nikon-z72-boot-config>\)", listing.decode())
+                configs.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
+                require(len(configs) == 2, 'Expected two engine synchronization receivers')
+                require(remote.command('Z0,102d949e,2') == 'OK',
+                        'Could not observe the original synchronization wait')
             for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1),
                                       (6, 7, 1), (1, 11, 1), (6, 14, 1), (6, 15, 1)):
                 wire.sendall(f"set_irq_in /machine/unattached/{gpios[index]} "
@@ -151,13 +164,41 @@ def run(args):
             def resume():
                 remote.sock.settimeout(args.seconds)
                 try:
-                    remote.command('vCont;c')
+                    response = remote.command('vCont;c')
                 except TimeoutError:
                     remote.interrupt()
+                    return
+                if args.sync_pulse and not report['sync_pulse_supplied']:
+                    match = re.search(r'thread:([0-9a-f]+);', response)
+                    require(match is not None, 'Missing synchronization stop thread')
+                    remote.select_thread(int(match[1], 16))
+                    registers = remote.regs()
+                    require(remote.get(registers, 'pc') == 0x102d949e and
+                            remote.get(registers, 'r0') == 0xb18a764c and
+                            remote.get(registers, 'r1') == 8 and
+                            remote.get(registers, 'r3') == 50,
+                            'Unexpected original synchronization wait')
+                    mask = int.from_bytes(remote.read(0x20060040, 4), 'little')
+                    require(mask & 0x10, 'Synchronization event is masked')
+                    for level in (1, 0):
+                        wire.sendall(f"set_irq_in /machine/unattached/{configs[0]} "
+                                     f"sync-event 15 {level}\n".encode())
+                        require(wire.recv(1024).strip() == b'OK', 'Synchronization input failed')
+                    report['sync_pulse_supplied'] = True
+                    report['sync_pulse'] = dict(line=15, status_bit=4, irq=87,
+                        wait_address='0x102d949e', mask=hex(mask),
+                        counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
+                    require(remote.command('z0,102d949e,2') == 'OK',
+                            'Could not remove synchronization observation point')
+                    try:
+                        remote.command('vCont;c')
+                    except TimeoutError:
+                        remote.interrupt()
 
             def sample(stage):
                 observation = dict(stage=stage,
                     application=application_observation(remote),
+                    system=system_observation(remote),
                     graphics=graphics_observation(remote),
                     capture_health=capture_health_observation(remote),
                     controller_input=controller_input_observation(remote))
@@ -166,6 +207,15 @@ def run(args):
                     remote.read(0x04266008, 8), 'little')
                 observation['counter_frequency'] = int.from_bytes(
                     remote.read(0x04266010, 4), 'little')
+                observation['cores'] = sample_cores(remote)
+                observation['engine_faults'] = []
+                for thread in range(1, 5):
+                    remote.select_thread(thread)
+                    observation['engine_faults'].append(dict(thread=thread,
+                        registers={name: hex(remote.read_register(name)) for name in
+                                   ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}))
+                remote.select_thread(5)
+                observation['controller_fault_status'] = remote.read(0xe000ed28, 8).hex()
                 report['observations'].append(observation)
                 return observation
 
@@ -173,6 +223,11 @@ def run(args):
                 for _ in range(args.windows):
                     resume()
                     observation = sample(stage)
+                    require(not any(int(value, 16) for core in observation['engine_faults']
+                                    for value in core['registers'].values()),
+                            'Engine recorded an execution fault')
+                    require(observation['controller_fault_status'] == '0000000000000000',
+                            'Controller recorded an execution fault')
                     print(f'{stage}: app={observation["application"]["current_index"]} '
                           f'menu={observation["controller_input"]["decoded_menu_bit"]}',
                           flush=True)
@@ -258,6 +313,10 @@ def main():
     parser.add_argument('--seconds', type=int, default=15)
     parser.add_argument('--windows', type=int, default=24)
     parser.add_argument('--settle-seconds', type=float, default=5)
+    parser.add_argument('--resource-header', action='store_true',
+                        help='Load an experimental group-32 header with a zero resource body')
+    parser.add_argument('--sync-pulse', action='store_true',
+                        help='Supply one external synchronization pulse at the original wait')
     arguments = parser.parse_args()
     run(arguments)
 

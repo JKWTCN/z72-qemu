@@ -47,6 +47,15 @@ def check(qemu):
                     remote.write(source, original)
                     base = 0x20070000 + channel * 0x40
                     irq_bit = 1 << (7 + channel)
+                    require(access(base + 0x0c, read=True) == 0,
+                            'Memory error detail word is not readable')
+                    remote.set(pc=BASE, cpsr=0xd3, r0=0xffffffff, r1=base + 0x0c)
+                    remote.command('s')
+                    regs = remote.regs()
+                    require(remote.get(regs, 'pc') == 16 and
+                            remote.get(regs, 'cpsr') & 31 == 0x17 and
+                            access(base + 0x0c, read=True) == 0,
+                            'Software changed read-only memory error details')
 
                     def submit(mode, target=destination, input_address=source):
                         for offset, value in ((4, 0x10), (0x14, mode), (0x18, 0x5a),

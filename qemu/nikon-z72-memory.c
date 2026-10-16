@@ -125,20 +125,22 @@ static void memory_complete_second(void *opaque)
     memory_complete(opaque, 1);
 }
 
-static bool memory_register(hwaddr offset, unsigned size)
+static bool memory_register(hwaddr offset, unsigned size, bool write)
 {
     unsigned local = offset & 0x3f;
     return size == 4 && !(offset & 3) && offset < 0x80 &&
-           local != 0x0c && local < 0x34;
+           (!write || local != 0x0c) && local < 0x34;
 }
 
 static MemTxResult memory_read(void *opaque, hwaddr offset, uint64_t *value,
                               unsigned size, MemTxAttrs attrs)
 {
     Z72Memory *s = opaque;
-    if (!memory_register(offset, size)) {
+    if (!memory_register(offset, size, false)) {
         return MEMTX_ERROR;
     }
+    /* Native error handlers read +0x0c bits 16/20 for channel diagnostics.
+     * Detailed classification is not modeled; this read-only word stays zero. */
     *value = s->registers[offset / 4];
     return MEMTX_OK;
 }
@@ -148,7 +150,7 @@ static MemTxResult memory_write(void *opaque, hwaddr offset, uint64_t value,
 {
     Z72Memory *s = opaque;
     unsigned channel = offset / 0x40, local = offset & 0x3f;
-    if (!memory_register(offset, size)) {
+    if (!memory_register(offset, size, true)) {
         return MEMTX_ERROR;
     }
     if (local == 8) {
