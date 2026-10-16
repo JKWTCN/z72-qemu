@@ -237,7 +237,9 @@ The [synchronization event path](research/z7ii/sampling_sync.md#同步事件与�
 now delivers external events through the native interrupt and callback. One
 supplied pulse removes the observed `0x3e` timeout status. Combined with the
 experimental header, this reaches mode 4 with an empty status list; continued
-execution then adds `0x3f`. Menu display and interaction remain unverified.
+execution then adds `0x3f`, and a menu press in one such run stopped before
+the application action consumer with no foreground rewrite after
+initialization. Menu display and interaction remain unverified.
 
 ## Firmware input
 
