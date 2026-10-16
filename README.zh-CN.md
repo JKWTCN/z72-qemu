@@ -15,6 +15,12 @@ Z72 QEMU 是面向 Nikon Z7 II C 1.70 固件分析的实验性 QEMU 环境，提
 前台应用退出。当前画面仍有 `Err`，菜单交互和正常完整启动尚未验证，见
 [界面持续运行观察](artifacts/shooting_persistence_validation/report.json)。
 
+[菜单键传输](research/z7ii/controller_keys.md)已端到端映射：逐个驱动
+键扫描扩展器输入，经原厂去抖、轮询和串行传输后各对应解码开关字的
+一个位；扩展器输入 3 即菜单输入（第二个开关字的位 0）。解码开关字
+只是输入状态快照，从开关字到应用管理器的按键事件分发尚未定位，
+菜单显示与交互仍待后续阶段。
+
 另外支持独立 slave 初始化实验：分析并验证两份 EG 的启动入口、栈、初始化表和
 任务记录，分别执行原厂复制及清零例程。详细地址和验证边界见
 [启动结构](research/z7ii/startup_structure.md)。
