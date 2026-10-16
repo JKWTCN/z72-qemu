@@ -226,6 +226,10 @@ the internal mode 3 → 1 transition for 11.50 sampled virtual seconds; see the
 [persistence observation](artifacts/shooting_persistence_validation/report.json).
 The visible `Err` indication and menu interaction remain unresolved.
 
+The [menu key transport](research/z7ii/controller_keys.md) has been traced from
+expander input 9 to bit 15 of the second decoded switch word and the original
+system input callback. Menu display and interaction remain unverified.
+
 ## Firmware input
 
 Supply your own legally obtained, extracted, unmodified C1.70 master EG:

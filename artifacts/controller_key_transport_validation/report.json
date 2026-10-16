@@ -70,14 +70,9 @@
   "menu_mapping": {
     "firmware_label": "ID_SW1_MENU",
     "switch_word": 1,
-    "mask": "0x1",
-    "payload_offset": 74,
-    "controller_aggregate": "0x2001152c",
-    "secondary_source": "0x20011690",
-    "secondary_source_offset": 70,
-    "source_update": "0x0803d164",
-    "source_snapshot": "0x08037fa8",
-    "source_snapshot_buffer": "0x20015ad0",
+    "mask": "0x8000",
+    "payload_offset": 67,
+    "controller_aggregate": "0x20011525",
     "physical_input_verified": false
   },
   "limitations": [
@@ -85,5 +80,6 @@
     "The verified external input does not represent the menu bit.",
     "Menu input sampling, application delivery and menu display remain unverified.",
     "The primary state prefix is retained without assigning unverified field meanings."
-  ]
+  ],
+  "interpretation_correction": "Name-table masks follow the 32-byte name at offset 36; the earlier menu interpretation used the previous entry. Pin 1 transport observations are unchanged."
 }

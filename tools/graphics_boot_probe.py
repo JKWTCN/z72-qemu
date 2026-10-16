@@ -87,7 +87,7 @@ def controller_input_observation(remote):
     remote.select_thread(5)
     expander = remote.read(0x2001ff50, 9)
     primary = remote.read(0x200159a4, 16)
-    menu = remote.read(0x2001152c, 1)[0]
+    menu = remote.read(0x20011525, 1)[0]
     remote.select_thread(1)
     switches = struct.unpack('<3I', remote.read(0xb25eaeac, 12))
     return dict(expander_mode=expander[0],
@@ -97,7 +97,7 @@ def controller_input_observation(remote):
                 primary_state_prefix=primary.hex(),
                 controller_menu_aggregate=menu,
                 decoded_switch_words=[hex(value) for value in switches],
-                decoded_menu_bit=bool(switches[1] & 1))
+                decoded_menu_bit=bool(switches[1] & 0x8000))
 
 
 def sensor_observation(remote):

@@ -158,7 +158,7 @@ def run(args):
                                listing.decode())
             gpios.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
             for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1),
-                                      (6, 7, 1), (1, 11, 1)):
+                                      (6, 7, 1), (1, 11, 1), (6, 14, 1), (6, 15, 1)):
                 wire.sendall(f"set_irq_in /machine/unattached/{gpios[index]} "
                              f"unnamed-gpio-in {pin} {level}\n".encode())
                 assert wire.recv(1024).strip() == b'OK'
