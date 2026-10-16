@@ -239,7 +239,18 @@ supplied pulse removes the observed `0x3e` timeout status. Combined with the
 experimental header, this reaches mode 4 with an empty status list; continued
 execution then adds `0x3f`, and a menu press in one such run stopped before
 the application action consumer with no foreground rewrite after
-initialization. Menu display and interaction remain unverified.
+initialization.
+
+Holding the menu input from the first ready foreground takes a different,
+working route: the original firmware runs the menu start entry `0x1044e3ae`
+directly, the foreground switches to the menu application (index 1), it
+stays foreground after the release, and the captured 720x480 frame shows a
+full structured menu across the screen. The menu key probe reproduces this
+(`--resource-header --sync-pulse --settle-seconds 0`, key held until the
+switch). Action-chain analysis also recovered the general switch machinery:
+a type-1 system event synthesizes action `0x50`, whose handler stores the
+foreground-switch request; a late press instead yields the unhandled raw
+action `0x1c`. Menu item interaction and text semantics remain unverified.
 
 ## Firmware input
 

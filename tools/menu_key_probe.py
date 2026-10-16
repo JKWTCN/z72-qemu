@@ -258,15 +258,25 @@ def run(args):
             baseline = observe('baseline', settled)
             require(int(baseline['controller_input']['decoded_switch_words'][0], 16)
                     & 0x0c000000 == 0, 'External shutter inputs remain asserted')
+            # Hold the menu input: the original pipeline needs the key level
+            # present across its polling cycles to start the menu application.
             drive(MENU_PIN, 0)
-            observe('pressed', lambda item: item['controller_input']['decoded_menu_bit'])
+            pressed = observe('pressed',
+                              lambda item: item['controller_input']['decoded_menu_bit'])
+            menu_opened = observe('menu-start',
+                                  lambda item: item['application']['current_index'] == 1)
             drive(MENU_PIN, 1)
-            observe('released', lambda item: not item['controller_input']['decoded_menu_bit'])
+            observe('released',
+                    lambda item: not item['controller_input']['decoded_menu_bit'])
             report['key_transport_verified'] = True
-            # Foreground selection alone does not prove visible menu rendering.
-            report['menu_application_observed'] = any(
-                item['application']['current_index'] == 1
-                for item in report['observations'])
+            report['menu_application_observed'] = True
+            report['menu_start_held_virtual_seconds'] = menu_opened.get(
+                'settled_seconds', menu_opened.get('counter_ticks'))
+            # The menu application must remain foreground after the release.
+            stayed = observe('menu-steady',
+                             lambda item: item['application']['current_index'] == 1
+                             and not item['controller_input']['decoded_menu_bit'])
+            report['menu_application_steady'] = stayed['application']['current_index'] == 1
             screenshot = str(args.destination.resolve() / 'interface.ppm')
             if os.name == 'nt':
                 screenshot = linux(screenshot)
