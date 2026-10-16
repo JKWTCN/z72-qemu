@@ -1,0 +1,99 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Local browser console HTTP transport and original menu navigation",
+  "firmware_modified": false,
+  "firmware_included": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "qemu_sha256": "10a4ab5eca1a7eb96511c7e350182322f0cb6327b698eb86d1d76def9428fe6a",
+  "experimental_battery_peer": true,
+  "experimental_resource_header_only": true,
+  "factory_calibration": false,
+  "initial_sync_pulses": 1,
+  "full_boot_verified": false,
+  "http_input_and_frame_verified": true,
+  "browser_rendering_verified": false,
+  "browser_click_automation_verified": false,
+  "firmware_free_checks": {
+    "command": "python -B -m unittest checks.test_web_console -v",
+    "passed": 9,
+    "javascript_syntax_checked": true
+  },
+  "menu_input": {
+    "pin": 9,
+    "pressed_level": 0,
+    "held_until_application_index": 1,
+    "released": true,
+    "remained_foreground": true
+  },
+  "navigation_input": {
+    "pin": 4,
+    "pressed_level": 0,
+    "held_host_seconds": 8,
+    "released": true,
+    "observed": "Highlight moved from Delete to Playback folder; no item was activated"
+  },
+  "menu_frame": {
+    "width": 720,
+    "height": 480,
+    "sha256": "9d288fc3df32993956e099c7fc1bde4a29a44b2431e30170f2dc0df3d918f1f4",
+    "nonblack_pixels": 282736
+  },
+  "navigation_frame": {
+    "width": 720,
+    "height": 480,
+    "sha256": "5e920c0c39e0e0e5b0674874e99dcb8de6bf3d14b72ffac18190fab0dbafd275",
+    "nonblack_pixels": 282736
+  },
+  "captures_included": false,
+  "events": [
+    {
+      "phase": "starting",
+      "error": null,
+      "ready": false,
+      "uptime": 28
+    },
+    {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 37,
+      "execution": "running",
+      "index": 3,
+      "held": [],
+      "input_ready": false
+    },
+    {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 136,
+      "execution": "running",
+      "index": 1,
+      "held": [
+        9
+      ],
+      "input_ready": true
+    },
+    {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "uptime": 136,
+      "execution": "running",
+      "index": 1,
+      "held": [],
+      "input_ready": true
+    }
+  ],
+  "limitations": [
+    "Only the downward navigation action was exercised in the original menu",
+    "Menu item activation and all other controls are not verified by this run",
+    "The initial application switch precedes completion of menu rendering",
+    "The resource body and sensor frames are not validated"
+  ]
+}

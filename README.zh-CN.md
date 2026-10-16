@@ -1,5 +1,8 @@
 # Z72 QEMU
 
+[浏览器交互台](docs/browser.md)支持实时画面、按住输入、键盘快捷键与重启。
+使用 `tools/web_console.py` 指定三份固件后，打开 `http://127.0.0.1:8666` 即可操作。
+
 [English](README.md) · [架构](docs/architecture.md) · [开发状态](docs/porting.md) · [固件](docs/firmware.md) · [测试](docs/testing.md) · [发布](docs/publication.md) · [研究索引](research/README.md)
 
 Z72 QEMU 是面向 Nikon Z7 II C 1.70 固件分析的实验性 QEMU 环境，提供独立 ARM

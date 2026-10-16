@@ -2,6 +2,10 @@
 
 [中文](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Development status](docs/porting.md) · [Firmware](docs/firmware.md) · [Testing](docs/testing.md) · [Publication](docs/publication.md) · [Research](research/README.md)
 
+The [local browser console](docs/browser.md) provides live display frames,
+held keys, keyboard shortcuts and restart controls. Run `tools/web_console.py`
+with the three firmware paths and open `http://127.0.0.1:8666`.
+
 Z72 QEMU is an experimental QEMU environment for Nikon Z7 II C 1.70 firmware
 research. It provides a dedicated ARM machine, strict firmware input validation,
 and reproducible experiments for memory initialization, MMU permissions and

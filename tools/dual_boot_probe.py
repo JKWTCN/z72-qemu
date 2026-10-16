@@ -35,7 +35,7 @@ SLAVE_SERVICE = (0x10038000, 0x1003A000)
 def dual_machine(qemu, directory, master, slave, console, globals_=(),
                  icount="shift=0,sleep=off", trace="int", controller_firmware=None,
                  devices=(), controller_link=False, controller_flash_data=None,
-                 extra_arguments=()):
+                 extra_arguments=(), process_factory=None):
     require(not controller_link or controller_firmware is not None,
             'Controller link requires a controller firmware image')
     require(controller_flash_data is None or controller_firmware is not None,
@@ -75,7 +75,7 @@ def dual_machine(qemu, directory, master, slave, console, globals_=(),
     command.extend(extra_arguments)
     (directory/'command.json').write_text(json.dumps(command, indent=2)+'\n',
                                           encoding='utf-8')
-    process = subprocess.Popen(command, stdout=subprocess.DEVNULL,
+    process = (process_factory or subprocess.Popen)(command, stdout=subprocess.DEVNULL,
         stderr=(directory/'qemu.log').open('wb'),
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
     try:
