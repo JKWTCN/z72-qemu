@@ -1,0 +1,422 @@
+{
+  "format": 1,
+  "passed": true,
+  "menu_pin": 9,
+  "sweep_pins": [
+    4,
+    5,
+    6,
+    7,
+    3,
+    8
+  ],
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "resource_header_only": true,
+  "sync_pulse_supplied": true,
+  "full_boot_verified": false,
+  "steps": [
+    {
+      "pin": 4,
+      "screenshots": {
+        "after": "pin-4.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 4,
+          "switches": [
+            "0x210",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 226344007,
+          "application": 1
+        },
+        {
+          "phase": "release",
+          "pin": 4,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 235113132,
+          "application": 1
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x10",
+        "0x0",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 1,
+      "changed_row_bands": [
+        [
+          431,
+          468
+        ]
+      ]
+    },
+    {
+      "pin": 5,
+      "screenshots": {
+        "after": "pin-5.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 5,
+          "switches": [
+            "0x220",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 260545010,
+          "application": 1
+        },
+        {
+          "phase": "release",
+          "pin": 5,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 268956561,
+          "application": 1
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x20",
+        "0x0",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 1,
+      "changed_row_bands": []
+    },
+    {
+      "pin": 6,
+      "screenshots": {
+        "after": "pin-6.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 6,
+          "switches": [
+            "0x280",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 294656216,
+          "application": 1
+        },
+        {
+          "phase": "release",
+          "pin": 6,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 302648182,
+          "application": 1
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x80",
+        "0x0",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 1,
+      "changed_row_bands": []
+    },
+    {
+      "pin": 7,
+      "screenshots": {
+        "after": "pin-7.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 7,
+          "switches": [
+            "0x240",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 327995649,
+          "application": 1
+        },
+        {
+          "phase": "release",
+          "pin": 7,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 336220201,
+          "application": 1
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x40",
+        "0x0",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 1,
+      "changed_row_bands": [
+        [
+          16,
+          17
+        ],
+        [
+          28,
+          31
+        ],
+        [
+          42,
+          43
+        ],
+        [
+          114,
+          161
+        ],
+        [
+          166,
+          213
+        ],
+        [
+          218,
+          265
+        ],
+        [
+          270,
+          317
+        ],
+        [
+          322,
+          369
+        ],
+        [
+          374,
+          421
+        ],
+        [
+          426,
+          473
+        ]
+      ]
+    },
+    {
+      "pin": 3,
+      "screenshots": {
+        "after": "pin-3.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 3,
+          "switches": [
+            "0x200",
+            "0x1",
+            "0x0"
+          ],
+          "ticks": 361925075,
+          "application": 1
+        },
+        {
+          "phase": "release",
+          "pin": 3,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 370322566,
+          "application": 1
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x0",
+        "0x1",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 1,
+      "changed_row_bands": []
+    },
+    {
+      "pin": 8,
+      "screenshots": {
+        "after": "pin-8.ppm"
+      },
+      "observations": [
+        {
+          "phase": "press",
+          "pin": 8,
+          "switches": [
+            "0x200",
+            "0x2",
+            "0x0"
+          ],
+          "ticks": 396111977,
+          "application": 2
+        },
+        {
+          "phase": "release",
+          "pin": 8,
+          "switches": [
+            "0x200",
+            "0x0",
+            "0x0"
+          ],
+          "ticks": 404605022,
+          "application": 2
+        }
+      ],
+      "switch_delta_during_press": [
+        "0x0",
+        "0x2",
+        "0x0"
+      ],
+      "press_reached_engine": true,
+      "released": true,
+      "foreground_after": 2,
+      "changed_row_bands": [
+        [
+          0,
+          59
+        ],
+        [
+          62,
+          473
+        ]
+      ]
+    }
+  ],
+  "error": null,
+  "baseline_switch_words": [
+    "0x200",
+    "0x0",
+    "0x0"
+  ],
+  "menu_opened": true,
+  "menu_baseline_switch_words": [
+    "0x200",
+    "0x0",
+    "0x0"
+  ],
+  "scope": "Controller-input sweep inside the open original menu: decoded switch deltas, foreground changes and frame differences",
+  "frame_differences": {
+    "note": "Per-pixel comparison against the rendered menu baseline",
+    "pin-4": {
+      "changed_pixels": 60906,
+      "row_bands": [
+        [
+          62,
+          109
+        ],
+        [
+          114,
+          161
+        ],
+        [
+          430,
+          469
+        ]
+      ]
+    },
+    "pin-5": {
+      "changed_pixels": 0,
+      "row_bands": []
+    },
+    "pin-6": {
+      "changed_pixels": 0,
+      "row_bands": []
+    },
+    "pin-7": {
+      "changed_pixels": 49213,
+      "row_bands": [
+        [
+          0,
+          59
+        ],
+        [
+          62,
+          109
+        ],
+        [
+          173,
+          209
+        ],
+        [
+          225,
+          261
+        ],
+        [
+          328,
+          360
+        ],
+        [
+          362,
+          363
+        ],
+        [
+          380,
+          415
+        ],
+        [
+          430,
+          469
+        ]
+      ]
+    },
+    "pin-3": {
+      "changed_pixels": 0,
+      "row_bands": []
+    },
+    "pin-8": {
+      "changed_pixels": 39600,
+      "row_bands": [
+        [
+          0,
+          59
+        ],
+        [
+          62,
+          473
+        ]
+      ]
+    }
+  },
+  "conclusions": [
+    "Input 4 moves the menu highlight down one item (rows 62-109 to 114-161) and updates the bottom description strip",
+    "Input 5 returns the display exactly to the baseline (highlight moved up from the second item back to the first)",
+    "Input 6 leaves the first menu tab unchanged (left at the leftmost tab)",
+    "Input 7 redraws the title bar and the whole item list (right switches the tab)",
+    "Input 3 reaches the engine as the confirmation switch bit without a visible change on the tab page",
+    "Input 8 switches the foreground to the playback application (index 2)"
+  ],
+  "limitations": [
+    "Up and left assignments follow from the no-op and return-to-baseline behavior of a single sweep order",
+    "The menu does not reopen after it closes; see the status-append trace",
+    "A confirmation press produced no visible change on the top-level tab page"
+  ]
+}

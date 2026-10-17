@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Native breakpoint at the status-append entry while the menu key is held",
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "breakpoint_entry": "0x1035ed5c",
+  "captured": [
+    {
+      "stop": 17,
+      "pc": "0x1035ed5c",
+      "lr": "0x10394cd1",
+      "r0": "0x3f",
+      "r1": "0x0",
+      "r6": "0x4200181",
+      "r7": "0x40",
+      "r8": "0x4"
+    }
+  ],
+  "conclusions": [
+    "The append entry receives status code 0x3f in r0 from caller 0x10394ccc (return address 0x10394cd1)",
+    "The notification record at r4 carries source 0x04200181 and event bits 1 in its halfword at +8",
+    "After this append the status list contains 0x3f while the menu application is foreground, and later held menu presses no longer switch the foreground"
+  ],
+  "limitations": [
+    "The subsystem that raises the record event bits was not identified",
+    "The bounded hold that opens the menu the first time was verified before this trace; reopening remains blocked"
+  ],
+  "note": "Register summary only; raw stack bytes stay in the local run directory and are not published"
+}
