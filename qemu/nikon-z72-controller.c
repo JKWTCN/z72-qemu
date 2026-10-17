@@ -547,6 +547,7 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
                                        qdev_get_gpio_in(config, port * 16 + pin));
         }
         if (port == 6) {
+            object_property_add_const_link(owner, "keys-gpio", OBJECT(gpio));
             s->switch_input = qdev_get_gpio_in(gpio, 5);
             qemu_set_irq(s->switch_input, s->power_switch);
             s->wake_signal = qdev_get_gpio_in(gpio, 7);

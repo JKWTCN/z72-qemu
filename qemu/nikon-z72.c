@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Z7 II C1.70 instruction laboratory with bounded early boot registers. */
 #include "qemu/osdep.h"
+#include "qemu/timer.h"
 #include "qapi/error.h"
 #include "hw/boards.h"
 #include "hw/sysbus.h"
@@ -523,6 +524,9 @@ struct NikonZ72BootConfig {
     uint32_t dbi_regions[2 * 16 * 7];
     uint32_t input_levels[8];
     uint32_t sync_levels[2];
+    bool frame_sync;
+    uint64_t frame_sync_count;
+    QEMUTimer *frame_sync_timer;
 };
 
 static bool dbi_accepts(void *opaque, hwaddr offset, unsigned size,
@@ -708,6 +712,33 @@ static void sync_event(void *opaque, int line, int level)
     s->sync_levels[bank] = level ? s->sync_levels[bank] | bit :
                                   s->sync_levels[bank] & ~bit;
     sync_update_irqs(s);
+}
+
+/* Optional laboratory timing source; no sensor pixels or sample results.
+ * Bank 1 bit 4 follows the pending/mask/acknowledge path of input 15.
+ * The 30 Hz period is a functional choice, not a measured sensor rate. */
+static void frame_sync_tick(void *opaque)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    *boot_config_value(s, 0x20060044) |= 0x10;
+    s->frame_sync_count++;
+    sync_update_irqs(s);
+    timer_mod(s->frame_sync_timer,
+              qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 33333333);
+}
+
+static void frame_sync_enable(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    if (!level) {
+        timer_del(s->frame_sync_timer);
+    } else if (s->frame_sync && s->master_role &&
+               !timer_pending(s->frame_sync_timer)) {
+        timer_mod(s->frame_sync_timer,
+                  qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 33333333);
+    }
 }
 
 static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
@@ -1303,6 +1334,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->dbi_viewport = 0;
     memset(s->input_levels, 0, sizeof(s->input_levels));
     memset(s->sync_levels, 0, sizeof(s->sync_levels));
+    timer_del(s->frame_sync_timer);
+    s->frame_sync_count = 0;
     input_update_irqs(s);
     sync_update_irqs(s);
     if (s->intc) {
@@ -1357,8 +1390,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 31,
-    .minimum_version_id = 31,
+    .version_id = 32,
+    .minimum_version_id = 32,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1367,6 +1400,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(dbi_regions, NikonZ72BootConfig, 2 * 16 * 7),
         VMSTATE_UINT32_ARRAY(input_levels, NikonZ72BootConfig, 8),
         VMSTATE_UINT32_ARRAY(sync_levels, NikonZ72BootConfig, 2),
+        VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
+        VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -1388,10 +1423,14 @@ static const VMStateDescription boot_config_vmstate = {
 static void boot_config_init(Object *obj)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
+    s->frame_sync_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, frame_sync_tick, s);
+    object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
+                                   OBJ_PROP_FLAG_READ);
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
     qdev_init_gpio_in_named(DEVICE(obj), sync_event, "sync-event", 11 + 32);
+    qdev_init_gpio_in_named(DEVICE(obj), frame_sync_enable, "frame-sync-enable", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
     /* Sparse containers keep unsupported words unassigned and avoid the
@@ -1405,6 +1444,14 @@ static void boot_config_init(Object *obj)
         s->words[i].device = s;
         s->words[i].index = i;
     }
+}
+
+static void boot_config_finalize(Object *obj)
+{
+    NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
+
+    timer_del(s->frame_sync_timer);
+    timer_free(s->frame_sync_timer);
 }
 
 static void boot_config_realize(DeviceState *dev, Error **errp)
@@ -1577,6 +1624,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
          * device completions while the guest runs under software execution. */
         DEFINE_PROP_UINT32("timer-tick-us", NikonZ72BootConfig, timer_tick_us, 10000),
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
+        DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),
         DEFINE_PROP_BOOL("master-role", NikonZ72BootConfig, master_role, true),
@@ -1608,6 +1656,7 @@ static void boot_config_register_types(void)
         .parent = TYPE_SYS_BUS_DEVICE,
         .instance_size = sizeof(NikonZ72BootConfig),
         .instance_init = boot_config_init,
+        .instance_finalize = boot_config_finalize,
         .class_init = boot_config_class_init,
     };
     type_register_static(&info);

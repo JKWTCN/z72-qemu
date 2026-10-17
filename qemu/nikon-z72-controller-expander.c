@@ -4,6 +4,7 @@
 #include "qapi/visitor.h"
 #include "hw/i2c/i2c.h"
 #include "hw/irq.h"
+#include "hw/qdev-properties.h"
 #include "hw/resettable.h"
 #include "migration/vmstate.h"
 
@@ -20,6 +21,8 @@ struct Z72Expander {
     uint8_t pointer;
     bool expect_pointer;
     bool increment;
+    DeviceState *interrupt_gpio;
+    uint8_t interrupt_pin;
     qemu_irq irq;
 };
 
@@ -229,11 +232,33 @@ static const VMStateDescription expander_state = {
     .unmigratable = true,
 };
 
+static void expander_realize(DeviceState *dev, Error **errp)
+{
+    Z72Expander *s = Z72_EXPANDER(dev);
+
+    if (s->interrupt_pin >= 16) {
+        error_setg(errp, "Expander interrupt pin must be below 16");
+        return;
+    }
+    if (s->interrupt_gpio) {
+        qdev_connect_gpio_out(DEVICE(dev), 0,
+            qdev_get_gpio_in(s->interrupt_gpio, s->interrupt_pin));
+    }
+}
+
+static const Property expander_properties[] = {
+    DEFINE_PROP_LINK("interrupt-gpio", Z72Expander, interrupt_gpio,
+                     "nikon-z72-controller-gpio", DeviceState *),
+    DEFINE_PROP_UINT8("interrupt-pin", Z72Expander, interrupt_pin, 8),
+};
+
 static void expander_class_init(ObjectClass *klass, const void *data)
 {
     DeviceClass *dc = DEVICE_CLASS(klass);
     I2CSlaveClass *ic = I2C_SLAVE_CLASS(klass);
     dc->vmsd = &expander_state;
+    device_class_set_props(dc, expander_properties);
+    dc->realize = expander_realize;
     ic->event = expander_event;
     ic->send = expander_send;
     ic->recv = expander_receive;
