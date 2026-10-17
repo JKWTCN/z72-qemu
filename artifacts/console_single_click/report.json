@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "passed": true,
+  "cycles": [
+    {
+      "cycle": 0,
+      "uptime": 247,
+      "menu_opened": true,
+      "menu_closed": true
+    },
+    {
+      "cycle": 1,
+      "uptime": 246,
+      "menu_opened": true,
+      "menu_closed": true
+    }
+  ],
+  "transport": "local HTTP console interface",
+  "menu_clicks_per_cycle": 1,
+  "exit_clicks_per_cycle": 1
+}

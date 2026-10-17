@@ -462,3 +462,15 @@ written. The run also records whether a later second menu tap reopens the
 menu: a capture status raised while the menu application runs is not cleared
 in this combination, so the reopen stays a documented boundary. See the
 [steady-state interaction evidence](../artifacts/menu_steady_interaction/report.json).
+
+`tools/console_interaction_check.py` repeats that acceptance through the
+browser console's own local HTTP interface, the same path a person uses. Each
+cycle restarts the console machine in place, waits for the shooting
+foreground, settles far past the old startup window, then performs exactly one
+short menu click and one short exit click; a cycle passes only when the
+foreground switches to the menu application and back on those single clicks.
+The real-time virtual clock stays unusable here (the machine never reaches the
+foreground under it), and accelerating the guest clock with a larger
+instruction-count shift breaks startup the same way, so the acceptance runs
+on the default clock. See the
+[single-click console evidence](../artifacts/console_single_click/report.json).
