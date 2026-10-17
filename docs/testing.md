@@ -450,3 +450,15 @@ acknowledgement behaviour, role isolation and reset. The browser console
 holds a quick menu click until the foreground leaves the shooting
 application; `checks.test_web_console` covers that hold, its expiry and
 cancellation without firmware.
+
+`tools/menu_interaction_probe.py` boots with the periodic frame
+synchronization source and the controller key interrupt wired, the same
+combination the interactive console uses. After the shooting application has
+stabilised well beyond any startup window, it taps the menu input for a tenth
+of a guest second and requires the original menu application to become
+foreground, then taps the exit input and requires the shooting application
+back. Both presses are short taps; nothing is held and no firmware state is
+written. The run also records whether a later second menu tap reopens the
+menu: a capture status raised while the menu application runs is not cleared
+in this combination, so the reopen stays a documented boundary. See the
+[steady-state interaction evidence](../artifacts/menu_steady_interaction/report.json).

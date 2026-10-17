@@ -50,7 +50,7 @@ function releaseAll() {
 }
 
 // Names recovered from the firmware input tables; blank entries are unknown.
-const pinNames = {0: '退出菜单·实测', 1: '释放模式', 2: 'I 键', 3: 'OK', 4: '下',
+const pinNames = {0: 'EXIT 退出菜单', 1: '释放模式', 2: 'I 键', 3: 'OK', 4: '下',
   5: '上', 6: '左', 7: '右', 8: '播放', 9: '菜单', 10: '显示', 20: 'ISO',
   22: '缩略图', 23: '变焦'};
 for (let pin = 0; pin < 24; pin++) {
@@ -93,7 +93,7 @@ document.querySelectorAll('[data-pin]').forEach(button => {
 });
 
 // Firmware-confirmed inputs: 3 OK, 8 playback, 9 menu, 4/5/6/7 pad directions.
-const shortcuts = {KeyM: 9, KeyP: 8, Enter: 3, ArrowUp: 5, ArrowDown: 4, ArrowLeft: 6, ArrowRight: 7};
+const shortcuts = {KeyM: 9, KeyP: 8, Enter: 3, KeyX: 0, ArrowUp: 5, ArrowDown: 4, ArrowLeft: 6, ArrowRight: 7};
 function shortcut(event, down) {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.code === 'Escape' && down) { if (!event.repeat) releaseAll(); return; }
