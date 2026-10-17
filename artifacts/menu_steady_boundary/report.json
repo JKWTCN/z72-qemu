@@ -1,0 +1,1972 @@
+{
+  "format": 1,
+  "passed": true,
+  "menu_pin": 9,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "full_boot_verified": true,
+  "menu_verified": false,
+  "resource_header_only": true,
+  "sync_pulse_supplied": true,
+  "observations": [
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 0,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819848",
+        "current_mode": 0,
+        "previous_mode": 255,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          2,
+          0,
+          64
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 0,
+        "pending_settings_bitmap": 11
+      },
+      "graphics": {
+        "successful_uploads": 6,
+        "render_requests": 0,
+        "rendered_commands": 3,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 0,
+        "target_address": 3089394432,
+        "target_dimensions": 2097184,
+        "target_format": 0,
+        "target_second_plane": 0
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 0,
+        "status_codes": [],
+        "menu_blocking_status_codes": [],
+        "menu_inhibited_by_status": false,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 26379851,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 0
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 0,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819988",
+        "current_mode": 2,
+        "previous_mode": 1,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          1,
+          1
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 6,
+        "render_requests": 0,
+        "rendered_commands": 3,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 0,
+        "target_address": 3089394432,
+        "target_dimensions": 2097184,
+        "target_format": 0,
+        "target_second_plane": 0
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 0,
+        "status_codes": [],
+        "menu_blocking_status_codes": [],
+        "menu_inhibited_by_status": false,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 51223909,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 188,
+        "render_requests": 0,
+        "rendered_commands": 155,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 0,
+        "status_codes": [],
+        "menu_blocking_status_codes": [],
+        "menu_inhibited_by_status": false,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 80581986,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 0.0
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 446,
+        "render_requests": 0,
+        "rendered_commands": 473,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3200643584,
+        "target_dimensions": 31458000,
+        "target_format": 0,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 105030995,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 0.5093543541666666
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 702,
+        "render_requests": 0,
+        "rendered_commands": 820,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 129600413,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 1.0212172291666666
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 810,
+        "render_requests": 0,
+        "rendered_commands": 946,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 155382034,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 1.5583343333333333
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 966,
+        "render_requests": 0,
+        "rendered_commands": 1136,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 180026181,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 2.0717540625
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1046,
+        "render_requests": 0,
+        "rendered_commands": 1228,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 205923226,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 2.6112758333333335
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1202,
+        "render_requests": 0,
+        "rendered_commands": 1418,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 230486318,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 3.1230069166666667
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1286,
+        "render_requests": 0,
+        "rendered_commands": 1518,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 256358383,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 3.6620082708333332
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1438,
+        "render_requests": 0,
+        "rendered_commands": 1700,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 280609040,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 4.167230291666667
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1506,
+        "render_requests": 0,
+        "rendered_commands": 1778,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 305577811,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 4.6874130208333336
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1654,
+        "render_requests": 0,
+        "rendered_commands": 1958,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 330083118,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 5.19794025
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1714,
+        "render_requests": 0,
+        "rendered_commands": 2030,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3418025984,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3419422720
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 354921526,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 5.715407083333333
+    },
+    {
+      "stage": "baseline",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1858,
+        "render_requests": 0,
+        "rendered_commands": 2202,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 379701922,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 3,
+      "ring_read": 3,
+      "settled_seconds": 6.231665333333333
+    },
+    {
+      "stage": "after-release",
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 1858,
+        "render_requests": 0,
+        "rendered_commands": 2202,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 1,
+        "status_codes": [
+          "0x3f"
+        ],
+        "menu_blocking_status_codes": [
+          "0x3f"
+        ],
+        "menu_inhibited_by_status": true,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "counter_ticks": 380349864,
+      "counter_frequency": 48000000,
+      "key_parameters": {
+        "0x1145": 34,
+        "0x114a": 41,
+        "0x114f": 9,
+        "0x1153": 4,
+        "0x1158": 4,
+        "0x115c": 9,
+        "0x1182": 9,
+        "0x1278": 27,
+        "0x168c": 0
+      },
+      "ring_write": 4,
+      "ring_read": 4
+    }
+  ],
+  "routed_actions": [
+    {
+      "stop": 0,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380347983,
+      "application": 3
+    },
+    {
+      "stop": 1,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348109,
+      "application": 3
+    },
+    {
+      "stop": 2,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348204,
+      "application": 3
+    },
+    {
+      "stop": 3,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348251,
+      "application": 3
+    },
+    {
+      "stop": 4,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348280,
+      "application": 3
+    },
+    {
+      "stop": 5,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348311,
+      "application": 3
+    },
+    {
+      "stop": 6,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348314,
+      "application": 3
+    },
+    {
+      "stop": 7,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348322,
+      "application": 3
+    },
+    {
+      "stop": 8,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348322,
+      "application": 3
+    },
+    {
+      "stop": 9,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348322,
+      "application": 3
+    },
+    {
+      "stop": 10,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348343,
+      "application": 3
+    },
+    {
+      "stop": 11,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348525,
+      "application": 3
+    },
+    {
+      "stop": 12,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348815,
+      "application": 3
+    },
+    {
+      "stop": 13,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380348934,
+      "application": 3
+    },
+    {
+      "stop": 14,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349014,
+      "application": 3
+    },
+    {
+      "stop": 15,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349080,
+      "application": 3
+    },
+    {
+      "stop": 16,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349122,
+      "application": 3
+    },
+    {
+      "stop": 17,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349168,
+      "application": 3
+    },
+    {
+      "stop": 18,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349535,
+      "application": 3
+    },
+    {
+      "stop": 19,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349691,
+      "application": 3
+    },
+    {
+      "stop": 20,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349798,
+      "application": 3
+    },
+    {
+      "stop": 21,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349842,
+      "application": 3
+    },
+    {
+      "stop": 22,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349860,
+      "application": 3
+    },
+    {
+      "stop": 23,
+      "phase": "pressed",
+      "action": 28,
+      "ticks": 380349864,
+      "application": 3
+    }
+  ],
+  "errors": [],
+  "steady_parameters": {
+    "0x1145": 34,
+    "0x114a": 41,
+    "0x114f": 9,
+    "0x1153": 4,
+    "0x1158": 4,
+    "0x115c": 9,
+    "0x1182": 9,
+    "0x1278": 27,
+    "0x168c": 0
+  },
+  "steady_ring": [
+    3,
+    3
+  ],
+  "final_ring": [
+    4,
+    4
+  ],
+  "final_application": 3,
+  "menu_action_routed": true,
+  "switch_action_routed": false
+}

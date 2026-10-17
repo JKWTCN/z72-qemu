@@ -432,6 +432,18 @@ end the useful sweep order. Reopening the menu after it closes remains
 outside the probe; see the
 [input map evidence](../artifacts/menu_navigation_validation/report.json).
 
+`tools/menu_boundary_probe.py` measures where a menu key press stops after
+the shooting application has fully stabilised. It reads the application
+input-method key parameters from their descriptor-resolved storage, records
+the input request ring indices across the key edges, and observes the
+application action router through a single observation point. The passing
+report shows the menu action `0x1c` repeatedly routed while no application
+switch request appears and the foreground stays on the shooting application;
+it documents the steady-state boundary without writing firmware state. Only
+one software breakpoint is used per run because this QEMU reports just the
+first inserted one. See the
+[steady-state boundary evidence](../artifacts/menu_steady_boundary/report.json).
+
 The frame synchronization source has a firmware-free qtest
 (`tests/test_frame_sync.py --qemu ...`) covering period, pending and
 acknowledgement behaviour, role isolation and reset. The browser console
