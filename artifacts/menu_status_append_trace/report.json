@@ -32,5 +32,11 @@
     "The subsystem that raises the record event bits was not identified",
     "Held-key sampling shows no route-2 traffic by design; only key edges generate input messages"
   ],
-  "note": "Register summary only; raw stack bytes stay in the local run directory and are not published"
+  "note": "Register summary only; raw stack bytes stay in the local run directory and are not published",
+  "steady_chain": [
+    "Key edges in the steady state update the controller summary and the engine switch words",
+    "The route-2 dispatch reaches the decoder and its consumer in the same dispatch; both slots stay registered",
+    "The system-event wrapper runs with kind 4 and the app input method receives the input state containing the menu bit",
+    "The foreground switch write never runs; the drop is inside the app input method parameter checks"
+  ]
 }
