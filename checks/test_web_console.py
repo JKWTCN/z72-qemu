@@ -4,6 +4,7 @@ import http.client
 import json
 import struct
 import threading
+import time
 import unittest
 from unittest.mock import Mock, call
 import zlib
@@ -210,6 +211,72 @@ class WebConsoleTests(unittest.TestCase):
             self.assertFalse(machine.status()['menu_inhibited'])
         finally:
             machine.process = machine.qmp = None
+            machine.close()
+
+    def test_menu_click_is_held_until_foreground_moves(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        commands = []
+        machine._ready = lambda: None
+        machine._key_clock = lambda: (0, 1000)
+        machine._qtest = commands.append
+        machine.app_index = 3
+        try:
+            machine.set_key(9, 0)
+            machine.set_key(9, 1)
+            # The release request is deferred while the foreground is shooting.
+            self.assertEqual(commands,
+                             ['set_irq_in /machine/peripheral/keys pins 9 0'])
+            self.assertIn(9, machine.held)
+            self.assertFalse(machine.requested_keys)
+            self.assertTrue(machine.menu_release_held)
+
+            def words(address, count):
+                return [1, 0, 0, 0, 1 if address == 0xb1811e40 else 3]
+
+            machine._words = words
+            machine.menu_poll_ticks = 5
+            with machine.io:
+                machine._menu_hold_step()
+            self.assertEqual([line[-1] for line in commands], ['0', '1'])
+            self.assertNotIn(9, machine.held)
+            self.assertFalse(machine.menu_release_held)
+            self.assertEqual(machine.app_index, 1)
+        finally:
+            machine.close()
+
+    def test_menu_hold_expires_and_release_all_stops_it(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        commands = []
+        machine._ready = lambda: None
+        clock = [0]
+        machine._key_clock = lambda: (clock[0], 1000)
+        machine._qtest = commands.append
+        machine.app_index = 3
+        try:
+            machine.set_key(9, 0)
+            machine.set_key(9, 1)
+            machine.menu_deadline = time.monotonic() - 1
+            machine.menu_poll_ticks = 5
+            machine._words = lambda address, count: [1, 0, 0, 0, 3]
+            with machine.io:
+                machine._menu_hold_step()
+            self.assertEqual([line[-1] for line in commands], ['0', '1'])
+            self.assertFalse(machine.menu_release_held)
+
+            clock[0] = 200
+            machine.set_key(9, 0)
+            machine.set_key(9, 1)
+            self.assertTrue(machine.menu_release_held)
+            machine.release()
+            self.assertEqual([line[-1] for line in commands],
+                             ['0', '1', '0', '1'])
+            self.assertFalse(machine.menu_release_held)
+            self.assertFalse(machine.held)
+        finally:
             machine.close()
 
 

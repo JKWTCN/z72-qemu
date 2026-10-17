@@ -1,0 +1,84 @@
+{
+  "format": 1,
+  "passed": true,
+  "steps": [
+    {
+      "step": "menu-open",
+      "held": [],
+      "index": 1
+    },
+    {
+      "step": "down-1",
+      "pin": 4,
+      "index": 1,
+      "changed_pixels": 60906,
+      "changed_rows": 136,
+      "expect_change": true
+    },
+    {
+      "step": "down-2",
+      "pin": 4,
+      "index": 1,
+      "changed_pixels": 60470,
+      "changed_rows": 96,
+      "expect_change": true
+    },
+    {
+      "step": "up-1",
+      "pin": 5,
+      "index": 1,
+      "changed_pixels": 60906,
+      "changed_rows": 136,
+      "expect_change": true
+    },
+    {
+      "step": "left-1",
+      "pin": 6,
+      "index": 1,
+      "changed_pixels": 60906,
+      "changed_rows": 136,
+      "expect_change": false
+    },
+    {
+      "step": "right-1",
+      "pin": 7,
+      "index": 1,
+      "changed_pixels": 49184,
+      "changed_rows": 293,
+      "expect_change": true
+    },
+    {
+      "step": "ok-1",
+      "pin": 3,
+      "index": 1,
+      "changed_pixels": 60906,
+      "changed_rows": 136,
+      "expect_change": null
+    }
+  ],
+  "error": null,
+  "final_status": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": null,
+    "uptime": 207,
+    "execution": "running",
+    "index": 1,
+    "held": [],
+    "input_ready": true
+  },
+  "scope": "HTTP-driven browser console: quick menu click with the bounded auto-hold, then in-menu direction, confirmation and playback inputs with per-pixel frame comparisons",
+  "frame_baseline": "The rendered menu before any navigation input",
+  "conclusions": [
+    "A quick menu click opens the original menu through the bounded hold without a manual long press",
+    "Two down inputs move the highlight two items; one up input moves it back one item (the standing frame difference matches the single-down state)",
+    "Left on the first tab and confirmation on the tab page leave the frame unchanged; right switches the tab",
+    "The menu application stays foreground after all inputs"
+  ],
+  "limitations": [
+    "Frame differences are compared against the pre-navigation menu frame, not between consecutive clicks",
+    "The menu reopen boundary documented in the research notes still applies",
+    "Screenshots remain in the local run directory and are not published"
+  ]
+}

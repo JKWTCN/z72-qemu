@@ -29,6 +29,10 @@ from tools.dual_boot_probe import dual_machine
 
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
+MENU_PIN = 9
+# Bounded in host time: under the default instruction-count clock the guest
+# runs slower than the wall clock, so the foreground switch can take minutes.
+MENU_HOLD_SECONDS = 240
 WEB = ROOT / 'web'
 
 
@@ -113,6 +117,11 @@ class Machine:
         self.next_key_ticks = {}
         self.key_deadline = 0
         self.started_at = None
+        self.menu_open_pending = False
+        self.menu_release_held = False
+        self.menu_deadline = 0
+        self.menu_poll_ticks = 0
+        self.app_index = None
         self.shutdown = threading.Event()
         self.worker = None
         self.watchdog = threading.Thread(target=self._release_expired, daemon=True)
@@ -191,7 +200,8 @@ class Machine:
             (work / name).write_bytes(data)
         devices = (
             'nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',
-            'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys',
+            'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys,'
+            'interrupt-gpio=/machine/controller/keys-gpio,interrupt-pin=8',
             f'nikon-z72-controller-register-bank,bus=controller-i2c0,address=107,initial-state={work / "primary.bin"}',
             f'nikon-z72-controller-register-bank,bus=controller-i2c0,address=13,initial-state={work / "aux.bin"}')
         devices += tuple(f'loader,file={work / name},addr={address:#x},force-raw=on'
@@ -201,9 +211,13 @@ class Machine:
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
-            work / 'console.txt', trace='guest_errors', controller_firmware=self.args.controller,
+            work / 'console.txt',
+            icount=None if self.args.realtime else 'shift=0,sleep=off',
+            trace='guest_errors',
+            controller_firmware=self.args.controller,
             controller_link=True, controller_flash_data=work / 'resident.bin', devices=devices,
-            globals_=tuple(f'nikon-z72-controller-adc.channel{c}={v}'
+            globals_=('nikon-z72-boot-config.frame-sync=on',) +
+                     tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
             process_factory=Launcher)
         self.started_at = time.monotonic()
@@ -244,6 +258,7 @@ class Machine:
                 'Synchronization input is masked')
         for level in (1, 0):
             self._qtest(f'set_irq_in /machine/unattached/{configs[0]} sync-event 15 {level}')
+        self._qtest(f'set_irq_in /machine/unattached/{configs[0]} frame-sync-enable 0 1')
         require(self.remote.command(f'z0,{SYNC_WAIT:x},2') == 'OK', 'Could not remove observation point')
         # Detaching resumes execution and leaves all subsequent access to the monitor.
         require(self.remote.command('D') == 'OK', 'Could not resume the machine')
@@ -298,6 +313,16 @@ class Machine:
                 'Invalid key input')
         with self.io:
             self._ready()
+            if pin == MENU_PIN and level == 0:
+                # The original menu start executes while the key stays held,
+                # so a quick click is stretched to a bounded hold.
+                self.menu_open_pending = self.app_index == 3
+                self.menu_deadline = time.monotonic() + MENU_HOLD_SECONDS
+            if pin == MENU_PIN and level == 1 and self.menu_open_pending and \
+                    time.monotonic() < self.menu_deadline:
+                self.menu_release_held = True
+                self.requested_keys.discard(pin)
+                return
             events = self.key_events.setdefault(pin, deque())
             previous = events[-1] if events else int(pin not in self.held)
             if level != previous:
@@ -311,6 +336,30 @@ class Machine:
                 self.requested_keys.discard(pin)
             self._advance_keys()
 
+    def _menu_hold_step(self):
+        """Keep a released menu click pressed until the foreground moves on.
+
+        The press edge was already delivered; the original firmware runs its
+        direct menu start only while the input stays low, so the release is
+        delayed until the application switches or the bounded hold expires.
+        """
+        if not self.menu_release_held:
+            return
+        self.menu_poll_ticks += 1
+        expired = time.monotonic() >= self.menu_deadline
+        if expired or self.menu_poll_ticks % 6 == 0:
+            try:
+                index = self._words(APP_MANAGER, 5)[4] & 255
+                self.app_index = index
+            except (OSError, ValueError, RuntimeError):
+                return
+            if expired or index != 3:
+                self.menu_release_held = False
+                self.menu_open_pending = False
+                self._qtest(f'set_irq_in /machine/peripheral/keys pins '
+                            f'{MENU_PIN} 1')
+                self.held.discard(MENU_PIN)
+
     def release(self):
         with self.io:
             self._release()
@@ -319,6 +368,8 @@ class Machine:
         self.key_events.clear()
         self.next_key_ticks.clear()
         self.requested_keys.clear()
+        self.menu_open_pending = False
+        self.menu_release_held = False
         for pin in tuple(self.held):
             self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} 1')
             self.held.remove(pin)
@@ -333,6 +384,7 @@ class Machine:
             with self.io:
                 if self.phase == 'running':
                     try:
+                        self._menu_hold_step()
                         if self.requested_keys and time.monotonic() > self.key_deadline:
                             self._release()
                         else:
@@ -367,6 +419,7 @@ class Machine:
             words = self._words(APP_MANAGER, 5)
             state.update(ready=words[0] == 1, index=words[4] & 255,
                          held=sorted(self.held))
+            self.app_index = state['index']
             state['input_ready'] = state['ready'] and state['index'] in (1, 2, 4)
             if state['ready'] and state['index'] == 3:
                 graphics = {name: self.qmp.command('qom-get',
@@ -500,6 +553,9 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--port', type=int, default=8666)
     parser.add_argument('--wsl', action='store_true', help='Run the Linux QEMU build through WSL on Windows')
+    parser.add_argument('--realtime', action='store_true',
+                        help='Try the real-time virtual clock; menu opening '
+                             'prefers the default instruction-count clock')
     parser.add_argument('--open-browser', action='store_true')
     args = parser.parse_args()
     require(1 <= args.port <= 65535, 'Invalid HTTP port')

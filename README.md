@@ -13,9 +13,12 @@ display-state predicates. Both original engine images plus the original
 controller image boot together to their schedulers with zero execution faults:
 a synthetic battery peer completes the original serial authentication, the
 five-second power policy clears, the shooting application renders and persists,
-and a short menu-key input runs the original menu start entry with a full
-structured menu across the screen. Menu item interaction and text semantics,
-LCD live view and the natural production of a few notifications remain pending.
+and a menu-key input runs the original menu start entry with a full structured
+menu across the screen. Inside that menu the recovered input map moves the
+highlight with the four direction inputs, switches tabs, and reaches the
+confirmation bit; the playback input switches the foreground application.
+Menu reopening after it closes, menu text semantics, LCD live view and the
+natural production of a few notifications remain pending.
 See the [menu key research](research/z7ii/controller_keys.md) and
 [battery peer](research/z7ii/battery_serial.md) for the current boundaries.
 
