@@ -246,6 +246,57 @@ class WebConsoleTests(unittest.TestCase):
         finally:
             machine.close()
 
+    def test_auto_menu_presses_once_when_shooting_appears(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        machine.auto_menu = True
+        commands = []
+        machine._ready = lambda: None
+        machine._key_clock = lambda: (0, 1000)
+        machine._qtest = commands.append
+        try:
+            self.assertTrue(machine.auto_menu)
+            # Not yet ready: no press even on the polling tick.
+            machine._words = lambda address, count: [0, 0, 0, 0, 3]
+            machine.auto_menu_ticks = 5
+            with machine.io:
+                machine._auto_menu_step()
+            self.assertEqual(commands, [])
+            # Shooting ready: one press and a deferred release.
+            machine._words = lambda address, count: [1, 0, 0, 0, 3]
+            machine.auto_menu_ticks = 5
+            with machine.io:
+                machine._auto_menu_step()
+            self.assertEqual(commands,
+                             ['set_irq_in /machine/peripheral/keys pins 9 0'])
+            self.assertTrue(machine.auto_menu_done)
+            self.assertTrue(machine.menu_release_held)
+            # A later step must not press again.
+            with machine.io:
+                machine._auto_menu_step()
+            self.assertEqual(len(commands), 1)
+        finally:
+            machine.close()
+
+    def test_auto_menu_can_be_disabled(self):
+        machine = Machine(None)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        commands = []
+        machine._ready = lambda: None
+        machine._key_clock = lambda: (0, 1000)
+        machine._qtest = commands.append
+        try:
+            self.assertFalse(machine.auto_menu)
+            machine._words = lambda address, count: [1, 0, 0, 0, 3]
+            machine.auto_menu_ticks = 5
+            with machine.io:
+                machine._auto_menu_step()
+            self.assertEqual(commands, [])
+        finally:
+            machine.close()
+
     def test_menu_hold_expires_and_release_all_stops_it(self):
         machine = Machine(None)
         machine.shutdown.set()

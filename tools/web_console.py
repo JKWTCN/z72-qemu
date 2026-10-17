@@ -33,6 +33,7 @@ MENU_PIN = 9
 # Bounded in host time: under the default instruction-count clock the guest
 # runs slower than the wall clock, so the foreground switch can take minutes.
 MENU_HOLD_SECONDS = 240
+AUTO_MENU_POLL_TICKS = 6
 WEB = ROOT / 'web'
 
 
@@ -122,6 +123,9 @@ class Machine:
         self.menu_deadline = 0
         self.menu_poll_ticks = 0
         self.app_index = None
+        self.auto_menu = bool(getattr(args, 'auto_menu', False))
+        self.auto_menu_done = False
+        self.auto_menu_ticks = 0
         self.shutdown = threading.Event()
         self.worker = None
         self.watchdog = threading.Thread(target=self._release_expired, daemon=True)
@@ -140,7 +144,10 @@ class Machine:
             with self.io:
                 self._cleanup()
             self._start()
-            self.phase = 'running'
+            with self.io:
+                self.phase = 'running'
+                self.auto_menu_done = False
+                self.auto_menu_ticks = 0
         except Exception as error:
             self.error = str(error)
             with self.io:
@@ -313,28 +320,54 @@ class Machine:
                 'Invalid key input')
         with self.io:
             self._ready()
-            if pin == MENU_PIN and level == 0:
-                # The original menu start executes while the key stays held,
-                # so a quick click is stretched to a bounded hold.
-                self.menu_open_pending = self.app_index == 3
-                self.menu_deadline = time.monotonic() + MENU_HOLD_SECONDS
-            if pin == MENU_PIN and level == 1 and self.menu_open_pending and \
-                    time.monotonic() < self.menu_deadline:
-                self.menu_release_held = True
-                self.requested_keys.discard(pin)
-                return
-            events = self.key_events.setdefault(pin, deque())
-            previous = events[-1] if events else int(pin not in self.held)
-            if level != previous:
-                events.append(level)
-            if not events:
-                del self.key_events[pin]
-            if level == 0:
-                self.requested_keys.add(pin)
-                self.key_deadline = time.monotonic() + 5
-            else:
-                self.requested_keys.discard(pin)
-            self._advance_keys()
+            self._set_key_locked(pin, level)
+
+    def _set_key_locked(self, pin, level):
+        if pin == MENU_PIN and level == 0:
+            # The original menu start executes while the key stays held,
+            # so a quick click is stretched to a bounded hold.
+            self.menu_open_pending = self.app_index == 3
+            self.menu_deadline = time.monotonic() + MENU_HOLD_SECONDS
+        if pin == MENU_PIN and level == 1 and self.menu_open_pending and \
+                time.monotonic() < self.menu_deadline:
+            self.menu_release_held = True
+            self.requested_keys.discard(pin)
+            return
+        events = self.key_events.setdefault(pin, deque())
+        previous = events[-1] if events else int(pin not in self.held)
+        if level != previous:
+            events.append(level)
+        if not events:
+            del self.key_events[pin]
+        if level == 0:
+            self.requested_keys.add(pin)
+            self.key_deadline = time.monotonic() + 5
+        else:
+            self.requested_keys.discard(pin)
+        self._advance_keys()
+
+    def _auto_menu_step(self):
+        """Press the menu key once while the native start window is open.
+
+        The original firmware executes its direct menu start only in a short
+        span after the shooting foreground first appears. The console presses
+        the physical input at that moment, exactly like a person clicking in
+        time; nothing is written into firmware state.
+        """
+        if not self.auto_menu or self.auto_menu_done:
+            return
+        self.auto_menu_ticks += 1
+        if self.auto_menu_ticks % AUTO_MENU_POLL_TICKS:
+            return
+        try:
+            words = self._words(APP_MANAGER, 5)
+        except (OSError, ValueError, RuntimeError):
+            return
+        self.app_index = words[4] & 255
+        if words[0] == 1 and self.app_index == 3:
+            self.auto_menu_done = True
+            self._set_key_locked(MENU_PIN, 0)
+            self._set_key_locked(MENU_PIN, 1)
 
     def _menu_hold_step(self):
         """Keep a released menu click pressed until the foreground moves on.
@@ -379,11 +412,17 @@ class Machine:
             if self.requested_keys:
                 self.key_deadline = time.monotonic() + 5
 
+    def set_auto_menu(self, enabled):
+        require(type(enabled) is bool, 'Expected a boolean')
+        with self.io:
+            self.auto_menu = enabled
+
     def _release_expired(self):
         while not self.shutdown.wait(0.05):
             with self.io:
                 if self.phase == 'running':
                     try:
+                        self._auto_menu_step()
                         self._menu_hold_step()
                         if self.requested_keys and time.monotonic() > self.key_deadline:
                             self._release()
@@ -420,6 +459,8 @@ class Machine:
             state.update(ready=words[0] == 1, index=words[4] & 255,
                          held=sorted(self.held))
             self.app_index = state['index']
+            state['auto_menu'] = ('off' if not self.auto_menu else
+                                  'pressed' if self.auto_menu_done else 'armed')
             state['input_ready'] = state['ready'] and state['index'] in (1, 2, 4)
             if state['ready'] and state['index'] == 3:
                 graphics = {name: self.qmp.command('qom-get',
@@ -530,6 +571,10 @@ def make_handler(machine):
                     machine.release()
                 elif self.path == '/heartbeat':
                     machine.heartbeat()
+                elif self.path == '/auto-menu':
+                    enabled = request.get('enabled')
+                    require(type(enabled) is bool, 'Expected a boolean enabled field')
+                    machine.set_auto_menu(enabled)
                 elif self.path == '/restart':
                     if not machine.restart():
                         self.send(409, b'{"error":"Restart already in progress"}')
@@ -556,6 +601,10 @@ def main():
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')
+    parser.add_argument('--auto-menu', action='store_true',
+                        help='Press the menu key automatically during the '
+                             'native start window (the manual menu key only '
+                             'works in that early window)')
     parser.add_argument('--open-browser', action='store_true')
     args = parser.parse_args()
     require(1 <= args.port <= 65535, 'Invalid HTTP port')

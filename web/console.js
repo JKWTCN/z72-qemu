@@ -110,6 +110,11 @@ window.addEventListener('blur', releaseAll);
 window.addEventListener('pagehide', releaseAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 $('release').onclick = releaseAll;
+$('auto-menu').onchange = () => {
+  send('/auto-menu', {enabled: $('auto-menu').checked});
+  if ($('auto-menu').checked) notice('将在启动窗口内自动按下菜单键。');
+  else notice('已关闭自动按下菜单，需在拍摄画面刚出现时手动点击 MENU。');
+};
 $('restart').onclick = async () => {
   if (restarting) return;
   restarting = true;
@@ -163,6 +168,8 @@ async function status() {
     running = state.phase === 'running' && state.execution === 'running';
     available = running && state.input_ready === true;
     restarting = state.phase === 'starting';
+    $('auto-menu').checked = state.auto_menu !== 'off';
+    $('auto-menu').disabled = restarting;
     $('connection').textContent = ({starting: '启动中', running: running ? (available ? '运行中' : '初始化中') : '已暂停',
       failed: '启动失败', stopped: '已停止'})[state.phase] || '连接中';
     $('connection').className = `pill ${state.phase}`;
@@ -176,7 +183,8 @@ async function status() {
     else if (restarting) notice('正在启动模拟器，冷启动可能需要几分钟…');
     else if (available && state.index === 1) notice('菜单应用已打开。可继续操作，画面响应以当前固件为准。');
     else if (available && state.menu_inhibited === true) notice('固件当前状态阻止打开菜单，可重启模拟器重试。', true);
-    else if (available) notice('连接就绪。点击 MENU 打开菜单，方向键移动高亮。');
+    else if (available) notice('连接就绪。方向键移动高亮；MENU 仅在拍摄画面刚出现的一小段窗口内有效。');
+    else if (running && state.auto_menu === 'armed') notice('正在启动，将在拍摄画面出现的窗口内自动按下菜单键…');
     else if (running) notice('固件正在初始化显示与输入，请稍候…');
     else notice('模拟器尚未运行，可点击重启。');
     if (running && !seenFrame) frame();

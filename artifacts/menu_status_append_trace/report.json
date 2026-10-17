@@ -25,11 +25,12 @@
   "conclusions": [
     "The append entry receives status code 0x3f in r0 from caller 0x10394ccc (return address 0x10394cd1)",
     "The notification record at r4 carries source 0x04200181 and event bits 1 in its halfword at +8",
-    "After this append the status list contains 0x3f while the menu application is foreground, and later held menu presses no longer switch the foreground"
+    "The status list contains 0x3f while the menu application is foreground",
+    "No causal link to menu reopening is established; the late menu-open boundary is the missing application-switch event synthesis"
   ],
   "limitations": [
     "The subsystem that raises the record event bits was not identified",
-    "The bounded hold that opens the menu the first time was verified before this trace; reopening remains blocked"
+    "Held-key sampling shows no route-2 traffic by design; only key edges generate input messages"
   ],
   "note": "Register summary only; raw stack bytes stay in the local run directory and are not published"
 }
