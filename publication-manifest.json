@@ -123,7 +123,7 @@
     "docs/porting.md": "2c3aba7aaf19c77d533dfad5fac4c6659057d3920eb9a2a45bfe19c4d00d7bf6",
     "docs/publication.md": "9c0aaecc2bc2b4c17c17d881acf0c838d345d7c10aaabe2a857de037b2e68327",
     "docs/reference-sources.json": "638b788bc152e9d3228040064ccd5d5e32f763fe9475af07962c7ea6d1f6a584",
-    "docs/testing.md": "bb1366c3562e1b171100e1faf45b9801710058d4bc8fd40cc30b7fa51483d632",
+    "docs/testing.md": "611a6c37c854670e97b508a65453a55e8e24e311d812e1537c5c399f0f31c986",
     "qemu/nikon-gpu.h": "8e8d13c10b41569e15baa882aa06b401e84349d85a141672cca26fb17487368c",
     "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
     "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",

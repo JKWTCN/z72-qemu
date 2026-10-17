@@ -422,3 +422,19 @@ its destination message and the last timer-start interval. The interval is
 neither remaining time nor proof that the timer is active. Native observation
 correlates slot 0's `0x03000003` message with the subsequent mode request;
 see the [startup timeout evidence](../artifacts/startup_idle_timer_validation/report.json).
+
+`tools/menu_navigation_probe.py` opens the original menu with a held menu
+input and then presses each requested expander input once inside it. The
+report records decoded switch deltas, the foreground index and per-row frame
+differences; it never writes firmware state or substitutes callbacks. The
+menu must stay foreground for a step to count, so inputs that leave the menu
+end the useful sweep order. Reopening the menu after it closes remains
+outside the probe; see the
+[input map evidence](../artifacts/menu_navigation_validation/report.json).
+
+The frame synchronization source has a firmware-free qtest
+(`tests/test_frame_sync.py --qemu ...`) covering period, pending and
+acknowledgement behaviour, role isolation and reset. The browser console
+holds a quick menu click until the foreground leaves the shooting
+application; `checks.test_web_console` covers that hold, its expiry and
+cancellation without firmware.
