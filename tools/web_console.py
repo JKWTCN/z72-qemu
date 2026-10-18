@@ -126,12 +126,17 @@ class Machine:
         self.auto_menu = bool(getattr(args, 'auto_menu', False))
         self.auto_menu_done = False
         self.auto_menu_ticks = 0
+        # Served frames are cached and rate limited so that continuous frame
+        # polling cannot starve key delivery of the monitor lock.
+        self.frame_cache = (0.0, b'')
+        self.frame_interval = 0.05
         self.shutdown = threading.Event()
         self.worker = None
         self.watchdog = threading.Thread(target=self._release_expired, daemon=True)
         self.watchdog.start()
 
     def restart(self):
+        self.frame_cache = (0.0, b'')
         if self.shutdown.is_set() or not self.lifecycle.acquire(blocking=False):
             return False
         self.phase, self.error = 'starting', None
@@ -437,11 +442,20 @@ class Machine:
                         self.phase = 'failed'
 
     def frame_png(self):
+        now = time.monotonic()
+        cached_at, cached = self.frame_cache
+        if cached and now - cached_at < self.frame_interval:
+            return cached
         with self.io:
             self._ready()
             path = self.work / 'frame.ppm'
             self.qmp.command('screendump', {'filename': linux(path) if self.args.wsl else str(path)})
-            return ppm_to_png(path.read_bytes())
+            data = path.read_bytes()
+        # The expensive PNG encoding runs without the lock so the watchdog
+        # thread can keep delivering key events meanwhile.
+        encoded = ppm_to_png(data)
+        self.frame_cache = (time.monotonic(), encoded)
+        return encoded
 
     def status(self):
         state = dict(phase=self.phase, error=self.error, ready=False,

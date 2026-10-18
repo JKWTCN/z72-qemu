@@ -299,7 +299,7 @@
     "tools/system_boot_probe.py": "0fa414f4d7e8bec3dd0fcba33ce5b90adfef43117965e2f06ffc81de09da12e6",
     "tools/transport_boot_probe.py": "eb4eb24bd456da8d3eb5594c07384dea30ad5d662b735df04093985b816ad5d2",
     "tools/verify_release.py": "06bb98852e7f7f6955457f81412d604d37d065523e19ddd5c94be9c62387a73e",
-    "tools/web_console.py": "9cd7e81b165aadda406d417e074e39a533e8894706a7cc7881b2816e631226d6",
+    "tools/web_console.py": "069c2c8c25177958d90a4fcf5c8b0594de7e775ff1d5cabff209f6405fa3d160",
     "web/console.js": "5d94451d857ced532ab389db602b1d5ae3f19b85608a798660344960a7022923",
     "web/index.html": "71f6669145f435223e9e7ca247a41d2ddecf402b3fec55a8fd982138a818e50d",
     "web/style.css": "946221a50ee5b5022d6e7ec94392d35bfb60e3aa8c9dfb2277f2f74bbf3630cb"
