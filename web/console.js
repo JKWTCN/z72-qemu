@@ -130,6 +130,69 @@ $('restart').onclick = async () => {
   await status();
 };
 
+function describeFirmware(entry) {
+  if (!entry) return '未知';
+  const identity = `${entry.version || '版本未知'} · ${(entry.sha256 || '').slice(0, 12)}`;
+  if (entry.source === 'installed')
+    return `已更新 ${identity}${entry.installed_at ? ` · 安装于 ${entry.installed_at.replace('T', ' ').replace('Z', ' UTC')}` : ''}`;
+  return `原厂 ${identity}`;
+}
+
+function paintUpdate(state) {
+  const firmware = state.firmware || {};
+  const current = $('firmware-current');
+  current.textContent = describeFirmware(firmware) +
+    (firmware.store_error ? `（更新存储异常：${firmware.store_error}）` : '');
+  const staged = $('firmware-staged');
+  if (!state.staged) staged.textContent = '未提供';
+  else if (state.staged.error) staged.textContent = `无效：${state.staged.error}`;
+  else staged.textContent = `${state.staged.version} · ${state.staged.sha256.slice(0, 12)}`;
+  $('install-update').disabled = !state.update_ready || restarting;
+  $('remove-update').hidden = !state.update_installed;
+}
+
+$('install-update').onclick = async () => {
+  if (restarting) return;
+  restarting = true;
+  available = running = false;
+  held.clear(); paintKeys();
+  try {
+    await request('/update/install', {});
+    notice('固件更新已安装，正在重启并加载更新固件…');
+  } catch (error) {
+    restarting = false;
+    notice(error.message, true);
+    return;
+  }
+  if (lastUrl) URL.revokeObjectURL(lastUrl);
+  lastUrl = null; seenFrame = false;
+  $('frame').hidden = true;
+  $('placeholder').hidden = false;
+  $('frame-state').textContent = '等待首帧';
+  await status();
+};
+
+$('remove-update').onclick = async () => {
+  if (restarting) return;
+  restarting = true;
+  available = running = false;
+  held.clear(); paintKeys();
+  try {
+    await request('/update/remove', {});
+    notice('已移除安装的更新，正在重启回原厂固件…');
+  } catch (error) {
+    restarting = false;
+    notice(error.message, true);
+    return;
+  }
+  if (lastUrl) URL.revokeObjectURL(lastUrl);
+  lastUrl = null; seenFrame = false;
+  $('frame').hidden = true;
+  $('placeholder').hidden = false;
+  $('frame-state').textContent = '等待首帧';
+  await status();
+};
+
 setInterval(() => { if (held.size) send('/heartbeat'); }, 1000);
 
 async function frame() {
@@ -176,12 +239,15 @@ async function status() {
     document.querySelectorAll('[data-pin]').forEach(button => { button.disabled = !available; });
     $('release').disabled = !available;
     $('restart').disabled = restarting;
+    paintUpdate(state);
     $('application').textContent = '前台应用 · ' + (state.ready ? (names[state.index] || '切换中') : '初始化中');
     const seconds = state.uptime || 0;
     $('uptime').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
     if (state.error) notice(state.error, true);
     else if (restarting) notice('正在启动模拟器，冷启动可能需要几分钟…');
-    else if (available && state.index === 1) notice('菜单应用已打开。可继续操作，画面响应以当前固件为准。');
+    else if (available && state.index === 1) notice(state.update_ready
+      ? '菜单应用已打开。可在“菜单固件更新”中安装待安装镜像。'
+      : '菜单应用已打开。可继续操作，画面响应以当前固件为准。');
     else if (available && state.menu_inhibited === true) notice('固件当前状态阻止打开菜单，可重启模拟器重试。', true);
     else if (available) notice('连接就绪。随时轻按 MENU 打开菜单，EXIT 退出；方向键移动高亮。');
     else if (running && state.auto_menu === 'armed') notice('正在启动，拍摄画面出现后将自动按一次菜单键…');

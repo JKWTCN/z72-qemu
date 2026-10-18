@@ -2,15 +2,19 @@
 """Firmware-free checks for browser input and frame transport."""
 import http.client
 import json
+from pathlib import Path
 import struct
+import tempfile
 import threading
 import time
+import types
 import unittest
 from unittest.mock import Mock, call
 import zlib
 from http.server import ThreadingHTTPServer
 
 from tools.web_console import Machine, make_handler, ppm_to_png
+from checks.synthetic_master import build as build_master
 
 
 class WebConsoleTests(unittest.TestCase):
@@ -73,6 +77,12 @@ class WebConsoleTests(unittest.TestCase):
     def test_restart_conflict(self):
         self.machine.restart.return_value = False
         self.assertEqual(self.request('/restart', {})[0], 409)
+
+    def test_update_endpoints_reach_the_machine(self):
+        self.assertEqual(self.request('/update/install', {})[0], 200)
+        self.machine.install_update.assert_called_once_with()
+        self.assertEqual(self.request('/update/remove', {})[0], 200)
+        self.machine.remove_update.assert_called_once_with()
 
     def test_status_error_is_visible(self):
         self.machine.status.side_effect = RuntimeError('monitor disconnected')
@@ -329,6 +339,122 @@ class WebConsoleTests(unittest.TestCase):
             self.assertFalse(machine.held)
         finally:
             machine.close()
+
+    def update_machine(self):
+        """A running machine with a staged synthetic update candidate."""
+        import shutil
+        work = Path(tempfile.mkdtemp(prefix='web-console-update-'))
+        self.addCleanup(shutil.rmtree, work, True)
+        candidate = work / 'candidate.bin'
+        candidate.write_bytes(build_master())
+        machine = Machine(types.SimpleNamespace(auto_menu=False,
+                                                update_image=candidate,
+                                                update_store=work / 'store'))
+        self.addCleanup(machine.close)
+        machine.shutdown.set()
+        machine.watchdog.join()
+        machine.phase = 'running'
+        machine.process = Mock()
+        machine.process.poll.return_value = None
+        machine._ready = lambda: None
+        machine.restarts = []
+        machine.restart = lambda: machine.restarts.append(True) or True
+        return machine, work
+
+    def test_update_installs_from_the_menu_foreground_only(self):
+        machine, work = self.update_machine()
+        machine._words = lambda address, count: [1, 0, 0, 0, 3]
+        with self.assertRaisesRegex(ValueError, 'menu'):
+                machine.install_update()
+        self.assertFalse(machine.store.installed())
+        machine._words = lambda address, count: [1, 0, 0, 0, 1]
+        manifest = machine.install_update()
+        self.assertTrue(machine.restarts)
+        self.assertEqual(manifest['sha256'], machine.staged['sha256'])
+        identity, image = machine.store.load()
+        self.assertEqual(image, build_master())
+        self.assertEqual(identity['sha256'], manifest['sha256'])
+
+    def test_update_refuses_the_loaded_firmware(self):
+        machine, work = self.update_machine()
+        machine._words = lambda address, count: [1, 0, 0, 0, 1]
+        machine.firmware = dict(machine.staged)
+        with self.assertRaisesRegex(ValueError, 'already'):
+                machine.install_update()
+        self.assertFalse(machine.restarts)
+
+    def test_update_requires_a_staged_image_and_ready_machine(self):
+        machine, work = self.update_machine()
+        machine.update_image = None
+        with self.assertRaisesRegex(ValueError, 'supplied'):
+            machine.install_update()
+        machine.update_image = work / 'candidate.bin'
+        machine._ready = Machine._ready.__get__(machine)
+        machine.phase = 'starting'
+        with self.assertRaisesRegex(ValueError, '就绪|ready'):
+            machine.install_update()
+
+    def test_rollback_removes_the_store_and_restarts(self):
+        machine, work = self.update_machine()
+        with self.assertRaisesRegex(ValueError, 'No installed'):
+                machine.remove_update()
+        machine.store.install(build_master())
+        machine.remove_update()
+        self.assertIsNone(machine.store.installed())
+        self.assertTrue(machine.restarts)
+
+    def test_select_master_prefers_the_verified_store(self):
+        machine, work = self.update_machine()
+        image = build_master(extra=68)
+        machine.store.install(image, note='rebuild')
+        self.assertEqual(machine._select_master(), image)
+        self.assertEqual(machine.firmware['source'], 'installed')
+        self.assertEqual(machine.firmware['sha256'],
+                             __import__('hashlib').sha256(image).hexdigest())
+        self.assertIsNone(machine.firmware['store_error'])
+
+    def test_select_master_falls_back_to_stock_when_the_store_is_broken(self):
+        machine, work = self.update_machine()
+        machine.store.install(build_master())
+        manifest = json.loads(machine.store.manifest_path.read_text(encoding='utf-8'))
+        manifest['sha256'] = '0' * 64
+        machine.store.manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+        stock = build_master()
+        machine.args.master = types.SimpleNamespace(read_bytes=lambda: stock)
+        original = __import__('tools.web_console', fromlist=['analyze_eg']).analyze_eg
+        try:
+            import tools.web_console
+            tools.web_console.analyze_eg = lambda data, role: None
+            self.assertEqual(machine._select_master(), stock)
+            self.assertEqual(machine.firmware['source'], 'stock')
+            self.assertIn('manifest', machine.firmware['store_error'])
+        finally:
+            tools.web_console.analyze_eg = original
+            machine.close()
+
+    def test_status_reports_update_state_and_menu_readiness(self):
+        machine, work = self.update_machine()
+        machine.qmp = Mock()
+        machine.qmp.command.side_effect = lambda name, *args: (
+            {'status': 'running'} if name == 'query-status' else 1)
+
+        def words(address, count):
+            return [1, 0, 0, 0, 1] if address == 0xb1811e40 else [0, 0]
+
+        machine._words = words
+        machine.firmware = dict(source='stock', sha256='a' * 64, version='Ver.01.70.02')
+        state = machine.status()
+        self.assertEqual(state['firmware']['source'], 'stock')
+        self.assertEqual(state['staged']['version'], 'Ver.01.70.02')
+        self.assertIsNone(state['staged']['error'])
+        self.assertTrue(state['update_ready'])
+        self.assertFalse(state['update_installed'])
+
+        def shooting(address, count):
+            return [1, 0, 0, 0, 3] if address == 0xb1811e40 else [0, 0]
+
+        machine._words = shooting
+        self.assertFalse(machine.status()['update_ready'])
 
 
 if __name__ == '__main__':

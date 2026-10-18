@@ -52,6 +52,17 @@
           <label class="toggle"><input id="live" type="checkbox" checked>持续刷新画面</label>
           <button id="restart" class="text-button">重启模拟器 <span>↻</span></button>
         </div>
+        <div class="update" id="update-panel">
+          <div class="eyebrow">FIRMWARE UPDATE</div>
+          <h2>菜单固件更新</h2>
+          <dl class="update-state">
+            <dt>当前固件</dt><dd id="firmware-current">未知</dd>
+            <dt>待安装</dt><dd id="firmware-staged">未提供</dd>
+          </dl>
+          <button id="install-update" class="secondary" disabled>安装并重启</button>
+          <button id="remove-update" class="text-button" hidden>恢复原厂固件</button>
+          <p class="hint">分析固件可见，原厂更新入口先检查存储卡上的更新文件，卡与文件系统尚未建模；此处的安装在菜单应用打开后进行，写入实验更新存储并重启加载。待安装镜像由控制台启动参数提供，本仓库不提供制作或解码工具。</p>
+        </div>
       </aside>
     </div>
     <div id="notice" role="status" aria-live="polite">正在启动模拟器…</div>

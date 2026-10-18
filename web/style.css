@@ -320,6 +320,35 @@ input {
 .text-button:hover {
   color:#efba90
 }
+.update {
+  border-top:1px solid #30332d;
+  margin-top:22px;
+  padding-top:18px;
+  font-size:11px;
+  color:#a3a99a
+}
+.update h2 {
+  margin:6px 0 12px;
+  font-size:15px;
+  color:#efeadb
+}
+.update-state {
+  margin:0 0 12px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:4px 12px
+}
+.update-state dt {
+  color:#7d8474
+}
+.update-state dd {
+  margin:0;
+  color:#c0c5b6;
+  overflow-wrap:anywhere
+}
+.update .hint {
+  margin:12px 0 0
+}
 #notice {
   margin-top:22px;
   font-size:12px;

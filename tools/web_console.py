@@ -21,8 +21,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from analyze.decode_z72 import require
+from analyze.decode_z72 import digest, require
 from analyze.firmware_structure import analyze_eg
+from analyze.update_store import UpdateStore, installable_master
 from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.create_lab_parameters import parameter_images, resource_header_image
 from tools.dual_boot_probe import dual_machine
@@ -30,6 +31,8 @@ from tools.dual_boot_probe import dual_machine
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
 MENU_PIN = 9
+MENU_APPLICATION = 1
+DEFAULT_STORE = ROOT / '.local' / 'console-update-store'
 # Bounded in host time: under the default instruction-count clock the guest
 # runs slower than the wall clock, so the foreground switch can take minutes.
 MENU_HOLD_SECONDS = 240
@@ -126,6 +129,15 @@ class Machine:
         self.auto_menu = bool(getattr(args, 'auto_menu', False))
         self.auto_menu_done = False
         self.auto_menu_ticks = 0
+        # The update store survives machine restarts: an installed image is
+        # re-verified against its manifest on every boot and then loaded in
+        # place of the supplied stock master.
+        self.store = UpdateStore(getattr(args, 'update_store', None) or DEFAULT_STORE)
+        self.update_image = getattr(args, 'update_image', None)
+        self.staged = None
+        self.staged_error = None
+        self.refresh_staged()
+        self.firmware = None
         # Served frames are cached and rate limited so that continuous frame
         # polling cannot starve key delivery of the monitor lock.
         self.frame_cache = (0.0, b'')
@@ -164,9 +176,8 @@ class Machine:
 
     def _start(self):
         import hashlib
-        master, slave = self.args.master.read_bytes(), self.args.slave.read_bytes()
-        for role, data in (('master', master), ('slave', slave)):
-            analyze_eg(data, role)
+        master, slave = self._select_master(), self.args.slave.read_bytes()
+        analyze_eg(slave, 'slave')
         require(hashlib.sha256(self.args.controller.read_bytes()).hexdigest() ==
                 CONTROLLER_SHA256, 'Expected the original controller image')
         (ROOT / '.local').mkdir(exist_ok=True)
@@ -276,6 +287,75 @@ class Machine:
         require(self.remote.command('D') == 'OK', 'Could not resume the machine')
         self.remote.sock.close()
         self.remote = None
+
+    def refresh_staged(self):
+        """Describe the update candidate supplied on the command line."""
+        self.staged, self.staged_error = None, None
+        if self.update_image is None:
+            return
+        try:
+            self.staged = installable_master(self.update_image.read_bytes())
+            self.staged['note'] = str(self.update_image)
+        except (OSError, ValueError) as error:
+            self.staged_error = str(error)
+
+    def _select_master(self):
+        """Load the installed update when present, else the stock master.
+
+        Both paths verify the executed boot structure; the installed path
+        pins the whole-image digest recorded at installation time instead
+        of the stock identity, because an update may change those bytes.
+        """
+        store_error = None
+        try:
+            installed, image = self.store.load()
+        except (OSError, ValueError) as error:
+            installed, image, store_error = None, None, str(error)
+        if installed is not None:
+            self.firmware = dict(source='installed',
+                                 **{key: installed[key] for key in
+                                    ('sha256', 'length', 'version', 'installed_at')},
+                                 note=installed.get('note', ''), store_error=None)
+            return image
+        master = self.args.master.read_bytes()
+        analyze_eg(master, 'master')
+        self.firmware = dict(source='stock', sha256=digest(master),
+                             length=len(master), version=master[0x20:0x2C].decode('ascii'),
+                             installed_at='', note='', store_error=store_error)
+        return master
+
+    def install_update(self):
+        """Complete a menu-driven update through the experimental store.
+
+        The original firmware-update entry scans the memory card through
+        services the laboratory does not model, so installation requires
+        the recovered menu application in the foreground and commits the
+        staged image to the persistent store; the following restart loads
+        it. Returns the installed manifest.
+        """
+        require(self.update_image is not None,
+                'No update image was supplied to this console')
+        with self.io:
+            self._ready()
+            words = self._words(APP_MANAGER, 5)
+            require(words[0] == 1 and words[4] & 255 == MENU_APPLICATION,
+                    'Open the menu first: updates install from the menu application')
+            image = self.update_image.read_bytes()
+            candidate = installable_master(image)
+            require(self.firmware is None or candidate['sha256'] != self.firmware.get('sha256'),
+                    'The staged update already is the loaded firmware')
+            manifest = self.store.install(image, note=str(self.update_image))
+            self.staged = dict(candidate, note=str(self.update_image))
+            self.staged_error = None
+        require(self.restart(), 'Restart already in progress; the update is installed')
+        return manifest
+
+    def remove_update(self):
+        """Roll the console back to the supplied stock master."""
+        with self.io:
+            require(self.store.installed() is not None, 'No installed update to remove')
+            self.store.remove()
+        require(self.restart(), 'Restart already in progress; the rollback is complete')
 
     def _qtest(self, line):
         self.wire_file.write((line + '\n').encode())
@@ -460,7 +540,12 @@ class Machine:
     def status(self):
         state = dict(phase=self.phase, error=self.error, ready=False,
                      menu_inhibited=None,
-                     uptime=int(time.monotonic() - self.started_at) if self.started_at else 0)
+                     uptime=int(time.monotonic() - self.started_at) if self.started_at else 0,
+                     firmware=dict(self.firmware or {}),
+                     staged=(dict(self.staged or {}, error=self.staged_error)
+                             if self.staged or self.staged_error else None),
+                     update_ready=False, update_installed=bool(
+                         self.firmware and self.firmware.get('source') == 'installed'))
         if self.phase != 'running':
             return state
         with self.io:
@@ -476,6 +561,8 @@ class Machine:
             state['auto_menu'] = ('off' if not self.auto_menu else
                                   'pressed' if self.auto_menu_done else 'armed')
             state['input_ready'] = state['ready'] and state['index'] in (1, 2, 4)
+            state['update_ready'] = bool(self.staged and state['ready'] and
+                                         state['index'] == MENU_APPLICATION)
             if state['ready'] and state['index'] == 3:
                 graphics = {name: self.qmp.command('qom-get',
                     {'path': '/machine/master-graphics', 'property': name})
@@ -589,6 +676,10 @@ def make_handler(machine):
                     enabled = request.get('enabled')
                     require(type(enabled) is bool, 'Expected a boolean enabled field')
                     machine.set_auto_menu(enabled)
+                elif self.path == '/update/install':
+                    machine.install_update()
+                elif self.path == '/update/remove':
+                    machine.remove_update()
                 elif self.path == '/restart':
                     if not machine.restart():
                         self.send(409, b'{"error":"Restart already in progress"}')
@@ -619,6 +710,13 @@ def main():
                         help='Press the menu key automatically during the '
                              'native start window (the manual menu key only '
                              'works in that early window)')
+    parser.add_argument('--update-image', type=Path,
+                        help='Master EG candidate installed through the menu-'
+                             'driven firmware update (validated structurally; '
+                             'the project ships no tools to build one)')
+    parser.add_argument('--update-store', type=Path, default=DEFAULT_STORE,
+                        help='Persistent directory holding the installed '
+                             'update and its manifest (survives restarts)')
     parser.add_argument('--open-browser', action='store_true')
     args = parser.parse_args()
     require(1 <= args.port <= 65535, 'Invalid HTTP port')

@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "passed": true,
+  "transport": "local HTTP console interface",
+  "staged": {
+    "role": "master",
+    "length": 38239166,
+    "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
+    "version": "Ver.01.70.02"
+  },
+  "stages": [
+    {
+      "name": "stock-boot",
+      "passed": true,
+      "firmware": {
+        "source": "stock",
+        "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+        "length": 38239098,
+        "version": "Ver.01.70.02",
+        "installed_at": "",
+        "note": "",
+        "store_error": null
+      }
+    },
+    {
+      "name": "gate-refused",
+      "passed": true,
+      "http": 400,
+      "message": "Open the menu first: updates install from the menu application"
+    },
+    {
+      "name": "menu-opened",
+      "passed": true
+    },
+    {
+      "name": "menu-gate-open",
+      "passed": true,
+      "staged_sha": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa"
+    },
+    {
+      "name": "installed-boot",
+      "passed": true,
+      "firmware": {
+        "source": "installed",
+        "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
+        "length": 38239166,
+        "version": "Ver.01.70.02",
+        "installed_at": "2026-10-18T08:38:17+00:00",
+        "note": "D:\\Temporary\\2610\\07\\Z_72_firmware\\artifacts\\c170_histogram_horizon\\master.bin",
+        "store_error": null
+      }
+    },
+    {
+      "name": "restart-keeps-update",
+      "passed": true,
+      "firmware": {
+        "source": "installed",
+        "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
+        "length": 38239166,
+        "version": "Ver.01.70.02",
+        "installed_at": "2026-10-18T08:38:17+00:00",
+        "note": "D:\\Temporary\\2610\\07\\Z_72_firmware\\artifacts\\c170_histogram_horizon\\master.bin",
+        "store_error": null
+      }
+    },
+    {
+      "name": "rollback-to-stock",
+      "passed": true,
+      "firmware": {
+        "source": "stock",
+        "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+        "length": 38239098,
+        "version": "Ver.01.70.02",
+        "installed_at": "",
+        "note": "",
+        "store_error": null
+      }
+    }
+  ]
+}
