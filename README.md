@@ -17,9 +17,17 @@ and a menu-key input runs the original menu start entry with a full structured
 menu across the screen. Inside that menu the recovered input map moves the
 highlight with the four direction inputs, switches tabs, and reaches the
 confirmation bit; the playback input switches the foreground application.
-Menu reopening after it closes, menu text semantics, LCD live view and the
-natural production of a few notifications remain pending.
-See the [menu key research](research/z7ii/controller_keys.md) and
+Firmware analysis recovered the original menu firmware-update service, its
+card-file naming rules and package-check library, so the browser console now
+completes a menu-gated update: with a candidate master supplied from outside
+the repository, the install requires the menu application in the foreground,
+commits an atomically verified update store, and the restarted machine loads
+the installed image (with rollback to the supplied stock master). The card,
+file-system and flash-write stages stay host-side stand-ins. Menu reopening
+after it closes, menu text semantics, LCD live view and the natural
+production of a few notifications remain pending.
+See the [menu key research](research/z7ii/controller_keys.md),
+[menu firmware update](research/z7ii/firmware_update.md) and
 [battery peer](research/z7ii/battery_serial.md) for the current boundaries.
 
 ## Startup structure

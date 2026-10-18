@@ -474,3 +474,16 @@ foreground under it), and accelerating the guest clock with a larger
 instruction-count shift breaks startup the same way, so the acceptance runs
 on the default clock. See the
 [single-click console evidence](../artifacts/console_single_click/report.json).
+
+`tools/console_update_check.py` drives the menu-gated firmware update over
+the same HTTP path with an update candidate supplied from outside the
+repository. It requires an install attempt outside the menu to be rejected,
+opens the menu with one click, installs, and verifies the machine restarts
+onto the installed image and reaches the shooting foreground again;
+`--verify-restart` reboots once more to prove persistence and
+`--verify-rollback` returns to the supplied stock master. The firmware-free
+sides are `checks.test_update_store` (synthetic structure images: candidate
+acceptance/rejection and store lifecycle) and the update cases of
+`checks.test_web_console` (menu gate, identical-firmware refusal, stock
+fallback on a broken store, status reporting). See the
+[menu update evidence](../artifacts/menu_update_validation/report.json).

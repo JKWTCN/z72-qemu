@@ -66,6 +66,19 @@ launch.
   protects the recorded address research; it is a validation boundary, not
   a restriction of the emulator. Adapt or extend the probes if you research
   a different image.
+- **Installed update images** are the one sanctioned exception, and only
+  inside the console update store. A candidate supplied through
+  `tools/web_console.py --update-image` is accepted when it preserves the
+  executed boot structure (window-bounded length, zero CRC residue,
+  version record, reset branch, initialization-table count, communication
+  window and boot prefix); the stock digests above deliberately do not
+  apply because an update may change those bytes. The manifest written at
+  installation time is the local trust anchor: every boot re-verifies the
+  stored image against it before loading, and a broken store falls back to
+  the supplied stock master with a visible error. See
+  [menu firmware update](../research/z7ii/firmware_update.md). The store
+  contains only images you supplied; this repository still ships no
+  decoding, extraction, repacking or image-building tools.
 
 ## Local outputs
 

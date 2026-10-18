@@ -5,9 +5,16 @@ controller image to their schedulers with zero execution faults. A synthetic
 battery peer completes the original serial authentication, the five-second
 power policy clears, the shooting application renders and persists, and
 a short menu-key input runs the original menu start entry with a full
-structured menu across the screen. Menu item interaction, text semantics and
-LCD live view remain pending; see the
-[menu key research](../research/z7ii/controller_keys.md). Earlier runtime
+structured menu across the screen. Firmware analysis recovered the original
+menu firmware-update service, so the browser console completes a menu-gated
+update: a candidate master supplied from outside the repository installs
+only while the menu application is foreground, commits an atomically
+verified persistent store, and the restarted machine loads the installed
+image with rollback to the supplied stock master; card, file-system and
+flash-write stages stay host-side stand-ins. Menu item interaction, text
+semantics and LCD live view remain pending; see the
+[menu key research](../research/z7ii/controller_keys.md) and
+[menu firmware update](../research/z7ii/firmware_update.md). Earlier runtime
 gate behaviour is unchanged and still covered by the
 [runtime gate contracts](../research/z7ii/runtime_gate.md).
 
