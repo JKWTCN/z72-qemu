@@ -696,6 +696,15 @@ static void sync_update_irqs(NikonZ72BootConfig *s)
             }
             qemu_set_irq(qdev_get_gpio_in(s->intc, 86 + bank - 32), pending != 0);
         }
+        /* The third synchronization path carries the automatic sample event.
+         * Its pending bit is not part of the two mask/status banks above; a
+         * periodic pulse keeps the sampling state machine moving while the
+         * laboratory source is armed. */
+        if (s->frame_sync_count &&
+            timer_pending(s->frame_sync_timer)) {
+            qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), 1);
+            qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), 0);
+        }
     }
 }
 
