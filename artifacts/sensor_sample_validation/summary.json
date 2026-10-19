@@ -105,6 +105,99 @@
       "menu_reopened": null,
       "passed": true,
       "errors": []
+    },
+    "sweep_counter": {
+      "shooting_steady": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_control": "0x1f",
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false
+    },
+    "sweep_counter_mask": {
+      "shooting_steady": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_control": "0x1f",
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false
+    },
+    "sweep_mask": {
+      "shooting_steady": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_control": "0x1f",
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false
+    },
+    "sweep_group1": {
+      "shooting_steady": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_control": "0x1f",
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false
     }
-  }
+  },
+  "line_sweep_conclusion": "Six source configurations produce identical steady observations: the sampled line values and the group-1 timing latch are not the gate; the 0x40 report comes from the capture application session state."
 }

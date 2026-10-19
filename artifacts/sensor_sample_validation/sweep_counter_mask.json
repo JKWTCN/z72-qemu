@@ -1,0 +1,369 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "periodic_frame_sync": true,
+  "sample_source": true,
+  "errors": [],
+  "shooting_steady": true,
+  "steady_observation": {
+    "application": {
+      "initialization_complete": 1,
+      "start_notification_sent": 1,
+      "current_index": 3,
+      "next_index": 5,
+      "state": 2,
+      "applications": [
+        {
+          "index": 0,
+          "name": "APPIDLE",
+          "getter": "0x104377b5",
+          "context": "0xb181d8a4",
+          "ready": 1
+        },
+        {
+          "index": 1,
+          "name": "APPMENU",
+          "getter": "0x1044e301",
+          "context": "0xb1824ea0",
+          "ready": 1
+        },
+        {
+          "index": 2,
+          "name": "APPPLAY",
+          "getter": "0x1073ed91",
+          "context": "0xb1828108",
+          "ready": 1
+        },
+        {
+          "index": 3,
+          "name": "APPLV",
+          "getter": "0x1053cf35",
+          "context": "0xb181d9b8",
+          "ready": 1
+        },
+        {
+          "index": 4,
+          "name": "APPMSG",
+          "getter": "0x1043dccd",
+          "context": "0xb1828064",
+          "ready": 1
+        }
+      ]
+    },
+    "system": {
+      "mode_context": "0xb1819604",
+      "current_mode": 4,
+      "previous_mode": 2,
+      "power_input": 1,
+      "configuration_flags": 8,
+      "configuration_secondary_flags": 8,
+      "transition_inhibitors": [
+        0,
+        0,
+        0
+      ],
+      "deferred_transition_flags": 0,
+      "deferred_target_mode": null,
+      "control_ready_bitmap": 15,
+      "pending_settings_bitmap": 15
+    },
+    "graphics": {
+      "successful_uploads": 128,
+      "render_requests": 0,
+      "rendered_commands": 134,
+      "unsupported_commands": 0,
+      "failed_requests": 0,
+      "surface_address": 3200643584,
+      "target_address": 3414339584,
+      "target_dimensions": 45089792,
+      "target_format": 263,
+      "target_second_plane": 3415736320
+    },
+    "capture_health": {
+      "status_parameter": "0x1921",
+      "status_buffer": "0xb25d4714",
+      "status_count": 1,
+      "status_codes": [
+        "0x40"
+      ],
+      "menu_blocking_status_codes": [
+        "0x40"
+      ],
+      "menu_inhibited_by_status": true,
+      "resource_parameter": 80,
+      "resource_buffer": "0xb7d00000",
+      "resource_storage": "0x13e80000",
+      "resource_version_offset": "0xbe014",
+      "resource_version_bytes": "1500",
+      "resource_version": "0x150",
+      "resource_header_check_passed": true
+    },
+    "chain": {
+      "capture_state": 2,
+      "sub_state": 0,
+      "pending_words": [
+        "0x0"
+      ],
+      "event_bits": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "operation14_trampoline": "0x0",
+      "capture_handlers": [
+        "0x10243691",
+        "0x10243657",
+        "0x10243695",
+        "0x1024365b",
+        "0x1024369b",
+        "0x10243661",
+        "0x102436a1",
+        "0x10243667",
+        "0x102436a5",
+        "0x1024366b",
+        "0x102436ab",
+        "0x10243671",
+        "0x102436b1",
+        "0x10243677",
+        "0x103a04e9",
+        "0x103a04e9",
+        "0x102436bb",
+        "0x10243681"
+      ],
+      "capture_interrupts_registered": 16,
+      "subdriver": {
+        "state": 1,
+        "category": 2
+      },
+      "sampling_mask": "0xffff",
+      "sampling_control": "0x1f",
+      "third_status": "0x1",
+      "third_mask": "0x0",
+      "group2_mask": "0x27feb7",
+      "group2_status": "0x0",
+      "third_callback": "0x0",
+      "sampling_results": [
+        "0x7",
+        "0x27feb7",
+        "0x27feb7",
+        "0x27feb7",
+        "0x27feb7"
+      ]
+    }
+  },
+  "chain_after_windows": {
+    "capture_state": 2,
+    "sub_state": 0,
+    "pending_words": [
+      "0x0"
+    ],
+    "event_bits": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "operation14_trampoline": "0x0",
+    "capture_handlers": [
+      "0x10243691",
+      "0x10243657",
+      "0x10243695",
+      "0x1024365b",
+      "0x1024369b",
+      "0x10243661",
+      "0x102436a1",
+      "0x10243667",
+      "0x102436a5",
+      "0x1024366b",
+      "0x102436ab",
+      "0x10243671",
+      "0x102436b1",
+      "0x10243677",
+      "0x103a04e9",
+      "0x103a04e9",
+      "0x102436bb",
+      "0x10243681"
+    ],
+    "capture_interrupts_registered": 16,
+    "subdriver": {
+      "state": 1,
+      "category": 2
+    },
+    "sampling_mask": "0xffff",
+    "sampling_control": "0x1f",
+    "third_status": "0x1",
+    "third_mask": "0x0",
+    "group2_mask": "0x27feb7",
+    "group2_status": "0x0",
+    "third_callback": "0x0",
+    "sampling_results": [
+      "0x1b",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7"
+    ]
+  },
+  "distinct_event_bits": [
+    [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ]
+  ],
+  "distinct_capture_states": [
+    [
+      2,
+      0
+    ]
+  ],
+  "menu_opened": false,
+  "codes_while_menu_open": [
+    "0x40"
+  ],
+  "chain_while_menu_open": {
+    "capture_state": 2,
+    "sub_state": 0,
+    "pending_words": [
+      "0x0"
+    ],
+    "event_bits": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "operation14_trampoline": "0x0",
+    "capture_handlers": [
+      "0x10243691",
+      "0x10243657",
+      "0x10243695",
+      "0x1024365b",
+      "0x1024369b",
+      "0x10243661",
+      "0x102436a1",
+      "0x10243667",
+      "0x102436a5",
+      "0x1024366b",
+      "0x102436ab",
+      "0x10243671",
+      "0x102436b1",
+      "0x10243677",
+      "0x103a04e9",
+      "0x103a04e9",
+      "0x102436bb",
+      "0x10243681"
+    ],
+    "capture_interrupts_registered": 16,
+    "subdriver": {
+      "state": 1,
+      "category": 2
+    },
+    "sampling_mask": "0xffff",
+    "sampling_control": "0x1f",
+    "third_status": "0x1",
+    "third_mask": "0x0",
+    "group2_mask": "0x27feb7",
+    "group2_status": "0x0",
+    "third_callback": "0x0",
+    "sampling_results": [
+      "0xfe",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7"
+    ]
+  },
+  "codes_after_exit": [
+    "0x40"
+  ],
+  "menu_reopened": false,
+  "codes_after_reopen_attempt": [
+    "0x40"
+  ],
+  "chain_final": {
+    "capture_state": 2,
+    "sub_state": 0,
+    "pending_words": [
+      "0x0"
+    ],
+    "event_bits": [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "operation14_trampoline": "0x0",
+    "capture_handlers": [
+      "0x10243691",
+      "0x10243657",
+      "0x10243695",
+      "0x1024365b",
+      "0x1024369b",
+      "0x10243661",
+      "0x102436a1",
+      "0x10243667",
+      "0x102436a5",
+      "0x1024366b",
+      "0x102436ab",
+      "0x10243671",
+      "0x102436b1",
+      "0x10243677",
+      "0x103a04e9",
+      "0x103a04e9",
+      "0x102436bb",
+      "0x10243681"
+    ],
+    "capture_interrupts_registered": 16,
+    "subdriver": {
+      "state": 1,
+      "category": 2
+    },
+    "sampling_mask": "0xffff",
+    "sampling_control": "0x1f",
+    "third_status": "0x1",
+    "third_mask": "0x0",
+    "group2_mask": "0x27feb7",
+    "group2_status": "0x0",
+    "third_callback": "0x0",
+    "sampling_results": [
+      "0x218",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7",
+      "0x27feb7"
+    ]
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": 269512828,
+      "mode": 19
+    },
+    {
+      "thread": 2,
+      "pc": 269512852,
+      "mode": 19
+    },
+    {
+      "thread": 3,
+      "pc": 268667460,
+      "mode": 19
+    },
+    {
+      "thread": 4,
+      "pc": 268667496,
+      "mode": 19
+    }
+  ],
+  "sampling_faults": [],
+  "console_lines": 0
+}
