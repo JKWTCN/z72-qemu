@@ -1,0 +1,110 @@
+{
+  "format": 1,
+  "transport": "local debugger and qtest interfaces",
+  "sample_source_property": "nikon-z72-boot-config.sensor-sample",
+  "sample_lines_property": "nikon-z72-boot-config.sample-lines",
+  "runs": {
+    "survey": {
+      "shooting_steady": true,
+      "sample_source": null,
+      "steady_codes": [],
+      "sampling_mask": "0xffff",
+      "sampling_control": null,
+      "sampling_results": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "distinct_event_bits": null,
+      "distinct_capture_states": null,
+      "menu_opened": null,
+      "menu_reopened": null,
+      "passed": null,
+      "errors": []
+    },
+    "sample_source": {
+      "shooting_steady": true,
+      "sample_source": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_mask": "0xffff",
+      "sampling_control": null,
+      "sampling_results": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false,
+      "passed": null,
+      "errors": []
+    },
+    "sample_lines_ones": {
+      "shooting_steady": true,
+      "sample_source": true,
+      "steady_codes": [
+        "0x40"
+      ],
+      "sampling_mask": "0xffff",
+      "sampling_control": "0x1f",
+      "sampling_results": [
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff",
+        "0xffffffff"
+      ],
+      "distinct_event_bits": [
+        [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      ],
+      "distinct_capture_states": [
+        [
+          2,
+          0
+        ]
+      ],
+      "menu_opened": false,
+      "menu_reopened": false,
+      "passed": null,
+      "errors": []
+    },
+    "menu_regression": {
+      "shooting_steady": null,
+      "sample_source": null,
+      "steady_codes": null,
+      "sampling_mask": null,
+      "sampling_control": null,
+      "sampling_results": null,
+      "distinct_event_bits": null,
+      "distinct_capture_states": null,
+      "menu_opened": null,
+      "menu_reopened": null,
+      "passed": true,
+      "errors": []
+    }
+  }
+}
