@@ -539,6 +539,7 @@ struct NikonZ72BootConfig {
     bool sensor_sample;
     bool sample_counter;
     bool sample_group1;
+    bool pcie_link;
     bool auto_sample_level;
     uint32_t sample_lines;
     uint64_t frame_sync_count;
@@ -826,6 +827,14 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     if (boot_config_addresses[word->index] == 0x04287004 ||
         boot_config_addresses[word->index] == 0x20010038) {
         value |= 1;
+    }
+    /* Firmware analysis recovered the original link poll: 0x1008b32e
+     * checks bits 16..21 of the link status for the trained state 0x11
+     * for up to 500 sleep units. No endpoint exists in this model; the
+     * experimental property reports the trained state so the original
+     * initialization can proceed. */
+    if (s->pcie_link && boot_config_addresses[word->index] == 0x2b200058) {
+        value = (value & ~0x3f0000u) | 0x110000u;
     }
     return value;
 }
@@ -1470,6 +1479,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(auto_sample_level, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_counter, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
+        VMSTATE_BOOL(pcie_link, NikonZ72BootConfig),
         VMSTATE_UINT32(sample_lines, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
@@ -1700,6 +1710,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
+        DEFINE_PROP_BOOL("pcie-link", NikonZ72BootConfig, pcie_link, false),
         DEFINE_PROP_UINT32("sample-lines", NikonZ72BootConfig, sample_lines, 0),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),

@@ -60,6 +60,9 @@ SAMPLING_MASK = 0x20061000      # word 0 enables the sampled result words
 SAMPLING_RESULTS = tuple(0x20061300 + index * 4 for index in range(5))
 THIRD_STATUS = 0x20060050       # INTID 88 status word (mask at +0x4c)
 THIRD_SLOT = 0xb1806da0         # INTID 88 single callback slot
+SESSION_BLOCK = 0xb1887d70      # capture session module block (+9 state mirror)
+SESSION_OBJECT = SESSION_BLOCK + 0x3c
+SESSION_OFFSETS = (0, 0x41, 0x4d4, 0x4d6, 0x4e2, 0x4e4, 0x4ec, 0x2e08)
 DEFAULT_HANDLER = 0x103a04e9
 
 
@@ -167,6 +170,18 @@ def capture_chain_observation(remote):
                 for index in range(len(CAPTURE_INTIDS))]
     subdriver = remote.read(SUBDRIVER_BLOCK, 4)
     results = [try_read(remote, address, 4) for address in SAMPLING_RESULTS]
+    session = {}
+    pointer = try_read(remote, SESSION_OBJECT, 4)
+    if pointer:
+        capture_object = struct.unpack('<I', pointer)[0]
+        if capture_object:
+            for offset in SESSION_OFFSETS:
+                value = try_read(remote, capture_object + offset, 4)
+                session[f'+{offset:#x}'] = (None if value is None else
+                                             hex(struct.unpack('<I', value)[0]))
+            session['object'] = hex(capture_object)
+            session['module_state'] = hex(struct.unpack(
+                '<I', remote.read(SESSION_BLOCK + 8, 4))[0])
     return dict(capture_state=block[4], sub_state=block[5],
                 pending_words=[hex(struct.unpack_from('<I', block, 0x1c)[0])],
                 event_bits=[hex(byte) for byte in event],
@@ -182,6 +197,7 @@ def capture_chain_observation(remote):
                 group2_mask=word(try_read(remote, 0x20060040, 4)),
                 group2_status=word(try_read(remote, 0x20060044, 4)),
                 third_callback=word(try_read(remote, THIRD_SLOT, 4)),
+                session=session,
                 sampling_results=[word(value) for value in results])
 
 
@@ -272,6 +288,8 @@ def run(args):
                     settings.append('nikon-z72-boot-config.sample-counter=on')
                 if args.sample_group1:
                     settings.append('nikon-z72-boot-config.sample-group1=on')
+                if args.pcie_link:
+                    settings.append('nikon-z72-boot-config.pcie-link=on')
             process, remote = dual_machine(
                 str(args.qemu), work, master, slave, work / 'console.txt',
                 icount='shift=0,sleep=off', trace='guest_errors',
@@ -473,6 +491,10 @@ def main():
     parser.add_argument('--sample-group1', action='store_true',
                         help='Also latch group 1 bit 0 (a sensor timing '
                              'line) on every sample event')
+    parser.add_argument('--pcie-link', action='store_true',
+                        help='Report the trained link state the original '
+                             'initialization polls for, with no endpoint '
+                             'otherwise connected')
     parser.add_argument('--trace-status', type=int, default=0,
                         help='With --sample-source: seconds of a bounded '
                              'breakpoint window at the status-append entry, '
