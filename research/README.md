@@ -38,3 +38,4 @@
 - [输入处理配置与初始拍摄界面](z7ii/input_configuration.md)
 - [启动后的五秒时限与供电状态](z7ii/startup_idle_timer.md)
 - [菜单固件更新路径与实验更新存储](z7ii/firmware_update.md)
+- [传感器采样事件与捕获管线结构](z7ii/sensor_frames.md)

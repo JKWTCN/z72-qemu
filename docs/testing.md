@@ -487,3 +487,17 @@ acceptance/rejection and store lifecycle) and the update cases of
 `checks.test_web_console` (menu gate, identical-firmware refusal, stock
 fallback on a broken store, status reporting). See the
 [menu update evidence](../artifacts/menu_update_validation/report.json).
+
+`tools/sensor_frame_probe.py` boots the combined machine with the console
+inputs and samples the recovered capture chain after the shooting foreground
+stabilises: the capture control block, the capture event byte, operation
+14's completion slot, the second-level interrupt registrations, the sampled
+result window and all three synchronization banks. Without arguments it is
+the survey (the chain sits parked with the sampling mask armed and no
+producer); `--sample-source` arms the laboratory sensor-sample source and
+adds a menu open/exit/reopen sequence, and `--sample-lines` sweeps the held
+result-word pattern. `tests/test_input_events.py` covers the third
+synchronization bank contract (latching, mask routing, write-one
+acknowledgement, level retention, reset and engine isolation) and the
+result-window write rejection. See
+[sensor sampling research](../research/z7ii/sensor_frames.md).

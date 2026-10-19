@@ -23,11 +23,18 @@ completes a menu-gated update: with a candidate master supplied from outside
 the repository, the install requires the menu application in the foreground,
 commits an atomically verified update store, and the restarted machine loads
 the installed image (with rollback to the supplied stock master). The card,
-file-system and flash-write stages stay host-side stand-ins. Menu reopening
-after it closes, menu text semantics, LCD live view and the natural
-production of a few notifications remain pending.
+file-system and flash-write stages stay host-side stand-ins. The sensor
+sampling-event stage is now modeled as well: the sampled result window and
+the third synchronization bank exist as register contracts, and an optional
+sensor-sample source latches the recovered sample-ready line each frame —
+the original readout executes and reports its sampling status, while the
+valid sampled-line pattern that would advance the capture state machine
+remains unrecovered. Menu reopening after it closes, menu text semantics,
+LCD live view and the natural production of a few notifications remain
+pending.
 See the [menu key research](research/z7ii/controller_keys.md),
-[menu firmware update](research/z7ii/firmware_update.md) and
+[menu firmware update](research/z7ii/firmware_update.md),
+[sensor sampling events](research/z7ii/sensor_frames.md) and
 [battery peer](research/z7ii/battery_serial.md) for the current boundaries.
 
 ## Startup structure
