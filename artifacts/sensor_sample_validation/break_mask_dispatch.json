@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "periodic_frame_sync": true,
+  "sample_source": false,
+  "errors": [
+    "TimeoutError: timed out"
+  ],
+  "early_break": null
+}

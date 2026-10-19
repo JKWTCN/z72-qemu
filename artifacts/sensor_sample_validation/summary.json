@@ -308,9 +308,18 @@
       "steady_codes": [
         "0x40"
       ]
+    },
+    "break_device_open": {
+      "early_break": null,
+      "note": "No hit at 0x103ac408 during the whole boot window"
+    },
+    "break_mask_dispatch": {
+      "early_break": null,
+      "note": "No hit at 0x103ac9ca during the whole boot window"
     }
   },
   "line_sweep_conclusion": "Six source configurations produce identical steady observations: the sampled line values and the group-1 timing latch are not the gate; the 0x40 report comes from the capture application session state.",
   "session_conclusion": "The capture session object is 0xb3c78040 (the recorded device descriptor); its gate byte +0x41 stays 0 while the transition requires 2, and the PCIe trained-link property changes no session byte - the remaining producer is the device-class driver stack (sub-driver work submission and sensor programming).",
-  "driver_stack_conclusion": "Both sub-driver work queues stay empty: no device node is ever registered, the framework objects (0x52/0x53/0x54) are initialized, and the device inventory depends on the resource-8 protocol whose query reply is -821 with no PCIe endpoint. The remaining producer is an endpoint-level inventory responder so the original registration, open and programming paths run naturally."
+  "driver_stack_conclusion": "Both sub-driver work queues stay empty: no device node is ever registered, the framework objects (0x52/0x53/0x54) are initialized, and the device inventory depends on the resource-8 protocol whose query reply is -821 with no PCIe endpoint. The remaining producer is an endpoint-level inventory responder so the original registration, open and programming paths run naturally.",
+  "registration_conclusion": "The device-open family never executes in this combination: no static references exist and boot-window breakpoints at both the mask dispatcher and the open entry do not hit. Device registration arrives through runtime-relocated function tables, whose map is the recorded open item from the container analysis. The earlier resource-8 inventory inference is retracted: resource 8 is the storage-card query (slots 0/1, per-slot driver vtables) and -821 is its not-ready verdict."
 }

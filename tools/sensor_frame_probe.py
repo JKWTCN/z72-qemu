@@ -329,6 +329,33 @@ def run(args):
                                       (1, 11, 1), (6, 14, 1), (6, 15, 1)):
                 qtest(f'set_irq_in /machine/unattached/{gpios[index]} '
                       f'unnamed-gpio-in {pin} {level}')
+            # An optional early-boot breakpoint: the debug stub reports only
+            # the first inserted software breakpoint per run, so this runs
+            # before the synchronization stop. Recording the caller answers
+            # where otherwise-unreferenced framework entries are reached.
+            if args.break_at:
+                require(remote.command(f'Z0,{args.break_at:x},2') == 'OK',
+                        'Early breakpoint rejected')
+                remote.sock.settimeout(args.break_seconds)
+                try:
+                    reply = remote.command('vCont;c')
+                except TimeoutError:
+                    reply = None
+                    remote.interrupt()
+                match = re.search(r'thread:([0-9a-f]+);', reply or '')
+                if match:
+                    thread = int(match[1], 16)
+                    remote.select_thread(thread)
+                    registers = remote.regs()
+                    report['early_break'] = dict(
+                        thread=thread, pc=remote.get(registers, 'pc'),
+                        caller=remote.get(registers, 'lr'),
+                        r0=remote.get(registers, 'r0'), r1=remote.get(registers, 'r1'))
+                    remote.sock.settimeout(15)
+                else:
+                    report['early_break'] = None
+                require(remote.command(f'z0,{args.break_at:x},2') == 'OK',
+                        'Early breakpoint removal failed')
             require(remote.command(f'Z0,{SYNC_WAIT:x},2') == 'OK',
                     'Could not observe the original synchronization wait')
             remote.sock.settimeout(120)
@@ -506,6 +533,12 @@ def main():
                         help='Report the trained link state the original '
                              'initialization polls for, with no endpoint '
                              'otherwise connected')
+    parser.add_argument('--break-at', type=lambda text: int(text, 0),
+                        default=0,
+                        help='Insert one software breakpoint at this runtime '
+                             'address during early boot and record its caller')
+    parser.add_argument('--break-seconds', type=int, default=240,
+                        help='Host-time bound for the early breakpoint window')
     parser.add_argument('--trace-status', type=int, default=0,
                         help='With --sample-source: seconds of a bounded '
                              'breakpoint window at the status-append entry, '
