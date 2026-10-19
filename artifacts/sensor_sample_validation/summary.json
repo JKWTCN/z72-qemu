@@ -197,7 +197,50 @@
       ],
       "menu_opened": false,
       "menu_reopened": false
+    },
+    "session_probe": {
+      "session": {
+        "+0x0": "0x0",
+        "+0x41": "0x100",
+        "+0x4d4": "0x2020100",
+        "+0x4d6": "0x10202",
+        "+0x4e2": "0x3e70002",
+        "+0x4e4": "0x3e7",
+        "+0x4ec": "0x0",
+        "+0x2e08": "0x0",
+        "object": "0xb3c78040",
+        "module_state": "0x7000700"
+      },
+      "steady_codes": [
+        "0x40"
+      ],
+      "subdriver": {
+        "state": 1,
+        "category": 2
+      }
+    },
+    "session_pcie_link": {
+      "session": {
+        "+0x0": "0x0",
+        "+0x41": "0x100",
+        "+0x4d4": "0x2020100",
+        "+0x4d6": "0x10202",
+        "+0x4e2": "0x3e70002",
+        "+0x4e4": "0x3e7",
+        "+0x4ec": "0x0",
+        "+0x2e08": "0x0",
+        "object": "0xb3c78040",
+        "module_state": "0x7000700"
+      },
+      "steady_codes": [
+        "0x40"
+      ],
+      "subdriver": {
+        "state": 1,
+        "category": 2
+      }
     }
   },
-  "line_sweep_conclusion": "Six source configurations produce identical steady observations: the sampled line values and the group-1 timing latch are not the gate; the 0x40 report comes from the capture application session state."
+  "line_sweep_conclusion": "Six source configurations produce identical steady observations: the sampled line values and the group-1 timing latch are not the gate; the 0x40 report comes from the capture application session state.",
+  "session_conclusion": "The capture session object is 0xb3c78040 (the recorded device descriptor); its gate byte +0x41 stays 0 while the transition requires 2, and the PCIe trained-link property changes no session byte - the remaining producer is the device-class driver stack (sub-driver work submission and sensor programming)."
 }
