@@ -68,6 +68,30 @@ DRIVER_BLOCKS = (0xb1864d48, 0xb1864d6c, 0xb1864d80, 0xb1864d90)
 DEFAULT_HANDLER = 0x103a04e9
 
 
+def scan_for(remote, value, windows):
+    """Find a 32-bit value inside bounded RAM windows; reports addresses."""
+    found = []
+    for start, length in windows:
+        data = try_read(remote, start, length)
+        if data is None:
+            continue
+        needle = struct.pack('<I', value)
+        offset = data.find(needle)
+        while offset >= 0:
+            found.append(hex(start + offset))
+            offset = data.find(needle, offset + 1)
+    return found
+
+
+SCAN_WINDOWS = (
+    (0xb1864dc8, 0x200),      # driver framework function table
+    (0xb1887d70, 0x100),      # capture session module block
+    (0xb2b5de00, 0x400),      # second-level interrupt handle table area
+    (0xbab00000, 0x1000),     # payload staging window
+    (0xb1d41000, 0x1000),     # resource manager area
+)
+
+
 def linux(path):
     text = str(path)
     return re.sub(r'([A-Za-z]):[\\/][^,]*',
@@ -356,6 +380,36 @@ def run(args):
                     report['early_break'] = None
                 require(remote.command(f'z0,{args.break_at:x},2') == 'OK',
                         'Early breakpoint removal failed')
+            if args.watch_at:
+                # A boot-phase write watchpoint over a framework table: the
+                # first hits are the scatter copy that fills the window, so
+                # several stops are collected and filtered by caller.
+                require(remote.command(f'Z2,{args.watch_at:x},4') == 'OK',
+                        'Watchpoint rejected')
+                stops = []
+                deadline = time.monotonic() + args.break_seconds
+                while time.monotonic() < deadline and len(stops) < 8:
+                    remote.sock.settimeout(8)
+                    try:
+                        reply = remote.command('vCont;c')
+                    except TimeoutError:
+                        remote.interrupt()
+                        break
+                    match = re.search(r'thread:([0-9a-f]+);', reply or '')
+                    if not match:
+                        break
+                    thread = int(match[1], 16)
+                    remote.select_thread(thread)
+                    registers = remote.regs()
+                    stops.append(dict(thread=thread, pc=remote.get(registers, 'pc'),
+                                      caller=remote.get(registers, 'lr'),
+                                      value=int.from_bytes(
+                                          remote.read(args.watch_at, 4), 'little')))
+                remote.sock.settimeout(15)
+                remote.interrupt()
+                require(remote.command(f'z2,{args.watch_at:x},4') == 'OK',
+                        'Watchpoint removal failed')
+                report['early_watch'] = stops
             require(remote.command(f'Z0,{SYNC_WAIT:x},2') == 'OK',
                     'Could not observe the original synchronization wait')
             remote.sock.settimeout(120)
@@ -426,6 +480,36 @@ def run(args):
 
             report['progress_snapshots'] = progress(args.watch_seconds)
             report['chain_after_windows'] = capture_chain_observation(remote)
+            if args.scan_pointers:
+                report['pointer_scan'] = {
+                    hex(pointer): scan_for(remote, pointer, SCAN_WINDOWS)
+                    for pointer in args.scan_pointers}
+            if args.hmp_find:
+                # The monitor's in-QEMU search covers whole RAM windows that
+                # are impractical to read packet by packet.
+                found = {}
+                for pointer in args.hmp_find:
+                    for start, length in ((0xb1800000, 0x04800000),
+                                          (0xbab00000, 0x00100000),
+                                          (0xb5f00000, 0x00100000),
+                                          (0xb6000000, 0x01000000),
+                                          (0xb1900000, 0x00700000),
+                                          (0x13200000, 0x00e00000),
+                                          (0x10000000, 0x02400000)):
+                        command = (f'find /w {start:#x}, {length:#x}, '
+                                   f'{pointer:#x}')
+                        response = remote.command(
+                            'qRcmd,' + command.encode().hex())
+                        output = bytearray()
+                        while response.startswith('O') and response != 'OK':
+                            output.extend(bytes.fromhex(response[1:]))
+                            response = remote.receive()
+                        text = output.decode(errors='replace')
+                        hits = re.findall(r'0x[0-9a-f]{8,}', text)
+                        if hits:
+                            found.setdefault(hex(pointer), []).extend(
+                                hits if isinstance(hits, list) else [hits])
+                report['hmp_find'] = found
             distinct_events = sorted({tuple(item['event_bits'])
                                       for item in report['progress_snapshots']})
             distinct_states = sorted({(item['capture_state'], item['sub_state'])
@@ -537,6 +621,18 @@ def main():
                         default=0,
                         help='Insert one software breakpoint at this runtime '
                              'address during early boot and record its caller')
+    parser.add_argument('--watch-at', type=lambda text: int(text, 0),
+                        default=0,
+                        help='Insert one write watchpoint at this runtime '
+                             'address during early boot and record the writers')
+    parser.add_argument('--scan-pointers', type=lambda text: int(text, 0),
+                        nargs='+', default=[],
+                        help='Scan bounded RAM windows for these runtime '
+                             'pointers and report where they are stored')
+    parser.add_argument('--hmp-find', type=lambda text: int(text, 0),
+                        nargs='+', default=[],
+                        help='Search whole RAM windows for these pointers '
+                             'with the in-QEMU monitor search')
     parser.add_argument('--break-seconds', type=int, default=240,
                         help='Host-time bound for the early breakpoint window')
     parser.add_argument('--trace-status', type=int, default=0,
