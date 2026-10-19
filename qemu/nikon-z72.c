@@ -273,7 +273,10 @@ static const hwaddr boot_config_addresses[] = {
     0x20060010, 0x20060014, 0x20060018, 0x2006001c,
     0x20060020, 0x20060024, 0x20060028, 0x2006002c,
     0x20060030, 0x20060034, 0x20060038, 0x20060040, 0x20060044,
-    0x2006004c,
+    /* Third synchronization bank: mask +0x4c, status +0x50. Firmware
+     * analysis recovered the INTID 88 handler reading and acknowledging
+     * the status word at +0x50 before invoking its callback slot. */
+    0x2006004c, 0x20060050,
     0x20060070, 0x20060074, 0x20060078, 0x2006007c,
     0x20060080, 0x20060084, 0x20060088, 0x2006008c,
     0x20060090, 0x20060094, 0x20060098, 0x2006009c,
@@ -384,6 +387,14 @@ static const hwaddr boot_config_addresses[] = {
     0x20061450, 0x20061460, 0x20061464, 0x20061468,
     0x2006146c, 0x20061470, 0x200614a0, 0x200614a4,
     0x200614a8, 0x200614ac, 0x200614b0,
+    /* Sampled result window: the readout query returns five words masked
+     * by the block's word 0, and the byte/halfword accessors read the
+     * trailing fields. The words are latched state; the laboratory
+     * source keeps them at the reset value because no sampled line
+     * semantics have been recovered yet. */
+    0x20061300, 0x20061304, 0x20061308, 0x2006130c, 0x20061310,
+    0x2006135c, 0x20061360, 0x20061364, 0x20061368, 0x2006136c,
+    0x20061370,
 };
 
 typedef struct NikonZ72Completion {
@@ -525,6 +536,9 @@ struct NikonZ72BootConfig {
     uint32_t input_levels[8];
     uint32_t sync_levels[2];
     bool frame_sync;
+    bool sensor_sample;
+    bool auto_sample_level;
+    uint32_t sample_lines;
     uint64_t frame_sync_count;
     QEMUTimer *frame_sync_timer;
 };
@@ -696,15 +710,14 @@ static void sync_update_irqs(NikonZ72BootConfig *s)
             }
             qemu_set_irq(qdev_get_gpio_in(s->intc, 86 + bank - 32), pending != 0);
         }
-        /* The third synchronization path carries the automatic sample event.
-         * Its pending bit is not part of the two mask/status banks above; a
-         * periodic pulse keeps the sampling state machine moving while the
-         * laboratory source is armed. */
-        if (s->frame_sync_count &&
-            timer_pending(s->frame_sync_timer)) {
-            qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), 1);
-            qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), 0);
-        }
+        /* The third synchronization path is the automatic-sample event.
+         * Firmware analysis recovered its handler: it reads the status
+         * word at +0x50, acknowledges it by write-back, then calls the
+         * callback registered in its slot. The line follows the masked
+         * pending state like the two banks above. */
+        uint32_t pending = *boot_config_value(s, 0x2006004c) &
+                           *boot_config_value(s, 0x20060050);
+        qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), pending != 0);
     }
 }
 
@@ -723,14 +736,39 @@ static void sync_event(void *opaque, int line, int level)
     sync_update_irqs(s);
 }
 
-/* Optional laboratory timing source; no sensor pixels or sample results.
- * Bank 1 bit 4 follows the pending/mask/acknowledge path of input 15.
- * The 30 Hz period is a functional choice, not a measured sensor rate. */
+/* One direct injection line for the automatic-sample event, edge-latched
+ * like the synchronization banks above. */
+static void auto_sample_event(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    if (level && !s->auto_sample_level) {
+        *boot_config_value(s, 0x20060050) |= 1u;
+        sync_update_irqs(s);
+    }
+    s->auto_sample_level = level != 0;
+}
+
+/* Optional laboratory timing source; no sensor pixels are produced.
+ * Bank 2 bit 4 follows the pending/mask/acknowledge path of input 15.
+ * With sensor-sample armed, each tick also latches bank 2 bit 0 - the
+ * recovered sample-ready line whose callback runs the sampling readout -
+ * and one automatic-sample event in the third bank. The 30 Hz period is
+ * a functional choice, not a measured sensor rate. */
 static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
 
     *boot_config_value(s, 0x20060044) |= 0x10;
+    if (s->sensor_sample) {
+        *boot_config_value(s, 0x20060044) |= 0x01;
+        *boot_config_value(s, 0x20060050) |= 0x01;
+        /* The sampled result words hold the configured line pattern; no
+         * measured sensor levels exist to reproduce. */
+        for (unsigned index = 0; index < 5; index++) {
+            *boot_config_value(s, 0x20061300 + index * 4) = s->sample_lines;
+        }
+    }
     s->frame_sync_count++;
     sync_update_irqs(s);
     timer_mod(s->frame_sync_timer,
@@ -787,9 +825,15 @@ static void boot_config_write(void *opaque, hwaddr offset,
     NikonZ72BootConfig *s = word->device;
     hwaddr address = boot_config_addresses[word->index];
     uint32_t *stored = &s->values[word->index];
-    if (address == 0x20060038 || address == 0x20060044) {
+    if (address == 0x20060038 || address == 0x20060044 ||
+        address == 0x20060050) {
         *stored &= ~(uint32_t)value;
         sync_update_irqs(s);
+        return;
+    }
+    /* The sampled result window is latched state: the readout only reads
+     * it, and no laboratory source writes sampled line values yet. */
+    if (address >= 0x20061300 && address <= 0x20061370) {
         return;
     }
     if (address == 0x2b200058 || address == 0x2b20005c) {
@@ -878,7 +922,8 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
-    if (address == 0x20060034 || address == 0x20060040) {
+    if (address == 0x20060034 || address == 0x20060040 ||
+        address == 0x2006004c) {
         sync_update_irqs(s);
     }
     if (address >= 0x20068200 && address <= 0x200682e0 &&
@@ -1343,6 +1388,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->dbi_viewport = 0;
     memset(s->input_levels, 0, sizeof(s->input_levels));
     memset(s->sync_levels, 0, sizeof(s->sync_levels));
+    s->auto_sample_level = false;
     timer_del(s->frame_sync_timer);
     s->frame_sync_count = 0;
     input_update_irqs(s);
@@ -1399,8 +1445,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 32,
-    .minimum_version_id = 32,
+    .version_id = 33,
+    .minimum_version_id = 33,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1409,6 +1455,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(dbi_regions, NikonZ72BootConfig, 2 * 16 * 7),
         VMSTATE_UINT32_ARRAY(input_levels, NikonZ72BootConfig, 8),
         VMSTATE_UINT32_ARRAY(sync_levels, NikonZ72BootConfig, 2),
+        VMSTATE_BOOL(auto_sample_level, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
@@ -1440,6 +1487,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
     qdev_init_gpio_in_named(DEVICE(obj), sync_event, "sync-event", 11 + 32);
     qdev_init_gpio_in_named(DEVICE(obj), frame_sync_enable, "frame-sync-enable", 1);
+    qdev_init_gpio_in_named(DEVICE(obj), auto_sample_event, "auto-sample-event", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
     /* Sparse containers keep unsupported words unassigned and avoid the
@@ -1634,6 +1682,8 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_UINT32("timer-tick-us", NikonZ72BootConfig, timer_tick_us, 10000),
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
+        DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_UINT32("sample-lines", NikonZ72BootConfig, sample_lines, 0),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),
         DEFINE_PROP_BOOL("master-role", NikonZ72BootConfig, master_role, true),

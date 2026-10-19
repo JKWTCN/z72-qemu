@@ -151,11 +151,45 @@ def check(qemu):
                     signal(role, line, 0, 'sync-event')
                     store(thread, mask, 0)
 
+                # Third synchronization bank: the automatic-sample event.
+                store(thread, 0x20060050, 1)
+                require(read(thread, 0x20060050) == 0,
+                        'Software manufactured an automatic-sample event')
+                signal(role, 0, 1, 'auto-sample-event')
+                require(read(thread, 0x20060050) == 1 and not pending(thread, 88),
+                        'Masked automatic-sample event or interrupt differs')
+                store(thread, 0x2006004c, 1)
+                require(pending(thread, 88) and not pending(peer, 88) and
+                        read(peer, 0x20060050) == 0,
+                        'Automatic-sample routing or isolation differs')
+                store(thread, 0x2006004c, 0)
+                clear_pending(thread, 88)
+                require(read(thread, 0x20060050) == 1 and not pending(thread, 88),
+                        'Automatic-sample masking lost status or retained the interrupt')
+                store(thread, 0x2006004c, 1)
+                require(pending(thread, 88), 'Automatic-sample unmask lost the event')
+                store(thread, 0x20060050, 1)
+                require(read(thread, 0x20060050) == 0 and not pending(thread, 88),
+                        'Automatic-sample acknowledgement failed')
+                clear_pending(thread, 88)
+                signal(role, 0, 1, 'auto-sample-event')
+                require(read(thread, 0x20060050) == 0,
+                        'Held automatic-sample input repeated an event')
+                signal(role, 0, 0, 'auto-sample-event')
+                store(thread, 0x2006004c, 0)
+                # Sampled result window: latched zero, software writes rejected.
+                for index in range(5):
+                    store(thread, 0x20061300 + index * 4, 0xffffffff)
+                    require(read(thread, 0x20061300 + index * 4) == 0,
+                            'Result window accepted a software write')
+
             for role, thread in ((0, 1), (1, 3)):
                 store(thread, 0x20060034, 1)
                 signal(role, 0, 1, 'sync-event')
                 store(thread, 0x20060040, 1)
                 signal(role, 11, 1, 'sync-event')
+                store(thread, 0x2006004c, 1)
+                signal(role, 0, 1, 'auto-sample-event')
             require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK',
                     'Input event reset failed')
             for role, thread in ((0, 1), (1, 3)):
@@ -173,6 +207,13 @@ def check(qemu):
                 signal(role, 11, 1, 'sync-event')
                 require(read(thread, 0x20060044) == 1 and pending(thread, 87),
                         'Reset retained the synchronization condition edge detector')
+                require(read(thread, 0x2006004c) == 0 and
+                        read(thread, 0x20060050) == 0 and not pending(thread, 88),
+                        'Reset retained automatic-sample status or interrupt')
+                store(thread, 0x2006004c, 1)
+                signal(role, 0, 1, 'auto-sample-event')
+                require(read(thread, 0x20060050) == 1 and pending(thread, 88),
+                        'Reset retained the automatic-sample edge detector')
                 for bank in range(8):
                     require(read(thread, 0x20068200 + bank * 0x20) == 0 and
                             read(thread, 0x20068210 + bank * 0x20) == 0,
@@ -181,8 +222,8 @@ def check(qemu):
                 signal(role, 0, 1)
                 require(read(thread, 0x20068210) == 1 and pending(thread, 94),
                         'Reset retained the edge detector')
-            print('PASS input events: eight banks, 43 sync lines, masks, IRQs, reset and isolation',
-                  flush=True)
+            print('PASS input events: eight banks, 43 sync lines, automatic-sample bank, '
+                  'result window, masks, IRQs, reset and isolation', flush=True)
         finally:
             if stream is not None:
                 stream.close()
