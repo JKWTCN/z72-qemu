@@ -46,6 +46,8 @@ from tools.graphics_boot_probe import (application_observation,
 
 SYNC_WAIT = 0x102d949e
 SUBSTATE_ENTRY = 0x103e5190
+STATUS_APPEND = 0x1035ed5c      # r0 carries the appended status code
+EVENT10_BROADCAST = 0x1026c484  # notification 0x04200181 event index 10 entry
 MENU_PIN = 9
 EXIT_PIN = 0
 CONTROL_BLOCK = 0xb23f6a7c      # +4 capture state, +5 sub-state, +0x1c pending
@@ -66,6 +68,50 @@ def linux(path):
     return re.sub(r'([A-Za-z]):[\\/][^,]*',
                   lambda m: '/mnt/' + m[1].lower() + '/' +
                             m[0][3:].replace('\\', '/'), text)
+
+
+def trace_status(remote, wanted, seconds, limit=40):
+    """Stop at the status-append entry and record the callers.
+
+    Returns every append with its argument and return address; entries
+    matching the wanted code are marked. The loop keeps the machine
+    running between stops, mirroring the resume pattern of the other
+    probes.
+    """
+    require(remote.command(f'Z0,{STATUS_APPEND:x},2') == 'OK',
+            'Status breakpoint rejected')
+    records, matches = [], []
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline and len(matches) < 8:
+        remote.sock.settimeout(6)
+        try:
+            reply = remote.command('vCont;c')
+        except TimeoutError:
+            remote.interrupt()
+            continue
+        match = re.search(r'thread:([0-9a-f]+);', reply or '')
+        if not match:
+            break
+        thread = int(match[1], 16)
+        remote.select_thread(thread)
+        registers = remote.regs()
+        record = dict(thread=thread, code=remote.get(registers, 'r0'),
+                      caller=remote.get(registers, 'lr'))
+        records.append(record)
+        if record['code'] == wanted:
+            match_data = dict(record)
+            for frame in range(3):
+                try:
+                    match_data[f'stack_{frame}'] = int.from_bytes(
+                        remote.read(remote.get(registers, 'sp') + frame * 4, 4), 'little')
+                except ValueError:
+                    break
+            matches.append(match_data)
+    remote.sock.settimeout(15)
+    remote.interrupt()
+    require(remote.command(f'z0,{STATUS_APPEND:x},2') == 'OK',
+            'Status breakpoint removal failed')
+    return records, matches
 
 
 def watch(remote, address, size, kind, seconds):
@@ -222,6 +268,10 @@ def run(args):
                 settings.append('nikon-z72-boot-config.sensor-sample=on')
                 settings.append(f'nikon-z72-boot-config.sample-lines='
                                 f'{args.sample_lines:#x}')
+                if args.sample_counter:
+                    settings.append('nikon-z72-boot-config.sample-counter=on')
+                if args.sample_group1:
+                    settings.append('nikon-z72-boot-config.sample-group1=on')
             process, remote = dual_machine(
                 str(args.qemu), work, master, slave, work / 'console.txt',
                 icount='shift=0,sleep=off', trace='guest_errors',
@@ -329,6 +379,11 @@ def run(args):
 
             if args.sample_source:
                 settle(5)
+                if args.trace_status:
+                    records, matches = trace_status(
+                        remote, 0x40, args.trace_status)
+                    report['status_append_trace'] = dict(
+                        records=records[-40:], matches=matches)
 
                 def tap(pin):
                     """One short press: a tenth of a guest second, then release."""
@@ -412,6 +467,17 @@ def main():
     parser.add_argument('--sample-lines', type=lambda text: int(text, 0),
                         default=0,
                         help='Line pattern held in the sampled result words')
+    parser.add_argument('--sample-counter', action='store_true',
+                        help='Hold the frame count in result word 0 so the '
+                             'pattern changes on every sample event')
+    parser.add_argument('--sample-group1', action='store_true',
+                        help='Also latch group 1 bit 0 (a sensor timing '
+                             'line) on every sample event')
+    parser.add_argument('--trace-status', type=int, default=0,
+                        help='With --sample-source: seconds of a bounded '
+                             'breakpoint window at the status-append entry, '
+                             'recording callers of every append and the '
+                             'matching 0x40 postings')
     arguments = parser.parse_args()
     try:
         run(arguments)

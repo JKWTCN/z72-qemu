@@ -537,6 +537,8 @@ struct NikonZ72BootConfig {
     uint32_t sync_levels[2];
     bool frame_sync;
     bool sensor_sample;
+    bool sample_counter;
+    bool sample_group1;
     bool auto_sample_level;
     uint32_t sample_lines;
     uint64_t frame_sync_count;
@@ -763,10 +765,20 @@ static void frame_sync_tick(void *opaque)
     if (s->sensor_sample) {
         *boot_config_value(s, 0x20060044) |= 0x01;
         *boot_config_value(s, 0x20060050) |= 0x01;
+        /* Group 1 carries the sensor timing lines; with the property
+         * armed, one latch per frame mirrors a vertical-sync event on
+         * its first line. */
+        if (s->sample_group1) {
+            *boot_config_value(s, 0x20060038) |= 0x01;
+        }
         /* The sampled result words hold the configured line pattern; no
-         * measured sensor levels exist to reproduce. */
+         * measured sensor levels exist to reproduce. With the counter
+         * mode armed, word 0 carries the frame count instead, so the
+         * pattern changes on every event like live sampled lines. */
         for (unsigned index = 0; index < 5; index++) {
-            *boot_config_value(s, 0x20061300 + index * 4) = s->sample_lines;
+            *boot_config_value(s, 0x20061300 + index * 4) =
+                s->sample_counter && index == 0 ?
+                (uint32_t)s->frame_sync_count : s->sample_lines;
         }
     }
     s->frame_sync_count++;
@@ -1456,6 +1468,9 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(input_levels, NikonZ72BootConfig, 8),
         VMSTATE_UINT32_ARRAY(sync_levels, NikonZ72BootConfig, 2),
         VMSTATE_BOOL(auto_sample_level, NikonZ72BootConfig),
+        VMSTATE_BOOL(sample_counter, NikonZ72BootConfig),
+        VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
+        VMSTATE_UINT32(sample_lines, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
@@ -1683,6 +1698,8 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
+        DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
         DEFINE_PROP_UINT32("sample-lines", NikonZ72BootConfig, sample_lines, 0),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),
