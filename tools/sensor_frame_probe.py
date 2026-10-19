@@ -63,6 +63,8 @@ THIRD_SLOT = 0xb1806da0         # INTID 88 single callback slot
 SESSION_BLOCK = 0xb1887d70      # capture session module block (+9 state mirror)
 SESSION_OBJECT = SESSION_BLOCK + 0x3c
 SESSION_OFFSETS = (0, 0x41, 0x4d4, 0x4d6, 0x4e2, 0x4e4, 0x4ec, 0x2e08)
+SUBDRIVER_TASK = 0xb238e654     # +0x40/+0x60 are the two work queues
+DRIVER_BLOCKS = (0xb1864d48, 0xb1864d6c, 0xb1864d80, 0xb1864d90)
 DEFAULT_HANDLER = 0x103a04e9
 
 
@@ -169,6 +171,12 @@ def capture_chain_observation(remote):
     handlers = [struct.unpack_from('<I', table, index * 4)[0]
                 for index in range(len(CAPTURE_INTIDS))]
     subdriver = remote.read(SUBDRIVER_BLOCK, 4)
+    queues = remote.read(SUBDRIVER_TASK, 0x68)
+    driver = {}
+    for index, driver_base in enumerate(DRIVER_BLOCKS):
+        words = try_read(remote, driver_base, 8)
+        driver[f'{driver_base:#x}'] = (None if words is None else
+                                       [hex(byte) for byte in words])
     results = [try_read(remote, address, 4) for address in SAMPLING_RESULTS]
     session = {}
     pointer = try_read(remote, SESSION_OBJECT, 4)
@@ -189,7 +197,10 @@ def capture_chain_observation(remote):
                 capture_handlers=[hex(handler) for handler in handlers],
                 capture_interrupts_registered=sum(
                     handler != DEFAULT_HANDLER for handler in handlers),
-                subdriver=dict(state=subdriver[1], category=subdriver[2]),
+                subdriver=dict(state=subdriver[1], category=subdriver[2],
+                               queues=[hex(struct.unpack_from('<I', queues, o)[0])
+                                       for o in (0x40, 0x44, 0x60, 0x64)],
+                               blocks=driver),
                 sampling_mask=word(try_read(remote, SAMPLING_MASK, 4)),
                 sampling_control=word(try_read(remote, 0x200610ec, 4)),
                 third_status=word(try_read(remote, THIRD_STATUS, 4)),
