@@ -24,6 +24,8 @@ sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import digest, require
 from analyze.firmware_structure import analyze_eg
 from analyze.update_store import UpdateStore, installable_master
+from analyze.upgrade_signature import verify_update
+from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.create_lab_parameters import parameter_images, resource_header_image
 from tools.dual_boot_probe import dual_machine
@@ -32,6 +34,9 @@ SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
 MENU_PIN = 9
 MENU_APPLICATION = 1
+ENGINE_ENTRY = 0x10020000
+BOOT_AUXILIARY = (('group17.bin', 0x132c0000), ('group18.bin', 0x132e0000),
+                  ('group32.bin', 0x13e80000))
 DEFAULT_STORE = ROOT / '.local' / 'console-update-store'
 # Bounded in host time: under the default instruction-count clock the guest
 # runs slower than the wall clock, so the foreground switch can take minutes.
@@ -115,6 +120,7 @@ class Machine:
         self.phase = 'stopped'
         self.error = None
         self.process = self.remote = self.wire = self.qmp = self.work = None
+        self.gdb_port = None
         self.held = set()
         self.requested_keys = set()
         self.key_events = {}
@@ -134,6 +140,14 @@ class Machine:
         # place of the supplied stock master.
         self.store = UpdateStore(getattr(args, 'update_store', None) or DEFAULT_STORE)
         self.update_image = getattr(args, 'update_image', None)
+        self.boot_key = None
+        boot_key_path = getattr(args, 'boot_key', None)
+        if self.update_image is not None:
+            require(boot_key_path is not None,
+                    'A signed update image requires --boot-key (eight boot-window bytes)')
+            key = Path(boot_key_path).read_bytes()
+            require(len(key) == 8, 'The boot-window key file must hold exactly eight bytes')
+            self.boot_key = key
         self.staged = None
         self.staged_error = None
         self.refresh_staged()
@@ -182,14 +196,15 @@ class Machine:
                 CONTROLLER_SHA256, 'Expected the original controller image')
         (ROOT / '.local').mkdir(exist_ok=True)
         self.work = Path(tempfile.mkdtemp(prefix='web-console-', dir=ROOT / '.local'))
-        qtest_port, qmp_port = free_port(), free_port()
+        self.wire_port, self.qmp_port = free_port(), free_port()
         original = subprocess.Popen
         work = self.work
+        wire_port, qmp_port = self.wire_port, self.qmp_port
 
         class Launcher(original):
             def __init__(child, command, *extra, **keywords):
                 command[command.index('-M') + 1] += ',controller-battery-peer=on'
-                command += ['-qtest', f'tcp:127.0.0.1:{qtest_port},server=on,wait=off',
+                command += ['-qtest', f'tcp:127.0.0.1:{wire_port},server=on,wait=off',
                             '-qtest-log', '/dev/null' if os.name != 'nt' or self.args.wsl else 'NUL',
                             '-qmp', f'tcp:127.0.0.1:{qmp_port},server=on,wait=off']
                 child.pid_file = work / 'process.pid'
@@ -239,14 +254,22 @@ class Machine:
             trace='guest_errors',
             controller_firmware=self.args.controller,
             controller_link=True, controller_flash_data=work / 'resident.bin', devices=devices,
+            machine_options=(f'master-boot-image={work / "master.bin"}',
+                             f'slave-boot-image={work / "slave.bin"}',
+                             # Machine options split on commas; double them
+                             # so the file list travels as one value.
+                             'master-boot-aux=' + ','.join(
+                                 f'{work / name}@{address:#x}'
+                                 for name, address in BOOT_AUXILIARY).replace(',', ',,')),
             globals_=('nikon-z72-boot-config.frame-sync=on',) +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
             process_factory=Launcher)
+        self.gdb_port = self.remote.sock.getpeername()[1]
         self.started_at = time.monotonic()
-        self.wire = socket.create_connection(('127.0.0.1', qtest_port), timeout=5)
+        self.wire = socket.create_connection(('127.0.0.1', self.wire_port), timeout=5)
         self.wire_file = self.wire.makefile('rwb')
-        self.qmp = QmpClient(qmp_port)
+        self.qmp = QmpClient(self.qmp_port)
         devices = self.qmp.command('qom-list', {'path': '/machine/unattached'})
 
         def children(kind):
@@ -254,10 +277,22 @@ class Machine:
                           key=lambda item: int(re.search(r'\d+', item)[0]))
 
         gpios, configs = children('nikon-z72-controller-gpio'), children('nikon-z72-boot-config')
+        self.gpio_names, self.config_names = gpios, configs
         require(len(gpios) == 8 and len(configs) == 2, 'Missing controller or engine inputs')
         for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1),
                                   (1, 11, 1), (6, 14, 1), (6, 15, 1)):
             self._qtest(f'set_irq_in /machine/unattached/{gpios[index]} unnamed-gpio-in {pin} {level}')
+        self._boot_dance()
+
+    def _boot_dance(self):
+        """Release the paused machine through its first synchronization wait.
+
+        The original startup polls a synchronization status bit before the
+        shooting foreground can appear. The console observes that wait once
+        through the debug connection, confirms the surrounding state and then
+        supplies the missing synchronization edge and frame timing, exactly
+        like the hardware lines the body expects around it.
+        """
         require(self.remote.command(f'Z0,{SYNC_WAIT:x},2') == 'OK', 'Could not observe synchronization')
         deadline = time.monotonic() + 180
         self.remote.sock.settimeout(1)
@@ -280,24 +315,92 @@ class Machine:
         require(int.from_bytes(self.remote.read(0x20060040, 4), 'little') & 0x10,
                 'Synchronization input is masked')
         for level in (1, 0):
-            self._qtest(f'set_irq_in /machine/unattached/{configs[0]} sync-event 15 {level}')
-        self._qtest(f'set_irq_in /machine/unattached/{configs[0]} frame-sync-enable 0 1')
+            self._qtest(f'set_irq_in /machine/unattached/{self.config_names[0]} sync-event 15 {level}')
+        # The enable line is edge triggered; pulse it so a machine that was
+        # already released once re-arms its frame timing after a reset.
+        for level in (0, 1):
+            self._qtest(f'set_irq_in /machine/unattached/{self.config_names[0]} '
+                        f'frame-sync-enable 0 {level}')
         require(self.remote.command(f'z0,{SYNC_WAIT:x},2') == 'OK', 'Could not remove observation point')
         # Detaching resumes execution and leaves all subsequent access to the monitor.
         require(self.remote.command('D') == 'OK', 'Could not resume the machine')
         self.remote.sock.close()
         self.remote = None
 
+    def _machine_reflash(self, image):
+        """Program the stored master image and restart through a machine reset.
+
+        Writing the boot-store property is the programming step; the following
+        whole-machine reset makes the board reload the stored image set and
+        restart both engines at the image entry, so the running machine boots
+        the replaced firmware without a host process restart.
+        """
+        require(self.work is not None and self.phase == 'running', '机器尚未就绪')
+        flashed = self.work / 'flashed-master.bin'
+        flashed.write_bytes(image)
+        path = linux(flashed) if self.args.wsl else str(flashed)
+        with self.io:
+            self._release()
+            self.frame_cache = (0.0, b'')
+            self.app_index = None
+            self.qmp.command('stop')
+            self.qmp.command('qom-set', {'path': '/machine/master-boot-store',
+                                         'property': 'image', 'value': path})
+            self.qmp.command('system_reset')
+            # The reset lands in the emulator loop; the cores restart at the
+            # stored entry once the stored image has been copied back in.
+            deadline = time.monotonic() + 30
+            self.remote = Remote(self.gdb_port)
+            try:
+                while True:
+                    require(time.monotonic() < deadline, 'Machine reset did not complete')
+                    self.remote.command('Hg1')
+                    if self.remote.get(self.remote.regs(), 'pc') == ENGINE_ENTRY:
+                        break
+                    time.sleep(0.05)
+                self._boot_dance()
+            except BaseException:
+                if self.remote is not None:
+                    try:
+                        self.remote.sock.close()
+                    except OSError:
+                        pass
+                    self.remote = None
+                raise
+        self.started_at = time.monotonic()
+        self.auto_menu_done = False
+        self.auto_menu_ticks = 0
+
     def refresh_staged(self):
-        """Describe the update candidate supplied on the command line."""
+        """Describe and verify the signed update supplied on the command line."""
         self.staged, self.staged_error = None, None
         if self.update_image is None:
             return
         try:
-            self.staged = installable_master(self.update_image.read_bytes())
-            self.staged['note'] = str(self.update_image)
+            described = self._verified_update()
+            # The payload bytes never enter the served state.
+            self.staged = {key: value for key, value in described.items()
+                           if key != 'payload'}
         except (OSError, ValueError) as error:
             self.staged_error = str(error)
+
+    def _reference_master(self):
+        """Return the supplied stock master; the check tables live inside it."""
+        return self.args.master.read_bytes()
+
+    def _verified_update(self):
+        """Verify one signed update file and describe its payload member.
+
+        Mirrors the stock whole-file check: the file digest must match the
+        body computed with the supplied boot-window key material, and the
+        decoded payload must still satisfy the member structure checks.
+        """
+        master = self._reference_master()
+        described = verify_update(self.update_image.read_bytes(), self.boot_key, master)
+        candidate = installable_master(described['payload'])
+        return dict(candidate, note=str(self.update_image),
+                    digest=described['digest'], length=described['length'],
+                    signed=True, payload=described['payload'])
 
     def _select_master(self):
         """Load the installed update when present, else the stock master.
@@ -330,8 +433,10 @@ class Machine:
         The original firmware-update entry scans the memory card through
         services the laboratory does not model, so installation requires
         the recovered menu application in the foreground and commits the
-        staged image to the persistent store; the following restart loads
-        it. Returns the installed manifest.
+        staged image to the persistent store. The stored image is then
+        programmed into the running machine's boot storage and a whole
+        machine reset reboots the body from it. Returns the installed
+        manifest.
         """
         require(self.update_image is not None,
                 'No update image was supplied to this console')
@@ -340,22 +445,39 @@ class Machine:
             words = self._words(APP_MANAGER, 5)
             require(words[0] == 1 and words[4] & 255 == MENU_APPLICATION,
                     'Open the menu first: updates install from the menu application')
-            image = self.update_image.read_bytes()
-            candidate = installable_master(image)
-            require(self.firmware is None or candidate['sha256'] != self.firmware.get('sha256'),
+            described = self._verified_update()
+            image = described['payload']
+            require(self.firmware is None or described['sha256'] != self.firmware.get('sha256'),
                     'The staged update already is the loaded firmware')
-            manifest = self.store.install(image, note=str(self.update_image))
-            self.staged = dict(candidate, note=str(self.update_image))
+            manifest = self.store.install(image, note=str(self.update_image),
+                                          signature=dict(digest=described['digest'],
+                                                         signed=True))
+            self.staged = {key: value for key, value in described.items()
+                           if key != 'payload'}
             self.staged_error = None
-        require(self.restart(), 'Restart already in progress; the update is installed')
+            self.firmware = dict(source='installed',
+                                 **{key: manifest[key] for key in
+                                    ('sha256', 'length', 'version', 'installed_at')},
+                                 note=manifest.get('note', ''), store_error=None)
+        self._machine_reflash(image)
         return manifest
 
     def remove_update(self):
-        """Roll the console back to the supplied stock master."""
+        """Roll the console back to the supplied stock master.
+
+        The commit record is removed first so a later process start loads the
+        supplied stock master; the running machine is then reprogrammed with
+        that master and restarted through the same machine-reset path.
+        """
         with self.io:
             require(self.store.installed() is not None, 'No installed update to remove')
             self.store.remove()
-        require(self.restart(), 'Restart already in progress; the rollback is complete')
+        master = self.args.master.read_bytes()
+        analyze_eg(master, 'master')
+        self.firmware = dict(source='stock', sha256=digest(master),
+                             length=len(master), version=master[0x20:0x2C].decode('ascii'),
+                             installed_at='', note='', store_error=None)
+        self._machine_reflash(master)
 
     def _qtest(self, line):
         self.wire_file.write((line + '\n').encode())
@@ -557,6 +679,12 @@ class Machine:
             words = self._words(APP_MANAGER, 5)
             state.update(ready=words[0] == 1, index=words[4] & 255,
                          held=sorted(self.held))
+            # The version record at the image entry window is what the booted
+            # image carries; it evidences which stored firmware executes.
+            record = self._words(ENGINE_ENTRY + 0x20, 3)
+            state['booted_version'] = b''.join(word.to_bytes(4, 'little')
+                                               for word in record).decode('ascii',
+                                                                          'replace')
             self.app_index = state['index']
             state['auto_menu'] = ('off' if not self.auto_menu else
                                   'pressed' if self.auto_menu_done else 'armed')
@@ -711,9 +839,12 @@ def main():
                              'native start window (the manual menu key only '
                              'works in that early window)')
     parser.add_argument('--update-image', type=Path,
-                        help='Master EG candidate installed through the menu-'
-                             'driven firmware update (validated structurally; '
-                             'the project ships no tools to build one)')
+                        help='Signed master update file installed through the menu-'
+                             'driven firmware update (verified against the whole-file '
+                             'digest check; the project ships no tools to build one)')
+    parser.add_argument('--boot-key', type=Path,
+                        help='Eight boot-window key bytes the update digest check '
+                             'combines with the staged update (local research input)')
     parser.add_argument('--update-store', type=Path, default=DEFAULT_STORE,
                         help='Persistent directory holding the installed '
                              'update and its manifest (survives restarts)')

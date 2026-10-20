@@ -11,10 +11,11 @@ function notice(text, error = false) {
   $('notice').classList.toggle('error', error);
 }
 
-async function request(path, body) {
+async function request(path, body, timeout = 10000) {
   const response = await fetch(path, {
     method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body), keepalive: true, signal: AbortSignal.timeout(10000)
+    body: JSON.stringify(body), keepalive: true,
+    signal: timeout ? AbortSignal.timeout(timeout) : undefined
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || '操作失败');
@@ -146,7 +147,8 @@ function paintUpdate(state) {
   const staged = $('firmware-staged');
   if (!state.staged) staged.textContent = '未提供';
   else if (state.staged.error) staged.textContent = `无效：${state.staged.error}`;
-  else staged.textContent = `${state.staged.version} · ${state.staged.sha256.slice(0, 12)}`;
+  else staged.textContent = `${state.staged.version} · ${state.staged.sha256.slice(0, 12)}` +
+    (state.staged.signed ? ` · 摘要 ${state.staged.digest.slice(0, 8)}` : '');
   $('install-update').disabled = !state.update_ready || restarting;
   $('remove-update').hidden = !state.update_installed;
 }
@@ -157,8 +159,8 @@ $('install-update').onclick = async () => {
   available = running = false;
   held.clear(); paintKeys();
   try {
-    await request('/update/install', {});
-    notice('固件更新已安装，正在重启并加载更新固件…');
+    await request('/update/install', {}, 0);
+    notice('固件更新已安装，机器已复位并从更新固件重新启动…');
   } catch (error) {
     restarting = false;
     notice(error.message, true);
@@ -178,8 +180,8 @@ $('remove-update').onclick = async () => {
   available = running = false;
   held.clear(); paintKeys();
   try {
-    await request('/update/remove', {});
-    notice('已移除安装的更新，正在重启回原厂固件…');
+    await request('/update/remove', {}, 0);
+    notice('已移除安装的更新，机器已复位并回原厂固件重新启动…');
   } catch (error) {
     restarting = false;
     notice(error.message, true);

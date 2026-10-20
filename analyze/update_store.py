@@ -93,12 +93,12 @@ class UpdateStore:
                 'Installed image does not match the manifest')
         return dict(manifest, structure=candidate), image
 
-    def install(self, image, note=''):
+    def install(self, image, note='', signature=None):
         """Validate and commit an update image plus its manifest."""
         candidate = installable_master(image)
         manifest = dict(candidate, format=MANIFEST_FORMAT,
                         installed_at=datetime.now(timezone.utc).isoformat(timespec='seconds'),
-                        note=str(note))
+                        note=str(note), signature=dict(signature or {}))
         self.directory.mkdir(parents=True, exist_ok=True)
         # The image lands first; the manifest commit makes it visible.
         self._write(self.image_path, image)

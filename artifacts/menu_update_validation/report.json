@@ -1,13 +1,7 @@
 {
-  "format": 1,
+  "format": 2,
   "passed": true,
   "transport": "local HTTP console interface",
-  "staged": {
-    "role": "master",
-    "length": 38239166,
-    "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
-    "version": "Ver.01.70.02"
-  },
   "stages": [
     {
       "name": "stock-boot",
@@ -20,7 +14,8 @@
         "installed_at": "",
         "note": "",
         "store_error": null
-      }
+      },
+      "booted_version": "Ver.01.70.02"
     },
     {
       "name": "gate-refused",
@@ -38,17 +33,18 @@
       "staged_sha": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa"
     },
     {
-      "name": "installed-boot",
+      "name": "installed-reset-boot",
       "passed": true,
       "firmware": {
         "source": "installed",
         "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
         "length": 38239166,
         "version": "Ver.01.70.02",
-        "installed_at": "2026-10-18T08:38:17+00:00",
-        "note": "D:\\Temporary\\2610\\07\\Z_72_firmware\\artifacts\\c170_histogram_horizon\\master.bin",
+        "installed_at": "2026-10-20T00:14:44+00:00",
+        "note": "D:\\code\\z72-qemu\\.local\\update-e2e\\signed-update.bin",
         "store_error": null
-      }
+      },
+      "booted_version": "Ver.01.70.02"
     },
     {
       "name": "restart-keeps-update",
@@ -58,8 +54,8 @@
         "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
         "length": 38239166,
         "version": "Ver.01.70.02",
-        "installed_at": "2026-10-18T08:38:17+00:00",
-        "note": "D:\\Temporary\\2610\\07\\Z_72_firmware\\artifacts\\c170_histogram_horizon\\master.bin",
+        "installed_at": "2026-10-20T00:14:44+00:00",
+        "note": "D:\\code\\z72-qemu\\.local\\update-e2e\\signed-update.bin",
         "store_error": null
       }
     },
@@ -74,7 +70,15 @@
         "installed_at": "",
         "note": "",
         "store_error": null
-      }
+      },
+      "booted_version": "Ver.01.70.02"
     }
-  ]
+  ],
+  "staged": {
+    "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
+    "length": 38239230,
+    "version": "Ver.01.70.02",
+    "digest": "6b6424ac0b022b05b27bd6b6a6e40d21a22bd9ff",
+    "signed": true
+  }
 }

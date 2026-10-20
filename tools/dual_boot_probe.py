@@ -35,7 +35,7 @@ SLAVE_SERVICE = (0x10038000, 0x1003A000)
 def dual_machine(qemu, directory, master, slave, console, globals_=(),
                  icount="shift=0,sleep=off", trace="int", controller_firmware=None,
                  devices=(), controller_link=False, controller_flash_data=None,
-                 extra_arguments=(), process_factory=None):
+                 extra_arguments=(), process_factory=None, machine_options=()):
     require(not controller_link or controller_firmware is not None,
             'Controller link requires a controller firmware image')
     require(controller_flash_data is None or controller_firmware is not None,
@@ -54,6 +54,8 @@ def dual_machine(qemu, directory, master, slave, console, globals_=(),
             machine += ',controller-flash-data=' + str(controller_flash_data)
         if controller_link:
             machine += ',controller-link=on'
+    for option in machine_options:
+        machine += ',' + option
     command = [qemu, '-M', machine, '-smp',
                '4,maxcpus=5' if controller_firmware is not None else '4', '-display', 'none',
                '-serial', 'none', '-monitor', 'none', '-nic', 'none',

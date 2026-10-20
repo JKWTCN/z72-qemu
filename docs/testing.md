@@ -476,16 +476,21 @@ on the default clock. See the
 [single-click console evidence](../artifacts/console_single_click/report.json).
 
 `tools/console_update_check.py` drives the menu-gated firmware update over
-the same HTTP path with an update candidate supplied from outside the
-repository. It requires an install attempt outside the menu to be rejected,
-opens the menu with one click, installs, and verifies the machine restarts
-onto the installed image and reaches the shooting foreground again;
-`--verify-restart` reboots once more to prove persistence and
-`--verify-rollback` returns to the supplied stock master. The firmware-free
-sides are `checks.test_update_store` (synthetic structure images: candidate
-acceptance/rejection and store lifecycle) and the update cases of
-`checks.test_web_console` (menu gate, identical-firmware refusal, stock
-fallback on a broken store, status reporting). See the
+the same HTTP path with a signed update file and its eight boot-window key
+bytes supplied from outside the repository. It requires an install attempt
+outside the menu to be rejected, opens the menu with one click, verifies the
+whole-file digest, installs, and verifies the machine resets and reboots —
+inside the same emulator process — onto the installed image and reaches the
+shooting foreground again, checking the guest-visible version record of the
+booted image; `--verify-restart` reboots once more through a full process
+restart to prove persistence and `--verify-rollback` returns to the supplied
+stock master through the same machine-reset path. The firmware-free sides
+are `checks.test_update_store` (synthetic structure images: candidate
+acceptance/rejection and store lifecycle), `checks.test_upgrade_signature`
+(synthetic tables: digest formula, signed round trip, wrong-key/tamper/
+marker rejection) and the update cases of `checks.test_web_console` (staged
+signature check, menu gate, identical-firmware refusal, stock fallback on a
+broken store, status reporting). See the
 [menu update evidence](../artifacts/menu_update_validation/report.json).
 
 `tools/sensor_frame_probe.py` boots the combined machine with the console
