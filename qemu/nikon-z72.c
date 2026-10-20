@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Z7 II C1.70 instruction laboratory with bounded early boot registers. */
 #include "qemu/osdep.h"
+#include "qemu/cutils.h"
 #include "qemu/timer.h"
 #include "qapi/error.h"
 #include "hw/boards.h"
@@ -8,6 +9,7 @@
 #include "hw/qdev-properties.h"
 #include "hw/arm/machines-qom.h"
 #include "hw/resettable.h"
+#include "system/reset.h"
 #include "hw/irq.h"
 #include "hw/intc/arm_gic.h"
 #include "chardev/char.h"
@@ -24,6 +26,10 @@ struct NikonZ72DualMachine {
     MachineState parent_obj;
     char *controller_firmware;
     bool controller_link;
+    char *master_boot_image;
+    char *slave_boot_image;
+    char *master_boot_aux;
+    char *slave_boot_aux;
     Z72ControllerInputs controller_inputs;
 };
 
@@ -81,6 +87,74 @@ static bool dual_controller_battery_peer_get(Object *obj, Error **errp)
 static void dual_controller_battery_peer_set(Object *obj, bool value, Error **errp)
 {
     NIKON_Z72_DUAL(obj)->controller_inputs.battery_peer = value;
+}
+
+static char *dual_boot_image_get(Object *obj, int role, Error **errp)
+{
+    NikonZ72DualMachine *s = NIKON_Z72_DUAL(obj);
+    return g_strdup(role ? s->slave_boot_image : s->master_boot_image);
+}
+
+static void dual_boot_image_set(Object *obj, int role, const char *value, Error **errp)
+{
+    NikonZ72DualMachine *s = NIKON_Z72_DUAL(obj);
+    char **slot = role ? &s->slave_boot_image : &s->master_boot_image;
+    g_free(*slot);
+    *slot = g_strdup(value);
+}
+
+static char *dual_master_boot_image_get(Object *obj, Error **errp)
+{
+    return dual_boot_image_get(obj, 0, errp);
+}
+
+static void dual_master_boot_image_set(Object *obj, const char *value, Error **errp)
+{
+    dual_boot_image_set(obj, 0, value, errp);
+}
+
+static char *dual_slave_boot_image_get(Object *obj, Error **errp)
+{
+    return dual_boot_image_get(obj, 1, errp);
+}
+
+static void dual_slave_boot_image_set(Object *obj, const char *value, Error **errp)
+{
+    dual_boot_image_set(obj, 1, value, errp);
+}
+
+static char *dual_boot_aux_get(Object *obj, int role, Error **errp)
+{
+    NikonZ72DualMachine *s = NIKON_Z72_DUAL(obj);
+    return g_strdup(role ? s->slave_boot_aux : s->master_boot_aux);
+}
+
+static void dual_boot_aux_set(Object *obj, int role, const char *value, Error **errp)
+{
+    NikonZ72DualMachine *s = NIKON_Z72_DUAL(obj);
+    char **slot = role ? &s->slave_boot_aux : &s->master_boot_aux;
+    g_free(*slot);
+    *slot = g_strdup(value);
+}
+
+static char *dual_master_boot_aux_get(Object *obj, Error **errp)
+{
+    return dual_boot_aux_get(obj, 0, errp);
+}
+
+static void dual_master_boot_aux_set(Object *obj, const char *value, Error **errp)
+{
+    dual_boot_aux_set(obj, 0, value, errp);
+}
+
+static char *dual_slave_boot_aux_get(Object *obj, Error **errp)
+{
+    return dual_boot_aux_get(obj, 1, errp);
+}
+
+static void dual_slave_boot_aux_set(Object *obj, const char *value, Error **errp)
+{
+    dual_boot_aux_set(obj, 1, value, errp);
 }
 
 /* Exact configuration words observed in stock startup. Firmware pairs command
@@ -1750,17 +1824,206 @@ static void boot_config_register_types(void)
 }
 type_init(boot_config_register_types)
 
+/* Engine boot storage: the image set the board reloads at every reset.
+ * The body boots from its stored firmware, so a reset must copy the image
+ * back into the code window and restart both cores at the image entry even
+ * though the preloader only runs once. Writing the image property replaces
+ * the stored firmware (the programming step of a firmware update); the next
+ * machine reset then boots the replaced image. */
+#define TYPE_NIKON_Z72_BOOT_STORE "nikon-z72-boot-store"
+OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72BootStore, NIKON_Z72_BOOT_STORE)
+
+#define Z72_BOOT_STORE_FILES 4
+
+typedef struct NikonZ72BootFile {
+    char *path;
+    hwaddr address;
+    uint8_t *data;
+    size_t size;
+} NikonZ72BootFile;
+
+struct NikonZ72BootStore {
+    SysBusDevice parent_obj;
+    char *image;
+    char *auxiliary;
+    NikonZ72BootFile files[Z72_BOOT_STORE_FILES];
+    unsigned file_count;
+    hwaddr entry;
+    ARMCPU *cpus[2];
+    unsigned cpu_count;
+};
+
+static void boot_store_load(NikonZ72BootFile *file, const char *path,
+                            hwaddr address, Error **errp)
+{
+    gchar *data = NULL;
+    gsize size = 0;
+    if (!g_file_get_contents(path, &data, &size, NULL)) {
+        error_setg(errp, "Boot store file is not readable: %s", path);
+        return;
+    }
+    g_free(file->path);
+    g_free(file->data);
+    file->path = g_strdup(path);
+    file->data = (uint8_t *)data;
+    file->size = size;
+    file->address = address;
+}
+
+/* Auxiliary entries are "path@hex-address" pairs separated by commas. */
+static void boot_store_parse_auxiliary(NikonZ72BootStore *s, Error **errp)
+{
+    g_auto(GStrv) entries = g_strsplit(s->auxiliary ?: "", ",", 0);
+    for (unsigned i = 0; entries[i] && entries[i][0]; i++) {
+        if (s->file_count >= Z72_BOOT_STORE_FILES) {
+            error_setg(errp, "Boot store accepts at most %d auxiliary files",
+                       Z72_BOOT_STORE_FILES - 1);
+            return;
+        }
+        gchar *marker = strrchr(entries[i], '@');
+        if (marker == NULL) {
+            error_setg(errp, "Boot store entry lacks @address: %s", entries[i]);
+            return;
+        }
+        uint64_t address;
+        if (qemu_strtou64(marker + 1, NULL, 16, &address) || address == 0) {
+            error_setg(errp, "Boot store entry address is invalid: %s", entries[i]);
+            return;
+        }
+        *marker = '\0';
+        boot_store_load(&s->files[s->file_count++], entries[i], address, errp);
+        if (*errp) {
+            return;
+        }
+    }
+}
+
+static char *boot_store_image_get(Object *obj, Error **errp)
+{
+    return g_strdup(NIKON_Z72_BOOT_STORE(obj)->image);
+}
+
+static void boot_store_image_set(Object *obj, const char *value, Error **errp)
+{
+    NikonZ72BootStore *s = NIKON_Z72_BOOT_STORE(obj);
+    /* File zero is the firmware image; replacing it reprograms the store. */
+    boot_store_load(&s->files[0], value, s->entry, errp);
+    if (*errp) {
+        return;
+    }
+    g_free(s->image);
+    s->image = g_strdup(value);
+    if (s->file_count == 0) {
+        s->file_count = 1;
+    }
+}
+
+static char *boot_store_auxiliary_get(Object *obj, Error **errp)
+{
+    return g_strdup(NIKON_Z72_BOOT_STORE(obj)->auxiliary);
+}
+
+static void boot_store_auxiliary_set(Object *obj, const char *value, Error **errp)
+{
+    NikonZ72BootStore *s = NIKON_Z72_BOOT_STORE(obj);
+    g_free(s->auxiliary);
+    s->auxiliary = g_strdup(value);
+}
+
+/* Runs after the device tree reset: the code window and the cores are back
+ * at their reset state, so the stored set is copied in and execution is
+ * pointed at the image entry, matching the preloader's initial placement. */
+static void boot_store_reset(void *opaque)
+{
+    NikonZ72BootStore *s = opaque;
+    if (s->cpu_count == 0 || s->entry == 0) {
+        return;
+    }
+    AddressSpace *view = CPU(s->cpus[0])->as;
+    for (unsigned i = 0; i < s->file_count; i++) {
+        NikonZ72BootFile *file = &s->files[i];
+        if (file->size == 0) {
+            continue;
+        }
+        address_space_write(view, file->address, MEMTXATTRS_UNSPECIFIED,
+                            file->data, file->size);
+    }
+    for (unsigned i = 0; i < s->cpu_count; i++) {
+        CPUState *cs = CPU(s->cpus[i]);
+        cpu_reset(cs);
+        cpu_set_pc(cs, s->entry);
+    }
+}
+
+static void boot_store_realize(DeviceState *dev, Error **errp)
+{
+    NikonZ72BootStore *s = NIKON_Z72_BOOT_STORE(dev);
+    /* Slot zero always belongs to the image, loaded or empty. */
+    s->file_count = 1;
+    if (s->image) {
+        boot_store_load(&s->files[0], s->image, s->entry, errp);
+        if (*errp) {
+            return;
+        }
+    }
+    boot_store_parse_auxiliary(s, errp);
+    if (*errp) {
+        return;
+    }
+    qemu_register_reset(boot_store_reset, s);
+}
+
+static void boot_store_finalize(Object *obj)
+{
+    NikonZ72BootStore *s = NIKON_Z72_BOOT_STORE(obj);
+    for (unsigned i = 0; i < Z72_BOOT_STORE_FILES; i++) {
+        g_free(s->files[i].path);
+        g_free(s->files[i].data);
+    }
+    g_free(s->image);
+    g_free(s->auxiliary);
+}
+
+static void boot_store_class_init(ObjectClass *oc, const void *data)
+{
+    DeviceClass *dc = DEVICE_CLASS(oc);
+    dc->realize = boot_store_realize;
+    object_class_property_add_str(oc, "image", boot_store_image_get,
+                                  boot_store_image_set);
+    object_class_property_set_description(oc, "image",
+        "Stored engine firmware image copied to the entry at every reset");
+    object_class_property_add_str(oc, "auxiliary", boot_store_auxiliary_get,
+                                  boot_store_auxiliary_set);
+    object_class_property_set_description(oc, "auxiliary",
+        "Comma separated path@address files reloaded alongside the image");
+}
+
+static void boot_store_register_types(void)
+{
+    static const TypeInfo info = {
+        .name = TYPE_NIKON_Z72_BOOT_STORE,
+        .parent = TYPE_SYS_BUS_DEVICE,
+        .instance_size = sizeof(NikonZ72BootStore),
+        .instance_finalize = boot_store_finalize,
+        .class_init = boot_store_class_init,
+    };
+    type_register_static(&info);
+}
+type_init(boot_store_register_types)
+
 static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *view,
                                           const NikonZ72Window *windows,
                                           unsigned count,
                                           MemoryRegion *shared_message,
-                                          const char *chardev_id, bool own_file);
+                                          const char *chardev_id, bool own_file,
+                                          const char *boot_image,
+                                          const char *boot_aux);
 
 static void nikon_z72_context_init(MachineState *machine,
                                   const NikonZ72Window *windows, unsigned count)
 {
     nikon_z72_engine_init(machine, get_system_memory(), windows, count, NULL,
-                          NULL, true);
+                          NULL, true, NULL, NULL);
 }
 
 /* One engine context: two execution cores, its own private view of the bus
@@ -1770,7 +2033,9 @@ static void nikon_z72_context_init(MachineState *machine,
 static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *view,
                                           const NikonZ72Window *windows,
                                           unsigned count, MemoryRegion *shared_message,
-                                          const char *chardev_id, bool own_file)
+                                          const char *chardev_id, bool own_file,
+                                          const char *boot_image,
+                                          const char *boot_aux)
 {
     MemoryRegion *ram = g_new0(MemoryRegion, count);
     /* Execution cores within one selected role share RAM and a GIC. The
@@ -1790,6 +2055,27 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
                                  &error_fatal);
         object_property_set_bool(OBJECT(cpus[i]), "realized", true, &error_fatal);
     }
+    /* Boot storage: every machine reset re-copies the stored image set into
+     * the code window and restarts the cores at the image entry, so a reset
+     * after a store update boots the replaced firmware. */
+    DeviceState *boot_store = qdev_new(TYPE_NIKON_Z72_BOOT_STORE);
+    NikonZ72BootStore *store = NIKON_Z72_BOOT_STORE(boot_store);
+    store->entry = Z72_MASTER_BASE;
+    for (unsigned i = 0; i < num_cpus; i++) {
+        store->cpus[i] = cpus[i];
+    }
+    store->cpu_count = num_cpus;
+    if (boot_image) {
+        qdev_prop_set_string(boot_store, "image", boot_image);
+    }
+    if (boot_aux) {
+        qdev_prop_set_string(boot_store, "auxiliary", boot_aux);
+    }
+    object_property_add_child(OBJECT(machine),
+                              windows == nikon_z72_slave_windows
+                                  ? "slave-boot-store" : "master-boot-store",
+                              OBJECT(boot_store));
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(boot_store), &error_fatal);
     /* Stock RTOS setup reads CBAR and uses distributor +0x1000, CPU +0x2000
      * and 256 interrupt slots. Revision, base and timer wiring are laboratory
      * choices, using the standard QEMU device rather than status-only words. */
@@ -2004,11 +2290,12 @@ static void nikon_z72_dual_init(MachineState *machine)
     DeviceState *master_config =
         nikon_z72_engine_init(machine, master_view, nikon_z72_windows,
                               G_N_ELEMENTS(nikon_z72_windows), master_message,
-                              "z72-console", true);
+                              "z72-console", true, s->master_boot_image,
+                              s->master_boot_aux);
     DeviceState *slave_config =
         nikon_z72_engine_init(machine, slave_view, nikon_z72_slave_windows,
                           G_N_ELEMENTS(nikon_z72_slave_windows), slave_message,
-                          NULL, false);
+                          NULL, false, s->slave_boot_image, s->slave_boot_aux);
     /* Communication initialization uses master bank 6 bit 3 and slave
      * bank 8 bit 10. The board connects the two readiness signals; this
      * wiring is inferred from the complementary firmware startup paths. */
@@ -2148,6 +2435,26 @@ static void dual_machine_class_init(ObjectClass *klass, const void *data)
                                   dual_controller_battery_peer_set);
     object_class_property_set_description(klass, "controller-battery-peer",
         "Answer original battery serial exchanges with a synthetic peer");
+    object_class_property_add_str(klass, "master-boot-image",
+                                  dual_master_boot_image_get,
+                                  dual_master_boot_image_set);
+    object_class_property_set_description(klass, "master-boot-image",
+        "Master engine firmware image reloaded at every machine reset");
+    object_class_property_add_str(klass, "slave-boot-image",
+                                  dual_slave_boot_image_get,
+                                  dual_slave_boot_image_set);
+    object_class_property_set_description(klass, "slave-boot-image",
+        "Slave engine firmware image reloaded at every machine reset");
+    object_class_property_add_str(klass, "master-boot-aux",
+                                  dual_master_boot_aux_get,
+                                  dual_master_boot_aux_set);
+    object_class_property_set_description(klass, "master-boot-aux",
+        "Comma separated path@address master boot files reloaded at reset");
+    object_class_property_add_str(klass, "slave-boot-aux",
+                                  dual_slave_boot_aux_get,
+                                  dual_slave_boot_aux_set);
+    object_class_property_set_description(klass, "slave-boot-aux",
+        "Comma separated path@address slave boot files reloaded at reset");
 }
 
 static void dual_machine_instance_init(Object *obj)
@@ -2158,6 +2465,10 @@ static void dual_machine_instance_init(Object *obj)
 static void dual_machine_finalize(Object *obj)
 {
     g_free(NIKON_Z72_DUAL(obj)->controller_firmware);
+    g_free(NIKON_Z72_DUAL(obj)->master_boot_image);
+    g_free(NIKON_Z72_DUAL(obj)->slave_boot_image);
+    g_free(NIKON_Z72_DUAL(obj)->master_boot_aux);
+    g_free(NIKON_Z72_DUAL(obj)->slave_boot_aux);
     g_free(NIKON_Z72_DUAL(obj)->controller_inputs.flash_data);
     g_free(NIKON_Z72_DUAL(obj)->controller_inputs.supply_data);
 }
