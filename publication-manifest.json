@@ -143,12 +143,12 @@
     "checks/test_upgrade_signature.py": "185ee2fcf51aaff610b636b0aecd42326edf7802a4d007569cf8bd3c423c3826",
     "checks/test_web_console.py": "51aa4abeb1cec0f05e514fa510b37b4fa2d058b11b14a1c0b525a39933864c00",
     "docs/architecture.md": "1596b7403b9c1ad4966892998160d199c85c0223a12e48d11e8a85f651d1b104",
-    "docs/browser.md": "000e205355553dba1e31aa95babeb152688b94f7b133b454669f308fe28979f8",
+    "docs/browser.md": "059e44ddf6c7304bfe792aaf6c590d3af6f8df20482839540dfe059a1e9d4dda",
     "docs/firmware.md": "d94d549f9c53e74dc17c17ed6813c64a27c5ece105fd76e56a9cb48eb870fc7f",
     "docs/porting.md": "c396ad9a79416797337917271cbdc01c78527dc0aafed838b0b3afdfcb3f85d6",
     "docs/publication.md": "9c0aaecc2bc2b4c17c17d881acf0c838d345d7c10aaabe2a857de037b2e68327",
     "docs/reference-sources.json": "638b788bc152e9d3228040064ccd5d5e32f763fe9475af07962c7ea6d1f6a584",
-    "docs/testing.md": "dd57bf2801d5bb4e7d7b996cf2da002759a3c8cdc944f455e529ad4845b2c01f",
+    "docs/testing.md": "5c2d16544bd1fc920baf6fb0806214311c190a14d0562fed9560768b926b1e2b",
     "qemu/nikon-gpu.h": "8e8d13c10b41569e15baa882aa06b401e84349d85a141672cca26fb17487368c",
     "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
     "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
@@ -328,7 +328,7 @@
     "tools/verify_release.py": "06bb98852e7f7f6955457f81412d604d37d065523e19ddd5c94be9c62387a73e",
     "tools/web_console.py": "835be3729ffa79a5b61359fa9a745afa503b515acef8127f2df46c87e8e66a56",
     "web/console.js": "18e1cd763b4bbc581b56d4f1a6c124c88f4f9ce3d3bfece1a05258f9a4657f92",
-    "web/index.html": "e7dfb67e9e677ea78323247ab27c21aa53702da347bd90b42a0d4afd5fed5196",
+    "web/index.html": "0de94dc74207d2f5876fa4825fe1e566f76245b646ecc8054e203476c0d25874",
     "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e"
   }
 }

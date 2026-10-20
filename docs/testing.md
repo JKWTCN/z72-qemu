@@ -475,6 +475,12 @@ instruction-count shift breaks startup the same way, so the acceptance runs
 on the default clock. See the
 [single-click console evidence](../artifacts/console_single_click/report.json).
 
+`tests/test_boot_store.py --qemu .build/build/qemu-system-arm` checks the
+engine boot store with synthetic marker images only: the stored first image
+runs, the store is reprogrammed through the monitor, and a whole-machine
+reset restarts the core at the image entry so the second image runs — the
+programming-and-reset contract behind the menu update, without firmware.
+
 `tools/console_update_check.py` drives the menu-gated firmware update over
 the same HTTP path with a signed update file and its eight boot-window key
 bytes supplied from outside the repository. It requires an install attempt
