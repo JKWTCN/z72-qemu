@@ -613,6 +613,9 @@ struct NikonZ72BootConfig {
     bool sensor_sample;
     bool sample_counter;
     bool sample_group1;
+    /* Sensor frame generation state */
+    bool frame_generate;
+    uint32_t frame_count;
     bool pcie_link;
     bool auto_sample_level;
     uint32_t sample_lines;
@@ -850,7 +853,15 @@ static void frame_sync_tick(void *opaque)
                 s->sample_counter && index == 0 ?
                 (uint32_t)s->frame_sync_count : s->sample_lines;
         }
+        /* With the sample source armed, also re-arm the sampling
+         * configuration the original firmware clears when the menu
+         * opens; a running sensor would cause the restart path to
+         * rewrite this word after each pause. */
+        if (!*boot_config_value(s, 0x20061000) && s->frame_sync_count > 4) {
+            *boot_config_value(s, 0x20061000) = 0xffff;
+        }
     }
+    s->frame_count = s->frame_sync_count;
     s->frame_sync_count++;
     sync_update_irqs(s);
     timer_mod(s->frame_sync_timer,
@@ -1777,6 +1788,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
         DEFINE_PROP_BOOL("pcie-link", NikonZ72BootConfig, pcie_link, false),
