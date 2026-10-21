@@ -944,6 +944,15 @@ static void boot_config_write(void *opaque, hwaddr offset,
         address == 0x20068140 || address == 0x20068144) {
         return;
     }
+    /* When the input path enable word is set, a running sensor would
+     * begin delivering events; latch a representative pattern in the
+     * first event group so the firmware's polling sees activity. */
+    if (address == 0x20068008 && value) {
+        *stored = (uint32_t)value;
+        *boot_config_value(s, 0x20068200) |= 0x79;
+        input_update_irqs(s);
+        return;
+    }
     if (address == 0x20068000 || address == 0x20068004 ||
         address == 0x20068010 || address == 0x20068014) {
         hwaddr base = address & ~0x4u;
