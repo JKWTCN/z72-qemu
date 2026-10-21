@@ -838,18 +838,13 @@ static void frame_sync_tick(void *opaque)
 
     *boot_config_value(s, 0x20060044) |= 0x10;
     if (s->sensor_sample) {
-        *boot_config_value(s, 0x20060044) |= 0x01;
+        /* The third bank's sample-ready bit drives the auto-sample event
+         * without claiming pixel data is available in bank 1; a separate
+         * "sample-group1" property latches the vertical-sync line only. */
         *boot_config_value(s, 0x20060050) |= 0x01;
-        /* Group 1 carries the sensor timing lines; with the property
-         * armed, one latch per frame mirrors a vertical-sync event on
-         * its first line. */
         if (s->sample_group1) {
             *boot_config_value(s, 0x20060038) |= 0x01;
         }
-        /* The sampled result words hold the configured line pattern; no
-         * measured sensor levels exist to reproduce. With the counter
-         * mode armed, word 0 carries the frame count instead, so the
-         * pattern changes on every event like live sampled lines. */
         for (unsigned index = 0; index < 5; index++) {
             *boot_config_value(s, 0x20061300 + index * 4) =
                 s->sample_counter && index == 0 ?
