@@ -68,15 +68,18 @@ launch.
   a different image.
 - **Installed update images** are the one sanctioned exception, and only
   inside the console update store. A candidate supplied through
-  `tools/web_console.py --update-image` must be a signed update file: its
-  header carries the SHA-1 digest the stock menu update verifies, and the
-  console recomputes that digest over the file's marked body plus eight
-  appended key bytes (the boot-window key material supplied separately via
-  `--boot-key`). The decoded payload must still preserve the executed boot
-  structure (window-bounded length, zero CRC residue, version record,
-  reset branch, initialization-table count, communication window and boot
-  prefix); the stock digests above deliberately do not apply because an
-  update may change those bytes. The module also recomputes the digest for
+  `tools/web_console.py --update-image` takes one of two formats, mirroring
+  the original paths. A whole update file carries the marked body prefix
+  and the SHA-1 digest the stock whole-file check verifies; the console
+  recomputes that digest over the file's marked body plus eight appended
+  key bytes (the boot-window key material supplied separately via
+  `--boot-key`). A bare master member file takes the standalone path: the
+  member CRC residue and the executed boot structure, without the digest.
+  In both formats the payload must preserve the executed boot structure
+  (window-bounded length, zero CRC residue, version record, reset branch,
+  initialization-table count, communication window and boot prefix); the
+  stock digests above deliberately do not apply because an update may
+  change those bytes. The module also recomputes the digest for
   a locally built custom payload (`analyze/upgrade_signature.py`), which
   is how a modified firmware is re-signed; the repository itself ships no
   payload-building or repacking tools. The manifest written at installation

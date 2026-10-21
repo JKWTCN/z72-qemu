@@ -431,7 +431,39 @@ class WebConsoleTests(unittest.TestCase):
             else:
                 self.assertIsNone(machine.staged_error)
                 self.assertTrue(machine.staged['signed'])
+                self.assertEqual(machine.staged['format'], 'package')
                 self.assertIn('digest', machine.staged)
+
+    def test_bare_member_update_takes_the_standalone_path(self):
+        machine, work, member = self.update_machine()
+        bare = work / 'bare.bin'
+        bare.write_bytes(build_master(extra=68))
+        machine.update_image = bare
+        machine.refresh_staged()
+        self.assertIsNone(machine.staged_error)
+        self.assertFalse(machine.staged['signed'])
+        self.assertEqual(machine.staged['format'], 'member')
+        self.assertEqual(machine.staged['length'], len(bare.read_bytes()))
+        machine._words = lambda address, count: [1, 0, 0, 0, 1]
+        manifest = machine.install_update()
+        self.assertFalse(manifest['signature']['signed'])
+        self.assertEqual(manifest['signature']['format'], 'member')
+        self.assertEqual(len(machine.reflashes), 1)
+
+    def test_whole_file_without_a_key_is_rejected_at_start(self):
+        import shutil
+        from analyze.upgrade_signature import assemble_update
+        from checks.test_upgrade_signature import table_master
+        work = Path(tempfile.mkdtemp(prefix='web-console-whole-'))
+        self.addCleanup(shutil.rmtree, work, True)
+        reference = table_master()
+        whole = work / 'whole.bin'
+        whole.write_bytes(assemble_update(build_master(), b'KEYBYTES', reference))
+        with self.assertRaisesRegex(ValueError, 'boot-key'):
+            Machine(types.SimpleNamespace(
+                auto_menu=False, update_image=whole, boot_key=None,
+                update_store=work / 'store',
+                master=types.SimpleNamespace(read_bytes=lambda: reference)))
 
     def test_rollback_removes_the_store_and_reflashes_stock(self):
         import tools.web_console

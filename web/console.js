@@ -147,7 +147,7 @@ function paintUpdate(state) {
   const staged = $('firmware-staged');
   if (!state.staged) staged.textContent = '未提供';
   else if (state.staged.error) staged.textContent = `无效：${state.staged.error}`;
-  else staged.textContent = `${state.staged.version} · ${state.staged.sha256.slice(0, 12)}` +
+  else staged.textContent = `${state.staged.format === 'member' ? '单成员' : '整包'} · ${state.staged.version} · ${state.staged.sha256.slice(0, 12)}` +
     (state.staged.signed ? ` · 摘要 ${state.staged.digest.slice(0, 8)}` : '');
   $('install-update').disabled = !state.update_ready || restarting;
   $('remove-update').hidden = !state.update_installed;

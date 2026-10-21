@@ -141,13 +141,17 @@ class Machine:
         self.store = UpdateStore(getattr(args, 'update_store', None) or DEFAULT_STORE)
         self.update_image = getattr(args, 'update_image', None)
         self.boot_key = None
-        boot_key_path = getattr(args, 'boot_key', None)
         if self.update_image is not None:
-            require(boot_key_path is not None,
-                    'A signed update image requires --boot-key (eight boot-window bytes)')
-            key = Path(boot_key_path).read_bytes()
-            require(len(key) == 8, 'The boot-window key file must hold exactly eight bytes')
-            self.boot_key = key
+            head = self.update_image.read_bytes()[:0x40]
+            if len(head) == 0x40 and head[0x20:] == b' ' * 0x20:
+                # A whole update file: the header digest check needs the
+                # boot-window key material as a second local input.
+                boot_key_path = getattr(args, 'boot_key', None)
+                require(boot_key_path is not None,
+                        'A whole update file requires --boot-key (eight boot-window bytes)')
+                key = Path(boot_key_path).read_bytes()
+                require(len(key) == 8, 'The boot-window key file must hold exactly eight bytes')
+                self.boot_key = key
         self.staged = None
         self.staged_error = None
         self.refresh_staged()
@@ -389,18 +393,27 @@ class Machine:
         return self.args.master.read_bytes()
 
     def _verified_update(self):
-        """Verify one signed update file and describe its payload member.
+        """Verify one update file and describe its payload member.
 
-        Mirrors the stock whole-file check: the file digest must match the
-        body computed with the supplied boot-window key material, and the
-        decoded payload must still satisfy the member structure checks.
+        Two formats mirror the original paths. A whole update file carries
+        the marked body prefix and its header digest; it must reproduce the
+        stock whole-file check computed with the supplied boot-window key
+        material. A bare member file takes the standalone path: the member
+        CRC residue and the executed boot structure, without the digest.
         """
-        master = self._reference_master()
-        described = verify_update(self.update_image.read_bytes(), self.boot_key, master)
-        candidate = installable_master(described['payload'])
-        return dict(candidate, note=str(self.update_image),
-                    digest=described['digest'], length=described['length'],
-                    signed=True, payload=described['payload'])
+        data = self.update_image.read_bytes()
+        if len(data) > 0x40 and data[0x20:0x40] == b' ' * 0x20:
+            master = self._reference_master()
+            require(self.boot_key is not None,
+                    'A whole update file requires --boot-key (eight boot-window bytes)')
+            described = verify_update(data, self.boot_key, master)
+            candidate = installable_master(described['payload'])
+            return dict(candidate, note=str(self.update_image),
+                        digest=described['digest'], length=described['length'],
+                        signed=True, format='package', payload=described['payload'])
+        candidate = installable_master(data)
+        return dict(candidate, note=str(self.update_image), length=len(data),
+                    signed=False, format='member', payload=data)
 
     def _select_master(self):
         """Load the installed update when present, else the stock master.
@@ -450,8 +463,10 @@ class Machine:
             require(self.firmware is None or described['sha256'] != self.firmware.get('sha256'),
                     'The staged update already is the loaded firmware')
             manifest = self.store.install(image, note=str(self.update_image),
-                                          signature=dict(digest=described['digest'],
-                                                         signed=True))
+                                          signature=dict(
+                                              format=described['format'],
+                                              digest=described.get('digest', ''),
+                                              signed=described['signed']))
             self.staged = {key: value for key, value in described.items()
                            if key != 'payload'}
             self.staged_error = None
@@ -839,9 +854,12 @@ def main():
                              'native start window (the manual menu key only '
                              'works in that early window)')
     parser.add_argument('--update-image', type=Path,
-                        help='Signed master update file installed through the menu-'
-                             'driven firmware update (verified against the whole-file '
-                             'digest check; the project ships no tools to build one)')
+                        help='Master update file installed through the menu-driven '
+                             'firmware update: a whole update file (checked against '
+                             'its header digest with --boot-key) or a bare master '
+                             'member file (CRC and structure only, like the '
+                             'standalone card path); the project ships no tools to '
+                             'build either')
     parser.add_argument('--boot-key', type=Path,
                         help='Eight boot-window key bytes the update digest check '
                              'combines with the staged update (local research input)')
