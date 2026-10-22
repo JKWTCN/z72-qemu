@@ -481,6 +481,20 @@ runs, the store is reprogrammed through the monitor, and a whole-machine
 reset restarts the core at the image entry so the second image runs — the
 programming-and-reset contract behind the menu update, without firmware.
 
+`tools/update_window_probe.py` checks the original update staging window:
+a preloaded decoded package (standing in for the original dispatcher's
+writes, which the bounded update probe covers separately) boots as its own
+master member after a machine reset and survives a second reset, while a
+one-byte-corrupted copy is rejected by the container CRCs and keeps the
+stock master running. See the
+[update window evidence](../artifacts/update_window_harvest/report.json).
+
+`tools/menu_fwupdate_probe.py` sweeps the original menu pages with real key
+presses, walking every tab to its lower items and pressing OK while an
+observation point on the firmware-management eligibility entry reports
+whether the key path alone reaches the update service. See the
+[menu navigation evidence](../artifacts/menu_fwupdate_navigation/report.json).
+
 `tools/console_update_check.py` drives the menu-gated firmware update over
 the same HTTP path with a signed update file and its eight boot-window key
 bytes supplied from outside the repository. It requires an install attempt
