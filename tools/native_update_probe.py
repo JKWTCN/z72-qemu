@@ -3,12 +3,13 @@
 
 File I/O, cache maintenance, runtime memory/string primitives, ASCII flags,
 locks, component-version responses and parameter storage are provided by the
-host. Original scanning and classification run through their return paths.
-GetProprietyCheck runs with a synthetic snapshot. Whole-package control flow
-uses synthetic boot material and host bulk primitives, checked separately
-against original small-input operations. This probe does not activate menu
-dispatch, establish real package acceptance, or program storage. Firmware
-bytes stay local.
+host. Original directory collection, candidate enumeration, scanning and
+classification run through their return paths; the directory record vector
+comes from the host. GetProprietyCheck runs with a synthetic snapshot.
+Whole-package control flow uses synthetic boot material and host bulk
+primitives, checked separately against original small-input operations.
+This probe does not activate menu dispatch, establish real package
+acceptance, or program storage. Firmware bytes stay local.
 """
 import argparse
 import hashlib
@@ -57,7 +58,8 @@ class NativeUpdateProbe:
                        0x37D4D4, 0x37DAA4, 0x37DB20, 0x3D6938,
                        0x37C638, 0x38FE82, 0x39C310, 0x39C308,
                        0x747092, 0x3D636A, 0x37D3A8, 0x37D71C,
-                       0x37D2E8, 0x37D372):
+                       0x37D2E8, 0x37D372, 0x37D984, 0x37D6B4,
+                       0x37D940, 0x37D922, 0x37AAE4):
             self.u.hook_add(UC_HOOK_CODE,
                             lambda u, address, size, unused: self.executed.append(hex(address - BASE)),
                             begin=BASE + offset, end=BASE + offset)
@@ -327,6 +329,94 @@ class NativeUpdateProbe:
                     matching_count=self.word(self.UPDATE_STATE + 0x4C),
                     opened_files=list(file_paths), executed_entries=list(self.executed))
 
+    def collect_packages(self, directories, failed_directories=(), mode=0,
+                         card_state=0):
+        from unicorn import UC_HOOK_CODE
+        self.directory_fixture([], card_state, ())
+        file_paths = self.file_fixture()
+        self.installed_version_fixture()
+        allocations, freed, queries = [], [], []
+        next_allocation = self.SCRATCH + 0x80000
+        def allocate(size, *args):
+            nonlocal next_allocation
+            require(next_allocation + size <= self.SCRATCH + 0x100000,
+                    'Original directory allocation exceeds the fixture heap')
+            address = next_allocation
+            next_allocation += (size + 7) & ~7
+            allocations.append(address)
+            self.result(address)
+        def release(address, *args):
+            require(address in allocations and address not in freed, 'Unexpected directory buffer release')
+            freed.append(address)
+        def directory_exists(path, *args):
+            name = self.cstring(path)
+            queries.append(dict(operation='exists', path=name))
+            self.result(int(name in directories))
+        def attributes(path, output, *args):
+            self.u.mem_write(output, bytes(1))
+            self.result(0x043A0080)
+        def scalar(number, *args):
+            require(number in (0x2F02, 0x2F03), 'Unexpected card parameter')
+            self.result(0)
+        self.install_hook(0x32FE30, allocate)
+        self.install_hook(0x32FE7E, release)
+        self.install_hook(0x4B3EF0, directory_exists)
+        self.install_hook(0x4B3E6C, attributes)
+        self.install_hook(0x4E6980, lambda *args: self.result(0))
+        self.install_hook(0xE0490, scalar)
+        # No attached-component snapshot is available in this fixture.
+        self.install_hook(0x3A541E, lambda *args: self.result(0))
+        callback_return = self.SCRATCH + 0x5000
+        entry_buffer = self.SCRATCH + 0x7000
+        pending = {}
+        def deliver_next():
+            entry = next(pending['entries'], None)
+            if entry is None:
+                self.result(0x043A0080)
+                self.u.reg_write(self.lr, pending['return_address'])
+                self.u.reg_write(self.pc, pending['return_address'])
+                return
+            self.u.mem_write(entry_buffer, self.directory_record(*entry))
+            self.u.reg_write(self.regs[0], entry_buffer)
+            self.u.reg_write(self.lr, callback_return | 1)
+            self.u.reg_write(self.pc, pending['callback'])
+        def enumerate_directory(u, address, size, unused):
+            path = self.cstring(u.reg_read(self.regs[0]))
+            queries.append(dict(operation='enumerate', path=path))
+            pending.update(entries=iter(directories[path]), return_address=u.reg_read(self.lr))
+            pending['callback'] = u.reg_read(self.regs[2])
+            require(pending['callback'] == BASE + 0x37D6B5, 'Unexpected directory callback')
+            if path in failed_directories:
+                self.result(0)
+                u.reg_write(self.pc, pending['return_address'])
+                return
+            deliver_next()
+        def callback_finished(u, address, size, unused):
+            if u.reg_read(self.regs[0]):
+                pending['entries'] = iter(())
+            deliver_next()
+        self.u.hook_add(UC_HOOK_CODE, enumerate_directory,
+                        begin=BASE + 0x4B3E92, end=BASE + 0x4B3E92)
+        self.u.hook_add(UC_HOOK_CODE, callback_finished,
+                        begin=callback_return, end=callback_return)
+        returned = self.call(0x37D984, mode, self.SCRATCH + 0x30000)
+        record = 0xB25EC904 + 13 * 0x1CC
+        collected = self.word(self.UPDATE_STATE + 0x60)
+        return dict(returned=returned, requested_mode=mode,
+                    stored_mode=self.u.mem_read(self.UPDATE_STATE + 2, 1)[0],
+                    summary_head=self.word(self.SCRATCH + 0x30000),
+                    collected_count=collected,
+                    matching_count=self.word(self.UPDATE_STATE + 0x4C),
+                    record_path=self.cstring(record), record_slot=13,
+                    record_package_flag=self.word(record + 0x1C4),
+                    record_category=self.u.mem_read(record + 0x1C8, 1)[0],
+                    collected_directory_indices=(
+                        [self.word(allocations[1] + 4 * i) for i in range(collected)]
+                        if len(allocations) > 1 else []),
+                    allocated_buffers=len(allocations), released_buffers=len(freed),
+                    directory_queries=list(queries), opened_files=list(file_paths),
+                    executed_entries=list(self.executed))
+
     def propriety(self, snapshot):
         require(len(snapshot) == 0x50, 'Expected 80-byte runtime snapshot')
         # Original snapshot getter reads this global while holding its lock.
@@ -337,9 +427,10 @@ class NativeUpdateProbe:
                     executed_entries=list(self.executed))
 
     def select_scanned_package(self):
-        enumerated = self.enumerate_packages([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
-        if not enumerated['record_path']:
-            return dict(enumeration=enumerated, selected=False,
+        collected = self.collect_packages({'A:\\firmware\\': [('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')],
+                                           'A:\\': []})
+        if not collected['record_path']:
+            return dict(collection=collected, selected=False,
                         executed_entries=list(self.executed))
         record = 0xB25EC904 + 13 * 0x1CC
         self.call(0x37DAA4, 13)
@@ -349,7 +440,7 @@ class NativeUpdateProbe:
         self.install_hook(0x3BC514, lambda *args: self.result(0))
         self.put_word(0xB1887D20 + 0x4C, 0x52000000)
         self.call(0x3D6938, stop_offset=0x37C638)
-        return dict(enumeration=enumerated, selected=True,
+        return dict(collection=collected, selected=True,
                     record_package_flag=self.word(record + 0x1C4), selector_flag=flag,
                     selected_check_offset=hex(self.u.reg_read(self.pc) - BASE),
                     selected_buffer=hex(self.u.reg_read(self.regs[0])),
@@ -560,6 +651,60 @@ def enumeration_suite(master, package, candidate):
                 installed_version_and_card_status_are_synthetic=True, cases=results)
 
 
+def collection_suite(master, package, candidate):
+    entry = ('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')
+    wrong = ('Z6_2_0~1.BIN', 'Z6_2_0170.BIN')
+    stock = {'A:\\firmware\\': [entry], 'A:\\': []}
+    cases = [
+        ('firmware_and_root', stock, (), 0, 0, 1, 'A:\\firmware\\Z7_2_0170.BIN', 1, [0]),
+        ('root_only', {'A:\\': [entry]}, (), 0, 0, 1, 'A:\\Z7_2_0170.BIN', 1, [1]),
+        ('firmware_only', {'A:\\firmware\\': [entry]}, (), 0, 0, 1,
+         'A:\\firmware\\Z7_2_0170.BIN', 1, [0]),
+        ('both_directories_absent', {}, (), 0, 0, 0, '', 0, []),
+        ('second_directory_error_aborts', stock, ('A:\\',), 0, 0, 0, '', 1, [0]),
+        ('first_directory_error_aborts', stock, ('A:\\firmware\\',), 0, 0, 0, '', 0, []),
+        ('other_model_name_only', {'A:\\firmware\\': [wrong], 'A:\\': []}, (), 0, 0, 1,
+         '', 1, [0]),
+        ('rejected_mode_one', stock, (), 1, 0, 0, '', 0, []),
+        ('rejected_mode_five', stock, (), 5, 0, 0, '', 0, []),
+        # Mode 2 passes the collection gate but targets no whole-camera record.
+        ('accepted_mode_two', stock, (), 2, 0, 1, '', 1, [0]),
+        ('card_b_firmware', {'B:\\firmware\\': [entry], 'B:\\': []}, (), 0, 2, 1,
+         'B:\\firmware\\Z7_2_0170.BIN', 1, [0]),
+        ('card_state_three_falls_back_to_a', {'A:\\firmware\\': [entry]}, (), 0, 3, 1,
+         'A:\\firmware\\Z7_2_0170.BIN', 1, [0]),
+    ]
+    if candidate is not None:
+        cases.append(('local_candidate', stock, (), 0, 0, 1,
+                      'A:\\firmware\\Z7_2_0170.BIN', 1, [0]))
+    accepted_modes = (0, 2, 3, 4, 6, 7, 8, 9, 0xC, 0xD, 0xE, 0x10, 0x12)
+    results = []
+    for (label, directories, failed, mode, card_state, returned, path,
+         collected, directory_indices) in cases:
+        result = NativeUpdateProbe(master, package).collect_packages(
+            directories, failed, mode, card_state)
+        buffers = 2 if mode in accepted_modes else 0
+        require(result['returned'] == returned and result['record_path'] == path and
+                result['collected_count'] == collected and
+                result['collected_directory_indices'] == directory_indices and
+                result['allocated_buffers'] == result['released_buffers'] == buffers and
+                result['stored_mode'] == (mode if buffers else 0) and
+                result['summary_head'] == (0 if not buffers else 19 if mode == 0 else 1) and
+                (path == '' or (result['matching_count'] == 1 and
+                                result['record_category'] == 4 and
+                                result['record_package_flag'] == 1)) and
+                (buffers or result['directory_queries'] == []) and
+                '0x37d984' in result['executed_entries'] and
+                ('0x37d71c' in result['executed_entries']) == (returned == 1) and
+                ('0x37d6b4' in result['executed_entries']) == (collected > 0),
+                'Unexpected collection result: ' + label)
+        results.append(dict(case=label, directory_keys=list(directories),
+                            failed_directories=list(failed), **result))
+    return dict(scope='Original 0x37D984 directory collection, mode gate, root selection and enumeration abort conditions',
+                directory_records_supplied_by_host=True,
+                allocation_and_release_are_host_heap=True, cases=results)
+
+
 def integrity_suite(master, package, candidate):
     material = bytes(8)
     def matching_header(data):
@@ -581,12 +726,12 @@ def integrity_suite(master, package, candidate):
                 ('crc16' in result['primitive_calls']) == checked_crc and
                 result['selection']['record_package_flag'] == 1 and
                 result['selection']['selector_flag'] == 1 and
-                result['selection']['enumeration']['record_slot'] == 13 and
+                result['selection']['collection']['record_slot'] == 13 and
                 result['notifications'] == [dict(event='0xb1887d24', mask='0x20')] and
                 result['dispatcher_return'] == 0,
                 'Unexpected whole-package result: ' + label)
         results.append(dict(case=label, input_sha256=digest(data), **result))
-    return dict(scope='Original candidate enumeration, selector, whole-package dispatcher and result notification',
+    return dict(scope='Original directory collection, selector, whole-package dispatcher and result notification',
                 boot_material='explicit synthetic eight-byte fixtures; real material remains unknown',
                 host_bulk_primitives=['decode', 'sha1_update', 'sha1_final', 'crc16', 'memmove'],
                 record_category_assigned_by_fixture=False,
@@ -637,6 +782,7 @@ def run_suite(master, package, candidate=None):
                 propriety=propriety_suite(master),
                 directory=directory_suite(master), scanner=scan_suite(master, package, candidate),
                 enumeration=enumeration_suite(master, package, candidate),
+                collection=collection_suite(master, package, candidate),
                 primitives=primitive_suite(master), integrity=integrity_suite(master, package, candidate),
                 version_service=NativeUpdateProbe(master, package).version_summary_service(),
                 environment=dict(running_image='supplied stock master; zero platform tag',
@@ -671,6 +817,7 @@ def main():
           len(report['scanner']['cases']), 'scanner cases,',
           len(report['propriety']['cases']), 'propriety cases,',
           len(report['enumeration']['cases']), 'enumeration cases,',
+          len(report['collection']['cases']), 'collection cases,',
           len(report['integrity']['cases']), 'synthetic integrity cases')
 
 

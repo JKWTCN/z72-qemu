@@ -717,161 +717,6 @@
         "version_count": 0,
         "parameter_writes": []
       }
-    },
-    {
-      "case": "local_candidate",
-      "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
-      "length": 48494092,
-      "image_capacity": 67108864,
-      "parser": {
-        "returned": 1,
-        "encoded_package_flag": 1,
-        "member_count": 5,
-        "io": [
-          {
-            "operation": "seek",
-            "position": 32
-          },
-          {
-            "operation": "read",
-            "position": 32,
-            "requested": 48,
-            "actual": 48
-          },
-          {
-            "operation": "read",
-            "position": 80,
-            "requested": 160,
-            "actual": 160
-          },
-          {
-            "operation": "seek",
-            "position": 48494076
-          },
-          {
-            "operation": "read",
-            "position": 48494076,
-            "requested": 16,
-            "actual": 16
-          }
-        ]
-      },
-      "member_checks": {
-        "returned": null,
-        "reached_version_list_formatting": true,
-        "encoded_package_flag": 1,
-        "member_mask": 31,
-        "io": [
-          {
-            "operation": "seek",
-            "position": 32
-          },
-          {
-            "operation": "read",
-            "position": 32,
-            "requested": 48,
-            "actual": 48
-          },
-          {
-            "operation": "read",
-            "position": 80,
-            "requested": 160,
-            "actual": 160
-          },
-          {
-            "operation": "seek",
-            "position": 48494076
-          },
-          {
-            "operation": "read",
-            "position": 48494076,
-            "requested": 16,
-            "actual": 16
-          },
-          {
-            "operation": "seek",
-            "position": 14320
-          },
-          {
-            "operation": "read",
-            "position": 14320,
-            "requested": 14,
-            "actual": 14
-          },
-          {
-            "operation": "seek",
-            "position": 38821046
-          },
-          {
-            "operation": "read",
-            "position": 38821046,
-            "requested": 4,
-            "actual": 4
-          },
-          {
-            "operation": "seek",
-            "position": 578034
-          },
-          {
-            "operation": "read",
-            "position": 578034,
-            "requested": 3,
-            "actual": 3
-          },
-          {
-            "operation": "seek",
-            "position": 39659722
-          },
-          {
-            "operation": "read",
-            "position": 39659722,
-            "requested": 8,
-            "actual": 8
-          },
-          {
-            "operation": "seek",
-            "position": 39659742
-          },
-          {
-            "operation": "read",
-            "position": 39659742,
-            "requested": 8,
-            "actual": 8
-          },
-          {
-            "operation": "seek",
-            "position": 581892
-          },
-          {
-            "operation": "read",
-            "position": 581892,
-            "requested": 8,
-            "actual": 8
-          },
-          {
-            "operation": "seek",
-            "position": 581912
-          },
-          {
-            "operation": "read",
-            "position": 581912,
-            "requested": 8,
-            "actual": 8
-          }
-        ]
-      },
-      "classification": {
-        "returned": 1,
-        "member_mask": 31,
-        "version_count": 5,
-        "parameter_writes": [
-          {
-            "number": "0x3804",
-            "length": 10,
-            "mode": 1
-          }
-        ]
-      }
     }
   ],
   "propriety": {
@@ -1320,35 +1165,6 @@
           "0x37c236",
           "0x37c236"
         ]
-      },
-      {
-        "case": "local_candidate",
-        "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
-        "returned": 0,
-        "category": 4,
-        "file_length": 48494092,
-        "version_count": 5,
-        "opened_roots": [
-          "A:\\",
-          "A:\\",
-          "A:\\"
-        ],
-        "opened_files": [
-          "A:\\Z7_2_0170.BIN"
-        ],
-        "executed_entries": [
-          "0x37c360",
-          "0x37c236",
-          "0x37c236",
-          "0x37c236",
-          "0x37bc0e",
-          "0x38d340",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e"
-        ]
       }
     ]
   },
@@ -1613,27 +1429,62 @@
           "0x37d3a8",
           "0x37d4d4"
         ]
-      },
+      }
+    ]
+  },
+  "collection": {
+    "scope": "Original 0x37D984 directory collection, mode gate, root selection and enumeration abort conditions",
+    "directory_records_supplied_by_host": true,
+    "allocation_and_release_are_host_heap": true,
+    "cases": [
       {
-        "case": "local_candidate",
-        "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
-        "directory_entries": [
-          [
-            "Z7_2_0~1.BIN",
-            "Z7_2_0170.BIN"
-          ]
+        "case": "firmware_and_root",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
         ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
         "record_path": "A:\\firmware\\Z7_2_0170.BIN",
         "record_slot": 13,
-        "directory_index": 0,
-        "card_state": 0,
         "record_package_flag": 1,
         "record_category": 4,
-        "matching_count": 1,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
         "opened_files": [
           "A:\\firmware\\Z7_2_0170.BIN"
         ],
         "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
           "0x37d71c",
           "0x37d2e8",
           "0x37d372",
@@ -1647,7 +1498,532 @@
           "0x37ae0e",
           "0x37d3a8",
           "0x37d3a8",
-          "0x37d4d4"
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "root_only",
+        "directory_keys": [
+          "A:\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          1
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "firmware_only",
+        "directory_keys": [
+          "A:\\firmware\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "both_directories_absent",
+        "directory_keys": [],
+        "failed_directories": [],
+        "returned": 0,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 0,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "second_directory_error_aborts",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [
+          "A:\\"
+        ],
+        "returned": 0,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "first_directory_error_aborts",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [
+          "A:\\firmware\\"
+        ],
+        "returned": 0,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 0,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          }
+        ],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "other_model_name_only",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "rejected_mode_one",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [],
+        "returned": 0,
+        "requested_mode": 1,
+        "stored_mode": 0,
+        "summary_head": 0,
+        "collected_count": 0,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [],
+        "allocated_buffers": 0,
+        "released_buffers": 0,
+        "directory_queries": [],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984"
+        ]
+      },
+      {
+        "case": "rejected_mode_five",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [],
+        "returned": 0,
+        "requested_mode": 5,
+        "stored_mode": 0,
+        "summary_head": 0,
+        "collected_count": 0,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [],
+        "allocated_buffers": 0,
+        "released_buffers": 0,
+        "directory_queries": [],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984"
+        ]
+      },
+      {
+        "case": "accepted_mode_two",
+        "directory_keys": [
+          "A:\\firmware\\",
+          "A:\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 2,
+        "stored_mode": 2,
+        "summary_head": 1,
+        "collected_count": 1,
+        "matching_count": 0,
+        "record_path": "",
+        "record_slot": 13,
+        "record_package_flag": 0,
+        "record_category": 0,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "card_b_firmware",
+        "directory_keys": [
+          "B:\\firmware\\",
+          "B:\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "B:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "B:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "B:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "B:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "B:\\"
+          }
+        ],
+        "opened_files": [
+          "B:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "case": "card_state_three_falls_back_to_a",
+        "directory_keys": [
+          "A:\\firmware\\"
+        ],
+        "failed_directories": [],
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
         ]
       }
     ]
@@ -1746,7 +2122,7 @@
     ]
   },
   "integrity": {
-    "scope": "Original candidate enumeration, selector, whole-package dispatcher and result notification",
+    "scope": "Original directory collection, selector, whole-package dispatcher and result notification",
     "boot_material": "explicit synthetic eight-byte fixtures; real material remains unknown",
     "host_bulk_primitives": [
       "decode",
@@ -1778,18 +2154,48 @@
           }
         ],
         "selection": {
-          "enumeration": {
+          "collection": {
+            "returned": 1,
+            "requested_mode": 0,
+            "stored_mode": 0,
+            "summary_head": 19,
+            "collected_count": 1,
+            "matching_count": 1,
             "record_path": "A:\\firmware\\Z7_2_0170.BIN",
             "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
             "record_package_flag": 1,
             "record_category": 4,
-            "matching_count": 1,
+            "collected_directory_indices": [
+              0
+            ],
+            "allocated_buffers": 2,
+            "released_buffers": 2,
+            "directory_queries": [
+              {
+                "operation": "exists",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "exists",
+                "path": "A:\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\"
+              }
+            ],
             "opened_files": [
               "A:\\firmware\\Z7_2_0170.BIN"
             ],
             "executed_entries": [
+              "0x37d984",
+              "0x37aae4",
+              "0x37d940",
+              "0x37d6b4",
               "0x37d71c",
               "0x37d2e8",
               "0x37d372",
@@ -1803,7 +2209,8 @@
               "0x37ae0e",
               "0x37d3a8",
               "0x37d3a8",
-              "0x37d4d4"
+              "0x37d4d4",
+              "0x37d922"
             ]
           },
           "selected": true,
@@ -1812,6 +2219,10 @@
           "selected_check_offset": "0x37c638",
           "selected_buffer": "0x52000000",
           "executed_entries": [
+            "0x37d984",
+            "0x37aae4",
+            "0x37d940",
+            "0x37d6b4",
             "0x37d71c",
             "0x37d2e8",
             "0x37d372",
@@ -1826,6 +2237,7 @@
             "0x37d3a8",
             "0x37d3a8",
             "0x37d4d4",
+            "0x37d922",
             "0x37daa4",
             "0x37db20",
             "0x3d6938",
@@ -1833,6 +2245,10 @@
           ]
         },
         "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
           "0x37d71c",
           "0x37d2e8",
           "0x37d372",
@@ -1847,6 +2263,7 @@
           "0x37d3a8",
           "0x37d3a8",
           "0x37d4d4",
+          "0x37d922",
           "0x37daa4",
           "0x37db20",
           "0x3d6938",
@@ -1876,18 +2293,48 @@
           }
         ],
         "selection": {
-          "enumeration": {
+          "collection": {
+            "returned": 1,
+            "requested_mode": 0,
+            "stored_mode": 0,
+            "summary_head": 19,
+            "collected_count": 1,
+            "matching_count": 1,
             "record_path": "A:\\firmware\\Z7_2_0170.BIN",
             "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
             "record_package_flag": 1,
             "record_category": 4,
-            "matching_count": 1,
+            "collected_directory_indices": [
+              0
+            ],
+            "allocated_buffers": 2,
+            "released_buffers": 2,
+            "directory_queries": [
+              {
+                "operation": "exists",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "exists",
+                "path": "A:\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\"
+              }
+            ],
             "opened_files": [
               "A:\\firmware\\Z7_2_0170.BIN"
             ],
             "executed_entries": [
+              "0x37d984",
+              "0x37aae4",
+              "0x37d940",
+              "0x37d6b4",
               "0x37d71c",
               "0x37d2e8",
               "0x37d372",
@@ -1901,7 +2348,8 @@
               "0x37ae0e",
               "0x37d3a8",
               "0x37d3a8",
-              "0x37d4d4"
+              "0x37d4d4",
+              "0x37d922"
             ]
           },
           "selected": true,
@@ -1910,6 +2358,10 @@
           "selected_check_offset": "0x37c638",
           "selected_buffer": "0x52000000",
           "executed_entries": [
+            "0x37d984",
+            "0x37aae4",
+            "0x37d940",
+            "0x37d6b4",
             "0x37d71c",
             "0x37d2e8",
             "0x37d372",
@@ -1924,6 +2376,7 @@
             "0x37d3a8",
             "0x37d3a8",
             "0x37d4d4",
+            "0x37d922",
             "0x37daa4",
             "0x37db20",
             "0x3d6938",
@@ -1931,6 +2384,10 @@
           ]
         },
         "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
           "0x37d71c",
           "0x37d2e8",
           "0x37d372",
@@ -1945,6 +2402,7 @@
           "0x37d3a8",
           "0x37d3a8",
           "0x37d4d4",
+          "0x37d922",
           "0x37daa4",
           "0x37db20",
           "0x3d6938",
@@ -1974,18 +2432,48 @@
           }
         ],
         "selection": {
-          "enumeration": {
+          "collection": {
+            "returned": 1,
+            "requested_mode": 0,
+            "stored_mode": 0,
+            "summary_head": 19,
+            "collected_count": 1,
+            "matching_count": 1,
             "record_path": "A:\\firmware\\Z7_2_0170.BIN",
             "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
             "record_package_flag": 1,
             "record_category": 4,
-            "matching_count": 1,
+            "collected_directory_indices": [
+              0
+            ],
+            "allocated_buffers": 2,
+            "released_buffers": 2,
+            "directory_queries": [
+              {
+                "operation": "exists",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "exists",
+                "path": "A:\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\"
+              }
+            ],
             "opened_files": [
               "A:\\firmware\\Z7_2_0170.BIN"
             ],
             "executed_entries": [
+              "0x37d984",
+              "0x37aae4",
+              "0x37d940",
+              "0x37d6b4",
               "0x37d71c",
               "0x37d2e8",
               "0x37d372",
@@ -1999,7 +2487,8 @@
               "0x37ae0e",
               "0x37d3a8",
               "0x37d3a8",
-              "0x37d4d4"
+              "0x37d4d4",
+              "0x37d922"
             ]
           },
           "selected": true,
@@ -2008,6 +2497,10 @@
           "selected_check_offset": "0x37c638",
           "selected_buffer": "0x52000000",
           "executed_entries": [
+            "0x37d984",
+            "0x37aae4",
+            "0x37d940",
+            "0x37d6b4",
             "0x37d71c",
             "0x37d2e8",
             "0x37d372",
@@ -2022,6 +2515,7 @@
             "0x37d3a8",
             "0x37d3a8",
             "0x37d4d4",
+            "0x37d922",
             "0x37daa4",
             "0x37db20",
             "0x3d6938",
@@ -2029,6 +2523,10 @@
           ]
         },
         "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
           "0x37d71c",
           "0x37d2e8",
           "0x37d372",
@@ -2043,6 +2541,7 @@
           "0x37d3a8",
           "0x37d3a8",
           "0x37d4d4",
+          "0x37d922",
           "0x37daa4",
           "0x37db20",
           "0x3d6938",
@@ -2072,18 +2571,48 @@
           }
         ],
         "selection": {
-          "enumeration": {
+          "collection": {
+            "returned": 1,
+            "requested_mode": 0,
+            "stored_mode": 0,
+            "summary_head": 19,
+            "collected_count": 1,
+            "matching_count": 1,
             "record_path": "A:\\firmware\\Z7_2_0170.BIN",
             "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
             "record_package_flag": 1,
             "record_category": 4,
-            "matching_count": 1,
+            "collected_directory_indices": [
+              0
+            ],
+            "allocated_buffers": 2,
+            "released_buffers": 2,
+            "directory_queries": [
+              {
+                "operation": "exists",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\firmware\\"
+              },
+              {
+                "operation": "exists",
+                "path": "A:\\"
+              },
+              {
+                "operation": "enumerate",
+                "path": "A:\\"
+              }
+            ],
             "opened_files": [
               "A:\\firmware\\Z7_2_0170.BIN"
             ],
             "executed_entries": [
+              "0x37d984",
+              "0x37aae4",
+              "0x37d940",
+              "0x37d6b4",
               "0x37d71c",
               "0x37d2e8",
               "0x37d372",
@@ -2097,7 +2626,8 @@
               "0x37ae0e",
               "0x37d3a8",
               "0x37d3a8",
-              "0x37d4d4"
+              "0x37d4d4",
+              "0x37d922"
             ]
           },
           "selected": true,
@@ -2106,6 +2636,10 @@
           "selected_check_offset": "0x37c638",
           "selected_buffer": "0x52000000",
           "executed_entries": [
+            "0x37d984",
+            "0x37aae4",
+            "0x37d940",
+            "0x37d6b4",
             "0x37d71c",
             "0x37d2e8",
             "0x37d372",
@@ -2120,6 +2654,7 @@
             "0x37d3a8",
             "0x37d3a8",
             "0x37d4d4",
+            "0x37d922",
             "0x37daa4",
             "0x37db20",
             "0x3d6938",
@@ -2127,6 +2662,10 @@
           ]
         },
         "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
           "0x37d71c",
           "0x37d2e8",
           "0x37d372",
@@ -2141,202 +2680,7 @@
           "0x37d3a8",
           "0x37d3a8",
           "0x37d4d4",
-          "0x37daa4",
-          "0x37db20",
-          "0x3d6938",
-          "0x37db20",
-          "0x3d6938",
-          "0x37db20",
-          "0x37c638",
-          "0x38fe82",
-          "0x39c310",
-          "0x39c308"
-        ]
-      },
-      {
-        "case": "built_candidate_under_fixture",
-        "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
-        "returned": 3,
-        "primitive_calls": [
-          "decode",
-          "sha1_update",
-          "sha1_final"
-        ],
-        "dispatcher_return": 0,
-        "notifications": [
-          {
-            "event": "0xb1887d24",
-            "mask": "0x20"
-          }
-        ],
-        "selection": {
-          "enumeration": {
-            "record_path": "A:\\firmware\\Z7_2_0170.BIN",
-            "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
-            "record_package_flag": 1,
-            "record_category": 4,
-            "matching_count": 1,
-            "opened_files": [
-              "A:\\firmware\\Z7_2_0170.BIN"
-            ],
-            "executed_entries": [
-              "0x37d71c",
-              "0x37d2e8",
-              "0x37d372",
-              "0x37d5bc",
-              "0x37bc0e",
-              "0x38d340",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37d3a8",
-              "0x37d3a8",
-              "0x37d4d4"
-            ]
-          },
-          "selected": true,
-          "record_package_flag": 1,
-          "selector_flag": 1,
-          "selected_check_offset": "0x37c638",
-          "selected_buffer": "0x52000000",
-          "executed_entries": [
-            "0x37d71c",
-            "0x37d2e8",
-            "0x37d372",
-            "0x37d5bc",
-            "0x37bc0e",
-            "0x38d340",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37d3a8",
-            "0x37d3a8",
-            "0x37d4d4",
-            "0x37daa4",
-            "0x37db20",
-            "0x3d6938",
-            "0x37db20"
-          ]
-        },
-        "executed_entries": [
-          "0x37d71c",
-          "0x37d2e8",
-          "0x37d372",
-          "0x37d5bc",
-          "0x37bc0e",
-          "0x38d340",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37d3a8",
-          "0x37d3a8",
-          "0x37d4d4",
-          "0x37daa4",
-          "0x37db20",
-          "0x3d6938",
-          "0x37db20",
-          "0x3d6938",
-          "0x37db20",
-          "0x37c638",
-          "0x38fe82",
-          "0x39c310"
-        ]
-      },
-      {
-        "case": "candidate_matching_synthetic_digest",
-        "input_sha256": "0135c492bc651fcc6abbec4a30c1c2c5bb0f784eec282e5275b6156f6f0db60e",
-        "returned": 0,
-        "primitive_calls": [
-          "decode",
-          "sha1_update",
-          "sha1_final",
-          "crc16"
-        ],
-        "dispatcher_return": 0,
-        "notifications": [
-          {
-            "event": "0xb1887d24",
-            "mask": "0x20"
-          }
-        ],
-        "selection": {
-          "enumeration": {
-            "record_path": "A:\\firmware\\Z7_2_0170.BIN",
-            "record_slot": 13,
-            "directory_index": 0,
-            "card_state": 0,
-            "record_package_flag": 1,
-            "record_category": 4,
-            "matching_count": 1,
-            "opened_files": [
-              "A:\\firmware\\Z7_2_0170.BIN"
-            ],
-            "executed_entries": [
-              "0x37d71c",
-              "0x37d2e8",
-              "0x37d372",
-              "0x37d5bc",
-              "0x37bc0e",
-              "0x38d340",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37ae0e",
-              "0x37d3a8",
-              "0x37d3a8",
-              "0x37d4d4"
-            ]
-          },
-          "selected": true,
-          "record_package_flag": 1,
-          "selector_flag": 1,
-          "selected_check_offset": "0x37c638",
-          "selected_buffer": "0x52000000",
-          "executed_entries": [
-            "0x37d71c",
-            "0x37d2e8",
-            "0x37d372",
-            "0x37d5bc",
-            "0x37bc0e",
-            "0x38d340",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37ae0e",
-            "0x37d3a8",
-            "0x37d3a8",
-            "0x37d4d4",
-            "0x37daa4",
-            "0x37db20",
-            "0x3d6938",
-            "0x37db20"
-          ]
-        },
-        "executed_entries": [
-          "0x37d71c",
-          "0x37d2e8",
-          "0x37d372",
-          "0x37d5bc",
-          "0x37bc0e",
-          "0x38d340",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37ae0e",
-          "0x37d3a8",
-          "0x37d3a8",
-          "0x37d4d4",
+          "0x37d922",
           "0x37daa4",
           "0x37db20",
           "0x3d6938",
