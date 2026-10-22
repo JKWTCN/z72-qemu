@@ -142,6 +142,18 @@
             "actual": 8
           }
         ]
+      },
+      "classification": {
+        "returned": 1,
+        "member_mask": 31,
+        "version_count": 5,
+        "parameter_writes": [
+          {
+            "number": "0x3804",
+            "length": 10,
+            "mode": 1
+          }
+        ]
       }
     },
     {
@@ -183,6 +195,12 @@
             "actual": 48
           }
         ]
+      },
+      "classification": {
+        "returned": 12,
+        "member_mask": 0,
+        "version_count": 0,
+        "parameter_writes": []
       }
     },
     {
@@ -224,6 +242,12 @@
             "actual": 32
           }
         ]
+      },
+      "classification": {
+        "returned": 12,
+        "member_mask": 0,
+        "version_count": 0,
+        "parameter_writes": []
       }
     },
     {
@@ -365,6 +389,18 @@
             "position": 581912,
             "requested": 8,
             "actual": 8
+          }
+        ]
+      },
+      "classification": {
+        "returned": 1,
+        "member_mask": 31,
+        "version_count": 5,
+        "parameter_writes": [
+          {
+            "number": "0x3804",
+            "length": 10,
+            "mode": 1
           }
         ]
       }
@@ -510,6 +546,18 @@
             "actual": 8
           }
         ]
+      },
+      "classification": {
+        "returned": 1,
+        "member_mask": 31,
+        "version_count": 5,
+        "parameter_writes": [
+          {
+            "number": "0x3804",
+            "length": 10,
+            "mode": 1
+          }
+        ]
       }
     },
     {
@@ -583,6 +631,12 @@
             "actual": 16
           }
         ]
+      },
+      "classification": {
+        "returned": 11,
+        "member_mask": 29,
+        "version_count": 0,
+        "parameter_writes": []
       }
     },
     {
@@ -656,6 +710,12 @@
             "actual": 16
           }
         ]
+      },
+      "classification": {
+        "returned": 11,
+        "member_mask": 12,
+        "version_count": 0,
+        "parameter_writes": []
       }
     },
     {
@@ -797,6 +857,18 @@
             "position": 581912,
             "requested": 8,
             "actual": 8
+          }
+        ]
+      },
+      "classification": {
+        "returned": 1,
+        "member_mask": 31,
+        "version_count": 5,
+        "parameter_writes": [
+          {
+            "number": "0x3804",
+            "length": 10,
+            "mode": 1
           }
         ]
       }
@@ -989,12 +1061,305 @@
       }
     ]
   },
+  "directory": {
+    "scope": "Original 0x37C236 directory scan and 0x37C218 long-name conversion",
+    "pattern": "Z7_2_???.BIN",
+    "synthetic_directory_records": true,
+    "cases": [
+      {
+        "case": "root_a",
+        "directory_entries": [
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 0,
+        "failed_roots": [],
+        "returned": 1,
+        "selected_short_name": "Z7_2_0~1.BIN",
+        "selected_long_name": "Z7_2_0170.BIN",
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "root_b",
+        "directory_entries": [
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 2,
+        "failed_roots": [],
+        "returned": 1,
+        "selected_short_name": "Z7_2_0~1.BIN",
+        "selected_long_name": "Z7_2_0170.BIN",
+        "opened_roots": [
+          "B:\\"
+        ]
+      },
+      {
+        "case": "case_insensitive",
+        "directory_entries": [
+          [
+            "z7_2_0~1.bin",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 0,
+        "failed_roots": [],
+        "returned": 1,
+        "selected_short_name": "z7_2_0~1.bin",
+        "selected_long_name": "Z7_2_0170.BIN",
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "skip_other_model",
+        "directory_entries": [
+          [
+            "Z6_2_0~1.BIN",
+            "Z6_2_0170.BIN"
+          ],
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 0,
+        "failed_roots": [],
+        "returned": 1,
+        "selected_short_name": "Z7_2_0~1.BIN",
+        "selected_long_name": "Z7_2_0170.BIN",
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "other_model_only",
+        "directory_entries": [
+          [
+            "Z6_2_0~1.BIN",
+            "Z6_2_0170.BIN"
+          ]
+        ],
+        "state": 0,
+        "failed_roots": [],
+        "returned": 0,
+        "selected_short_name": null,
+        "selected_long_name": null,
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "empty_directory",
+        "directory_entries": [],
+        "state": 0,
+        "failed_roots": [],
+        "returned": 0,
+        "selected_short_name": null,
+        "selected_long_name": null,
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "open_failure_without_fallback",
+        "directory_entries": [
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 0,
+        "failed_roots": [
+          "A:\\"
+        ],
+        "returned": 0,
+        "selected_short_name": null,
+        "selected_long_name": null,
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "open_failure_with_fallback",
+        "directory_entries": [
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 16,
+        "failed_roots": [
+          "A:\\"
+        ],
+        "returned": 1,
+        "selected_short_name": "Z7_2_0~1.BIN",
+        "selected_long_name": "Z7_2_0170.BIN",
+        "opened_roots": [
+          "A:\\",
+          "B:\\"
+        ]
+      },
+      {
+        "case": "empty_does_not_fallback",
+        "directory_entries": [],
+        "state": 16,
+        "failed_roots": [],
+        "returned": 0,
+        "selected_short_name": null,
+        "selected_long_name": null,
+        "opened_roots": [
+          "A:\\"
+        ]
+      },
+      {
+        "case": "both_roots_fail",
+        "directory_entries": [
+          [
+            "Z7_2_0~1.BIN",
+            "Z7_2_0170.BIN"
+          ]
+        ],
+        "state": 16,
+        "failed_roots": [
+          "A:\\",
+          "B:\\"
+        ],
+        "returned": 0,
+        "selected_short_name": null,
+        "selected_long_name": null,
+        "opened_roots": [
+          "A:\\",
+          "B:\\"
+        ]
+      }
+    ]
+  },
+  "scanner": {
+    "scope": "Original 0x37C360 through directory enumeration and classification return",
+    "file_io_and_component_version_are_host_supplied": true,
+    "whole_package_integrity_checked": false,
+    "cases": [
+      {
+        "case": "stock_package",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "returned": 0,
+        "category": 4,
+        "file_length": 48494024,
+        "version_count": 5,
+        "opened_roots": [
+          "A:\\",
+          "A:\\",
+          "A:\\"
+        ],
+        "opened_files": [
+          "A:\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e"
+        ]
+      },
+      {
+        "case": "bare_master_as_package",
+        "input_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+        "returned": 3,
+        "category": 4,
+        "file_length": 38239098,
+        "version_count": 0,
+        "opened_roots": [
+          "A:\\",
+          "A:\\",
+          "A:\\"
+        ],
+        "opened_files": [
+          "A:\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340"
+        ]
+      },
+      {
+        "case": "file_open_failure",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "returned": 3,
+        "category": 4,
+        "file_length": 0,
+        "version_count": 0,
+        "opened_roots": [
+          "A:\\",
+          "A:\\",
+          "A:\\"
+        ],
+        "opened_files": [
+          "A:\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236"
+        ]
+      },
+      {
+        "case": "local_candidate",
+        "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
+        "returned": 0,
+        "category": 4,
+        "file_length": 48494092,
+        "version_count": 5,
+        "opened_roots": [
+          "A:\\",
+          "A:\\",
+          "A:\\"
+        ],
+        "opened_files": [
+          "A:\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e"
+        ]
+      }
+    ]
+  },
   "environment": {
     "running_image": "supplied stock master; zero platform tag",
     "character_classification": "host ASCII flags",
+    "component_version": "synthetic all-zero descriptor; query succeeds",
+    "parameter_storage": "host acknowledges writes",
     "other_runtime_ram": "zero initialized"
   },
-  "scope": "Original directory parser and member checks, stopping before version-list formatting",
+  "scope": "Original directory parser, file scan, classification and propriety predicates",
   "whole_package_digest_verified": false,
   "menu_dispatch_executed": false,
   "native_service_methods_executed": [

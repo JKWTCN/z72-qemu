@@ -2,10 +2,11 @@
 """Run bounded original update directory/member checks on local input files.
 
 File I/O, cache maintenance, runtime memory/string primitives, ASCII flags,
-locks and diagnostic logging are provided by the host. Member checks stop
-before version-list formatting. GetProprietyCheck runs with a synthetic
-snapshot. This probe does not activate menu dispatch, verify the whole-package
-digest, or program storage. Firmware bytes stay local.
+locks, component-version responses and parameter storage are provided by the
+host. Original scanning and classification run through their return paths.
+GetProprietyCheck runs with a synthetic snapshot. This probe does not activate
+menu dispatch, verify the whole-package digest, or program storage. Firmware
+bytes stay local.
 """
 import argparse
 import json
@@ -14,7 +15,7 @@ import struct
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from analyze.decode_z72 import BASE, digest, require, validate_master
+from analyze.decode_z72 import BASE, SCATTER, digest, require, validate_master
 
 
 class NativeUpdateProbe:
@@ -38,6 +39,7 @@ class NativeUpdateProbe:
         for address, size in ((BASE, (len(master) + 4095) & ~4095),
                               (0xB1800000, 0x100000), (0xB25E0000, 0x20000),
                               (0xB23BC000, 0x2000),
+                              (0xB20D2000, 0x1000),
                               (0x50000000, 0x100000), (self.SCRATCH, 0x100000)):
             self.u.mem_map(address, size)
         self.u.mem_write(BASE, master)
@@ -45,11 +47,13 @@ class NativeUpdateProbe:
                         begin=self.STOP, end=self.STOP)
         self.executed = []
         for offset in (0x747048, 0x3D645A, 0x37AA82, 0x37AAA6,
-                       0x3D9A2A, 0x3D8AE4):
+                       0x3D9A2A, 0x3D8AE4, 0x37C360, 0x37C236,
+                       0x37BC0E, 0x38D340, 0x37AE0E):
             self.u.hook_add(UC_HOOK_CODE,
                             lambda u, address, size, unused: self.executed.append(hex(address - BASE)),
                             begin=BASE + offset, end=BASE + offset)
         self.data, self.position, self.io = data, 0, []
+        self.parameter_writes = []
         self.put_word(self.UPDATE_STATE + 0x40, self.SCRATCH)
         # Explicit synthetic running-image descriptor, not a captured body state.
         self.put_word(0xB25EC0DC + 4, BASE)
@@ -69,12 +73,27 @@ class NativeUpdateProbe:
             # Single-thread snapshot reads need no host lock operation.
             0x340F18: self.noop, 0x340F12: self.noop,
             0x4C09FE: self.noop,
+            # Peripheral version query and parameter storage are RTOS boundaries.
+            0x3BB958: self.component_version, 0xE06CA: self.store_parameter,
         }
         for offset, callback in self.hooks.items():
-            def hook(u, address, size, unused, callback=callback):
-                callback(*(u.reg_read(r) for r in self.regs))
-                u.reg_write(self.pc, u.reg_read(self.lr))
-            self.u.hook_add(UC_HOOK_CODE, hook, begin=BASE + offset, end=BASE + offset)
+            self.install_hook(offset, callback)
+
+    def install_hook(self, offset, callback):
+        from unicorn import UC_HOOK_CODE
+        def hook(u, address, size, unused):
+            callback(*(u.reg_read(r) for r in self.regs))
+            u.reg_write(self.pc, u.reg_read(self.lr))
+        self.u.hook_add(UC_HOOK_CODE, hook, begin=BASE + offset, end=BASE + offset)
+
+    def component_version(self, output, *args):
+        self.u.mem_write(output, bytes(12))
+        self.result(1)
+
+    def store_parameter(self, number, source, length, mode):
+        require(length <= 0x100, 'Unexpected parameter write length')
+        self.parameter_writes.append(dict(number=hex(number), length=length, mode=mode))
+        self.result(1)
 
     def put_word(self, address, value):
         self.u.mem_write(address, struct.pack('<I', value))
@@ -161,6 +180,89 @@ class NativeUpdateProbe:
                     member_mask=self.word(self.MEMBER_STATE + 0x78),
                     io=self.io)
 
+    def classify(self):
+        returned = self.call(0x37BC0E, 0, 1)
+        summary = 0xB25EC7F4 - 0xB8
+        return dict(returned=returned, member_mask=self.word(self.MEMBER_STATE + 0x78),
+                    version_count=self.word(summary + 8),
+                    parameter_writes=self.parameter_writes)
+
+    def cstring(self, address):
+        data = bytearray()
+        for index in range(256):
+            char = self.u.mem_read(address + index, 1)[0]
+            if not char:
+                return data.decode('ascii')
+            data.append(char)
+        raise ValueError('Unterminated directory string')
+
+    def directory_fixture(self, entries, state, failed_roots):
+        self.directory_entries = tuple(entries)
+        opened = []
+        def directory_open(path, output, *args):
+            root = self.cstring(path)
+            opened.append(root)
+            self.directory_cursor = iter(self.directory_entries)
+            self.put_word(output, 1)
+            self.result(0xFFFFFFFF if root in failed_roots else 0)
+        def directory_next(handle, output, *args):
+            entry = next(self.directory_cursor, None)
+            if entry is None:
+                self.result(1)
+                return
+            name, long_name = entry
+            require(len(name) <= 12 and len(long_name) <= 255,
+                    'Directory fixture name exceeds its field')
+            record = bytearray(0x21C)
+            record[:len(name)] = name.encode('ascii')
+            wide = long_name.encode('utf-16-le')
+            record[14:14 + len(wide)] = wide
+            struct.pack_into('<I', record, 0x218, len(self.data))
+            self.u.mem_write(output, bytes(record))
+            self.result(0)
+        self.install_hook(0x47D2E6, directory_open)
+        self.install_hook(0x47D3DA, directory_next)
+        self.install_hook(0x47D3F8, lambda *args: self.result(0))
+        # Restore the two root pointers from the original initialized-data image.
+        roots_source = SCATTER[0] + self.UPDATE_STATE + 0x80 - SCATTER[1]
+        self.u.mem_write(self.UPDATE_STATE + 0x80, bytes(self.u.mem_read(roots_source, 8)))
+        self.put_word(self.UPDATE_STATE + 0x90, state)
+        return opened
+
+    def find_update_name(self, entries, state=0, failed_roots=()):
+        opened = self.directory_fixture(entries, state, failed_roots)
+        output = 0xB25EC51C
+        returned = self.call(0x37C236, BASE + 0x208680C, 4, output)
+        short_name = self.cstring(output) if returned else None
+        long_name = None
+        if returned:
+            target = self.SCRATCH + 0x3000
+            self.call(0x37C218, target, output)
+            long_name = self.cstring(target)
+        return dict(returned=returned, selected_short_name=short_name,
+                    selected_long_name=long_name,
+                    opened_roots=opened)
+
+    def scan_update(self, entries, open_succeeds=True):
+        opened = self.directory_fixture(entries, 0, ())
+        file_paths = []
+        def file_init(handle, path, *args):
+            file_paths.append(self.cstring(path))
+            self.position = 0
+            self.result(handle)
+        self.install_hook(0x4B3C00, file_init)
+        self.install_hook(0x4B3C04, lambda *args: self.result(
+            0x043A0080 if open_succeeds else 0))
+        self.install_hook(0x4B3C90, lambda *args: self.result(0))
+        self.install_hook(0x4E9992, self.noop)
+        self.install_hook(0x4E99FA, self.noop)
+        returned = self.call(0x37C360, 0)
+        return dict(returned=returned, category=self.u.mem_read(self.UPDATE_STATE, 1)[0],
+                    file_length=self.word(self.UPDATE_STATE + 0x64),
+                    version_count=self.word(0xB25EC73C + 8),
+                    opened_roots=opened, opened_files=file_paths,
+                    executed_entries=self.executed)
+
     def propriety(self, snapshot):
         require(len(snapshot) == 0x50, 'Expected 80-byte runtime snapshot')
         # Original snapshot getter reads this global while holding its lock.
@@ -200,6 +302,54 @@ def propriety_suite(master):
                 cases=results)
 
 
+def directory_suite(master):
+    entry = ('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')
+    wrong = ('Z6_2_0~1.BIN', 'Z6_2_0170.BIN')
+    cases = [
+        ('root_a', [entry], 0, (), 1, ['A:\\']),
+        ('root_b', [entry], 2, (), 1, ['B:\\']),
+        ('case_insensitive', [(entry[0].lower(), entry[1])], 0, (), 1, ['A:\\']),
+        ('skip_other_model', [wrong, entry], 0, (), 1, ['A:\\']),
+        ('other_model_only', [wrong], 0, (), 0, ['A:\\']),
+        ('empty_directory', [], 0, (), 0, ['A:\\']),
+        ('open_failure_without_fallback', [entry], 0, ('A:\\',), 0, ['A:\\']),
+        ('open_failure_with_fallback', [entry], 16, ('A:\\',), 1, ['A:\\', 'B:\\']),
+        ('empty_does_not_fallback', [], 16, (), 0, ['A:\\']),
+        ('both_roots_fail', [entry], 16, ('A:\\', 'B:\\'), 0, ['A:\\', 'B:\\']),
+    ]
+    results = []
+    for label, entries, state, failed, returned, roots in cases:
+        result = NativeUpdateProbe(master, b'').find_update_name(entries, state, failed)
+        require(result['returned'] == returned and result['opened_roots'] == roots and
+                (not returned or result['selected_long_name'] == entry[1]),
+                'Unexpected directory result: ' + label)
+        results.append(dict(case=label, directory_entries=entries, state=state,
+                            failed_roots=failed, **result))
+    return dict(scope='Original 0x37C236 directory scan and 0x37C218 long-name conversion',
+                pattern='Z7_2_???.BIN', synthetic_directory_records=True, cases=results)
+
+
+def scan_suite(master, package, candidate):
+    cases = [('stock_package', package, True, 0, 5),
+             ('bare_master_as_package', master, True, 3, 0),
+             ('file_open_failure', package, False, 3, 0)]
+    if candidate is not None:
+        cases.append(('local_candidate', candidate, True, 0, 5))
+    results = []
+    for label, data, can_open, returned, count in cases:
+        result = NativeUpdateProbe(master, data).scan_update(
+            [('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')], can_open)
+        require(result['returned'] == returned and result['version_count'] == count and
+                result['category'] == 4 and result['opened_files'] == ['A:\\Z7_2_0170.BIN'] and
+                '0x37c360' in result['executed_entries'] and
+                (not can_open or '0x37bc0e' in result['executed_entries']),
+                'Unexpected scanner result: ' + label)
+        results.append(dict(case=label, input_sha256=digest(data), **result))
+    return dict(scope='Original 0x37C360 through directory enumeration and classification return',
+                file_io_and_component_version_are_host_supplied=True,
+                whole_package_integrity_checked=False, cases=results)
+
+
 def run_suite(master, package, candidate=None):
     validate_master(master)
     require(digest(package) ==
@@ -227,20 +377,25 @@ def run_suite(master, package, candidate=None):
     for label, data, capacity, expected_parser, expected_return, expected_mask in cases:
         parser = NativeUpdateProbe(master, data, capacity).parser()
         checks = NativeUpdateProbe(master, data, capacity).member_checks()
+        classification = NativeUpdateProbe(master, data, capacity).classify()
         require(parser['returned'] == expected_parser and
                 checks['returned'] == expected_return and
-                checks['member_mask'] == expected_mask,
+                checks['member_mask'] == expected_mask and
+                classification['returned'] == (1 if expected_return is None else expected_return),
                 f'Unexpected native result: {label}: parser={parser["returned"]}, '
                 f'member_return={checks["returned"]}, mask={checks["member_mask"]}')
         results.append(dict(case=label, input_sha256=digest(data), length=len(data),
                             image_capacity=capacity, parser=parser,
-                            member_checks=checks))
+                            member_checks=checks, classification=classification))
     return dict(master_sha256=digest(master), cases=results,
                 propriety=propriety_suite(master),
+                directory=directory_suite(master), scanner=scan_suite(master, package, candidate),
                 environment=dict(running_image='supplied stock master; zero platform tag',
                                  character_classification='host ASCII flags',
+                                 component_version='synthetic all-zero descriptor; query succeeds',
+                                 parameter_storage='host acknowledges writes',
                                  other_runtime_ram='zero initialized'),
-                scope='Original directory parser and member checks, stopping before version-list formatting',
+                scope='Original directory parser, file scan, classification and propriety predicates',
                 whole_package_digest_verified=False, menu_dispatch_executed=False,
                 native_service_methods_executed=['GetProprietyCheck'],
                 storage_programmed=False)
@@ -263,6 +418,9 @@ def main():
         print(case['case'], 'parser=', case['parser']['returned'],
               'member_return=', case['member_checks']['returned'],
               'member_mask=', case['member_checks']['member_mask'])
+    print('PASS', len(report['directory']['cases']), 'directory cases,',
+          len(report['scanner']['cases']), 'scanner cases,',
+          len(report['propriety']['cases']), 'propriety cases')
 
 
 if __name__ == '__main__':
