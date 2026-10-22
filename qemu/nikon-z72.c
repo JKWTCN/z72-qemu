@@ -915,11 +915,22 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     if (s->pcie_link && boot_config_addresses[word->index] == 0x2b200058) {
         value = (value & ~0x3f0000u) | 0x110000u;
     }
+    /* The firmware polls the input-path status word 0x20068060 on every
+     * frame period; a running sensor interface would latch a ready
+     * pattern here so the capture initialization can proceed. */
+    if (boot_config_addresses[word->index] == 0x20068060) {
+        value |= 0x1;
+    }
     /* Diagnostic: log reads from the input-path configuration region so
      * the firmware's sensor-interface polling can be traced. */
     if (boot_config_addresses[word->index] >= 0x20068000 &&
         boot_config_addresses[word->index] <= 0x20068300) {
         s->frame_count++;
+        /* Store the most-read input-path address for diagnostics. */
+        hwaddr read_addr = boot_config_addresses[word->index];
+        if (read_addr != s->sample_lines) {
+            s->sample_lines = read_addr;
+        }
     }
     return value;
 }
@@ -1600,6 +1611,8 @@ static void boot_config_init(Object *obj)
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
     s->frame_sync_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, frame_sync_tick, s);
     object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
