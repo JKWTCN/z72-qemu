@@ -56,15 +56,24 @@ def dual_machine(qemu, directory, master, slave, console, globals_=(),
             machine += ',controller-link=on'
     for option in machine_options:
         machine += ',' + option
+    # A file-backed generic loader restores its ROM blob on every reset.
+    # Let the boot store own image loading so that blob cannot overwrite a
+    # reprogrammed image after a menu update.
+    master_loader = f'loader,addr={BASE:#x},cpu-num=0'
+    if not any(option.startswith('master-boot-image=') for option in machine_options):
+        master_loader = f'loader,file={master_bin},addr={BASE:#x},cpu-num=0,force-raw=on'
+    slave_loader = f'loader,addr={BASE:#x},cpu-num=2'
+    if not any(option.startswith('slave-boot-image=') for option in machine_options):
+        slave_loader = f'loader,file={slave_bin},addr={BASE:#x},cpu-num=2,force-raw=on'
     command = [qemu, '-M', machine, '-smp',
                '4,maxcpus=5' if controller_firmware is not None else '4', '-display', 'none',
                '-serial', 'none', '-monitor', 'none', '-nic', 'none',
                '-S', '-gdb', f'tcp:127.0.0.1:{port}',
                '-chardev', f'file,id=z72-console,path={console}',
                '-global', 'nikon-z72-uart.enabled=on',
-               '-device', f'loader,file={master_bin},addr={BASE:#x},cpu-num=0,force-raw=on',
+               '-device', master_loader,
                '-device', f'loader,addr={BASE:#x},cpu-num=1',
-               '-device', f'loader,file={slave_bin},addr={BASE:#x},cpu-num=2,force-raw=on',
+               '-device', slave_loader,
                '-device', f'loader,addr={BASE:#x},cpu-num=3']
     if icount is not None:
         command.extend(('-icount', icount))

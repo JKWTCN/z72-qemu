@@ -1,0 +1,97 @@
+{
+  "format": 2,
+  "passed": true,
+  "scope": "Experimental local master update through HTTP menu gate; not native whole-package acceptance",
+  "stages": [
+    {
+      "name": "stock-boot",
+      "passed": true,
+      "booted_version": "Ver.01.70.02"
+    },
+    {
+      "name": "bare-master-staged",
+      "passed": true,
+      "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa"
+    },
+    {
+      "name": "outside-menu-refused",
+      "passed": true,
+      "http": 400
+    },
+    {
+      "name": "menu-opened",
+      "passed": true
+    },
+    {
+      "name": "menu-install-gate",
+      "passed": true
+    },
+    {
+      "name": "installed-master-loaded",
+      "passed": true,
+      "sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa"
+    },
+    {
+      "name": "updated-master-returned-to-shooting",
+      "passed": true,
+      "booted_version": "Ver.01.70.02"
+    },
+    {
+      "name": "guest-patch-bytes-match",
+      "passed": true,
+      "regions": 4
+    }
+  ],
+  "qemu_sha256": "0911dcc28c513629c76c574b4702f77b185625b09b90b28b6d92a8836f1dbfc9",
+  "source_file_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+  "guest_memory_checks": [
+    {
+      "region": "display-hook",
+      "offset": "0x600348",
+      "length": 12,
+      "matched": true,
+      "observed_sha256": "58dbed0a9eea6c1947593794f802df204d5f995197a5da5d1791ef41d9c2da14"
+    },
+    {
+      "region": "display-hook",
+      "offset": "0x539ee0",
+      "length": 10,
+      "matched": true,
+      "observed_sha256": "052693cc859edd49ea820a3b6764b11d52e0e016f13086486c0725a0078f34cd"
+    },
+    {
+      "region": "visibility-source",
+      "offset": "0x2399844",
+      "length": 36,
+      "matched": true,
+      "observed_sha256": "ee5e8e242e990a93aaa4dba6b1285d3bdd2b53b3e06116fbf1d4c762db9f3cdc"
+    },
+    {
+      "region": "appended-code-and-crc",
+      "offset": "0x2477b78",
+      "length": 70,
+      "matched": true,
+      "observed_sha256": "ef78723213c5b2e74b870d782bbddbc156cf25487ed177a394af92aa6c38d5cc"
+    }
+  ],
+  "analysis_date": "2026-10-22",
+  "candidate": {
+    "master_length": 38239166,
+    "master_sha256": "576acfcbb0c3c207eaee9017e6eff34e232f657e71c2833251a07da09dc5aeaa",
+    "package_length": 48494092,
+    "package_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
+    "appended_length": 68,
+    "member_and_container_crcs_verified": true,
+    "outer_header_digest_rebuilt": false,
+    "outer_header_digest_verified": false
+  },
+  "whole_package_staging": {
+    "accepted": false,
+    "reason": "A whole update file requires --boot-key (eight boot-window bytes)",
+    "boot_material_available": false
+  },
+  "compiled_this_run": false,
+  "native_camera_update_verified": false,
+  "display_feature_verified": false,
+  "launcher_fix": "File-backed generic loaders are omitted for engines whose boot store owns the image."
+}
