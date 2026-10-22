@@ -44,7 +44,7 @@ class UpdateSignatureTests(unittest.TestCase):
 
     def test_stream_matches_the_recovered_formula(self):
         # The seed folds through the first table, the model string through
-        # the second, and the stream advances by that multiplier.
+        # the second. Model the two accumulating registers independently.
         from analyze.upgrade_signature import MODEL, SEED, STREAM_PERIOD, STREAM_TABLE, INDEX_TABLE
         challenge = struct.unpack('>I', struct.pack('<I', ~SEED & 0xFFFFFFFF))[0]
         folded = 0
@@ -56,9 +56,20 @@ class UpdateSignatureTests(unittest.TestCase):
             index = index * 10 + digit
         base = self.master[STREAM_TABLE + folded]
         multiplier = self.master[INDEX_TABLE + (index & 0xFF)]
-        expected = bytes((base + multiplier * (STREAM_PERIOD + i)) & 0xFF
-                         for i in range(8))
-        self.assertEqual(key_stream(self.master), expected)
+        increment = STREAM_PERIOD * multiplier
+        expected = bytearray()
+        for _ in range(8):
+            base += increment
+            increment += multiplier
+            expected.append(base & 0xFF)
+        self.assertEqual(key_stream(self.master), bytes(expected))
+
+    def test_stream_accumulates_before_each_byte(self):
+        from analyze.upgrade_signature import STREAM_TABLE, INDEX_TABLE
+        image = bytearray(self.master)
+        image[STREAM_TABLE:STREAM_TABLE + 0x100] = bytes([0x12]) * 0x100
+        image[INDEX_TABLE:INDEX_TABLE + 0x100] = bytes([3]) * 0x100
+        self.assertEqual(key_stream(image), bytes.fromhex('32557ba4 d0ff3166'))
 
     def test_decode_is_stream_inverse_and_offset_aligned(self):
         blob = self.member * 3
@@ -119,6 +130,9 @@ class UpdateSignatureTests(unittest.TestCase):
     def test_table_master_must_cover_the_tables(self):
         with self.assertRaisesRegex(ValueError, 'too short'):
             key_stream(b'0' * 16)
+        from analyze.upgrade_signature import INDEX_TABLE
+        with self.assertRaisesRegex(ValueError, 'too short'):
+            key_stream(self.master[:INDEX_TABLE + 0xFF])
 
 
 if __name__ == '__main__':

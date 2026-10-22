@@ -20,7 +20,7 @@ The file layout this module expects:
 | `+0x40..` | encoded payload (three-table stream from index `0x20`) |
 
 This module verifies update files and recomputes digests so a locally built
-custom update can be signed the same way; it never writes decoded firmware
+custom update can carry a recomputed digest; it never writes decoded firmware
 anywhere.
 """
 import hashlib
@@ -43,7 +43,8 @@ BOOT_KEY_LENGTH = KEY_LENGTH
 
 def _tables(master):
     """Return (stream_table, index_table, encode_tables) from the image."""
-    require(len(master) >= ENCODE_TABLES + 0x300,
+    require(len(master) >= max(STREAM_TABLE + 0x100, INDEX_TABLE + 0x100,
+                               ENCODE_TABLES + 0x300),
             'Master image is too short for the update-check tables')
     return (master[STREAM_TABLE:STREAM_TABLE + 0x100],
             master[INDEX_TABLE:INDEX_TABLE + 0x100],
@@ -54,8 +55,9 @@ def key_stream(master):
     """Return the eight derived bytes appended to the body.
 
     The seed is complemented and byte-reversed, folded into one table index;
-    the model string collapses to a decimal index into the second table. The
-    stream then advances by that multiplier for each of the eight bytes.
+    the model string collapses to a decimal index into the second table.
+    Each round adds the current increment to an accumulator, then advances
+    the increment by the multiplier (member offsets 0x39C376..0x39C382).
     """
     stream_table, index_table, _ = _tables(master)
     challenge = struct.unpack('>I', struct.pack('<I', ~SEED & 0xFFFFFFFF))[0]
@@ -67,7 +69,8 @@ def key_stream(master):
         index = index * 10 + digit
     base = stream_table[folded]
     multiplier = index_table[index & 0xFF]
-    return bytes((base + multiplier * (STREAM_PERIOD + i)) & 0xFF
+    return bytes((base + multiplier *
+                  ((i + 1) * STREAM_PERIOD + i * (i + 1) // 2)) & 0xFF
                  for i in range(KEY_LENGTH))
 
 
@@ -115,12 +118,13 @@ def update_digest(prefix, payload, boot_key, master):
 
 
 def assemble_update(member, boot_key, master):
-    """Return a signed update file carrying the given payload member.
+    """Return a digest-bearing update file carrying the supplied payload.
 
     The payload is encoded with the in-image streams from index 0x20 and the
     recomputed digest lands in the file header, so the result passes the
-    same verification the stock body performs. Payloads are supplied by the
-    caller; this repository builds none.
+    recovered digest check. This does not establish container validity or
+    camera acceptance. A real package payload includes its directory,
+    members and trailer, excluding the marker added here.
     """
     require(HEADER_LENGTH <= len(member), 'Payload member is too short')
     payload = encode(master, member, HEADER_LENGTH)

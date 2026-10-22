@@ -353,7 +353,10 @@ class WebConsoleTests(unittest.TestCase):
         key = bytes.fromhex('0f1e2d3c4b5a6978')
         (work / 'boot-key').write_bytes(key)
         candidate = work / 'candidate.bin'
-        candidate.write_bytes(assemble_update(member, key, reference))
+        from checks.test_update_container import build_container
+        payload = build_container([('eg1840_mas_01700', member),
+                                   ('_tpj01_v140.bin', b'\0\0')])[0x20:]
+        candidate.write_bytes(assemble_update(payload, key, reference))
         machine = Machine(types.SimpleNamespace(
             auto_menu=False, update_image=candidate, boot_key=work / 'boot-key',
             update_store=work / 'store',
@@ -412,7 +415,9 @@ class WebConsoleTests(unittest.TestCase):
         reference = table_master()
         key = bytes.fromhex('0f1e2d3c4b5a6978')
         (work / 'boot-key').write_bytes(key)
-        signed = assemble_update(build_master(), key, reference)
+        from checks.test_update_container import build_container
+        payload = build_container([('eg1840_mas_01700', build_master())])[0x20:]
+        signed = assemble_update(payload, key, reference)
         tampered = bytearray(signed)
         tampered[-6] ^= 0x20
         for name, data, failed in (('good', signed, False), ('bad', bytes(tampered), True)):
@@ -439,6 +444,7 @@ class WebConsoleTests(unittest.TestCase):
         bare = work / 'bare.bin'
         bare.write_bytes(build_master(extra=68))
         machine.update_image = bare
+        machine.boot_key = None
         machine.refresh_staged()
         self.assertIsNone(machine.staged_error)
         self.assertFalse(machine.staged['signed'])
@@ -449,6 +455,21 @@ class WebConsoleTests(unittest.TestCase):
         self.assertFalse(manifest['signature']['signed'])
         self.assertEqual(manifest['signature']['format'], 'member')
         self.assertEqual(len(machine.reflashes), 1)
+
+    def test_authenticated_package_still_requires_valid_member_crcs(self):
+        from analyze.decode_z72 import crc
+        from analyze.upgrade_signature import assemble_update
+        from checks.test_update_container import build_container
+        machine, work, member = self.update_machine()
+        body = bytearray(build_container([('eg1840_mas_01700', member),
+                                          ('_tpj01_v140.bin', b'\0\0')])[:-16])
+        body[-1] ^= 1
+        body += crc(body).to_bytes(2, 'big') + bytes(14)
+        machine.update_image.write_bytes(assemble_update(
+            body[0x20:], machine.boot_key, machine._reference_master()))
+        machine.refresh_staged()
+        self.assertIsNone(machine.staged)
+        self.assertIn('member CRC', machine.staged_error)
 
     def test_whole_file_without_a_key_is_rejected_at_start(self):
         import shutil

@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "model": "Z7 II",
+  "analysis_date": "2026-10-22",
+  "reference_master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "samples": [
+    {
+      "file": "Z7_2_0110_01.bin",
+      "file_length": 47640392,
+      "file_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "length": 47640360,
+      "sha256": "29a639757e783722bd1231d662b5ba405150caf1967d9ed80ce0ba0c5ced8568",
+      "header_length": 208,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0110e",
+          "offset": 581844,
+          "length": 37437242,
+          "sha256": "7b7ff96dbe2d0ef79941dd21726a56893b722b5d3636e51ae1839d34c18e7b64",
+          "crc": "f352",
+          "version": "Ver.01.10.e0"
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38019086,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_0110e",
+          "offset": 38857750,
+          "length": 8782594,
+          "sha256": "6e577407ac8f01ab50c0c7b3c11f902ba3a57e4622647bd504f0fc4b9325f85f",
+          "crc": "273d",
+          "version": "Ver.01.10.e0"
+        }
+      ],
+      "trailer_offset": 47640344,
+      "container_crc": "822d"
+    },
+    {
+      "file": "Z7_2_0161.bin",
+      "file_length": 48381064,
+      "file_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "length": 48381032,
+      "sha256": "33fb556b056eeb3f7182ff28471b4037dd61ecbbd4dd49befce2d0825a01a282",
+      "header_length": 208,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01610",
+          "offset": 581844,
+          "length": 38126522,
+          "sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+          "crc": "fb89",
+          "version": "Ver.01.61.00"
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38708366,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_01610",
+          "offset": 39547030,
+          "length": 8833986,
+          "sha256": "8e4bf306f7fba697426f9625d2771272d61575e9502d4ace205263fef50fa028",
+          "crc": "ba9b",
+          "version": "Ver.01.61.00"
+        }
+      ],
+      "trailer_offset": 48381016,
+      "container_crc": "7a33"
+    },
+    {
+      "file": "Z7_2_0170.bin",
+      "file_length": 48494024,
+      "file_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "length": 48493992,
+      "sha256": "f53ab7dd6eb417adaac98d617bbf95f89b09f9176ba93a48853e3d825a24fe17",
+      "header_length": 208,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01700",
+          "offset": 581844,
+          "length": 38239098,
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "crc": "9d06",
+          "version": "Ver.01.70.02"
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38820942,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_01700",
+          "offset": 39659606,
+          "length": 8834370,
+          "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+          "crc": "b691",
+          "version": "Ver.01.70.02"
+        }
+      ],
+      "trailer_offset": 48493976,
+      "container_crc": "c71e"
+    }
+  ],
+  "transform_check": {
+    "member_offset": "0x39C310",
+    "instruction_execution_matches_python": true,
+    "synthetic_inputs": 3,
+    "character_classification": "supplied for ASCII model characters"
+  },
+  "limitations": [
+    "No boot-window key was supplied; header SHA-1 digests were not verified.",
+    "Older versions are container samples, not supported emulator boot profiles.",
+    "Standalone update acceptance on a Z7 II camera has not been verified."
+  ]
+}

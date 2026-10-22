@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import digest, require
 from analyze.firmware_structure import analyze_eg
 from analyze.update_store import UpdateStore, installable_master
+from analyze.update_container import master_member
 from analyze.upgrade_signature import verify_update
 from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
@@ -395,11 +396,12 @@ class Machine:
     def _verified_update(self):
         """Verify one update file and describe its payload member.
 
-        Two formats mirror the original paths. A whole update file carries
+        A whole update file carries
         the marked body prefix and its header digest; it must reproduce the
         stock whole-file check computed with the supplied boot-window key
-        material. A bare member file takes the standalone path: the member
-        CRC residue and the executed boot structure, without the digest.
+        material. For a package the directory and all CRCs are checked before
+        selecting the master. A bare member is an experimental local input:
+        its CRC and boot structure are checked without the package digest.
         """
         data = self.update_image.read_bytes()
         if len(data) > 0x40 and data[0x20:0x40] == b' ' * 0x20:
@@ -407,10 +409,13 @@ class Machine:
             require(self.boot_key is not None,
                     'A whole update file requires --boot-key (eight boot-window bytes)')
             described = verify_update(data, self.boot_key, master)
-            candidate = installable_master(described['payload'])
+            # A decoded whole package is a directory and several members,
+            # not a directly executable master image.
+            image = master_member(described['payload'])
+            candidate = installable_master(image)
             return dict(candidate, note=str(self.update_image),
                         digest=described['digest'], length=described['length'],
-                        signed=True, format='package', payload=described['payload'])
+                        signed=True, format='package', payload=image)
         candidate = installable_master(data)
         return dict(candidate, note=str(self.update_image), length=len(data),
                     signed=False, format='member', payload=data)
