@@ -2028,6 +2028,580 @@
       }
     ]
   },
+  "cross_version": {
+    "scope": "Original directory collection across stock package versions and installed master versions",
+    "whole_package_digest_and_execute_not_exercised": true,
+    "record_independent_of_installed_version": true,
+    "cases": [
+      {
+        "package": "stock C 1.70",
+        "installed_master_version": "01.70",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "input_length": 48494024,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "stock C 1.70",
+        "installed_master_version": "01.61",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "input_length": 48494024,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "stock C 1.70",
+        "installed_master_version": "01.10",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "input_length": 48494024,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0161",
+        "installed_master_version": "01.70",
+        "input_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+        "input_length": 48381064,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0161",
+        "installed_master_version": "01.61",
+        "input_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+        "input_length": 48381064,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0161",
+        "installed_master_version": "01.10",
+        "input_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+        "input_length": 48381064,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0110_01",
+        "installed_master_version": "01.70",
+        "input_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+        "input_length": 47640392,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0110_01",
+        "installed_master_version": "01.61",
+        "input_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+        "input_length": 47640392,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      },
+      {
+        "package": "Z7_2_0110_01",
+        "installed_master_version": "01.10",
+        "input_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+        "input_length": 47640392,
+        "returned": 1,
+        "requested_mode": 0,
+        "stored_mode": 0,
+        "summary_head": 19,
+        "collected_count": 1,
+        "matching_count": 1,
+        "record_path": "A:\\firmware\\Z7_2_0170.BIN",
+        "record_slot": 13,
+        "record_package_flag": 1,
+        "record_category": 4,
+        "collected_directory_indices": [
+          0
+        ],
+        "allocated_buffers": 2,
+        "released_buffers": 2,
+        "directory_queries": [
+          {
+            "operation": "exists",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\firmware\\"
+          },
+          {
+            "operation": "exists",
+            "path": "A:\\"
+          },
+          {
+            "operation": "enumerate",
+            "path": "A:\\"
+          }
+        ],
+        "opened_files": [
+          "A:\\firmware\\Z7_2_0170.BIN"
+        ],
+        "executed_entries": [
+          "0x37d984",
+          "0x37aae4",
+          "0x37d940",
+          "0x37d6b4",
+          "0x37d71c",
+          "0x37d2e8",
+          "0x37d372",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d3a8",
+          "0x37d3a8",
+          "0x37d4d4",
+          "0x37d922"
+        ]
+      }
+    ]
+  },
   "primitives": {
     "scope": "Unaccelerated original decode, suffix transform, CRC and SHA-1 checker on synthetic inputs",
     "decode_checks": [

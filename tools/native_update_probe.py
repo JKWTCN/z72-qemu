@@ -293,9 +293,10 @@ class NativeUpdateProbe:
                     opened_roots=list(opened), opened_files=list(file_paths),
                     executed_entries=list(self.executed))
 
-    def installed_version_fixture(self):
-        for number, version in ((0x3800, b'01.70'), (0x3801, b'01.30'),
-                                (0x3803, b'01.01'), (0x3808, b'01.70')):
+    def installed_version_fixture(self, master_version='01.70'):
+        for number, version in ((0x3800, master_version.encode('ascii')),
+                                (0x3801, b'01.30'),
+                                (0x3803, b'01.01'), (0x3808, master_version.encode('ascii'))):
             self.parameters[number] = version + bytes(10 - len(version))
 
     def enumerate_packages(self, entries, directory_index=0, card_state=0):
@@ -330,11 +331,11 @@ class NativeUpdateProbe:
                     opened_files=list(file_paths), executed_entries=list(self.executed))
 
     def collect_packages(self, directories, failed_directories=(), mode=0,
-                         card_state=0):
+                         card_state=0, installed_master_version='01.70'):
         from unicorn import UC_HOOK_CODE
         self.directory_fixture([], card_state, ())
         file_paths = self.file_fixture()
-        self.installed_version_fixture()
+        self.installed_version_fixture(installed_master_version)
         allocations, freed, queries = [], [], []
         next_allocation = self.SCRATCH + 0x80000
         def allocate(size, *args):
@@ -705,6 +706,42 @@ def collection_suite(master, package, candidate):
                 allocation_and_release_are_host_heap=True, cases=results)
 
 
+def cross_version_suite(master, packages):
+    """Check collection acceptance across stock package and installed versions.
+
+    packages is a list of (label, whole-package bytes). Every package is
+    collected against every synthetic installed master version; the whole-camera
+    record must be built for each combination and must not depend on the
+    installed version.
+    """
+    entry = ('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')
+    directories = {'A:\\firmware\\': [entry], 'A:\\': []}
+    installed_versions = ('01.70', '01.61', '01.10')
+    results = []
+    for label, data in packages:
+        records = {}
+        for installed in installed_versions:
+            probe = NativeUpdateProbe(master, data)
+            result = probe.collect_packages(dict(directories),
+                                            installed_master_version=installed)
+            records[installed] = bytes(probe.u.mem_read(
+                0xB25EC904 + 13 * 0x1CC, 0x1CC))
+            require(result['returned'] == 1 and result['matching_count'] == 1 and
+                    result['record_path'] == 'A:\\firmware\\Z7_2_0170.BIN' and
+                    result['record_category'] == 4 and
+                    result['record_package_flag'] == 1 and
+                    '0x37d71c' in result['executed_entries'],
+                    f'Unexpected cross-version result: {label}/{installed}')
+            results.append(dict(package=label, installed_master_version=installed,
+                                input_sha256=digest(data), input_length=len(data),
+                                **result))
+        require(len(set(records.values())) == 1,
+                'Whole-camera record depends on the installed version: ' + label)
+    return dict(scope='Original directory collection across stock package versions and installed master versions',
+                whole_package_digest_and_execute_not_exercised=True,
+                record_independent_of_installed_version=True, cases=results)
+
+
 def integrity_suite(master, package, candidate):
     material = bytes(8)
     def matching_header(data):
@@ -741,7 +778,7 @@ def integrity_suite(master, package, candidate):
                 storage_programmed=False, cases=results)
 
 
-def run_suite(master, package, candidate=None):
+def run_suite(master, package, candidate=None, extra_packages=()):
     validate_master(master)
     require(digest(package) ==
             'fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a',
@@ -783,6 +820,8 @@ def run_suite(master, package, candidate=None):
                 directory=directory_suite(master), scanner=scan_suite(master, package, candidate),
                 enumeration=enumeration_suite(master, package, candidate),
                 collection=collection_suite(master, package, candidate),
+                cross_version=cross_version_suite(
+                    master, [('stock C 1.70', package)] + list(extra_packages)),
                 primitives=primitive_suite(master), integrity=integrity_suite(master, package, candidate),
                 version_service=NativeUpdateProbe(master, package).version_summary_service(),
                 environment=dict(running_image='supplied stock master; zero platform tag',
@@ -801,12 +840,15 @@ def main():
     parser.add_argument('--master', type=Path, required=True)
     parser.add_argument('--stock-package', type=Path, required=True)
     parser.add_argument('--candidate', type=Path)
+    parser.add_argument('--extra-package', type=Path, action='append', default=[],
+                        help='Additional stock update package for the cross-version suite')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     require(not args.report.exists(), 'Report already exists')
     master, package = args.master.read_bytes(), args.stock_package.read_bytes()
     candidate = args.candidate.read_bytes() if args.candidate else None
-    report = run_suite(master, package, candidate)
+    extra_packages = [(path.stem, path.read_bytes()) for path in args.extra_package]
+    report = run_suite(master, package, candidate, extra_packages)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     for case in report['cases']:
@@ -818,6 +860,7 @@ def main():
           len(report['propriety']['cases']), 'propriety cases,',
           len(report['enumeration']['cases']), 'enumeration cases,',
           len(report['collection']['cases']), 'collection cases,',
+          len(report['cross_version']['cases']), 'cross-version cases,',
           len(report['integrity']['cases']), 'synthetic integrity cases')
 
 
