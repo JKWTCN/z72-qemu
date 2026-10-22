@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "passed": true,
+  "window_base": "0x52000000",
+  "update_package_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+  "update_members": [
+    "ex1840_013000.bi",
+    "_tpj01_v140.bin",
+    "eg1840_mas_01610",
+    "vr1840_010100.bi",
+    "eg1840_sla_01610"
+  ],
+  "update_master_sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+  "update_master_version": "Ver.01.61.00",
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_state_written": false,
+  "dispatcher_write_is_original_evidence": true,
+  "dispatcher_covered_separately": "tools/native_update_probe.py integrity suite",
+  "cases": [
+    {
+      "case": "valid",
+      "window_sha256": "edb8a4209d25da0d226ccb4600d61604eb6e24afe69cf403c68ce82b0fb50b20",
+      "window_length": 48381064,
+      "expected_after_reset": "Ver.01.61.00",
+      "boot_record": "Ver.01.70.02",
+      "first_reset_record": "Ver.01.61.00",
+      "matches_expectation": true,
+      "second_reset_record": "Ver.01.61.00"
+    },
+    {
+      "case": "corrupted",
+      "window_sha256": "f2397dc65c13763166884f6975943f4a3e77b18246dcc79bd1c17fcf441372b3",
+      "window_length": 48381064,
+      "expected_after_reset": "Ver.01.70.02",
+      "boot_record": "Ver.01.70.02",
+      "first_reset_record": "Ver.01.70.02",
+      "matches_expectation": true
+    }
+  ]
+}

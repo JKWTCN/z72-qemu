@@ -233,7 +233,7 @@ class Structure(unittest.TestCase):
                 # original capture path prepares its frame storage.
                 expected.update({
                     (0x00000000, 0x100000), (0x50000000, 0x300000),
-                    (0x50300000, 0x4600000), (0x5F900000, 0x2E00000),
+                    (0x50300000, 0x4C00000), (0x5F900000, 0x2E00000),
                     (0xB1000000, 0x300000), (0xB6000000, 0xF00000),
                     (0xBB300000, 0xDA0000), (0xBC100000, 0x10E0000),
                     (0xBD200000, 0x6BCB400), (0xC3E00000, 0x883B000),

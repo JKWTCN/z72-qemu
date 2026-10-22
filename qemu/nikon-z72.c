@@ -1885,7 +1885,185 @@ struct NikonZ72BootStore {
     hwaddr entry;
     ARMCPU *cpus[2];
     unsigned cpu_count;
+    bool harvest;
 };
+
+/* CCITT CRC-16, polynomial 0x1021, zero initial value: the same transform
+ * the original container checks use, streamed so multi-megabyte members
+ * never need a host-sized buffer. */
+static uint16_t update_crc_step(uint16_t crc, const uint8_t *data, size_t length)
+{
+    for (size_t i = 0; i < length; i++) {
+        crc ^= (uint16_t)data[i] << 8;
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc & 0x8000) ? (uint16_t)(crc << 1) ^ 0x1021
+                                 : (uint16_t)(crc << 1);
+        }
+    }
+    return crc;
+}
+
+static MemTxResult update_window_read(AddressSpace *view, uint32_t offset,
+                                      void *buffer, uint32_t length)
+{
+    return address_space_read(view, Z72_UPDATE_WINDOW_BASE + offset,
+                              MEMTXATTRS_UNSPECIFIED, buffer, length);
+}
+
+/* CRC over a window range computed in bounded chunks. */
+static bool update_window_crc(AddressSpace *view, uint32_t offset,
+                              uint32_t length, uint16_t *result)
+{
+    uint8_t chunk[0x10000];
+    uint16_t crc = 0;
+    while (length) {
+        uint32_t take = MIN(length, sizeof(chunk));
+        if (update_window_read(view, offset, chunk, take) != MEMTX_OK) {
+            return false;
+        }
+        crc = update_crc_step(crc, chunk, take);
+        offset += take;
+        length -= take;
+    }
+    *result = crc;
+    return true;
+}
+
+static bool update_member_name_ok(const uint8_t *raw)
+{
+    unsigned length = 0;
+    while (length < 16 && raw[length]) {
+        uint8_t c = raw[length];
+        bool letter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+                      (c >= '0' && c <= '9') || c == '_' || c == '.' || c == '-';
+        if (!letter) {
+            return false;
+        }
+        length++;
+    }
+    if (length == 0) {
+        return false;
+    }
+    while (length < 16) {
+        if (raw[length]) {
+            return false;
+        }
+        length++;
+    }
+    return true;
+}
+
+/* Harvest a decoded update container from the programming window. Mirrors
+ * the host-side container checks: 32-byte space marker, big-endian
+ * directory (count 1..64, contiguous members, zero reserved fields), one
+ * master member, every member CRC residue zero and the container CRC over
+ * the directory plus all members zero. On success the master member bounds
+ * are reported and the window is left untouched. */
+static bool update_window_harvest(AddressSpace *view, uint32_t *member_offset,
+                                  uint32_t *member_length)
+{
+    uint8_t marker[0x30];
+    if (update_window_read(view, 0x20, marker, sizeof(marker)) != MEMTX_OK) {
+        return false;
+    }
+    for (unsigned i = 0; i < 0x20; i++) {
+        if (marker[i] != 0x20) {
+            return false;
+        }
+    }
+    uint32_t count = ldl_be_p(marker + 0x20);
+    uint32_t header = ldl_be_p(marker + 0x24);
+    if (count == 0 || count > 64 || header != 0x30 + count * 0x20 ||
+        ldl_be_p(marker + 0x28) || ldl_be_p(marker + 0x2C)) {
+        return false;
+    }
+    uint8_t *entries = g_malloc(header - 0x30);
+    if (update_window_read(view, 0x20 + 0x30, entries, header - 0x30) != MEMTX_OK) {
+        g_free(entries);
+        return false;
+    }
+    /* The directory is followed by the members inside the window; the body
+     * ends with a 16-byte CRC-plus-zero trailer. */
+    const uint32_t body_limit = Z72_UPDATE_WINDOW_BYTES - 0x20 - 0x10;
+    uint32_t end = header;
+    unsigned masters = 0;
+    for (unsigned index = 0; index < count; index++) {
+        const uint8_t *entry = entries + index * 0x20;
+        if (!update_member_name_ok(entry) ||
+            ldl_be_p(entry + 24) || ldl_be_p(entry + 28)) {
+            g_free(entries);
+            return false;
+        }
+        uint32_t start = ldl_be_p(entry + 16);
+        uint32_t size = ldl_be_p(entry + 20);
+        bool master = memcmp(entry, "eg1840_mas_", 11) == 0;
+        if (size < 2 || size > body_limit || start != end ||
+            start > body_limit - size) {
+            g_free(entries);
+            return false;
+        }
+        if (master) {
+            masters++;
+            *member_offset = start;
+            *member_length = size;
+        }
+        end = start + size;
+    }
+    g_free(entries);
+    if (masters != 1 || end > body_limit) {
+        return false;
+    }
+    uint8_t trailer[14];
+    if (update_window_read(view, 0x20 + end + 2, trailer, sizeof(trailer))
+        != MEMTX_OK) {
+        return false;
+    }
+    for (unsigned i = 0; i < sizeof(trailer); i++) {
+        if (trailer[i]) {
+            return false;
+        }
+    }
+    /* Per-member residues and the container CRC over directory + members
+     * plus the trailer CRC word. */
+    uint32_t cursor = header;
+    for (unsigned index = 0; index < count; index++) {
+        uint8_t entry[0x20];
+        if (update_window_read(view, 0x20 + 0x30 + index * 0x20, entry,
+                              sizeof(entry)) != MEMTX_OK) {
+            return false;
+        }
+        uint32_t size = ldl_be_p(entry + 20);
+        uint16_t residue = 1;
+        if (!update_window_crc(view, 0x20 + cursor, size, &residue) ||
+            residue != 0) {
+            return false;
+        }
+        cursor += size;
+    }
+    uint16_t container = 1;
+    if (!update_window_crc(view, 0x20, cursor + 2, &container) ||
+        container != 0) {
+        return false;
+    }
+    return true;
+}
+
+/* Copy the harvested master member into the code window in chunks. */
+static void update_window_install(AddressSpace *view, uint32_t offset,
+                                  uint32_t length, hwaddr target)
+{
+    uint8_t chunk[0x10000];
+    while (length) {
+        uint32_t take = MIN(length, sizeof(chunk));
+        if (update_window_read(view, offset, chunk, take) != MEMTX_OK) {
+            return;
+        }
+        address_space_write(view, target, MEMTXATTRS_UNSPECIFIED, chunk, take);
+        offset += take;
+        length -= take;
+        target += take;
+    }
+}
 
 static void boot_store_load(NikonZ72BootFile *file, const char *path,
                             hwaddr address, Error **errp)
@@ -1964,9 +2142,22 @@ static void boot_store_auxiliary_set(Object *obj, const char *value, Error **err
     s->auxiliary = g_strdup(value);
 }
 
+static bool boot_store_harvest_get(Object *obj, Error **errp)
+{
+    return NIKON_Z72_BOOT_STORE(obj)->harvest;
+}
+
+static void boot_store_harvest_set(Object *obj, bool value, Error **errp)
+{
+    NIKON_Z72_BOOT_STORE(obj)->harvest = value;
+}
+
 /* Runs after the device tree reset: the code window and the cores are back
  * at their reset state, so the stored set is copied in and execution is
- * pointed at the image entry, matching the preloader's initial placement. */
+ * pointed at the image entry, matching the preloader's initial placement.
+ * A valid decoded container in the programming window replaces the stored
+ * image for this boot: the window is the body storage the original update
+ * dispatcher programs, so the machine boots from whatever it holds. */
 static void boot_store_reset(void *opaque)
 {
     NikonZ72BootStore *s = opaque;
@@ -1974,9 +2165,19 @@ static void boot_store_reset(void *opaque)
         return;
     }
     AddressSpace *view = CPU(s->cpus[0])->as;
+    bool harvested = false;
+    if (s->harvest) {
+        uint32_t offset = 0, length = 0;
+        harvested = update_window_harvest(view, &offset, &length);
+        if (harvested) {
+            /* The reported bounds are body-relative; the body starts 0x20
+             * into the staging stream. */
+            update_window_install(view, 0x20 + offset, length, s->entry);
+        }
+    }
     for (unsigned i = 0; i < s->file_count; i++) {
         NikonZ72BootFile *file = &s->files[i];
-        if (file->size == 0) {
+        if (file->size == 0 || (harvested && i == 0)) {
             continue;
         }
         address_space_write(view, file->address, MEMTXATTRS_UNSPECIFIED,
@@ -2030,6 +2231,17 @@ static void boot_store_class_init(ObjectClass *oc, const void *data)
                                   boot_store_auxiliary_set);
     object_class_property_set_description(oc, "auxiliary",
         "Comma separated path@address files reloaded alongside the image");
+    object_class_property_add_bool(oc, "harvest-update",
+        boot_store_harvest_get, boot_store_harvest_set);
+    object_class_property_set_description(oc, "harvest-update",
+        "Boot a valid decoded container from the programming window");
+}
+
+static void boot_store_init(Object *obj)
+{
+    /* Harvesting is on by default: an all-zero or invalid window fails the
+     * container checks and leaves the stored image untouched. */
+    NIKON_Z72_BOOT_STORE(obj)->harvest = true;
 }
 
 static void boot_store_register_types(void)
@@ -2038,6 +2250,7 @@ static void boot_store_register_types(void)
         .name = TYPE_NIKON_Z72_BOOT_STORE,
         .parent = TYPE_SYS_BUS_DEVICE,
         .instance_size = sizeof(NikonZ72BootStore),
+        .instance_init = boot_store_init,
         .instance_finalize = boot_store_finalize,
         .class_init = boot_store_class_init,
     };

@@ -16,13 +16,25 @@
 #define Z72_COUNTER_BASE 0x04266000u
 #define Z72_COUNTER_FREQUENCY 48000000u
 typedef struct NikonZ72Window { uint32_t base, size; const char *name; } NikonZ72Window;
+/* Original update staging window inside the cached buffer pool: once the
+ * whole-package checks pass, the update dispatcher decodes the complete
+ * package stream into this span (bounded-execution evidence: all
+ * 48,493,992 bytes of the stock package land here, container header,
+ * members and trailer included, ending at 0x54E3F5A8). The boot store
+ * treats it as the programmed body storage and harvests a valid decoded
+ * container from it at every reset. No separate mapping: the window is a
+ * carve-out of the pool so the 0x30000000 bus alias stays coherent. */
+#define Z72_UPDATE_WINDOW_BASE 0x52000000u
+#define Z72_UPDATE_WINDOW_BYTES 0x02F00000u
 static const NikonZ72Window nikon_z72_windows[] = {
     /* Auxiliary firmware load destinations observed in incrementing memory
      * descriptors. These are storage windows; auxiliary CPU execution and
      * its control/status handshake are not implemented yet. */
     {0x00000000, 0x00100000, "z72-auxiliary-local-memory-lab"},
     {0x50000000, 0x00300000, "z72-auxiliary-program-memory-lab"},
-    {0x50300000, 0x04600000, "z72-cached-buffer-pool-lab"},
+    /* Extended past the earlier 0x54900000 end so the update staging window
+     * above fits inside one backing region. */
+    {0x50300000, 0x04C00000, "z72-cached-buffer-pool-lab"},
     /* Cached capture allocation range paired with the 0x34600000 bus view. */
     {0x5F900000, 0x02E00000, "z72-capture-buffer-pool-lab"},
     {0xB1000000, 0x00300000, "z72-auxiliary-shared-memory-lab"},
