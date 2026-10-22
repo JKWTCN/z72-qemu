@@ -177,7 +177,7 @@
     "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
     "qemu/nikon-z72-timer.c": "dbd98d98c912bc65613b086ba88a33fdadc713abcbb15b9d7b90f6306abc0645",
     "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
-    "qemu/nikon-z72.c": "835e0ae6a5094000474914ea84ff12d836d951f2179a0d779cc91a5028bc725a",
+    "qemu/nikon-z72.c": "77ae1595e99868c27ae469a239143cf6f32b514afeee273550f8f07dda2b3fad",
     "qemu/prepare_source.py": "2e559d14c9fc8aa8584c0c211ce4a793951f3b4269fe4ef78d87d9e78bf93815",
     "research/README.md": "57519d9061226cd6c948bf16c480556c85dc66409d50f5fdfa3a77d9d6810e5b",
     "research/firmware_identity.json": "3ae73f19db98854e0876a3b7da5567ea9149143ff5e5ef0a20dcc54624fede85",

@@ -861,7 +861,6 @@ static void frame_sync_tick(void *opaque)
             *boot_config_value(s, 0x20061000) = 0xffff;
         }
     }
-    s->frame_count = s->frame_sync_count;
     s->frame_sync_count++;
     sync_update_irqs(s);
     timer_mod(s->frame_sync_timer,
@@ -915,6 +914,12 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
      * initialization can proceed. */
     if (s->pcie_link && boot_config_addresses[word->index] == 0x2b200058) {
         value = (value & ~0x3f0000u) | 0x110000u;
+    }
+    /* Diagnostic: log reads from the input-path configuration region so
+     * the firmware's sensor-interface polling can be traced. */
+    if (boot_config_addresses[word->index] >= 0x20068000 &&
+        boot_config_addresses[word->index] <= 0x20068300) {
+        s->frame_count++;
     }
     return value;
 }
