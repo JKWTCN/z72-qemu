@@ -1,0 +1,1004 @@
+{
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "cases": [
+    {
+      "case": "stock_package",
+      "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "length": 48494024,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": null,
+        "reached_version_list_formatting": true,
+        "encoded_package_flag": 1,
+        "member_mask": 31,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          },
+          {
+            "operation": "seek",
+            "position": 14320
+          },
+          {
+            "operation": "read",
+            "position": 14320,
+            "requested": 14,
+            "actual": 14
+          },
+          {
+            "operation": "seek",
+            "position": 38820978
+          },
+          {
+            "operation": "read",
+            "position": 38820978,
+            "requested": 4,
+            "actual": 4
+          },
+          {
+            "operation": "seek",
+            "position": 578034
+          },
+          {
+            "operation": "read",
+            "position": 578034,
+            "requested": 3,
+            "actual": 3
+          },
+          {
+            "operation": "seek",
+            "position": 39659654
+          },
+          {
+            "operation": "read",
+            "position": 39659654,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 39659674
+          },
+          {
+            "operation": "read",
+            "position": 39659674,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581892
+          },
+          {
+            "operation": "read",
+            "position": 581892,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581912
+          },
+          {
+            "operation": "read",
+            "position": 581912,
+            "requested": 8,
+            "actual": 8
+          }
+        ]
+      }
+    },
+    {
+      "case": "bare_master",
+      "input_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 0,
+        "encoded_package_flag": 0,
+        "member_count": 39680,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": 12,
+        "reached_version_list_formatting": false,
+        "encoded_package_flag": 0,
+        "member_mask": 0,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          }
+        ]
+      }
+    },
+    {
+      "case": "truncated_before_directory",
+      "input_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+      "length": 64,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 0,
+        "encoded_package_flag": 0,
+        "member_count": 0,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 32
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": 12,
+        "reached_version_list_formatting": false,
+        "encoded_package_flag": 0,
+        "member_mask": 0,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 32
+          }
+        ]
+      }
+    },
+    {
+      "case": "changed_outer_digest",
+      "input_sha256": "fd2fc385607d1895ee459d630b2b2cc52adcf1b25f38764cfcc56058605fbe59",
+      "length": 48494024,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": null,
+        "reached_version_list_formatting": true,
+        "encoded_package_flag": 1,
+        "member_mask": 31,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          },
+          {
+            "operation": "seek",
+            "position": 14320
+          },
+          {
+            "operation": "read",
+            "position": 14320,
+            "requested": 14,
+            "actual": 14
+          },
+          {
+            "operation": "seek",
+            "position": 38820978
+          },
+          {
+            "operation": "read",
+            "position": 38820978,
+            "requested": 4,
+            "actual": 4
+          },
+          {
+            "operation": "seek",
+            "position": 578034
+          },
+          {
+            "operation": "read",
+            "position": 578034,
+            "requested": 3,
+            "actual": 3
+          },
+          {
+            "operation": "seek",
+            "position": 39659654
+          },
+          {
+            "operation": "read",
+            "position": 39659654,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 39659674
+          },
+          {
+            "operation": "read",
+            "position": 39659674,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581892
+          },
+          {
+            "operation": "read",
+            "position": 581892,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581912
+          },
+          {
+            "operation": "read",
+            "position": 581912,
+            "requested": 8,
+            "actual": 8
+          }
+        ]
+      }
+    },
+    {
+      "case": "changed_last_member_crc",
+      "input_sha256": "209b126788e2ad56f9531c972d971cd69542b8d4b47962237ef9b5cedf93f3c9",
+      "length": 48494024,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": null,
+        "reached_version_list_formatting": true,
+        "encoded_package_flag": 1,
+        "member_mask": 31,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          },
+          {
+            "operation": "seek",
+            "position": 14320
+          },
+          {
+            "operation": "read",
+            "position": 14320,
+            "requested": 14,
+            "actual": 14
+          },
+          {
+            "operation": "seek",
+            "position": 38820978
+          },
+          {
+            "operation": "read",
+            "position": 38820978,
+            "requested": 4,
+            "actual": 4
+          },
+          {
+            "operation": "seek",
+            "position": 578034
+          },
+          {
+            "operation": "read",
+            "position": 578034,
+            "requested": 3,
+            "actual": 3
+          },
+          {
+            "operation": "seek",
+            "position": 39659654
+          },
+          {
+            "operation": "read",
+            "position": 39659654,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 39659674
+          },
+          {
+            "operation": "read",
+            "position": 39659674,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581892
+          },
+          {
+            "operation": "read",
+            "position": 581892,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581912
+          },
+          {
+            "operation": "read",
+            "position": 581912,
+            "requested": 8,
+            "actual": 8
+          }
+        ]
+      }
+    },
+    {
+      "case": "capacity_equal_master_length",
+      "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "length": 48494024,
+      "image_capacity": 38239098,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": 11,
+        "reached_version_list_formatting": false,
+        "encoded_package_flag": 1,
+        "member_mask": 29,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      }
+    },
+    {
+      "case": "invalid_ex_member_length",
+      "input_sha256": "2d0dad4234b6702aac6a60d96b459b261487605aecf1f373f5668c40b8eec5fe",
+      "length": 48494024,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": 11,
+        "reached_version_list_formatting": false,
+        "encoded_package_flag": 1,
+        "member_mask": 12,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494008
+          },
+          {
+            "operation": "read",
+            "position": 48494008,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      }
+    },
+    {
+      "case": "local_candidate",
+      "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
+      "length": 48494092,
+      "image_capacity": 67108864,
+      "parser": {
+        "returned": 1,
+        "encoded_package_flag": 1,
+        "member_count": 5,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494076
+          },
+          {
+            "operation": "read",
+            "position": 48494076,
+            "requested": 16,
+            "actual": 16
+          }
+        ]
+      },
+      "member_checks": {
+        "returned": null,
+        "reached_version_list_formatting": true,
+        "encoded_package_flag": 1,
+        "member_mask": 31,
+        "io": [
+          {
+            "operation": "seek",
+            "position": 32
+          },
+          {
+            "operation": "read",
+            "position": 32,
+            "requested": 48,
+            "actual": 48
+          },
+          {
+            "operation": "read",
+            "position": 80,
+            "requested": 160,
+            "actual": 160
+          },
+          {
+            "operation": "seek",
+            "position": 48494076
+          },
+          {
+            "operation": "read",
+            "position": 48494076,
+            "requested": 16,
+            "actual": 16
+          },
+          {
+            "operation": "seek",
+            "position": 14320
+          },
+          {
+            "operation": "read",
+            "position": 14320,
+            "requested": 14,
+            "actual": 14
+          },
+          {
+            "operation": "seek",
+            "position": 38821046
+          },
+          {
+            "operation": "read",
+            "position": 38821046,
+            "requested": 4,
+            "actual": 4
+          },
+          {
+            "operation": "seek",
+            "position": 578034
+          },
+          {
+            "operation": "read",
+            "position": 578034,
+            "requested": 3,
+            "actual": 3
+          },
+          {
+            "operation": "seek",
+            "position": 39659722
+          },
+          {
+            "operation": "read",
+            "position": 39659722,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 39659742
+          },
+          {
+            "operation": "read",
+            "position": 39659742,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581892
+          },
+          {
+            "operation": "read",
+            "position": 581892,
+            "requested": 8,
+            "actual": 8
+          },
+          {
+            "operation": "seek",
+            "position": 581912
+          },
+          {
+            "operation": "read",
+            "position": 581912,
+            "requested": 8,
+            "actual": 8
+          }
+        ]
+      }
+    }
+  ],
+  "propriety": {
+    "scope": "Original GetProprietyCheck and snapshot predicates; synthetic runtime snapshot",
+    "baseline": {
+      "valid_word": 1,
+      "source_byte": 1,
+      "other_bytes": 0
+    },
+    "snapshot_getter_executed": true,
+    "locks_and_diagnostic_logger_skipped": true,
+    "cases": [
+      {
+        "case": "baseline",
+        "snapshot_edits": {},
+        "service_return": 1,
+        "reason": 0,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a",
+          "0x3d8ae4"
+        ]
+      },
+      {
+        "case": "snapshot_absent",
+        "snapshot_edits": {
+          "0x0": 0
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a"
+        ]
+      },
+      {
+        "case": "source_zero",
+        "snapshot_edits": {
+          "0x4": 0
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a"
+        ]
+      },
+      {
+        "case": "source_five",
+        "snapshot_edits": {
+          "0x4": 5
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a"
+        ]
+      },
+      {
+        "case": "level_one",
+        "snapshot_edits": {
+          "0xb": 1
+        },
+        "service_return": 1,
+        "reason": 0,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a",
+          "0x3d8ae4"
+        ]
+      },
+      {
+        "case": "level_two",
+        "snapshot_edits": {
+          "0xb": 2
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a",
+          "0x3d8ae4"
+        ]
+      },
+      {
+        "case": "second_level_two",
+        "snapshot_edits": {
+          "0x7": 1,
+          "0x23": 2
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a",
+          "0x3d8ae4"
+        ]
+      },
+      {
+        "case": "third_level_two",
+        "snapshot_edits": {
+          "0x7": 2,
+          "0x3b": 2
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a",
+          "0x3d8ae4"
+        ]
+      },
+      {
+        "case": "flag_8",
+        "snapshot_edits": {
+          "0x8": 1
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a"
+        ]
+      },
+      {
+        "case": "flag_20",
+        "snapshot_edits": {
+          "0x20": 1
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a"
+        ]
+      },
+      {
+        "case": "flag_38",
+        "snapshot_edits": {
+          "0x38": 1
+        },
+        "service_return": 3,
+        "reason": 1,
+        "executed_entries": [
+          "0x747048",
+          "0x3d645a",
+          "0x37aa82",
+          "0x3d9a2a",
+          "0x37aaa6",
+          "0x3d9a2a"
+        ]
+      }
+    ]
+  },
+  "environment": {
+    "running_image": "supplied stock master; zero platform tag",
+    "character_classification": "host ASCII flags",
+    "other_runtime_ram": "zero initialized"
+  },
+  "scope": "Original directory parser and member checks, stopping before version-list formatting",
+  "whole_package_digest_verified": false,
+  "menu_dispatch_executed": false,
+  "native_service_methods_executed": [
+    "GetProprietyCheck"
+  ],
+  "storage_programmed": false
+}
