@@ -1,0 +1,355 @@
+{
+  "format": 1,
+  "analysis_date": "2026-10-22",
+  "samples": {
+    "z62": {
+      "length": 49002856,
+      "sha256": "2cc75cc4f909b69a680a8ba1486c44f6aec58f105f81c3c88625460ddc4cecf1",
+      "header_length": 208,
+      "members": [
+        {
+          "name": "ex1850_012000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "9c65cad554ed02f83d37fbc825a8eb9efe79e3f32f98894dd5dd73edee416983",
+          "crc": "d8d1"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1850_mas_01700",
+          "offset": 581844,
+          "length": 38750138,
+          "sha256": "bb83613121f843d65101da936d942acdc513d86dbd3abc26259d0d870d03f5d4",
+          "crc": "8e61",
+          "version": "Ver.01.70.02"
+        },
+        {
+          "name": "vr1850_010100.bi",
+          "offset": 39331982,
+          "length": 838664,
+          "sha256": "7e48c59adff7b917b41d2a2643ae692588c7b92b955d69f0000531885df274d9",
+          "crc": "d92e"
+        },
+        {
+          "name": "eg1850_sla_01700",
+          "offset": 40170646,
+          "length": 8832194,
+          "sha256": "3fd8c2cbdf57fadb03f6d69b596b58a8703efdd61ae82572d5afeea0241a9ed5",
+          "crc": "7d28",
+          "version": "Ver.01.70.02"
+        }
+      ],
+      "trailer_offset": 49002840,
+      "container_crc": "cf9a",
+      "file": "Z6_2_0170.bin",
+      "file_length": 49002888,
+      "file_sha256": "5a9640b4c07abe1ecbf5a52655cbec6b893bba045bb2a1a1d21055b9f8f9d06d",
+      "header_digest_verified": false,
+      "member_crcs_verified": true,
+      "container_crc_verified": true
+    },
+    "z72": {
+      "length": 48493992,
+      "sha256": "f53ab7dd6eb417adaac98d617bbf95f89b09f9176ba93a48853e3d825a24fe17",
+      "header_length": 208,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01700",
+          "offset": 581844,
+          "length": 38239098,
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "crc": "9d06",
+          "version": "Ver.01.70.02"
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38820942,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_01700",
+          "offset": 39659606,
+          "length": 8834370,
+          "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+          "crc": "b691",
+          "version": "Ver.01.70.02"
+        }
+      ],
+      "trailer_offset": 48493976,
+      "container_crc": "c71e",
+      "file": "Z7_2_0170.bin",
+      "file_length": 48494024,
+      "file_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "header_digest_verified": false,
+      "member_crcs_verified": true,
+      "container_crc_verified": true
+    }
+  },
+  "parameters": {
+    "z62": {
+      "seed": "0x44c",
+      "model": "Z_6_2",
+      "seed_index": 72,
+      "model_index": 20,
+      "stream_sha256": "7ec56c03a56c5f72063e6662e15b052f33d77a87f88c167c7debf47d811cf6a0",
+      "table1": {
+        "address": "0x12078c96",
+        "sha256": "e191ac095f2bb26c97fab2ce18f23cc36460d2f68fb3947841262c02e1a42069"
+      },
+      "table2": {
+        "address": "0x12078d96",
+        "sha256": "d13fee2ac88df8212c08fed12e11a7c5d20a23fbb14ae8f08f8c96f232f2a672"
+      },
+      "codec": {
+        "address": "0x11990a44",
+        "sha256": "a28f1ce655068656bbe51eb8ee40d8d3a89f8f47301970addec25ed344937d32"
+      },
+      "loop": {
+        "offset": "0x39ea98",
+        "length": 34,
+        "sha256": "0650fa8d115552d1e843185e5643ffbd5e1cfd49e8bd75ab001519db767c2e35"
+      },
+      "file_offsets": {
+        "classifier": "0x37e016",
+        "parser": "0x38f744",
+        "record_builder": "0x37f8dc",
+        "record_select": "0x37feac",
+        "flag_getter": "0x38f992",
+        "selector": "0x37ff28",
+        "dispatch": "0x3d7970",
+        "package_check": "0x37ea40",
+        "standalone_check": "0x37e886",
+        "transform": "0x39ea3c",
+        "digest_check": "0x392286"
+      },
+      "digest_context": "0xc2b2b608",
+      "update_state": "0xc1887bc0",
+      "boot_material_address": "0x10000088",
+      "code_windows": [
+        {
+          "role": "classifier",
+          "offset": "0x37e016",
+          "length": 32,
+          "sha256": "89b5dd35bd37578c85c5f565a6947b9e84a5fe717a99a04d43f26bde6be197e1"
+        },
+        {
+          "role": "parser",
+          "offset": "0x38f744",
+          "length": 444,
+          "sha256": "a834769507d6cb29f1fe277ba8f429247195bc78355ce3e199498f7d2bb455d8"
+        },
+        {
+          "role": "record_builder",
+          "offset": "0x37f8dc",
+          "length": 232,
+          "sha256": "62d2f042d15d5d47f361e925b6f9c37170a7f985ed54211cca36d7ea9c3bbba8"
+        },
+        {
+          "role": "record_select",
+          "offset": "0x37feac",
+          "length": 124,
+          "sha256": "e65124e2dd804393cc4ee8db04cd601fe63743b7b178aeb247d5b915297a39cd"
+        },
+        {
+          "role": "flag_getter",
+          "offset": "0x38f992",
+          "length": 6,
+          "sha256": "d8776e5135cd9976825840aff11e279a9796921e4cd05a356ae46bfa141196b3"
+        },
+        {
+          "role": "selector",
+          "offset": "0x37ff28",
+          "length": 20,
+          "sha256": "e4bb76bb5c2e6cc63b876967040a6a02404fc17d9301f62b3e9398bf57f4520c"
+        },
+        {
+          "role": "dispatch",
+          "offset": "0x3d7970",
+          "length": 84,
+          "sha256": "f16b2e5c8636111b5bfd4612dbf2f5b7a741f2becc43e455343ae11c9581ea2f"
+        }
+      ]
+    },
+    "z72": {
+      "seed": "0x44b",
+      "model": "Z_7_2",
+      "seed_index": 79,
+      "model_index": 120,
+      "stream_sha256": "5510bc2b278631adf64553c5f184f1051710f6fe6f2bac2cb1b0990867f9b46a",
+      "table1": {
+        "address": "0x12068276",
+        "sha256": "e191ac095f2bb26c97fab2ce18f23cc36460d2f68fb3947841262c02e1a42069"
+      },
+      "table2": {
+        "address": "0x12068376",
+        "sha256": "d13fee2ac88df8212c08fed12e11a7c5d20a23fbb14ae8f08f8c96f232f2a672"
+      },
+      "codec": {
+        "address": "0x119800d0",
+        "sha256": "a28f1ce655068656bbe51eb8ee40d8d3a89f8f47301970addec25ed344937d32"
+      },
+      "loop": {
+        "offset": "0x39c36c",
+        "length": 34,
+        "sha256": "0650fa8d115552d1e843185e5643ffbd5e1cfd49e8bd75ab001519db767c2e35"
+      },
+      "file_offsets": {
+        "classifier": "0x37bc0e",
+        "parser": "0x38d340",
+        "record_builder": "0x37d4d4",
+        "record_select": "0x37daa4",
+        "flag_getter": "0x38d58e",
+        "selector": "0x37db20",
+        "dispatch": "0x3d6938",
+        "package_check": "0x37c638",
+        "standalone_check": "0x37c47e",
+        "transform": "0x39c310",
+        "digest_check": "0x38fe82"
+      },
+      "digest_context": "0xb2b422c8",
+      "update_state": "0xb1887c80",
+      "boot_material_address": "0x10000088",
+      "code_windows": [
+        {
+          "role": "classifier",
+          "offset": "0x37bc0e",
+          "length": 32,
+          "sha256": "c857a2f4b60f942acbc29f94cb4e5a0d613e888c7be1e66fea000c30724e4461"
+        },
+        {
+          "role": "parser",
+          "offset": "0x38d340",
+          "length": 444,
+          "sha256": "8ab37579f72d5d0de07f2cb4cd27a66fef7c00795c6ddd91dcaf231d700460f8"
+        },
+        {
+          "role": "record_builder",
+          "offset": "0x37d4d4",
+          "length": 232,
+          "sha256": "d033ff7be4594342c794de4422060a7e1b94e34aff5c67199dc8404367a43c1e"
+        },
+        {
+          "role": "record_select",
+          "offset": "0x37daa4",
+          "length": 124,
+          "sha256": "fd16d054b0f8301e94f34ad36fab57fafc4306cef120848eb978e5946c561ead"
+        },
+        {
+          "role": "flag_getter",
+          "offset": "0x38d58e",
+          "length": 6,
+          "sha256": "d8776e5135cd9976825840aff11e279a9796921e4cd05a356ae46bfa141196b3"
+        },
+        {
+          "role": "selector",
+          "offset": "0x37db20",
+          "length": 20,
+          "sha256": "e4bb76bb5c2e6cc63b876967040a6a02404fc17d9301f62b3e9398bf57f4520c"
+        },
+        {
+          "role": "dispatch",
+          "offset": "0x3d6938",
+          "length": 84,
+          "sha256": "66b0d7746c1548e77827d25cfcdeb3b3ec46d8c9f4e255c0ac293c5b7ff526e4"
+        }
+      ]
+    }
+  },
+  "parser_execution": {
+    "results": {
+      "z62": {
+        "package": {
+          "return_value": 1,
+          "completed": true,
+          "package_flag": 1,
+          "directory_count": 5,
+          "file_calls": 5
+        },
+        "bare-master": {
+          "return_value": 0,
+          "completed": true,
+          "package_flag": 0,
+          "file_calls": 2
+        },
+        "bare-slave": {
+          "return_value": 0,
+          "completed": true,
+          "package_flag": 0,
+          "file_calls": 2
+        }
+      },
+      "z72": {
+        "package": {
+          "return_value": 1,
+          "completed": true,
+          "package_flag": 1,
+          "directory_count": 5,
+          "file_calls": 5
+        },
+        "bare-master": {
+          "return_value": 0,
+          "completed": true,
+          "package_flag": 0,
+          "file_calls": 2
+        },
+        "bare-slave": {
+          "return_value": 0,
+          "completed": true,
+          "package_flag": 0,
+          "file_calls": 2
+        }
+      }
+    },
+    "entry_file_offset": 32,
+    "host_supplied": [
+      "Read-only file seek and read",
+      "Memory copy and zeroing",
+      "Cache maintenance as no-op",
+      "ASCII uppercase conversion"
+    ],
+    "original_code_executed": [
+      "Header decoding",
+      "Endian conversion",
+      "Directory processing",
+      "Acceptance and rejection branches"
+    ],
+    "scope": "File parser only; no header digest, member CRC, model eligibility, flash programming or camera installation was exercised by this execution probe."
+  },
+  "transform_execution": {
+    "model": "z62",
+    "inputs": 3,
+    "formula_matches": true,
+    "model_string": "Z_6_2",
+    "seed": "0x44C",
+    "raw_boot_material_supplied": false,
+    "character_classification": "supplied for ASCII model characters"
+  },
+  "limitations": [
+    "Raw B8 and final K8 remain unknown.",
+    "Shared tables are not evidence of a shared B8 candidate library.",
+    "No original package header SHA-1 digest was verified.",
+    "No Z6 II emulator boot profile was added."
+  ]
+}

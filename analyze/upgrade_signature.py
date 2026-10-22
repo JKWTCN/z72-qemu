@@ -7,8 +7,9 @@ file are the expected digest, and the accepted digest is SHA-1 over the
 marked body plus eight appended key bytes. The appended bytes are the engine
 boot-window key material combined with a fixed stream derived from a seed,
 the model string and two 256-byte tables that live inside the supplied
-master image. The boot-window bytes are not part of the distributed update
-file; like the firmware images themselves they are a separate local input.
+master image. This module takes the raw boot-window bytes as a separate
+local input. Reading them from that window does not establish where the
+boot code originally obtains them, or exclude construction from immediates.
 
 The file layout this module expects:
 
