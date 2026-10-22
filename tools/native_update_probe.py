@@ -56,7 +56,8 @@ class NativeUpdateProbe:
                        0x37BC0E, 0x38D340, 0x37AE0E, 0x37D5BC,
                        0x37D4D4, 0x37DAA4, 0x37DB20, 0x3D6938,
                        0x37C638, 0x38FE82, 0x39C310, 0x39C308,
-                       0x747092, 0x3D636A, 0x37D3A8):
+                       0x747092, 0x3D636A, 0x37D3A8, 0x37D71C,
+                       0x37D2E8, 0x37D372):
             self.u.hook_add(UC_HOOK_CODE,
                             lambda u, address, size, unused: self.executed.append(hex(address - BASE)),
                             begin=BASE + offset, end=BASE + offset)
@@ -217,6 +218,16 @@ class NativeUpdateProbe:
             data.append(char)
         raise ValueError('Unterminated directory string')
 
+    def directory_record(self, name, long_name):
+        require(len(name) <= 12 and len(long_name) <= 255,
+                'Directory fixture name exceeds its field')
+        record = bytearray(0x220)
+        record[:len(name)] = name.encode('ascii')
+        wide = long_name.encode('utf-16-le')
+        record[14:14 + len(wide)] = wide
+        struct.pack_into('<I', record, 0x218, len(self.data))
+        return bytes(record)
+
     def directory_fixture(self, entries, state, failed_roots):
         self.directory_entries = tuple(entries)
         opened = []
@@ -231,22 +242,14 @@ class NativeUpdateProbe:
             if entry is None:
                 self.result(1)
                 return
-            name, long_name = entry
-            require(len(name) <= 12 and len(long_name) <= 255,
-                    'Directory fixture name exceeds its field')
-            record = bytearray(0x21C)
-            record[:len(name)] = name.encode('ascii')
-            wide = long_name.encode('utf-16-le')
-            record[14:14 + len(wide)] = wide
-            struct.pack_into('<I', record, 0x218, len(self.data))
-            self.u.mem_write(output, bytes(record))
+            self.u.mem_write(output, self.directory_record(*entry))
             self.result(0)
         self.install_hook(0x47D2E6, directory_open)
         self.install_hook(0x47D3DA, directory_next)
         self.install_hook(0x47D3F8, lambda *args: self.result(0))
-        # Restore the two root pointers from the original initialized-data image.
+        # Restore card roots and relative-directory pointers from initialized data.
         roots_source = SCATTER[0] + self.UPDATE_STATE + 0x80 - SCATTER[1]
-        self.u.mem_write(self.UPDATE_STATE + 0x80, bytes(self.u.mem_read(roots_source, 8)))
+        self.u.mem_write(self.UPDATE_STATE + 0x80, bytes(self.u.mem_read(roots_source, 16)))
         self.put_word(self.UPDATE_STATE + 0x90, state)
         return opened
 
@@ -262,10 +265,9 @@ class NativeUpdateProbe:
             long_name = self.cstring(target)
         return dict(returned=returned, selected_short_name=short_name,
                     selected_long_name=long_name,
-                    opened_roots=opened)
+                    opened_roots=list(opened))
 
-    def scan_update(self, entries, open_succeeds=True):
-        opened = self.directory_fixture(entries, 0, ())
+    def file_fixture(self, open_succeeds=True):
         file_paths = []
         def file_init(handle, path, *args):
             file_paths.append(self.cstring(path))
@@ -277,12 +279,53 @@ class NativeUpdateProbe:
         self.install_hook(0x4B3C90, lambda *args: self.result(0))
         self.install_hook(0x4E9992, self.noop)
         self.install_hook(0x4E99FA, self.noop)
+        return file_paths
+
+    def scan_update(self, entries, open_succeeds=True):
+        opened = self.directory_fixture(entries, 0, ())
+        file_paths = self.file_fixture(open_succeeds)
         returned = self.call(0x37C360, 0)
         return dict(returned=returned, category=self.u.mem_read(self.UPDATE_STATE, 1)[0],
                     file_length=self.word(self.UPDATE_STATE + 0x64),
                     version_count=self.word(0xB25EC73C + 8),
-                    opened_roots=opened, opened_files=file_paths,
+                    opened_roots=list(opened), opened_files=list(file_paths),
                     executed_entries=list(self.executed))
+
+    def installed_version_fixture(self):
+        for number, version in ((0x3800, b'01.70'), (0x3801, b'01.30'),
+                                (0x3803, b'01.01'), (0x3808, b'01.70')):
+            self.parameters[number] = version + bytes(10 - len(version))
+
+    def enumerate_packages(self, entries, directory_index=0, card_state=0):
+        require(len(entries) <= 50 and directory_index in (0, 1),
+                'Directory fixture exceeds the original enumeration bounds')
+        self.directory_fixture(entries, card_state, ())
+        file_paths = self.file_fixture()
+        self.installed_version_fixture()
+        def attributes(path, output, *args):
+            self.u.mem_write(output, bytes(1))
+            self.result(0x043A0080)
+        def scalar(number, *args):
+            require(number in (0x2F02, 0x2F03), 'Unexpected card parameter')
+            self.result(0)
+        self.install_hook(0x4B3E6C, attributes)
+        self.install_hook(0x4E6980, lambda *args: self.result(0))
+        self.install_hook(0xE0490, scalar)
+        records, directories, summary = (self.SCRATCH + offset for offset in (0x10000, 0x20000, 0x30000))
+        for index, entry in enumerate(entries):
+            self.u.mem_write(records + 0x220 * index, self.directory_record(*entry))
+            self.put_word(directories + 4 * index, directory_index)
+        self.put_word(self.UPDATE_STATE + 0x44, records)
+        self.put_word(self.UPDATE_STATE + 0x48, directories)
+        self.put_word(self.UPDATE_STATE + 0x60, len(entries))
+        self.call(0x37D71C, 0, summary)
+        record = 0xB25EC904 + 13 * 0x1CC
+        return dict(record_path=self.cstring(record),
+                    record_slot=13, directory_index=directory_index, card_state=card_state,
+                    record_package_flag=self.word(record + 0x1C4),
+                    record_category=self.u.mem_read(record + 0x1C8, 1)[0],
+                    matching_count=self.word(self.UPDATE_STATE + 0x4C),
+                    opened_files=list(file_paths), executed_entries=list(self.executed))
 
     def propriety(self, snapshot):
         require(len(snapshot) == 0x50, 'Expected 80-byte runtime snapshot')
@@ -294,25 +337,19 @@ class NativeUpdateProbe:
                     executed_entries=list(self.executed))
 
     def select_scanned_package(self):
-        scanned = self.scan_update([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
-        if scanned['returned'] != 0:
-            return dict(scan_return=scanned['returned'], selected=False,
+        enumerated = self.enumerate_packages([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
+        if not enumerated['record_path']:
+            return dict(enumeration=enumerated, selected=False,
                         executed_entries=list(self.executed))
-        path = 0xB25EC41C
-        checked = self.call(0x37D5BC, path, 4)
-        require(checked == 1, 'Category check disagrees with successful package scan')
-        self.call(0x37D4D4, path, 4)
-        record = 0xB25EC904 + 4 * 0x1CC
-        # The caller stores its category at 0x37D916 after building this record.
-        self.u.mem_write(record + 0x1C8, bytes([4]))
-        self.call(0x37DAA4, 4)
+        record = 0xB25EC904 + 13 * 0x1CC
+        self.call(0x37DAA4, 13)
         flag = self.call(0x37DB20)
         # Timer setup is an RTOS boundary. Stop at the selected check entry.
         self.install_hook(0x3B3E3E, lambda *args: self.result(0))
         self.install_hook(0x3BC514, lambda *args: self.result(0))
         self.put_word(0xB1887D20 + 0x4C, 0x52000000)
         self.call(0x3D6938, stop_offset=0x37C638)
-        return dict(scan_return=scanned['returned'], selected=True,
+        return dict(enumeration=enumerated, selected=True,
                     record_package_flag=self.word(record + 0x1C4), selector_flag=flag,
                     selected_check_offset=hex(self.u.reg_read(self.pc) - BASE),
                     selected_buffer=hex(self.u.reg_read(self.regs[0])),
@@ -349,17 +386,22 @@ class NativeUpdateProbe:
         self.install_hook(0x37FB8A, self.noop)
         self.install_hook(0x3BC538, self.noop)
         self.install_hook(0x39099C, self.noop)
-        returned = self.call(0x37C638, 0x52000000)
+        notifications = []
+        def event_set(event, mask, *args):
+            notifications.append(dict(event=hex(event), mask=hex(mask)))
+            self.result(0)
+        self.install_hook(0x3410CC, event_set)
+        dispatcher_return = self.call(0x3D6938)
+        returned = struct.unpack('<H', self.u.mem_read(0xB1887D20 + 2, 2))[0]
         return dict(returned=returned, primitive_calls=primitive_calls,
+                    dispatcher_return=dispatcher_return, notifications=notifications,
                     selection=selection, executed_entries=list(self.executed))
 
     def version_summary_service(self):
         scanned = self.scan_update([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
         require(scanned['returned'] == 0, 'Version fixture requires a classified package')
         # Synthetic installed versions for the parameter-read boundary.
-        for number, version in ((0x3800, b'01.70'), (0x3801, b'01.30'),
-                                (0x3803, b'01.01'), (0x3808, b'01.70')):
-            self.parameters[number] = version + bytes(10 - len(version))
+        self.installed_version_fixture()
         output = self.SCRATCH + 0x6000
         self.call(0x3D636A, output)
         count = self.word(output)
@@ -491,6 +533,33 @@ def primitive_suite(master):
                 sha1_checks=checks, crc_lengths=[1, 55, 56, 64, 65])
 
 
+def enumeration_suite(master, package, candidate):
+    entry = ('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')
+    cases = [('subdirectory_a', package, [entry], 0, 0, 'A:\\firmware\\Z7_2_0170.BIN', 1),
+             ('root_a', package, [entry], 1, 0, 'A:\\Z7_2_0170.BIN', 1),
+             ('subdirectory_b', package, [entry], 0, 2, 'B:\\firmware\\Z7_2_0170.BIN', 1),
+             ('bare_member', master, [entry], 0, 0, '', 0),
+             ('truncated_package', package[:64], [entry], 0, 0, '', 0),
+             ('other_model_name', package, [('Z6_2_0~1.BIN', 'Z6_2_0170.BIN')], 0, 0, '', 0),
+             ('empty_directory', package, [], 0, 0, '', 0),
+             ('same_payload_two_names', package, [entry, ('Z7_2_0~2.BIN', 'Z7_2_0171.BIN')],
+              0, 0, 'A:\\firmware\\Z7_2_0171.BIN', 2)]
+    if candidate is not None:
+        cases.append(('local_candidate', candidate, [entry], 0, 0,
+                      'A:\\firmware\\Z7_2_0170.BIN', 1))
+    results = []
+    for label, data, entries, directory, state, path, count in cases:
+        result = NativeUpdateProbe(master, data).enumerate_packages(entries, directory, state)
+        require(result['record_path'] == path and result['matching_count'] == count and
+                result['record_category'] == (4 if path else 0) and
+                result['record_package_flag'] == (1 if path else 0),
+                'Unexpected candidate enumeration result: ' + label)
+        results.append(dict(case=label, input_sha256=digest(data), directory_entries=entries, **result))
+    return dict(scope='Original 0x37D71C enumeration, matching, category checks and record construction',
+                directory_vector_supplied_by_host=True, record_category_assigned_by_fixture=False,
+                installed_version_and_card_status_are_synthetic=True, cases=results)
+
+
 def integrity_suite(master, package, candidate):
     material = bytes(8)
     def matching_header(data):
@@ -511,13 +580,16 @@ def integrity_suite(master, package, candidate):
         require(result['returned'] == returned and
                 ('crc16' in result['primitive_calls']) == checked_crc and
                 result['selection']['record_package_flag'] == 1 and
-                result['selection']['selector_flag'] == 1,
+                result['selection']['selector_flag'] == 1 and
+                result['selection']['enumeration']['record_slot'] == 13 and
+                result['notifications'] == [dict(event='0xb1887d24', mask='0x20')] and
+                result['dispatcher_return'] == 0,
                 'Unexpected whole-package result: ' + label)
         results.append(dict(case=label, input_sha256=digest(data), **result))
-    return dict(scope='Original category check, record helpers, selector and whole-package check control logic',
+    return dict(scope='Original candidate enumeration, selector, whole-package dispatcher and result notification',
                 boot_material='explicit synthetic eight-byte fixtures; real material remains unknown',
                 host_bulk_primitives=['decode', 'sha1_update', 'sha1_final', 'crc16', 'memmove'],
-                record_category_assigned_by_fixture=True,
+                record_category_assigned_by_fixture=False,
                 helper_invocation_sequence_supplied_by_host=True,
                 timer_and_status_callbacks_supplied_by_host=True,
                 actual_distributed_package_acceptance_verified=False,
@@ -564,6 +636,7 @@ def run_suite(master, package, candidate=None):
     return dict(master_sha256=digest(master), cases=results,
                 propriety=propriety_suite(master),
                 directory=directory_suite(master), scanner=scan_suite(master, package, candidate),
+                enumeration=enumeration_suite(master, package, candidate),
                 primitives=primitive_suite(master), integrity=integrity_suite(master, package, candidate),
                 version_service=NativeUpdateProbe(master, package).version_summary_service(),
                 environment=dict(running_image='supplied stock master; zero platform tag',
@@ -597,6 +670,7 @@ def main():
     print('PASS', len(report['directory']['cases']), 'directory cases,',
           len(report['scanner']['cases']), 'scanner cases,',
           len(report['propriety']['cases']), 'propriety cases,',
+          len(report['enumeration']['cases']), 'enumeration cases,',
           len(report['integrity']['cases']), 'synthetic integrity cases')
 
 
