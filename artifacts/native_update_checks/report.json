@@ -1352,15 +1352,643 @@
       }
     ]
   },
+  "primitives": {
+    "scope": "Unaccelerated original decode, suffix transform, CRC and SHA-1 checker on synthetic inputs",
+    "decode_checks": [
+      {
+        "index": 0,
+        "length": 96,
+        "matched": true
+      },
+      {
+        "index": 255,
+        "length": 65,
+        "matched": true
+      },
+      {
+        "index": 65530,
+        "length": 65,
+        "matched": true
+      }
+    ],
+    "transforms": [
+      {
+        "input_sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "matched": true
+      },
+      {
+        "input_sha256": "8a851ff82ee7048ad09ec3847f1ddf44944104d2cbd17ef4e3db22c6785a0d45",
+        "matched": true
+      },
+      {
+        "input_sha256": "12a3ae445661ce5dee78d0650d33362dec29c4f82af05e7e57fb595bbbacf0ca",
+        "matched": true
+      }
+    ],
+    "sha1_checks": [
+      {
+        "length": 1,
+        "changed_expected_digest": false,
+        "returned": 1
+      },
+      {
+        "length": 1,
+        "changed_expected_digest": true,
+        "returned": 0
+      },
+      {
+        "length": 55,
+        "changed_expected_digest": false,
+        "returned": 1
+      },
+      {
+        "length": 55,
+        "changed_expected_digest": true,
+        "returned": 0
+      },
+      {
+        "length": 56,
+        "changed_expected_digest": false,
+        "returned": 1
+      },
+      {
+        "length": 56,
+        "changed_expected_digest": true,
+        "returned": 0
+      },
+      {
+        "length": 64,
+        "changed_expected_digest": false,
+        "returned": 1
+      },
+      {
+        "length": 64,
+        "changed_expected_digest": true,
+        "returned": 0
+      },
+      {
+        "length": 65,
+        "changed_expected_digest": false,
+        "returned": 1
+      },
+      {
+        "length": 65,
+        "changed_expected_digest": true,
+        "returned": 0
+      }
+    ],
+    "crc_lengths": [
+      1,
+      55,
+      56,
+      64,
+      65
+    ]
+  },
+  "integrity": {
+    "scope": "Original category check, record helpers, selector and whole-package check control logic",
+    "boot_material": "explicit synthetic eight-byte fixtures; real material remains unknown",
+    "host_bulk_primitives": [
+      "decode",
+      "sha1_update",
+      "sha1_final",
+      "crc16",
+      "memmove"
+    ],
+    "record_category_assigned_by_fixture": true,
+    "helper_invocation_sequence_supplied_by_host": true,
+    "timer_and_status_callbacks_supplied_by_host": true,
+    "actual_distributed_package_acceptance_verified": false,
+    "storage_programmed": false,
+    "cases": [
+      {
+        "case": "distributed_package_under_fixture",
+        "input_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "returned": 3,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310"
+        ]
+      },
+      {
+        "case": "matching_synthetic_digest",
+        "input_sha256": "2de47971268cf24f7ac3b313198e6adb6b8f5b798d0a5818146fc16a6b8566ca",
+        "returned": 0,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final",
+          "crc16"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310",
+          "0x39c308"
+        ]
+      },
+      {
+        "case": "wrong_synthetic_material",
+        "input_sha256": "2de47971268cf24f7ac3b313198e6adb6b8f5b798d0a5818146fc16a6b8566ca",
+        "returned": 3,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310"
+        ]
+      },
+      {
+        "case": "damaged_crc_matching_synthetic_digest",
+        "input_sha256": "21281c7c71220f4220cb1a0e59114fa0464d4da67a51fc8fc5fa5d621a9b4d9f",
+        "returned": 3,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final",
+          "crc16"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310",
+          "0x39c308"
+        ]
+      },
+      {
+        "case": "built_candidate_under_fixture",
+        "input_sha256": "21df6b9cd054d9224be85de3ceaa980ea88b4f39513b1885f1c4701260436395",
+        "returned": 3,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310"
+        ]
+      },
+      {
+        "case": "candidate_matching_synthetic_digest",
+        "input_sha256": "0135c492bc651fcc6abbec4a30c1c2c5bb0f784eec282e5275b6156f6f0db60e",
+        "returned": 0,
+        "primitive_calls": [
+          "decode",
+          "sha1_update",
+          "sha1_final",
+          "crc16"
+        ],
+        "selection": {
+          "scan_return": 0,
+          "selected": true,
+          "record_package_flag": 1,
+          "selector_flag": 1,
+          "selected_check_offset": "0x37c638",
+          "selected_buffer": "0x52000000",
+          "executed_entries": [
+            "0x37c360",
+            "0x37c236",
+            "0x37c236",
+            "0x37c236",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d5bc",
+            "0x37bc0e",
+            "0x38d340",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37ae0e",
+            "0x37d4d4",
+            "0x37daa4",
+            "0x37db20",
+            "0x3d6938",
+            "0x37db20"
+          ]
+        },
+        "executed_entries": [
+          "0x37c360",
+          "0x37c236",
+          "0x37c236",
+          "0x37c236",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d5bc",
+          "0x37bc0e",
+          "0x38d340",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37ae0e",
+          "0x37d4d4",
+          "0x37daa4",
+          "0x37db20",
+          "0x3d6938",
+          "0x37db20",
+          "0x37c638",
+          "0x38fe82",
+          "0x39c310",
+          "0x39c308"
+        ]
+      }
+    ]
+  },
+  "version_service": {
+    "version_count": 5,
+    "kinds": [
+      4,
+      9,
+      2,
+      3,
+      17
+    ],
+    "service_return": 3,
+    "reason": 4,
+    "parameter_reads": [
+      {
+        "number": "0x3803",
+        "length": 10
+      },
+      {
+        "number": "0x3804",
+        "length": 10
+      },
+      {
+        "number": "0x3801",
+        "length": 10
+      },
+      {
+        "number": "0x3808",
+        "length": 10
+      },
+      {
+        "number": "0x3800",
+        "length": 10
+      },
+      {
+        "number": "0x3803",
+        "length": 10
+      },
+      {
+        "number": "0x3804",
+        "length": 10
+      },
+      {
+        "number": "0x3801",
+        "length": 10
+      },
+      {
+        "number": "0x3808",
+        "length": 10
+      },
+      {
+        "number": "0x3800",
+        "length": 10
+      }
+    ],
+    "installed_versions_are_synthetic": true,
+    "executed_entries": [
+      "0x37c360",
+      "0x37c236",
+      "0x37c236",
+      "0x37c236",
+      "0x37bc0e",
+      "0x38d340",
+      "0x37ae0e",
+      "0x37ae0e",
+      "0x37ae0e",
+      "0x37ae0e",
+      "0x37ae0e",
+      "0x3d636a",
+      "0x37d3a8",
+      "0x747092",
+      "0x3d636a",
+      "0x37d3a8"
+    ]
+  },
   "environment": {
     "running_image": "supplied stock master; zero platform tag",
     "character_classification": "host ASCII flags",
     "component_version": "synthetic all-zero descriptor; query succeeds",
-    "parameter_storage": "host acknowledges writes",
+    "parameter_storage": "host stores writes and supplies explicit version fixtures",
     "other_runtime_ram": "zero initialized"
   },
   "scope": "Original directory parser, file scan, classification and propriety predicates",
-  "whole_package_digest_verified": false,
+  "actual_package_digest_verified": false,
   "menu_dispatch_executed": false,
   "native_service_methods_executed": [
     "GetProprietyCheck"

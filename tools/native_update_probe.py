@@ -4,18 +4,22 @@
 File I/O, cache maintenance, runtime memory/string primitives, ASCII flags,
 locks, component-version responses and parameter storage are provided by the
 host. Original scanning and classification run through their return paths.
-GetProprietyCheck runs with a synthetic snapshot. This probe does not activate
-menu dispatch, verify the whole-package digest, or program storage. Firmware
+GetProprietyCheck runs with a synthetic snapshot. Whole-package control flow
+uses synthetic boot material and host bulk primitives, checked separately
+against original small-input operations. This probe does not activate menu
+dispatch, establish real package acceptance, or program storage. Firmware
 bytes stay local.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import struct
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from analyze.decode_z72 import BASE, SCATTER, digest, require, validate_master
+from analyze.decode_z72 import BASE, SCATTER, crc, digest, require, validate_master
+from analyze.upgrade_signature import appended_key, decode, update_digest
 
 
 class NativeUpdateProbe:
@@ -43,17 +47,23 @@ class NativeUpdateProbe:
                               (0x50000000, 0x100000), (self.SCRATCH, 0x100000)):
             self.u.mem_map(address, size)
         self.u.mem_write(BASE, master)
+        self.master = master
         self.u.hook_add(UC_HOOK_CODE, lambda u, *args: u.emu_stop(),
                         begin=self.STOP, end=self.STOP)
         self.executed = []
         for offset in (0x747048, 0x3D645A, 0x37AA82, 0x37AAA6,
                        0x3D9A2A, 0x3D8AE4, 0x37C360, 0x37C236,
-                       0x37BC0E, 0x38D340, 0x37AE0E):
+                       0x37BC0E, 0x38D340, 0x37AE0E, 0x37D5BC,
+                       0x37D4D4, 0x37DAA4, 0x37DB20, 0x3D6938,
+                       0x37C638, 0x38FE82, 0x39C310, 0x39C308,
+                       0x747092, 0x3D636A, 0x37D3A8):
             self.u.hook_add(UC_HOOK_CODE,
                             lambda u, address, size, unused: self.executed.append(hex(address - BASE)),
                             begin=BASE + offset, end=BASE + offset)
         self.data, self.position, self.io = data, 0, []
         self.parameter_writes = []
+        self.parameter_reads = []
+        self.parameters = {}
         self.put_word(self.UPDATE_STATE + 0x40, self.SCRATCH)
         # Explicit synthetic running-image descriptor, not a captured body state.
         self.put_word(0xB25EC0DC + 4, BASE)
@@ -61,7 +71,8 @@ class NativeUpdateProbe:
         # Provide the ASCII flags consumed by the original runtime callers.
         # Locale initialization is outside this bounded execution environment.
         self.put_word(self.SCRATCH + 0x1000, self.SCRATCH + 0x1100)
-        flags = bytes(8 if 48 <= c <= 57 else 16 if 65 <= c <= 90
+        # The suffix transform tests digit flags for equality with 0x20.
+        flags = bytes(0x20 if 48 <= c <= 57 else 16 if 65 <= c <= 90
                       else 128 if 97 <= c <= 122 else 0 for c in range(256))
         self.u.mem_write(self.SCRATCH + 0x1100, flags)
         self.hooks = {
@@ -75,6 +86,7 @@ class NativeUpdateProbe:
             0x4C09FE: self.noop,
             # Peripheral version query and parameter storage are RTOS boundaries.
             0x3BB958: self.component_version, 0xE06CA: self.store_parameter,
+            0xE04CE: self.load_parameter,
         }
         for offset, callback in self.hooks.items():
             self.install_hook(offset, callback)
@@ -92,8 +104,17 @@ class NativeUpdateProbe:
 
     def store_parameter(self, number, source, length, mode):
         require(length <= 0x100, 'Unexpected parameter write length')
+        self.parameters[number] = bytes(self.u.mem_read(source, length))
         self.parameter_writes.append(dict(number=hex(number), length=length, mode=mode))
         self.result(1)
+
+    def load_parameter(self, number, target, length, unused):
+        require(number in self.parameters, f'Missing runtime parameter: {number:#x}')
+        data = self.parameters[number]
+        require(length <= len(data), 'Runtime parameter is shorter than requested')
+        self.u.mem_write(target, data[:length])
+        self.parameter_reads.append(dict(number=hex(number), length=length))
+        self.result(0)
 
     def put_word(self, address, value):
         self.u.mem_write(address, struct.pack('<I', value))
@@ -108,7 +129,7 @@ class NativeUpdateProbe:
         pass
 
     def copy(self, target, source, size, unused):
-        require(size <= 0x100000, 'Unexpected copy length')
+        require(size <= 0x4000000, 'Unexpected copy length')
         if size:
             self.u.mem_write(target, bytes(self.u.mem_read(source, size)))
         self.result(target)
@@ -139,7 +160,7 @@ class NativeUpdateProbe:
 
     def read(self, handle, request, count, actual):
         target, capacity = struct.unpack('<II', self.u.mem_read(request + 4, 8))
-        require(count <= capacity and count <= 0x100000, 'Unexpected read length')
+        require(count <= capacity and count <= 0x4000000, 'Unexpected read length')
         block = self.data[self.position:self.position + count]
         self.io.append(dict(operation='read', position=self.position,
                             requested=count, actual=len(block)))
@@ -261,7 +282,7 @@ class NativeUpdateProbe:
                     file_length=self.word(self.UPDATE_STATE + 0x64),
                     version_count=self.word(0xB25EC73C + 8),
                     opened_roots=opened, opened_files=file_paths,
-                    executed_entries=self.executed)
+                    executed_entries=list(self.executed))
 
     def propriety(self, snapshot):
         require(len(snapshot) == 0x50, 'Expected 80-byte runtime snapshot')
@@ -270,7 +291,84 @@ class NativeUpdateProbe:
         output = self.SCRATCH + 0x2000
         returned = self.call(0x747048, 0, 0, output)
         return dict(service_return=returned, reason=self.word(output),
-                    executed_entries=self.executed)
+                    executed_entries=list(self.executed))
+
+    def select_scanned_package(self):
+        scanned = self.scan_update([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
+        if scanned['returned'] != 0:
+            return dict(scan_return=scanned['returned'], selected=False,
+                        executed_entries=list(self.executed))
+        path = 0xB25EC41C
+        checked = self.call(0x37D5BC, path, 4)
+        require(checked == 1, 'Category check disagrees with successful package scan')
+        self.call(0x37D4D4, path, 4)
+        record = 0xB25EC904 + 4 * 0x1CC
+        # The caller stores its category at 0x37D916 after building this record.
+        self.u.mem_write(record + 0x1C8, bytes([4]))
+        self.call(0x37DAA4, 4)
+        flag = self.call(0x37DB20)
+        # Timer setup is an RTOS boundary. Stop at the selected check entry.
+        self.install_hook(0x3B3E3E, lambda *args: self.result(0))
+        self.install_hook(0x3BC514, lambda *args: self.result(0))
+        self.put_word(0xB1887D20 + 0x4C, 0x52000000)
+        self.call(0x3D6938, stop_offset=0x37C638)
+        return dict(scan_return=scanned['returned'], selected=True,
+                    record_package_flag=self.word(record + 0x1C4), selector_flag=flag,
+                    selected_check_offset=hex(self.u.reg_read(self.pc) - BASE),
+                    selected_buffer=hex(self.u.reg_read(self.regs[0])),
+                    executed_entries=list(self.executed))
+
+    def whole_package_check(self, boot_material):
+        require(len(boot_material) == 8, 'Expected eight synthetic boot bytes')
+        selection = self.select_scanned_package()
+        require(selection['selected'], 'Package did not reach selection')
+        self.u.mem_map(0x10000000, 0x1000)
+        self.u.mem_write(0x10000088, boot_material)
+        self.u.mem_map(0xB2B42000, 0x1000)
+        self.u.mem_map(0x52000000, 0x4000000)
+        primitive_calls = []
+        def decode_buffer(target, index, length, unused):
+            skipped = 0x20 if index == 0 else 0
+            payload = bytes(self.u.mem_read(target + skipped, length - skipped))
+            self.u.mem_write(target + skipped, decode(self.master, payload, index + skipped))
+            primitive_calls.append('decode')
+        def sha_update(context, source, length, unused):
+            self.pending_digest = hashlib.sha1(bytes(self.u.mem_read(source, length))).digest()
+            primitive_calls.append('sha1_update')
+        def sha_final(target, context, *args):
+            self.u.mem_write(target, self.pending_digest)
+            primitive_calls.append('sha1_final')
+        def checksum(length, source, *args):
+            self.result(crc(bytes(self.u.mem_read(source, length))))
+            primitive_calls.append('crc16')
+        self.install_hook(0x38D2C2, decode_buffer)
+        self.install_hook(0x38FDDE, sha_update)
+        self.install_hook(0x38FF06, sha_final)
+        self.install_hook(0x39C308, checksum)
+        self.install_hook(0x4174E4, self.copy)
+        self.install_hook(0x37FB8A, self.noop)
+        self.install_hook(0x3BC538, self.noop)
+        self.install_hook(0x39099C, self.noop)
+        returned = self.call(0x37C638, 0x52000000)
+        return dict(returned=returned, primitive_calls=primitive_calls,
+                    selection=selection, executed_entries=list(self.executed))
+
+    def version_summary_service(self):
+        scanned = self.scan_update([('Z7_2_0~1.BIN', 'Z7_2_0170.BIN')])
+        require(scanned['returned'] == 0, 'Version fixture requires a classified package')
+        # Synthetic installed versions for the parameter-read boundary.
+        for number, version in ((0x3800, b'01.70'), (0x3801, b'01.30'),
+                                (0x3803, b'01.01'), (0x3808, b'01.70')):
+            self.parameters[number] = version + bytes(10 - len(version))
+        output = self.SCRATCH + 0x6000
+        self.call(0x3D636A, output)
+        count = self.word(output)
+        require(count <= 5, 'Unexpected version-list count')
+        kinds = [self.u.mem_read(output + 4 + 21 * i, 1)[0] for i in range(count)]
+        returned = self.call(0x747092, 0, 0, output + 0x100)
+        return dict(version_count=count, kinds=kinds, service_return=returned,
+                    reason=self.word(output + 0x100), parameter_reads=self.parameter_reads,
+                    installed_versions_are_synthetic=True, executed_entries=list(self.executed))
 
 
 def propriety_suite(master):
@@ -350,6 +448,82 @@ def scan_suite(master, package, candidate):
                 whole_package_integrity_checked=False, cases=results)
 
 
+def primitive_suite(master):
+    probe = NativeUpdateProbe(master, b'')
+    probe.u.mem_map(0xB2B42000, 0x1000)
+    probe.install_hook(0x39099C, probe.noop)
+    buffer, model = probe.SCRATCH + 0x4000, probe.SCRATCH + 0x3000
+    probe.u.mem_write(model, b'Z_7_2\0')
+    transforms = []
+    decoders = []
+    for index, size in ((0, 96), (255, 65), (65530, 65)):
+        data = bytes((i * 37 + size) & 255 for i in range(size))
+        skipped = 32 if index == 0 else 0
+        expected = data[:skipped] + decode(master, data[skipped:], index + skipped)
+        probe.u.mem_write(buffer, data)
+        probe.call(0x38D2C2, buffer, index, size)
+        require(bytes(probe.u.mem_read(buffer, size)) == expected,
+                'Native decode disagrees with the host primitive')
+        decoders.append(dict(index=index, length=size, matched=True))
+    for material in (bytes(8), bytes(range(8)), bytes([255]) * 8):
+        probe.u.mem_write(buffer, material)
+        probe.call(0x39C310, buffer, 8, 0xB4FBFFFF, model)
+        require(bytes(probe.u.mem_read(buffer, 8)) == appended_key(material, master),
+                'Native suffix transform disagrees with the host formula')
+        transforms.append(dict(input_sha256=digest(material), matched=True))
+    checks = []
+    for size in (1, 55, 56, 64, 65):
+        payload = bytes((i * 37 + size) & 255 for i in range(size))
+        probe.u.mem_write(buffer, payload + bytes(16))
+        require(probe.call(0x39C308, size, buffer) == crc(payload),
+                'Native CRC disagrees with the host primitive')
+        expected = hashlib.sha1(payload + appended_key(bytes(8), master)).digest()
+        for corrupt, wanted in ((False, 1), (True, 0)):
+            comparison = bytes([expected[0] ^ 1]) + expected[1:] if corrupt else expected
+            context = (struct.pack('<III', buffer, size, BASE + 0x37C635) + bytes(8) +
+                       struct.pack('<I', 0x44B) + b'Z_7_2\0\0\0' + comparison)
+            probe.u.mem_write(0xB2B422C8, context)
+            require(probe.call(0x38FE82) == wanted,
+                    'Native SHA-1 comparison disagrees with the host primitive')
+            checks.append(dict(length=size, changed_expected_digest=corrupt, returned=wanted))
+    return dict(scope='Unaccelerated original decode, suffix transform, CRC and SHA-1 checker on synthetic inputs',
+                decode_checks=decoders, transforms=transforms,
+                sha1_checks=checks, crc_lengths=[1, 55, 56, 64, 65])
+
+
+def integrity_suite(master, package, candidate):
+    material = bytes(8)
+    def matching_header(data):
+        return update_digest(data[32:64], data[64:], material, master) + data[20:]
+    matched = matching_header(package)
+    damaged = bytearray(package)
+    damaged[-17] ^= 1
+    cases = [('distributed_package_under_fixture', package, material, 3, False),
+             ('matching_synthetic_digest', matched, material, 0, True),
+             ('wrong_synthetic_material', matched, bytes(range(8)), 3, False),
+             ('damaged_crc_matching_synthetic_digest', matching_header(bytes(damaged)), material, 3, True)]
+    if candidate is not None:
+        cases.extend((('built_candidate_under_fixture', candidate, material, 3, False),
+                      ('candidate_matching_synthetic_digest', matching_header(candidate), material, 0, True)))
+    results = []
+    for label, data, key, returned, checked_crc in cases:
+        result = NativeUpdateProbe(master, data).whole_package_check(key)
+        require(result['returned'] == returned and
+                ('crc16' in result['primitive_calls']) == checked_crc and
+                result['selection']['record_package_flag'] == 1 and
+                result['selection']['selector_flag'] == 1,
+                'Unexpected whole-package result: ' + label)
+        results.append(dict(case=label, input_sha256=digest(data), **result))
+    return dict(scope='Original category check, record helpers, selector and whole-package check control logic',
+                boot_material='explicit synthetic eight-byte fixtures; real material remains unknown',
+                host_bulk_primitives=['decode', 'sha1_update', 'sha1_final', 'crc16', 'memmove'],
+                record_category_assigned_by_fixture=True,
+                helper_invocation_sequence_supplied_by_host=True,
+                timer_and_status_callbacks_supplied_by_host=True,
+                actual_distributed_package_acceptance_verified=False,
+                storage_programmed=False, cases=results)
+
+
 def run_suite(master, package, candidate=None):
     validate_master(master)
     require(digest(package) ==
@@ -390,13 +564,15 @@ def run_suite(master, package, candidate=None):
     return dict(master_sha256=digest(master), cases=results,
                 propriety=propriety_suite(master),
                 directory=directory_suite(master), scanner=scan_suite(master, package, candidate),
+                primitives=primitive_suite(master), integrity=integrity_suite(master, package, candidate),
+                version_service=NativeUpdateProbe(master, package).version_summary_service(),
                 environment=dict(running_image='supplied stock master; zero platform tag',
                                  character_classification='host ASCII flags',
                                  component_version='synthetic all-zero descriptor; query succeeds',
-                                 parameter_storage='host acknowledges writes',
+                                 parameter_storage='host stores writes and supplies explicit version fixtures',
                                  other_runtime_ram='zero initialized'),
                 scope='Original directory parser, file scan, classification and propriety predicates',
-                whole_package_digest_verified=False, menu_dispatch_executed=False,
+                actual_package_digest_verified=False, menu_dispatch_executed=False,
                 native_service_methods_executed=['GetProprietyCheck'],
                 storage_programmed=False)
 
@@ -420,7 +596,8 @@ def main():
               'member_mask=', case['member_checks']['member_mask'])
     print('PASS', len(report['directory']['cases']), 'directory cases,',
           len(report['scanner']['cases']), 'scanner cases,',
-          len(report['propriety']['cases']), 'propriety cases')
+          len(report['propriety']['cases']), 'propriety cases,',
+          len(report['integrity']['cases']), 'synthetic integrity cases')
 
 
 if __name__ == '__main__':
