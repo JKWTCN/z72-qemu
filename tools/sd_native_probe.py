@@ -440,16 +440,115 @@ def run(args):
                     except Exception as error:
                         states.append(dict(index=index, error=str(error)))
                 report['volume_table_states_after_mount'] = states
+            if args.mount_volume is not None and report['slot_query_succeeded']:
+                # The per-volume mount: parses the FAT through the card
+                # stack and advances the volume state to four on success.
+                context = workers[0].u.context_save()
+                workers[0].held_mutexes.clear()
+                workers[0].held_locks.clear()
+                pool = struct.unpack('<I', workers[0].u.mem_read(0xB18AD91C, 4))[0]
+                device = struct.unpack('<H', workers[0].u.mem_read(
+                    0xB2B464C0 + args.mount_volume * 0x38 + 0x24, 2))[0]
+                from unicorn import UC_HOOK_CODE
+                from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1
+                identity = {}
+                def identity_probe(u, address, size, unused):
+                    record_bytes = bytes(u.mem_read(pool + device * 11, 4)).hex()
+                    identity.setdefault('all', []).append(
+                        (hex(u.reg_read(UC_ARM_REG_R0)), hex(u.reg_read(UC_ARM_REG_R1)),
+                         record_bytes))
+                from unicorn.arm_const import UC_ARM_REG_R0 as _R0
+                def record_probe(u, address, size, unused):
+                    identity.setdefault('records', []).append(hex(u.reg_read(_R0)))
+                record_hook = workers[0].u.hook_add(
+                    UC_HOOK_CODE, record_probe,
+                    begin=BASE + 0x447D48, end=BASE + 0x447D48)
+                probe_hook = workers[0].u.hook_add(
+                    UC_HOOK_CODE, identity_probe,
+                    begin=BASE + 0x447D5E, end=BASE + 0x447D5E)
+                # First pass captures the card serial the original parser
+                # produces inside the mount; the detection flow of this
+                # bounded run leaves the binary copy in the work-area device
+                # record empty. Store the captured serial big-endian at the
+                # record the mount compares and run the mount again.
+                path_before = len(getattr(workers[0], 'path', []))
+                workers[0].call(0x447D04, args.mount_volume)
+                captured = (identity.get('all') or [None])[-1]
+                workers[0].u.context_restore(context)
+                workers[0].held_mutexes.clear()
+                workers[0].held_locks.clear()
+                if captured and captured[1] != '0x0':
+                    serial_value = int(captured[1], 16)
+                    def inject_serial(u, address, size, unused):
+                        # The SD bridge synchronizes this work-area region
+                        # from the device side during the mount, clobbering
+                        # host-side writes: inject right after the original
+                        # parser returns, before the record bytes load.
+                        u.mem_write(pool + device * 11,
+                                    struct.pack('<I', serial_value))
+                    inject_hook = workers[0].u.hook_add(
+                        UC_HOOK_CODE, inject_serial,
+                        begin=BASE + 0x447D3C, end=BASE + 0x447D3C)
+                    identity['injected'] = True
+                from unicorn import UC_HOOK_MEM_WRITE
+                def zero_probe(u, access, address, size, value, unused):
+                    if address == pool + device * 11:
+                        identity.setdefault('record_writes', []).append(
+                            (hex(u.reg_read(_R0) - BASE), hex(value)))
+                zero_hook = workers[0].u.hook_add(
+                    UC_HOOK_MEM_WRITE, zero_probe,
+                    begin=pool + device * 11, end=pool + device * 11 + 3)
+                result = workers[0].call(0x447D04, args.mount_volume)
+                workers[0].u.hook_del(zero_hook)
+                if identity.get('injected'):
+                    workers[0].u.hook_del(inject_hook)
+                workers[0].u.hook_del(probe_hook)
+                workers[0].u.hook_del(record_hook)
+                report['mount_identity_operands'] = dict(
+                    captured=captured, all_compares=identity.get('all'),
+                    records=identity.get('records'),
+                    readback=identity.get('readback'),
+                    writes=identity.get('record_writes'))
+                path = getattr(workers[0], 'path', [])
+                report['mount_volume_context'] = dict(pool=hex(pool),
+                                                      device=device)
+                report['mount_volume_path'] = [hex(pc) for pc in path[path_before:]]
+                states = [workers[0].u.mem_read(0xB2B464C0 + index * 0x38 + 0x3A, 1)[0]
+                          for index in range(2)]
+                report['mount_volume_result'] = result
+                report['mount_volume_states'] = states
+                report['mount_verified'] = 4 in states
+                if not report['mount_verified']:
+                    workers[0].u.context_restore(context)
+                states = []
+                for index in range(4):
+                    base = 0xB2B464C0 + index * 0x38
+                    try:
+                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
+                        states.append(dict(index=index, mount_state=state,
+                                           words=[hex(word) for word in words]))
+                    except Exception as error:
+                        states.append(dict(index=index, error=str(error)))
+                report['volume_table_states_after_mount'] = states
             if args.list_directory is not None and report['slot_query_succeeded']:
                 worker = workers[0]
                 path, output, record = 0x50006000, 0x50006400, 0x50006800
                 worker.u.mem_write(path, args.list_directory.encode('ascii') + bytes(1))
+                open_path_before = len(getattr(worker, 'path', []))
                 opened = worker.call(0x47D2E6, path, output)
-                directory = dict(path=args.list_directory, open_result=opened, entries=[])
+                open_path = getattr(worker, 'path', [])
+                directory = dict(path=args.list_directory, open_result=opened, entries=[],
+                                 open_path=[hex(pc) for pc in
+                                            open_path[open_path_before:][-24:]])
                 if opened.get('value') == 0:
                     handle = struct.unpack('<I', worker.u.mem_read(output, 4))[0]
                     for _ in range(64):
+                        next_before = len(getattr(worker, 'path', []))
                         fetched = worker.call(0x47D3DA, handle, record)
+                        directory.setdefault('next_paths', []).append(
+                            [hex(pc) for pc in
+                             getattr(worker, 'path', [])[next_before:][-18:]])
                         if fetched.get('value') != 0:
                             directory['end_result'] = fetched
                             break
@@ -459,6 +558,28 @@ def run(args):
                         directory['entries'].append(dict(short_name=short, long_name=wide,
                                                         size=struct.unpack_from('<I', raw, 0x218)[0]))
                     directory['close_result'] = worker.call(0x47D3F8, handle)
+                if not directory.get('entries') and directory.get('open_result', {}).get('value') == 0:
+                    # The original read APIs are the request senders that
+                    # post operations 53/54; with the volume mounted they
+                    # can fetch real directory records.
+                    for sender in (0x59F72C, 0x59F7BE):
+                        fallback = worker.u.context_save()
+                        worker.held_mutexes.clear()
+                        worker.held_locks.clear()
+                        fetched = worker.call(sender, handle, record, 0, 0)
+                        raw_record = bytes(worker.u.mem_read(record, 0x220))
+                        if fetched.get('value') == 0 and any(raw_record):
+                            directory['sender'] = hex(sender)
+                            short = raw_record[:13].split(bytes(1))[0].decode(
+                                'ascii', errors='replace')
+                            wide = raw_record[14:526].decode(
+                                'utf-16-le', errors='replace').split(chr(0))[0]
+                            directory['entries'].append(dict(
+                                short_name=short, long_name=wide,
+                                size=struct.unpack_from('<I', raw_record, 0x218)[0]))
+                            break
+                        worker.u.context_restore(fallback)
+                        directory.setdefault('sender_results', []).append(fetched)
                 report['directory'] = directory
                 report['filesystem_mount_verified'] = (
                     opened.get('value') == 0 and directory.get('end_result', {}).get('value') == 1)
@@ -495,6 +616,8 @@ if __name__ == '__main__':
                         help='Optional raw card image; writes stay in a temporary overlay')
     parser.add_argument('--slot-query', action='store_true',
                         help='Continue through the original slot query toward filesystem attachment')
+    parser.add_argument('--mount-volume', type=int, default=None,
+                        help='Mount one volume by index through the original FAT parser')
     parser.add_argument('--mount-exec', action='store_true',
                         help='Run the mount-all executor directly after the slot query')
     parser.add_argument('--mount-api', action='store_true',
@@ -504,6 +627,7 @@ if __name__ == '__main__':
     parser.add_argument('--list-directory', help='List a camera path after slot query, for example A:\\')
     arguments = parser.parse_args()
     if (arguments.list_directory is not None or arguments.mount
-            or arguments.mount_api or arguments.mount_exec):
+            or arguments.mount_api or arguments.mount_exec
+            or arguments.mount_volume is not None):
         arguments.slot_query = True
     run(arguments)

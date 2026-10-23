@@ -228,7 +228,7 @@
     "research/z7ii/early_configuration.md": "02a9e38e2047ad4bf0d61fb163d596e9f4b4bc733adf25e81abd49b95ca0a79d",
     "research/z7ii/engine_i2c.md": "85c8165964eea35d858fcd6e0d1aacdc57cc74bbe72c2290d6dbd80e3c358f7b",
     "research/z7ii/engine_memory.md": "ffaf4fde8828b65955c65b8243ced2755bbafc0d26162c19d5af03bd23e80061",
-    "research/z7ii/firmware_update.md": "24a9142fa49048655780d0eb20ce03b25b294fe1ec2dbdb781071e63665ae01d",
+    "research/z7ii/firmware_update.md": "d91005549873bcea2eaf411ee1e705488d1e883f41cb3e77ca814ec796ffccfb",
     "research/z7ii/graphics_device.md": "1e438b770a7290fcd89a9ea2c9eb2cf91eadb0fa83a7fde6c970949351192ae1",
     "research/z7ii/input_configuration.md": "630bb6f323f4657e48ad958a7d0321fa90653625049f73af954647f4afe1acbc",
     "research/z7ii/input_path.md": "e31f3abb408ae4d9cc1fe78e1f3888c84a637f2fb6e1b3129c352a16ea6aed09",
@@ -343,7 +343,7 @@
     "tools/platform_boot_probe.py": "92ff6c29fddb24b8648af219bcd7e651d1ea063ec54a402fbb6c9df6fe277c7c",
     "tools/runtime_boot_probe.py": "78fea1f4532b084b1a5d867250ba4e1776e2bd82529b43e0fd7a10e2350d424f",
     "tools/runtime_wait_probe.py": "6605eeb9f6c6ba53a0034ee32ad37ee6f72412338f958d3ccf678e65c610e410",
-    "tools/sd_native_probe.py": "bb8ffd5e1dcdfd9c132ec63c15f550dd71e4a8ee4ef96240b16491d443d75772",
+    "tools/sd_native_probe.py": "497878e03005391928bbbb80da099e9033a3f5a2dbc223fd49c2d6410edcf351",
     "tools/sensor_frame_probe.py": "89f0d9b219d013104dfe55919e1ff8e4f3457ca93a8f322c9d1fd98ee5e5f8cb",
     "tools/sequencer_boot_probe.py": "c80dfffce78c7ad89e5e010bf176a96333e5db34d660e1eddb78465684ab0d66",
     "tools/service_boot_probe.py": "280a185ec7ad8e6daedf42d2858b356a76b3a76346a35e39b7e474eac04cfe6a",
@@ -361,6 +361,7 @@
     "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e",
     "artifacts/sd_native_mount_boundary/report.json": "d3d5c1f5969cb62dffb98c310df06a9dcbaaa05c15cc7db6f5749c59aad653e2",
     "artifacts/sd_native_mount_attempts/report.json": "ac47b1c6613d222428e1aa0c88db0e46075be83e213ad8b76137baa4ef67662b",
-    "artifacts/sd_native_mount_senders/report.json": "38e69f63f771467e01252f196f98c319fd5b12c645a2c093ddf96befab15ea62"
+    "artifacts/sd_native_mount_senders/report.json": "38e69f63f771467e01252f196f98c319fd5b12c645a2c093ddf96befab15ea62",
+    "artifacts/sd_native_fat_mount/report.json": "a16c49d535f3611155fc7d15a794b4a8a0d0eb62bbbf52a3803f4bb3fb9703b8"
   }
 }
