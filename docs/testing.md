@@ -635,6 +635,33 @@ have different initialization and scheduling conditions; neither substitutes
 for the normal menu service's media setup. Whole-file transport does not establish
 native update authentication, programming or restart acceptance.
 
+The live update collection path has a separate diagnostic:
+
+```sh
+python tools/native_update_collect_probe.py --qemu .build/build/qemu-system-arm \
+  --master master.bin --slave slave.bin --controller controller.bin \
+  --card-image card.raw --expected-path 'B:\Z7_2_0~1.BIN' \
+  --destination .local/native-collection
+```
+
+This calls original collection entry `0x1039D984`, mode 0, through a temporary
+resource-8 caller. It selects SD explicitly and restores the selector afterward.
+Original SDK directory existence/enumeration, directory callbacks, candidate file
+reads, classification, record construction and allocation cleanup run on native
+tasks. The local `B:` lookup failure from `--find-update` does not prevent this
+SDK directory path. Observation points record the first visit to each stage;
+they do not replace replies or change guest registers to skip work.
+
+`--expected-path` requires exactly one whole-camera candidate with that exact
+path, category 4 and package flag 1. Omit it for a card without any matching
+upgrade package: successful collection must return normally with zero matches
+and an empty whole-camera record. Both cases also require native stage visits,
+released directory vectors, restored callbacks/selector/task stack and zero
+fault status on all four engine cores. See the
+[native collection record](../artifacts/native_update_collection/report.json).
+Candidate collection does not authenticate the package, activate menu dispatch
+or exercise storage programming and restart.
+
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
 bounded environment, forces the SD logical-slot enable byte and runs the original
 card worker entries, recording the executed chain and every peripheral

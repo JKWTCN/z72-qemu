@@ -1,0 +1,435 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Original update candidate collection through native SDK I/O with a diagnostic caller",
+  "firmware_included": false,
+  "firmware_modified": false,
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "f0a1508633574b388f902f824a1c354e4b4fcf0fc6717f9cad74f50864369ed6",
+    "sources": {
+      "qemu/nikon-z72.c": "49e32385ac8bb952cbe3c0255aab746120e3cafd280b30ee6262626cff1988f2",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+      "qemu/nikon-z72-memory.c": "aa2807c776f3631c37f890ef1da8be41fcf1ef946998ffa07f0ee857a4df95e1",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "efdf308622ee3344dde0179ab137acb4d80f30c8b43e41c919e5dad14134e6b7",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "7af84a9f813377587579d393038bbaa852c2bd68933239ec90a52583eef991e8",
+      "qemu/nikon-z72-controller-gpio.c": "4ebb569ef3c74e7c0f8294e37da6cfbc3379ec266260bdcc7b91fb538fc971b0",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "0cf66c7829feeb9da1c230b3e66efb32a7609e1377fd0944c5e86b2bee718bb2",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "1f3cc83213b014afca6001ab194fca234a7bd9368e123d258b9568e344b234d0",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "3cd87652448d81dc9b5d0243115e638fd410e563554ec789e0201d48f97474f8",
+      "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ]
+  },
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "stock_card": {
+    "logical_bytes": 4294967296,
+    "filesystem": "FAT16",
+    "first_sector_sha256": "731c6fc76828e50f8d7bbf0ba528a17dd324748ed5e1d5bd0135b211c488f9f8",
+    "candidate_name": "Z7_2_0~1.BIN",
+    "candidate_bytes": 48494024,
+    "candidate_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a"
+  },
+  "checks": {
+    "stock_package": {
+      "passed": true,
+      "engine_fault_free_before": true,
+      "collection": {
+        "caller_fixture": true,
+        "requested_mode": 0,
+        "expected_path": "B:\\Z7_2_0~1.BIN",
+        "sdk_replies_host_modeled": false,
+        "directory_records_host_supplied": false,
+        "caller_code_sha256": "87c2883d4b311d9fe08b786c1fda72f69060f154625eef83dd4a7eb79f6416a6",
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "r0": "0x42070001",
+            "r1": "0xb1d53ee8"
+          },
+          {
+            "pc": "0x1039d984",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "r0": "0x0",
+            "r1": "0xb5f00400"
+          },
+          {
+            "pc": "0x1039d940",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0x0"
+          },
+          {
+            "pc": "0x104d3ef0",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0xb25ec802",
+            "r1": "0x120a684a",
+            "path": "B:\\firmware\\"
+          },
+          {
+            "pc": "0x1039da30",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0xffffffff",
+            "directory_path": "B:\\firmware\\"
+          },
+          {
+            "pc": "0x104d3e92",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0xb25ec802",
+            "r1": "0x27",
+            "path": "B:\\"
+          },
+          {
+            "pc": "0x1039d6b4",
+            "thread": 2,
+            "sp": "0xb52c77c8",
+            "r0": "0xb6e9f340",
+            "r1": "0x1",
+            "short_name": "Z7_2_0~1.BIN",
+            "file_bytes": 48494024,
+            "attributes": 32
+          },
+          {
+            "pc": "0x1039da44",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x43a0084",
+            "r1": "0x80000030",
+            "directory_path": "B:\\"
+          },
+          {
+            "pc": "0x1039d71c",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0xb5f00400"
+          },
+          {
+            "pc": "0x1039d5bc",
+            "thread": 1,
+            "sp": "0xb5302f30",
+            "r0": "0xb25ec802",
+            "r1": "0x4"
+          },
+          {
+            "pc": "0x104d3c04",
+            "thread": 1,
+            "sp": "0xb5302ef8",
+            "r0": "0xb5302ef8",
+            "r1": "0x0",
+            "path": "B:\\Z7_2_0~1.BIN"
+          },
+          {
+            "pc": "0x1039d4d4",
+            "thread": 1,
+            "sp": "0xb5302f30",
+            "r0": "0xb25ec802",
+            "r1": "0xd"
+          },
+          {
+            "pc": "0x1039d922",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x43a0080",
+            "r1": "0x0"
+          },
+          {
+            "pc": "0x13f0101a",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "r0": "0x1",
+            "r1": "0xb5f00000"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "r0": "0x1",
+            "r1": "0xb5f00000"
+          }
+        ],
+        "caller_returned": true,
+        "collection_verified": true,
+        "selector_before": 19,
+        "selector_input": 18,
+        "local_volumes_before": [
+          {
+            "index": 0,
+            "name": "",
+            "readiness": 0
+          },
+          {
+            "index": 1,
+            "name": "",
+            "readiness": 0
+          }
+        ],
+        "wait_samples": [
+          [
+            71,
+            71,
+            70,
+            70
+          ]
+        ],
+        "returned": 1,
+        "completed": 1,
+        "summary_head": 19,
+        "collected_count": 2,
+        "matching_count": 1,
+        "record_path": "B:\\Z7_2_0~1.BIN",
+        "record_package_flag": 1,
+        "record_category": 4,
+        "record_sha256": "0ce0fba85671131a74afc9c0ed68b5b66892cc20ba7959b774bfd3ad9412212f",
+        "allocation_pointers_after": [
+          0,
+          0
+        ],
+        "selector_restored": true,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      }
+    },
+    "no_package": {
+      "passed": true,
+      "engine_fault_free_before": true,
+      "collection": {
+        "caller_fixture": true,
+        "requested_mode": 0,
+        "expected_path": "",
+        "sdk_replies_host_modeled": false,
+        "directory_records_host_supplied": false,
+        "caller_code_sha256": "87c2883d4b311d9fe08b786c1fda72f69060f154625eef83dd4a7eb79f6416a6",
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "r0": "0x42070001",
+            "r1": "0xb1d53ee8"
+          },
+          {
+            "pc": "0x1039d984",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "r0": "0x0",
+            "r1": "0xb5f00400"
+          },
+          {
+            "pc": "0x1039d940",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0x0"
+          },
+          {
+            "pc": "0x104d3ef0",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0xb25ec802",
+            "r1": "0x120a684a",
+            "path": "B:\\firmware\\"
+          },
+          {
+            "pc": "0x1039da30",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0xffffffff",
+            "directory_path": "B:\\firmware\\"
+          },
+          {
+            "pc": "0x104d3e92",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0xb25ec802",
+            "r1": "0x27",
+            "path": "B:\\"
+          },
+          {
+            "pc": "0x1039d6b4",
+            "thread": 2,
+            "sp": "0xb52c77c8",
+            "r0": "0xb6e9f340",
+            "r1": "0x1",
+            "short_name": "PROBE.TXT",
+            "file_bytes": 20,
+            "attributes": 32
+          },
+          {
+            "pc": "0x1039da44",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x43a0084",
+            "r1": "0x80000030",
+            "directory_path": "B:\\"
+          },
+          {
+            "pc": "0x1039d71c",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x0",
+            "r1": "0xb5f00400"
+          },
+          {
+            "pc": "0x1039d922",
+            "thread": 1,
+            "sp": "0xb5302fa8",
+            "r0": "0x43a0080",
+            "r1": "0x0"
+          },
+          {
+            "pc": "0x13f0101a",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "r0": "0x1",
+            "r1": "0xb5f00000"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "r0": "0x1",
+            "r1": "0xb5f00000"
+          }
+        ],
+        "caller_returned": true,
+        "collection_verified": true,
+        "selector_before": 19,
+        "selector_input": 18,
+        "local_volumes_before": [
+          {
+            "index": 0,
+            "name": "",
+            "readiness": 0
+          },
+          {
+            "index": 1,
+            "name": "",
+            "readiness": 0
+          }
+        ],
+        "returned": 1,
+        "completed": 1,
+        "summary_head": 19,
+        "collected_count": 2,
+        "matching_count": 0,
+        "record_path": "",
+        "record_package_flag": 0,
+        "record_category": 0,
+        "record_sha256": "7479649f4176c2a256e12d26259cba094d654d57dc58cf51fbe25c14e67c7fd9",
+        "allocation_pointers_after": [
+          0,
+          0
+        ],
+        "selector_restored": true,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      }
+    }
+  },
+  "native_menu_update_verified": false,
+  "native_package_authentication_verified": false,
+  "native_programming_verified": false,
+  "native_restart_after_update_verified": false
+}
