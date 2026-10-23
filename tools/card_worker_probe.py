@@ -32,7 +32,7 @@ PERIPHERAL = range(0x20000000, 0x30000000)
 
 
 class CardWorker:
-    def __init__(self, code_dump, ram_dump):
+    def __init__(self, code_dump, ram_dump, aux_dump):
         from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_HOOK_CODE
         from unicorn.arm_const import (UC_CPU_ARM_CORTEX_A15, UC_ARM_REG_R0,
                                        UC_ARM_REG_R1, UC_ARM_REG_R2,
@@ -43,7 +43,7 @@ class CardWorker:
         self.u = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
         self.u.ctl_set_cpu_model(UC_CPU_ARM_CORTEX_A15)
         for address, size in ((CODE_BASE, CODE_BYTES), (RAM_BASE, RAM_BYTES),
-                              (0x04000000, 0x1000), (SCRATCH, 0x100000),
+                              (0x00000000, 0x100000), (0x04000000, 0x1000), (SCRATCH, 0x100000),
                               # Timer family and platform configuration
                               # spans read as RAM so the worker chain passes
                               # through them; only genuinely new windows
@@ -55,6 +55,7 @@ class CardWorker:
             self.u.mem_map(address, size)
         self.u.mem_write(CODE_BASE, code_dump)
         self.u.mem_write(RAM_BASE, ram_dump)
+        self.u.mem_write(0x0, aux_dump[:0x100000])
         self.u.hook_add(UC_HOOK_CODE, lambda u, *a: u.emu_stop(),
                         begin=STOP, end=STOP)
         self.executed = []
@@ -124,6 +125,50 @@ class CardWorker:
     def ctype(self, *args):
         self.result(SCRATCH + 0x1000)
 
+    def install_svc_trap(self):
+        # The RTOS API layer calls svc #6 with ip holding a packed service
+        # id (Thumb wrappers jump into ARM thunks at 0xE4xxxx). Emulate the
+        # trap: record the service, answer success and skip the call.
+        from unicorn import UC_HOOK_INTR
+        from unicorn.arm_const import UC_ARM_REG_PC, UC_ARM_REG_R0, UC_ARM_REG_IP
+        self.services = []
+        def trap(u, intno, unused):
+            if intno not in (2, 6):
+                raise RuntimeError('Unexpected trap ' + str(intno))
+            pc = u.reg_read(UC_ARM_REG_PC)
+            service = u.reg_read(UC_ARM_REG_IP)
+            self.services.append(dict(pc=hex(pc), service=hex(service)))
+            # Success by default; pointer-shaped answers come from a
+            # per-service scratch slot so pointer-expecting callers do not
+            # dereference zero.
+            slot = SCRATCH + 0x50000 + (len(self.services) & 0xFF) * 0x40
+            u.mem_write(slot, bytes(0x40))
+            u.reg_write(UC_ARM_REG_R0, slot)
+            u.reg_write(UC_ARM_REG_PC, pc + 4)
+        self.u.hook_add(UC_HOOK_INTR, trap)
+
+    def install_allocators(self):
+        # Bump allocator over the top scratch half, mirroring the bounded
+        # update probe's host heap; frees are validated against it.
+        self.heap = SCRATCH + 0x80000
+        self.heap_next = self.heap
+        self.heap_end = SCRATCH + 0x100000
+        self.heap_live = set()
+        def allocate(size, *args):
+            size = (size + 7) & ~7
+            if self.heap_next + size > self.heap_end:
+                self.result(0)
+                return
+            address = self.heap_next
+            self.heap_next += size
+            self.heap_live.add(address)
+            self.u.mem_write(address, bytes(size))
+            self.result(address)
+        def release(address, *args):
+            self.heap_live.discard(address)
+        self.hook(0x32FE30, allocate)
+        self.hook(0x32FE7E, release)
+
     def call(self, offset, *args, budget=2000000):
         for register, value in zip(self.regs, args):
             self.u.reg_write(register, value)
@@ -146,7 +191,12 @@ def run(args):
     ram_dump = Path(f'{args.ram_dump}.B1800000').read_bytes()
     require(len(code_dump) == CODE_BYTES and len(ram_dump) == RAM_BYTES,
             'Unexpected RAM snapshot sizes')
-    probe = CardWorker(code_dump, ram_dump)
+    aux_dump = Path(f'{args.ram_dump}.0')
+    if aux_dump.exists():
+        aux = aux_dump.read_bytes()
+    else:
+        aux = bytes(0x100000)
+    probe = CardWorker(code_dump, ram_dump, aux)
     # Card worker entries from the captured slot table and the query path.
     probe.trace(0x4626A4)   # configured predicate (slot 0)
     probe.trace(0x4622CC)
@@ -173,8 +223,15 @@ def run(args):
             (0x341034, probe.zero), (0x32FA28, probe.noop),
             (0x32F9EC, probe.noop), (0x3802DA, probe.upper),
             (0x3D7144, probe.ctype), (0x340F18, probe.noop),
-            (0x340F12, probe.noop), (0x4C09FE, probe.noop)):
+            (0x340F12, probe.noop), (0x4C09FE, probe.noop),
+            (0x3410CC, lambda *a: probe.result(0)),
+            (0x3BC538, probe.noop), (0x39099C, probe.noop),
+            (0x37FB8A, probe.noop), (0x3B3E3E, lambda *a: probe.result(0)),
+            (0x3BC514, lambda *a: probe.result(0)),
+            (0x3B58FA, lambda *a: probe.result(0))):
         probe.hook(offset, callback)
+    probe.install_allocators()
+    probe.install_svc_trap()
     flags = bytes(0x20 if 48 <= c <= 57 else 16 if 65 <= c <= 90
                   else 128 if 97 <= c <= 122 else 0 for c in range(256))
     probe.u.mem_write(SCRATCH + 0x1000, bytes(4) + flags)
@@ -213,6 +270,7 @@ def run(args):
     experiments = []
     probe.full_trace()
     for label, offset, arguments in (
+            ('card_service_init', 0x4630B0, ()),
             ('configured_slot0', 0x4626A4, (0,)),
             ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x8000)),
             ('configured_slot1', 0x4626A4, (1,)),
@@ -236,6 +294,7 @@ def run(args):
         experiments.append(dict(
             experiment=label, entry=hex(offset), result=result,
             registry=entry,
+            services=probe.services,
             executed=probe.executed,
             path_length=len(path),
             path_tail=[hex(pc) for pc in path[-60:]],

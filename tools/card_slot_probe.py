@@ -249,7 +249,8 @@ def run(args):
             if os.name == 'nt':
                 target = linux(args.ram_dump)
             for base, size in ((0x10000000, 0x4000000),
-                               (0xB1800000, 0x4800000)):
+                               (0xB1800000, 0x4800000),
+                               (0x0, 0x100000)):
                 reply = remote.command('qRcmd,' + (
                     f'memsave {base:#x} {size:#x} ' + json.dumps(
                         target + f'.{base:X}')
