@@ -154,7 +154,7 @@
     "docs/porting.md": "c396ad9a79416797337917271cbdc01c78527dc0aafed838b0b3afdfcb3f85d6",
     "docs/publication.md": "9c0aaecc2bc2b4c17c17d881acf0c838d345d7c10aaabe2a857de037b2e68327",
     "docs/reference-sources.json": "638b788bc152e9d3228040064ccd5d5e32f763fe9475af07962c7ea6d1f6a584",
-    "docs/testing.md": "27d0372d56d99b1379628f9b783391060fcac96488989f6a98257242b2e2aca5",
+    "docs/testing.md": "f6cf4f1b8e84074fd2247dd8dc8efbb0d348fb14e8aa8d0dcc079be3a96b7075",
     "qemu/nikon-gpu.h": "8e8d13c10b41569e15baa882aa06b401e84349d85a141672cca26fb17487368c",
     "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
     "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
@@ -217,7 +217,7 @@
     "research/z7ii/early_configuration.md": "02a9e38e2047ad4bf0d61fb163d596e9f4b4bc733adf25e81abd49b95ca0a79d",
     "research/z7ii/engine_i2c.md": "85c8165964eea35d858fcd6e0d1aacdc57cc74bbe72c2290d6dbd80e3c358f7b",
     "research/z7ii/engine_memory.md": "ffaf4fde8828b65955c65b8243ced2755bbafc0d26162c19d5af03bd23e80061",
-    "research/z7ii/firmware_update.md": "b67de073ed6ce31ea5a5a4667799bf5c11992188bfc42e3ba2b0c7ac955409a8",
+    "research/z7ii/firmware_update.md": "901d2c90dc333d3b4dfd3e656ce8c39d8aeec483031fbe0372fb94565f160fb5",
     "research/z7ii/graphics_device.md": "1e438b770a7290fcd89a9ea2c9eb2cf91eadb0fa83a7fde6c970949351192ae1",
     "research/z7ii/input_configuration.md": "630bb6f323f4657e48ad958a7d0321fa90653625049f73af954647f4afe1acbc",
     "research/z7ii/input_path.md": "e31f3abb408ae4d9cc1fe78e1f3888c84a637f2fb6e1b3129c352a16ea6aed09",
@@ -342,9 +342,11 @@
     "web/console.js": "c87b36aad5aa9e3366686b37cfb002710a534dc8c5c5ea9ca7731117792412ae",
     "web/index.html": "0de94dc74207d2f5876fa4825fe1e566f76245b646ecc8054e203476c0d25874",
     "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e",
-    "tools/menu_fwupdate_probe.py": "dd357480544730e6ea814dc43c164e3121e7a7b6d5859a3920d618989f87abf5",
+    "tools/menu_fwupdate_probe.py": "a6ec633a3d2aa3459c937bf45608922150e03005a9c7f4bf3bfc6c9a68f4aa29",
     "tools/update_window_probe.py": "b2ca08b442078a411407340526c2794ffdcf7627a5b73059e1e40450a54b658c",
-    "artifacts/menu_fwupdate_navigation/report.json": "77ab91d43fe4b123f32d94703bc12b0f4c0b0e8175c7e4a503f9f3c5d837e19f",
-    "artifacts/update_window_harvest/report.json": "5513f60fbe38712944bc67de21be929a2a37dae90731b79588dd47d024e91f0f"
+    "artifacts/menu_fwupdate_navigation/report.json": "c26160f4dade7546022415f193ff38dbe2f9047866139b7ff243e5577d415fe1",
+    "artifacts/update_window_harvest/report.json": "5513f60fbe38712944bc67de21be929a2a37dae90731b79588dd47d024e91f0f",
+    "tools/card_slot_probe.py": "8c0f180574ee704557c51fe2540398588e8b11bae68612364fe074a1f7a701b3",
+    "artifacts/card_slot_table/report.json": "60a3c35d5525a41e073e8d3396ad121353cb8ecacb41d5c872be0e76e5e4bf2c"
   }
 }

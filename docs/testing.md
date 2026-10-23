@@ -495,6 +495,12 @@ observation point on the firmware-management eligibility entry reports
 whether the key path alone reaches the update service. See the
 [menu navigation evidence](../artifacts/menu_fwupdate_navigation/report.json).
 
+`tools/card_slot_probe.py` boots the original machine and stops on the
+runtime write that registers the card slot driver table (0xB18105BC),
+recording the table, the per-slot driver objects and every function
+pointer resolved to a master file offset. See the
+[card slot table evidence](../artifacts/card_slot_table/report.json).
+
 `tools/console_update_check.py` drives the menu-gated firmware update over
 the same HTTP path with a signed update file and its eight boot-window key
 bytes supplied from outside the repository. It requires an install attempt
