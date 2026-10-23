@@ -96,6 +96,8 @@ def run(qemu):
             assert command('readl 0x2a900104') == 0
             command('writel 0x2a900104 0xffffffff')
             assert command('readl 0x2a900104') == 0, 'Error acknowledgement created status'
+            for offset in range(0x150, 0x160, 4):
+                assert read(offset) == 0, 'Unexpected UHS-II capability in the conventional SD profile'
             assert command('readl 0x2b000010') & 0x400
             command('writel 0x2b000004 4')
             assert command('readl 0x2b000010') & 0x400 == 0

@@ -62,7 +62,7 @@ def dump_table(remote, table, report):
     return record
 
 
-def run(args):
+def run(args, observe=None):
     master, slave = args.master.read_bytes(), args.slave.read_bytes()
     launched = []
     original = subprocess.Popen
@@ -354,7 +354,10 @@ def run(args):
             report['slot0_forced'] = True
             report['peripheral_span_changes'] = changes
         report['passed'] = bool(report['registrations'])
+        if observe is not None:
+            observe(remote, report)
     except Exception as error:
+        report['passed'] = False
         import traceback
         report['errors'].append(f'{type(error).__name__}: {error}')
         report['traceback'] = traceback.format_exc()
@@ -377,10 +380,11 @@ def run(args):
         (args.destination / 'report.json').write_text(
             json.dumps(report, indent=2, ensure_ascii=False, default=str)
             + chr(10), encoding='utf-8')
+    label = 'card slot table registrations' if observe is None else 'card slot and attached check'
     print(('PASS ' if report['passed'] else 'FAIL ') +
-          f"card slot table registrations: {len(report['registrations'])}",
+          f"{label}: {len(report['registrations'])}",
           flush=True)
-    require(report['passed'], 'Card slot table observation failed')
+    require(report['passed'], 'Card slot observation or attached check failed')
     return report
 
 

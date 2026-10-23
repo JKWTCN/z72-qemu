@@ -576,6 +576,25 @@ instruction/data fault registers for all four engine cores. Its `passed` field
 only covers table registration; inspect `engine_fault_free` before treating the
 peer as running. The [startup boundary](../artifacts/pcie_sd_startup_boundary/report.json)
 records configuration progress followed by an unsupported SD-host extension read.
+That historical extension boundary is now covered by the conventional SD
+profile's read-only UHS-II capability snapshot. The native file diagnostic is:
+
+```sh
+python tools/filesystem_peer_probe.py --qemu .build/build/qemu-system-arm \
+  --master master.bin --slave slave.bin --controller controller.bin \
+  --card-image card.raw --reference marker/PROBE.TXT --destination .local/peer-file
+```
+
+Use `--camera-path` for a different card filename. The reference supplies only
+comparison bytes, capped at 64. Queue requests and the open-reply client are
+explicit fixtures; native peer file handling, data-copy dispatch and its reply
+must run. Success requires matching bytes, a successful copy acknowledgement
+and fault-free engine states. This does not execute the SDK sender or menu caller.
+The [native peer file record](../artifacts/native_peer_file_read/report.json)
+checks both a 20-byte marker and a 64-byte prefix of the stock update package.
+The negative observation before byte-copy support records success from the file
+service alongside a failed copy acknowledgement and zero destination bytes.
+The content comparison correctly rejects that observation.
 
 To make a new synthetic FAT card from a directory, use `qemu-img convert
 -f raw -O raw fat:/path/to/directory card.raw`, then `qemu-img resize

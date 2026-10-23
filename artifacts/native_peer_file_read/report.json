@@ -1,0 +1,1396 @@
+{
+  "format": 1,
+  "passed": true,
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "f0a1508633574b388f902f824a1c354e4b4fcf0fc6717f9cad74f50864369ed6",
+    "sources": {
+      "qemu/nikon-z72.c": "49e32385ac8bb952cbe3c0255aab746120e3cafd280b30ee6262626cff1988f2",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+      "qemu/nikon-z72-memory.c": "aa2807c776f3631c37f890ef1da8be41fcf1ef946998ffa07f0ee857a4df95e1",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "efdf308622ee3344dde0179ab137acb4d80f30c8b43e41c919e5dad14134e6b7",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "7af84a9f813377587579d393038bbaa852c2bd68933239ec90a52583eef991e8",
+      "qemu/nikon-z72-controller-gpio.c": "4ebb569ef3c74e7c0f8294e37da6cfbc3379ec266260bdcc7b91fb538fc971b0",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "0cf66c7829feeb9da1c230b3e66efb32a7609e1377fd0944c5e86b2bee718bb2",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "1f3cc83213b014afca6001ab194fca234a7bd9368e123d258b9568e344b234d0",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "3cd87652448d81dc9b5d0243115e638fd410e563554ec789e0201d48f97474f8",
+      "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ]
+  },
+  "checks": {
+    "sd_host": true,
+    "bidirectional_peer_memory": true,
+    "engine_memory_both_roles": true
+  },
+  "initialization_read": {
+    "pc": "0x1008b75a",
+    "address": "0x2a810150",
+    "width": 32,
+    "capability_offsets": [
+      336,
+      340,
+      344,
+      348
+    ],
+    "uhs2_advertised": false
+  },
+  "before_byte_copy_support": {
+    "expected_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+    "peer_source_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+    "translated_source_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+    "native_copy_arguments": [
+      3052405760,
+      1169814272,
+      64
+    ],
+    "memory_transfer_status": 1,
+    "copy_ack_status": -1,
+    "read_status": 0,
+    "actual_bytes": 64,
+    "actual_sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+    "file_prefix_verified": false
+  },
+  "reference_identity": {
+    "stock_update_bytes": 48494024,
+    "stock_update_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a"
+  },
+  "card_images": {
+    "marker": {
+      "size": 4294967296,
+      "sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8"
+    },
+    "stock_update": {
+      "size": 4294967296,
+      "sha256": "c703e01988ffb01aa48c15f3ff09769d89e49ee253328bd62cad056750485f09"
+    }
+  },
+  "cases": {
+    "marker": {
+      "format": 1,
+      "passed": true,
+      "slot_table": "0xb18105bc",
+      "firmware_sha256": {
+        "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+      },
+      "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+      "firmware_modified": false,
+      "runtime_state_written": true,
+      "registrations": [
+        {
+          "table": "0x108abb28",
+          "slots": [
+            {
+              "slot": 0,
+              "words": [
+                "0x104a1571",
+                "0x1209ca68",
+                "0x2",
+                "0x1209c8d4",
+                "0x1075e771",
+                "0x10482677",
+                "0x1075e7a9",
+                "0x1075e81d",
+                "0x104826a5",
+                "0x104826c9",
+                "0x10482677",
+                "0x1075e853",
+                "0x1075e927",
+                "0x2"
+              ],
+              "code_offsets": [
+                "0x481571",
+                "0x207ca68",
+                null,
+                "0x207c8d4",
+                "0x73e771",
+                "0x462677",
+                "0x73e7a9",
+                "0x73e81d",
+                "0x4626a5",
+                "0x4626c9",
+                "0x462677",
+                "0x73e853",
+                "0x73e927",
+                null
+              ]
+            },
+            {
+              "slot": 1,
+              "words": [
+                "0x104a1715",
+                "0x1209ca6c",
+                "0x1",
+                "0x1209c8d8",
+                "0x1075e6ed",
+                "0x10482677",
+                "0x1075e6fb",
+                "0x1075e743",
+                "0x10482157",
+                "0x1048217d",
+                "0x10482677",
+                "0x1075e747",
+                "0x1075e75d",
+                "0xd"
+              ],
+              "code_offsets": [
+                "0x481715",
+                "0x207ca6c",
+                null,
+                "0x207c8d8",
+                "0x73e6ed",
+                "0x462677",
+                "0x73e6fb",
+                "0x73e743",
+                "0x462157",
+                "0x46217d",
+                "0x462677",
+                "0x73e747",
+                "0x73e75d",
+                null
+              ]
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "sd_card_engine": "slave",
+      "sd_card_writes_use_overlay": true,
+      "settled": {
+        "table": "0x108abb28",
+        "slots": [
+          {
+            "slot": 0,
+            "words": [
+              "0x104a1571",
+              "0x1209ca68",
+              "0x2",
+              "0x1209c8d4",
+              "0x1075e771",
+              "0x10482677",
+              "0x1075e7a9",
+              "0x1075e81d",
+              "0x104826a5",
+              "0x104826c9",
+              "0x10482677",
+              "0x1075e853",
+              "0x1075e927",
+              "0x2"
+            ],
+            "code_offsets": [
+              "0x481571",
+              "0x207ca68",
+              null,
+              "0x207c8d4",
+              "0x73e771",
+              "0x462677",
+              "0x73e7a9",
+              "0x73e81d",
+              "0x4626a5",
+              "0x4626c9",
+              "0x462677",
+              "0x73e853",
+              "0x73e927",
+              null
+            ]
+          },
+          {
+            "slot": 1,
+            "words": [
+              "0x104a1715",
+              "0x1209ca6c",
+              "0x1",
+              "0x1209c8d8",
+              "0x1075e6ed",
+              "0x10482677",
+              "0x1075e6fb",
+              "0x1075e743",
+              "0x10482157",
+              "0x1048217d",
+              "0x10482677",
+              "0x1075e747",
+              "0x1075e75d",
+              "0xd"
+            ],
+            "code_offsets": [
+              "0x481715",
+              "0x207ca6c",
+              null,
+              "0x207c8d8",
+              "0x73e6ed",
+              "0x462677",
+              "0x73e6fb",
+              "0x73e743",
+              "0x462157",
+              "0x46217d",
+              "0x462677",
+              "0x73e747",
+              "0x73e75d",
+              null
+            ]
+          }
+        ]
+      },
+      "contexts": [
+        {
+          "slot": 0,
+          "name": "primary",
+          "address": "0x1209ca68",
+          "words": [
+            "0x3a41",
+            "0x3a42",
+            "0x52353056",
+            "0x303030",
+            "0x65646e55",
+            "0x656e6966",
+            "0x64",
+            "0x64696c53",
+            "0x6c6f4865",
+            "0x64",
+            "0x44746f4e",
+            "0x64696365",
+            "0x65",
+            "0x64696c53",
+            "0x65",
+            "0x66664f",
+            "0x636e6950",
+            "0x68",
+            "0x696f5031",
+            "0x6f54746e",
+            "0x686375",
+            "0x696f5032",
+            "0x6f54746e",
+            "0x686375"
+          ],
+          "register_like": []
+        },
+        {
+          "slot": 0,
+          "name": "secondary",
+          "address": "0x1209c8d4",
+          "words": [
+            "0x445158",
+            "0x4453",
+            "0x4643",
+            "0x62696c0a",
+            "0x20676e70",
+            "0x73726576",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x69727041",
+            "0x3532206c",
+            "0x3032202c",
+            "0x430a3331",
+            "0x7279706f",
+            "0x74686769",
+            "0x29632820",
+            "0x39393120",
+            "0x30322d38",
+            "0x47203331",
+            "0x6e6e656c",
+            "0x6e615220",
+            "0x73726564",
+            "0x6865502d",
+            "0x6e6f7372"
+          ],
+          "register_like": [
+            "0x20676e70",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x29632820"
+          ]
+        },
+        {
+          "slot": 1,
+          "name": "primary",
+          "address": "0x1209ca6c",
+          "words": [
+            "0x3a42",
+            "0x52353056",
+            "0x303030",
+            "0x65646e55",
+            "0x656e6966",
+            "0x64",
+            "0x64696c53",
+            "0x6c6f4865",
+            "0x64",
+            "0x44746f4e",
+            "0x64696365",
+            "0x65",
+            "0x64696c53",
+            "0x65",
+            "0x66664f",
+            "0x636e6950",
+            "0x68",
+            "0x696f5031",
+            "0x6f54746e",
+            "0x686375",
+            "0x696f5032",
+            "0x6f54746e",
+            "0x686375",
+            "0x63696c46"
+          ],
+          "register_like": []
+        },
+        {
+          "slot": 1,
+          "name": "secondary",
+          "address": "0x1209c8d8",
+          "words": [
+            "0x4453",
+            "0x4643",
+            "0x62696c0a",
+            "0x20676e70",
+            "0x73726576",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x69727041",
+            "0x3532206c",
+            "0x3032202c",
+            "0x430a3331",
+            "0x7279706f",
+            "0x74686769",
+            "0x29632820",
+            "0x39393120",
+            "0x30322d38",
+            "0x47203331",
+            "0x6e6e656c",
+            "0x6e615220",
+            "0x73726564",
+            "0x6865502d",
+            "0x6e6f7372",
+            "0x706f430a"
+          ],
+          "register_like": [
+            "0x20676e70",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x29632820"
+          ]
+        }
+      ],
+      "engine_states": [
+        {
+          "thread": 1,
+          "pc": "0x10103564",
+          "cpsr": "0x60000193",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10107070",
+          "cpsr": "0x60000013",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a68",
+          "cpsr": "0x60000013",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a64",
+          "cpsr": "0x60000093",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "engine_fault_free": true,
+      "sd_host_registers": [
+        {
+          "engine": "master",
+          "registers": {
+            "0x2b000010": "0x300",
+            "0x2b200000": "0x0",
+            "0x2b200024": "0x0",
+            "0x2b200058": "0x110000",
+            "0x2a900004": "0x0",
+            "0x2a900098": "0x2",
+            "0x2a800010": "0x0",
+            "0x2a800014": "0x0",
+            "0x2a800064": "0x0",
+            "0x2a810024": "0x1fa0000",
+            "0x2a81002c": "0x0",
+            "0x2a810030": "0x0"
+          }
+        },
+        {
+          "engine": "slave",
+          "registers": {
+            "0x2b000010": "0x400",
+            "0x2b200000": "0x14",
+            "0x2b200024": "0x0",
+            "0x2b200058": "0x110000",
+            "0x2a900004": "0x106",
+            "0x2a900098": "0x2",
+            "0x2a800010": "0x2a810000",
+            "0x2a800014": "0x2a820000",
+            "0x2a800064": "0x4",
+            "0x2a810024": "0x1ff0000",
+            "0x2a81002c": "0xe0207",
+            "0x2a810030": "0x0"
+          }
+        }
+      ],
+      "card_slot_enable_bytes": [
+        0,
+        0
+      ],
+      "foreground_application_index": 3,
+      "observation_window_seconds": 12,
+      "file_service": {
+        "input_frames_synthetic": true,
+        "sdk_sender_executed": false,
+        "menu_caller_executed": false,
+        "open_reply_client_host_modeled": true,
+        "read_reply_observation": "Native sender entry; reply not yet queued",
+        "read_reply_consumed_by_sdk": false,
+        "camera_path": "B:\\PROBE.TXT",
+        "expected_bytes": 20,
+        "expected_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "events": [
+          {
+            "thread": 4,
+            "pc": "0x1006323c",
+            "arguments": [
+              1107755009,
+              3242531160,
+              268841533,
+              0
+            ],
+            "message_words": [
+              13,
+              1843721,
+              0,
+              0,
+              3052405248
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x10065074",
+            "arguments": [
+              3242531168,
+              3248287552,
+              0,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bdf84",
+            "arguments": [
+              1107755009,
+              2983318544,
+              274456453,
+              0
+            ],
+            "message_words": [
+              14,
+              794633,
+              0,
+              0,
+              65536
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x100677da",
+            "arguments": [
+              9,
+              19,
+              12,
+              3287527320
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bdf84",
+            "arguments": [
+              1107755009,
+              2983318808,
+              274456453,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bc398",
+            "arguments": [
+              3052405760,
+              1169814272,
+              24,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bc452",
+            "arguments": [
+              0,
+              0,
+              1610612755,
+              32
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x1006323c",
+            "arguments": [
+              1107755009,
+              3242531688,
+              268841533,
+              0
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x100677da",
+            "arguments": [
+              9,
+              16,
+              16,
+              3287527360
+            ]
+          }
+        ],
+        "file_prefix_verified": true,
+        "indices_before": [
+          34,
+          34
+        ],
+        "open_reply_handle": 65536,
+        "copy_request_words": [
+          3052405760,
+          3317297920,
+          24
+        ],
+        "peer_source_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "native_copy_dispatch_entered": true,
+        "native_copy_arguments": [
+          3052405760,
+          1169814272,
+          24
+        ],
+        "memory_channels_before": [
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2880,
+            2880,
+            480,
+            0,
+            3245725184
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            16,
+            0,
+            16392,
+            16392,
+            16392,
+            1,
+            1171895040,
+            3070866240
+          ]
+        ],
+        "translated_source_debug_readable": true,
+        "translated_source_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "memory_transfer_status": 0,
+        "memory_channels_after": [
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2880,
+            2880,
+            480,
+            0,
+            3245725184
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            16,
+            0,
+            24,
+            24,
+            24,
+            1,
+            1169814272,
+            3052405760
+          ]
+        ],
+        "copy_ack_status": 0,
+        "read_reply_words": [
+          0,
+          0,
+          0,
+          20
+        ],
+        "read_status": 0,
+        "indices_after": [
+          37,
+          37
+        ],
+        "actual_bytes": 20,
+        "actual_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "file_bytes_match": true,
+        "buffers_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      },
+      "native_menu_update_verified": false
+    },
+    "stock_update_prefix": {
+      "format": 1,
+      "passed": true,
+      "slot_table": "0xb18105bc",
+      "firmware_sha256": {
+        "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+      },
+      "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+      "firmware_modified": false,
+      "runtime_state_written": true,
+      "registrations": [
+        {
+          "table": "0x108abb28",
+          "slots": [
+            {
+              "slot": 0,
+              "words": [
+                "0x104a1571",
+                "0x1209ca68",
+                "0x2",
+                "0x1209c8d4",
+                "0x1075e771",
+                "0x10482677",
+                "0x1075e7a9",
+                "0x1075e81d",
+                "0x104826a5",
+                "0x104826c9",
+                "0x10482677",
+                "0x1075e853",
+                "0x1075e927",
+                "0x2"
+              ],
+              "code_offsets": [
+                "0x481571",
+                "0x207ca68",
+                null,
+                "0x207c8d4",
+                "0x73e771",
+                "0x462677",
+                "0x73e7a9",
+                "0x73e81d",
+                "0x4626a5",
+                "0x4626c9",
+                "0x462677",
+                "0x73e853",
+                "0x73e927",
+                null
+              ]
+            },
+            {
+              "slot": 1,
+              "words": [
+                "0x104a1715",
+                "0x1209ca6c",
+                "0x1",
+                "0x1209c8d8",
+                "0x1075e6ed",
+                "0x10482677",
+                "0x1075e6fb",
+                "0x1075e743",
+                "0x10482157",
+                "0x1048217d",
+                "0x10482677",
+                "0x1075e747",
+                "0x1075e75d",
+                "0xd"
+              ],
+              "code_offsets": [
+                "0x481715",
+                "0x207ca6c",
+                null,
+                "0x207c8d8",
+                "0x73e6ed",
+                "0x462677",
+                "0x73e6fb",
+                "0x73e743",
+                "0x462157",
+                "0x46217d",
+                "0x462677",
+                "0x73e747",
+                "0x73e75d",
+                null
+              ]
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "sd_card_engine": "slave",
+      "sd_card_writes_use_overlay": true,
+      "settled": {
+        "table": "0x108abb28",
+        "slots": [
+          {
+            "slot": 0,
+            "words": [
+              "0x104a1571",
+              "0x1209ca68",
+              "0x2",
+              "0x1209c8d4",
+              "0x1075e771",
+              "0x10482677",
+              "0x1075e7a9",
+              "0x1075e81d",
+              "0x104826a5",
+              "0x104826c9",
+              "0x10482677",
+              "0x1075e853",
+              "0x1075e927",
+              "0x2"
+            ],
+            "code_offsets": [
+              "0x481571",
+              "0x207ca68",
+              null,
+              "0x207c8d4",
+              "0x73e771",
+              "0x462677",
+              "0x73e7a9",
+              "0x73e81d",
+              "0x4626a5",
+              "0x4626c9",
+              "0x462677",
+              "0x73e853",
+              "0x73e927",
+              null
+            ]
+          },
+          {
+            "slot": 1,
+            "words": [
+              "0x104a1715",
+              "0x1209ca6c",
+              "0x1",
+              "0x1209c8d8",
+              "0x1075e6ed",
+              "0x10482677",
+              "0x1075e6fb",
+              "0x1075e743",
+              "0x10482157",
+              "0x1048217d",
+              "0x10482677",
+              "0x1075e747",
+              "0x1075e75d",
+              "0xd"
+            ],
+            "code_offsets": [
+              "0x481715",
+              "0x207ca6c",
+              null,
+              "0x207c8d8",
+              "0x73e6ed",
+              "0x462677",
+              "0x73e6fb",
+              "0x73e743",
+              "0x462157",
+              "0x46217d",
+              "0x462677",
+              "0x73e747",
+              "0x73e75d",
+              null
+            ]
+          }
+        ]
+      },
+      "contexts": [
+        {
+          "slot": 0,
+          "name": "primary",
+          "address": "0x1209ca68",
+          "words": [
+            "0x3a41",
+            "0x3a42",
+            "0x52353056",
+            "0x303030",
+            "0x65646e55",
+            "0x656e6966",
+            "0x64",
+            "0x64696c53",
+            "0x6c6f4865",
+            "0x64",
+            "0x44746f4e",
+            "0x64696365",
+            "0x65",
+            "0x64696c53",
+            "0x65",
+            "0x66664f",
+            "0x636e6950",
+            "0x68",
+            "0x696f5031",
+            "0x6f54746e",
+            "0x686375",
+            "0x696f5032",
+            "0x6f54746e",
+            "0x686375"
+          ],
+          "register_like": []
+        },
+        {
+          "slot": 0,
+          "name": "secondary",
+          "address": "0x1209c8d4",
+          "words": [
+            "0x445158",
+            "0x4453",
+            "0x4643",
+            "0x62696c0a",
+            "0x20676e70",
+            "0x73726576",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x69727041",
+            "0x3532206c",
+            "0x3032202c",
+            "0x430a3331",
+            "0x7279706f",
+            "0x74686769",
+            "0x29632820",
+            "0x39393120",
+            "0x30322d38",
+            "0x47203331",
+            "0x6e6e656c",
+            "0x6e615220",
+            "0x73726564",
+            "0x6865502d",
+            "0x6e6f7372"
+          ],
+          "register_like": [
+            "0x20676e70",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x29632820"
+          ]
+        },
+        {
+          "slot": 1,
+          "name": "primary",
+          "address": "0x1209ca6c",
+          "words": [
+            "0x3a42",
+            "0x52353056",
+            "0x303030",
+            "0x65646e55",
+            "0x656e6966",
+            "0x64",
+            "0x64696c53",
+            "0x6c6f4865",
+            "0x64",
+            "0x44746f4e",
+            "0x64696365",
+            "0x65",
+            "0x64696c53",
+            "0x65",
+            "0x66664f",
+            "0x636e6950",
+            "0x68",
+            "0x696f5031",
+            "0x6f54746e",
+            "0x686375",
+            "0x696f5032",
+            "0x6f54746e",
+            "0x686375",
+            "0x63696c46"
+          ],
+          "register_like": []
+        },
+        {
+          "slot": 1,
+          "name": "secondary",
+          "address": "0x1209c8d8",
+          "words": [
+            "0x4453",
+            "0x4643",
+            "0x62696c0a",
+            "0x20676e70",
+            "0x73726576",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x69727041",
+            "0x3532206c",
+            "0x3032202c",
+            "0x430a3331",
+            "0x7279706f",
+            "0x74686769",
+            "0x29632820",
+            "0x39393120",
+            "0x30322d38",
+            "0x47203331",
+            "0x6e6e656c",
+            "0x6e615220",
+            "0x73726564",
+            "0x6865502d",
+            "0x6e6f7372",
+            "0x706f430a"
+          ],
+          "register_like": [
+            "0x20676e70",
+            "0x206e6f69",
+            "0x2e362e31",
+            "0x202d2032",
+            "0x29632820"
+          ]
+        }
+      ],
+      "engine_states": [
+        {
+          "thread": 1,
+          "pc": "0x10107094",
+          "cpsr": "0x60000013",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x101017e2",
+          "cpsr": "0x40000033",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a50",
+          "cpsr": "0x60000093",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a48",
+          "cpsr": "0x60000093",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "engine_fault_free": true,
+      "sd_host_registers": [
+        {
+          "engine": "master",
+          "registers": {
+            "0x2b000010": "0x300",
+            "0x2b200000": "0x0",
+            "0x2b200024": "0x0",
+            "0x2b200058": "0x110000",
+            "0x2a900004": "0x0",
+            "0x2a900098": "0x2",
+            "0x2a800010": "0x0",
+            "0x2a800014": "0x0",
+            "0x2a800064": "0x0",
+            "0x2a810024": "0x1fa0000",
+            "0x2a81002c": "0x0",
+            "0x2a810030": "0x0"
+          }
+        },
+        {
+          "engine": "slave",
+          "registers": {
+            "0x2b000010": "0x400",
+            "0x2b200000": "0x14",
+            "0x2b200024": "0x0",
+            "0x2b200058": "0x110000",
+            "0x2a900004": "0x106",
+            "0x2a900098": "0x2",
+            "0x2a800010": "0x2a810000",
+            "0x2a800014": "0x2a820000",
+            "0x2a800064": "0x4",
+            "0x2a810024": "0x1ff0000",
+            "0x2a81002c": "0xe0207",
+            "0x2a810030": "0x0"
+          }
+        }
+      ],
+      "card_slot_enable_bytes": [
+        0,
+        0
+      ],
+      "foreground_application_index": 3,
+      "observation_window_seconds": 12,
+      "file_service": {
+        "input_frames_synthetic": true,
+        "sdk_sender_executed": false,
+        "menu_caller_executed": false,
+        "open_reply_client_host_modeled": true,
+        "read_reply_observation": "Native sender entry; reply not yet queued",
+        "read_reply_consumed_by_sdk": false,
+        "camera_path": "B:\\Z7_2_0~1.BIN",
+        "expected_bytes": 64,
+        "expected_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+        "events": [
+          {
+            "thread": 4,
+            "pc": "0x1006323c",
+            "arguments": [
+              1107755009,
+              3242531160,
+              268841533,
+              0
+            ],
+            "message_words": [
+              13,
+              1843721,
+              0,
+              0,
+              3052405248
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x10065074",
+            "arguments": [
+              3242531168,
+              3248287552,
+              0,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bdf84",
+            "arguments": [
+              1107755009,
+              2983318544,
+              274456453,
+              0
+            ],
+            "message_words": [
+              14,
+              794633,
+              0,
+              0,
+              65536
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x100677da",
+            "arguments": [
+              9,
+              19,
+              12,
+              3287527320
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bdf84",
+            "arguments": [
+              1107755009,
+              2983318808,
+              274456453,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bc398",
+            "arguments": [
+              3052405760,
+              1169814272,
+              64,
+              0
+            ]
+          },
+          {
+            "thread": 2,
+            "pc": "0x105bc452",
+            "arguments": [
+              0,
+              0,
+              1610612755,
+              32
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x1006323c",
+            "arguments": [
+              1107755009,
+              3242531688,
+              268841533,
+              0
+            ]
+          },
+          {
+            "thread": 4,
+            "pc": "0x100677da",
+            "arguments": [
+              9,
+              16,
+              16,
+              3287527360
+            ]
+          }
+        ],
+        "file_prefix_verified": true,
+        "indices_before": [
+          34,
+          34
+        ],
+        "open_reply_handle": 65536,
+        "copy_request_words": [
+          3052405760,
+          3317297920,
+          64
+        ],
+        "peer_source_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+        "native_copy_dispatch_entered": true,
+        "native_copy_arguments": [
+          3052405760,
+          1169814272,
+          64
+        ],
+        "memory_channels_before": [
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2880,
+            2880,
+            480,
+            0,
+            3245725184
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            16,
+            0,
+            16392,
+            16392,
+            16392,
+            1,
+            1171895040,
+            3070866240
+          ]
+        ],
+        "translated_source_debug_readable": true,
+        "translated_source_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+        "memory_transfer_status": 0,
+        "memory_channels_after": [
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2880,
+            2880,
+            480,
+            0,
+            3245725184
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            1,
+            16,
+            0,
+            64,
+            64,
+            64,
+            1,
+            1169814272,
+            3052405760
+          ]
+        ],
+        "copy_ack_status": 0,
+        "read_reply_words": [
+          0,
+          0,
+          0,
+          64
+        ],
+        "read_status": 0,
+        "indices_after": [
+          37,
+          37
+        ],
+        "actual_bytes": 64,
+        "actual_sha256": "431cebe76ac56eaea28ca311eaabaa118c6d23758215f72b890ada74d7f0172a",
+        "file_bytes_match": true,
+        "buffers_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      },
+      "native_menu_update_verified": false
+    }
+  },
+  "native_sdk_call_chain_verified": false,
+  "whole_package_read_verified": false,
+  "package_authentication_verified": false,
+  "native_menu_update_verified": false
+}

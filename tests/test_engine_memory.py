@@ -91,15 +91,22 @@ def check(qemu):
                     require(access(base + 0x10, read=True) & 3 == 2,
                             'Memory stop did not acknowledge idle state')
 
-                    remote.write(destination, b'\xa5' * 32)
-                    submit(0)
+                    for mode in (0, 0x10):
+                        remote.write(destination, b'\xa5' * 32)
+                        submit(mode)
+                        advance()
+                        for row in range(3):
+                            expected[row * 9:row * 9 + 5] = original[row * 8:row * 8 + 5]
+                        copied = remote.read(destination, 32)
+                        require(copied == expected and access(base + 8, read=True) == 1,
+                                f'Strided copy mode {mode:#x} differs: {copied.hex()}, status='
+                                f'{access(base + 8, read=True):#x}')
+                    remote.write(destination, b'keep')
+                    submit(0x20)
                     advance()
-                    for row in range(3):
-                        expected[row * 9:row * 9 + 5] = original[row * 8:row * 8 + 5]
-                    copied = remote.read(destination, 32)
-                    require(copied == expected,
-                            f'Strided copy differs: {copied.hex()}, status='
-                            f'{access(base + 8, read=True):#x}')
+                    require(access(base + 8, read=True) == 0x10 and
+                            remote.read(destination, 4) == b'keep',
+                            'Unsupported memory format copied data or reported success')
 
                     boundary = 0xb1900000 if role == 'master' else 0xc1a00000
                     remote.write(boundary - 4, b'HEAD' + b'\xa5' * 16 + b'TAIL')

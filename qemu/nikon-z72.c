@@ -607,6 +607,7 @@ struct NikonZ72BootConfig {
     MemoryRegion dbi_ram;
     MemoryRegion sd_config_ram;
     MemoryRegion sd_clock_status;
+    MemoryRegion sd_uhs2_caps;
     DeviceState *sd_controller;
     bool sd_host;
     bool sd_irq_level;
@@ -713,6 +714,29 @@ static uint64_t sd_clock_read(void *opaque, hwaddr offset, unsigned size)
     return (value & ~4u) |
            ((SYSBUS_SDHCI(s->sd_controller)->clkcon & 2) ? 4 : 0);
 }
+
+static bool sd_uhs2_caps_accepts(void *opaque, hwaddr offset,
+                                  unsigned size, bool is_write,
+                                  MemTxAttrs attrs)
+{
+    return !is_write && size == 4 && !(offset & 3) && offset < 0x10;
+}
+
+static uint64_t sd_uhs2_caps_read(void *opaque, hwaddr offset,
+                                  unsigned size)
+{
+    /* Initialization snapshots four UHS-II capability words. The generic
+     * SD host implements the conventional SD path and advertises no UHS-II. */
+    return 0;
+}
+
+static const MemoryRegionOps sd_uhs2_caps_ops = {
+    .read = sd_uhs2_caps_read,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4,
+               .accepts = sd_uhs2_caps_accepts },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
 
 static void sd_clock_write(void *opaque, hwaddr offset,
                            uint64_t value, unsigned size)
@@ -1764,6 +1788,11 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                                   &sd_clock_ops, s, "z72-sd-clock-status", 4);
             memory_region_add_subregion_overlap(root, 0x2a800064,
                                                 &s->sd_clock_status, 1);
+            memory_region_init_io(&s->sd_uhs2_caps, OBJECT(dev),
+                                  &sd_uhs2_caps_ops, s,
+                                  "z72-sd-uhs2-capabilities", 0x10);
+            memory_region_add_subregion(root, 0x2a810150,
+                                        &s->sd_uhs2_caps);
         }
         memory_region_init_io(&s->transport_ram, OBJECT(dev), &transport_ops, s,
                               "z72-transport-control", 0x10000);
@@ -2678,6 +2707,13 @@ static void nikon_z72_dual_init(MachineState *machine)
                              master_view, 0xB0000000, 0x10000000);
     memory_region_add_subregion_overlap(slave_view, 0x40000000,
                                         master_bus_alias, -1);
+    /* File reads request the inverse copy: the master accesses slave
+     * C0000000-family RAM through the same 40000000 bus-address family. */
+    MemoryRegion *slave_bus_alias = g_new0(MemoryRegion, 1);
+    memory_region_init_alias(slave_bus_alias, NULL, "z72-slave-memory-peer",
+                             slave_view, 0xC0000000, 0x10000000);
+    memory_region_add_subregion_overlap(master_view, 0x40000000,
+                                        slave_bus_alias, -1);
     /* The master's own frame pool includes 0xC6000000. Its peer message
      * access uses the translated 0x46000000 window, preserving that pool. */
     /* Runtime pointer translation supplies bus-visible message addresses.

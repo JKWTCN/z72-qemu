@@ -68,6 +68,8 @@ static bool memory_transfer(Z72Memory *s, unsigned channel)
         (uint64_t)width * rows > 0x10000000) {
         return false;
     }
+    /* Native file transfers select 0x10 for byte copies. Their row widths
+     * and strides are byte counts, just like the existing copy mode 0. */
     if (early) {
         uint64_t bytes = (uint64_t)width * rows;
         if (!fill || r[0] || source || r[6] || width != 0x4000 ||
@@ -77,7 +79,7 @@ static bool memory_transfer(Z72Memory *s, unsigned channel)
             (uint64_t)s->clear_base + s->clear_size) {
             return false;
         }
-    } else if ((r[5] & ~1u) || r[6] > 0xff ||
+    } else if ((r[5] != 0 && r[5] != 1 && r[5] != 0x10) || r[6] > 0xff ||
                (!fill && source_stride < width)) {
         return false;
     }
