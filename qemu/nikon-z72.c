@@ -12,6 +12,7 @@
 #include "system/reset.h"
 #include "hw/irq.h"
 #include "hw/intc/arm_gic.h"
+#include "hw/sd/sdhci.h"
 #include "chardev/char.h"
 #include "migration/vmstate.h"
 #include "system/address-spaces.h"
@@ -604,6 +605,10 @@ struct NikonZ72BootConfig {
     uint8_t transport_table[0x10000];
     MemoryRegion auxiliary_ram;
     MemoryRegion dbi_ram;
+    MemoryRegion sd_config_ram;
+    MemoryRegion sd_clock_status;
+    DeviceState *sd_controller;
+    bool sd_host;
     uint32_t dbi_table[0x8c0 / 4];
     uint32_t dbi_viewport;
     uint32_t dbi_regions[2 * 16 * 7];
@@ -661,7 +666,13 @@ static uint32_t *dbi_word(NikonZ72BootConfig *s, hwaddr offset)
 
 static uint64_t dbi_read(void *opaque, hwaddr offset, unsigned size)
 {
-    return *dbi_word(opaque, offset);
+    NikonZ72BootConfig *s = opaque;
+    uint32_t value = *dbi_word(s, offset);
+    /* The original bus guard requires negotiated speed 2 at this offset. */
+    if (s->sd_host && offset == 0x098) {
+        value = (value & ~0xfu) | 2;
+    }
+    return value;
 }
 
 static void dbi_write(void *opaque, hwaddr offset, uint64_t value,
@@ -682,6 +693,37 @@ static const MemoryRegionOps dbi_ops = {
     .endianness = DEVICE_LITTLE_ENDIAN,
     .valid = { .min_access_size = 4, .max_access_size = 4,
                .accepts = dbi_accepts },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
+static uint64_t sd_clock_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint32_t value;
+    uint8_t *config = memory_region_get_ram_ptr(&s->sd_config_ram);
+
+    memcpy(&value, config + 0x64, 4);
+    /* The original channel-0 clock wait polls endpoint configuration bit 2.
+     * Tie that indication to the SDHCI internal-clock stable state. */
+    return (value & ~4u) |
+           ((SYSBUS_SDHCI(s->sd_controller)->clkcon & 2) ? 4 : 0);
+}
+
+static void sd_clock_write(void *opaque, hwaddr offset,
+                           uint64_t value, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint8_t *config = memory_region_get_ram_ptr(&s->sd_config_ram);
+    uint32_t stored = value & ~4u;
+
+    memcpy(config + 0x64, &stored, 4);
+}
+
+static const MemoryRegionOps sd_clock_ops = {
+    .read = sd_clock_read,
+    .write = sd_clock_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
@@ -909,10 +951,11 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     }
     /* Firmware analysis recovered the original link poll: 0x1008b32e
      * checks bits 16..21 of the link status for the trained state 0x11
-     * for up to 500 sleep units. No endpoint exists in this model; the
-     * experimental property reports the trained state so the original
-     * initialization can proceed. */
-    if (s->pcie_link && boot_config_addresses[word->index] == 0x2b200058) {
+     * for up to 500 sleep units. The optional link profiles report the
+     * trained state so the original initialization can proceed; only the
+     * SD-host profile also supplies an endpoint window. */
+    if ((s->pcie_link || s->sd_host) &&
+        boot_config_addresses[word->index] == 0x2b200058) {
         value = (value & ~0x3f0000u) | 0x110000u;
     }
     /* The firmware polls the input-path status word 0x20068060 on every
@@ -1512,6 +1555,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
     memset(s->dbi_regions, 0, sizeof(s->dbi_regions));
     s->dbi_viewport = 0;
+    if (s->sd_host && s->release_config) {
+        memset(memory_region_get_ram_ptr(&s->sd_config_ram), 0, 0x2000);
+    }
     memset(s->input_levels, 0, sizeof(s->input_levels));
     memset(s->sync_levels, 0, sizeof(s->sync_levels));
     s->auto_sample_level = false;
@@ -1571,8 +1617,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 33,
-    .minimum_version_id = 33,
+    .version_id = 34,
+    .minimum_version_id = 34,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1585,6 +1631,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(sample_counter, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
         VMSTATE_BOOL(pcie_link, NikonZ72BootConfig),
+        VMSTATE_BOOL(sd_host, NikonZ72BootConfig),
         VMSTATE_UINT32(sample_lines, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
@@ -1656,6 +1703,31 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         memory_region_init_io(&s->dbi_ram, OBJECT(dev), &dbi_ops, s,
                               "z72-pcie-configuration", 0x1000);
         memory_region_add_subregion(root, 0x2a900000, &s->dbi_ram);
+        if (s->sd_host) {
+            DeviceState *sd = qdev_new("generic-sdhci");
+
+            s->sd_controller = sd;
+
+            /* Fixed windows recovered from the original board setup:
+             * endpoint configuration followed by the first host BAR.
+             * Configuration is passive storage, without PCI enumeration. */
+            memory_region_init_ram(&s->sd_config_ram, OBJECT(dev),
+                                   g_strdup_printf("z72-sd-config-%s", tag),
+                                   0x2000, &error_fatal);
+            memory_region_add_subregion(root, 0x2a800000, &s->sd_config_ram);
+            object_property_add_child(OBJECT(dev), "sd-controller", OBJECT(sd));
+            object_property_set_link(OBJECT(sd), "dma", OBJECT(root),
+                                     &error_fatal);
+            sysbus_realize_and_unref(SYS_BUS_DEVICE(sd), &error_fatal);
+            memory_region_add_subregion(root, 0x2a810000,
+                                        sysbus_mmio_get_region(
+                                            SYS_BUS_DEVICE(sd), 0));
+            memory_region_init_io(&s->sd_clock_status, OBJECT(dev),
+                                  &sd_clock_ops, s, "z72-sd-clock-status", 4);
+            memory_region_add_subregion_overlap(root, 0x2a800064,
+                                                &s->sd_clock_status, 1);
+            /* Polling works independently of the unresolved PCIe IRQ path. */
+        }
         memory_region_init_io(&s->transport_ram, OBJECT(dev), &transport_ops, s,
                               "z72-transport-control", 0x10000);
         memory_region_add_subregion_overlap(root, 0x20130000,
@@ -1716,6 +1788,7 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         qdev_prop_set_uint32(s->timer, "line", s->timer_line);
         qdev_prop_set_uint32(s->timer, "tick-us", s->timer_tick_us);
         qdev_prop_set_bit(s->timer, "tick-enabled", s->timer_tick);
+        qdev_prop_set_bit(s->timer, "pcie-clock", s->sd_host);
         object_property_add_child(OBJECT(dev), "z72-timer", OBJECT(s->timer));
         sysbus_realize_and_unref(SYS_BUS_DEVICE(s->timer), &error_fatal);
         memory_region_add_subregion(root, 0x2B000000,
@@ -1819,6 +1892,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
         DEFINE_PROP_BOOL("pcie-link", NikonZ72BootConfig, pcie_link, false),
+        DEFINE_PROP_BOOL("sd-host", NikonZ72BootConfig, sd_host, false),
         DEFINE_PROP_UINT32("sample-lines", NikonZ72BootConfig, sample_lines, 0),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),

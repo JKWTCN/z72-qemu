@@ -9,7 +9,8 @@
  * laboratory models that contract: armed event bits are latched into +8 (and
  * the per-channel status word +0x10) at a selectable period, the line stays
  * asserted until the firmware writes the bits back, and every other word in
- * the block is passive storage. Real channel timing, the period unit and the
+ * the block is passive storage, except for optional PCIe clock readiness.
+ * Real channel timing, the period unit and the
  * hardware event sources remain unconfirmed. */
 #include "qemu/osdep.h"
 #include "qemu/timer.h"
@@ -39,6 +40,7 @@ struct NikonZ72Timer {
     uint32_t line;
     uint32_t tick_us;
     bool enabled;
+    bool pcie_clock;
 };
 
 static void z72_timer_update_line(NikonZ72Timer *s)
@@ -77,6 +79,14 @@ static void z72_timer_expire(void *opaque)
 static uint64_t z72_timer_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72Timer *s = opaque;
+    if (s->pcie_clock && offset == Z72_TIMER_STATUS && size == 4) {
+        uint32_t value, request;
+        memcpy(&value, s->storage + Z72_TIMER_STATUS, 4);
+        memcpy(&request, s->storage + 4, 4);
+        /* The original PCIe gate uses request bit 2 (active low) and
+         * checks readiness in status bit 10. Completion is synchronous. */
+        return (value & ~(1u << 10)) | ((request & 4) ? 0 : 1u << 10);
+    }
     if (!s->enabled) {
         uint64_t stored = 0;
         memcpy(&stored, s->storage + offset, size);
@@ -174,6 +184,7 @@ static const Property z72_timer_properties[] = {
     DEFINE_PROP_UINT32("line", NikonZ72Timer, line, 237),
     DEFINE_PROP_UINT32("tick-us", NikonZ72Timer, tick_us, 1000),
     DEFINE_PROP_BOOL("tick-enabled", NikonZ72Timer, enabled, true),
+    DEFINE_PROP_BOOL("pcie-clock", NikonZ72Timer, pcie_clock, false),
 };
 
 static void z72_timer_init(Object *obj)

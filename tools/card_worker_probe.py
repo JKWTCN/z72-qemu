@@ -11,6 +11,7 @@ a cluster of unmapped peripheral accesses. The probe reads state and
 never writes firmware files.
 """
 import argparse
+from collections import deque
 import json
 from pathlib import Path
 import struct
@@ -48,7 +49,9 @@ class CardWorker:
                               # spans read as RAM so the worker chain passes
                               # through them; only genuinely new windows
                               # surface in the unmapped log.
-                              (0x2B000000, 0x4000), (0x20010000, 0x1000000),
+                              (0x2B000000, 0x4000), (0x2B200000, 0x1000),
+                              (0x2A900000, 0x1000),
+                              (0x20010000, 0x1000000),
                               (0x04200000, 0x100000),
                               (0x28000000, 0x1000), (0x2C000000, 0x200000),
                               (0xB6000000, 0x6000000)):
@@ -63,6 +66,7 @@ class CardWorker:
                         begin=STOP, end=STOP)
         self.executed = []
         self.peripheral_access = []
+        self.peripheral_tail = deque(maxlen=64)
         self.peripheral_access_count = 0
         self.unmapped = []
         from unicorn import (UC_HOOK_MEM_UNMAPPED, UC_HOOK_MEM_READ,
@@ -76,8 +80,10 @@ class CardWorker:
                          else hex(value))
         def peripheral(u, access, address, size, value, unused):
             self.peripheral_access_count += 1
+            record = entry(u, access, address, size, value)
+            self.peripheral_tail.append(record)
             if len(self.peripheral_access) < 512:
-                self.peripheral_access.append(entry(u, access, address, size, value))
+                self.peripheral_access.append(record)
         def memory(u, access, address, size, value, unused):
             record = entry(u, access, address, size, value)
             if address in PERIPHERAL:
@@ -203,8 +209,11 @@ class CardWorker:
         try:
             self.u.emu_start((BASE + offset) | 1, STOP, count=budget)
         except Exception as error:
+            reached = self.u.reg_read(self.pc)
             return dict(fault=str(error),
-                        pc=hex(self.u.reg_read(self.pc) - BASE))
+                        runtime_pc=hex(reached),
+                        pc=hex(reached - BASE)
+                        if BASE <= reached < CODE_BASE + CODE_BYTES else None)
         reached = self.u.reg_read(self.pc)
         return dict(returned=None if reached == STOP else 'stopped',
                     pc=hex(reached - BASE) if reached != STOP else None,
@@ -212,7 +221,7 @@ class CardWorker:
                     else self.u.reg_read(self.regs[0]))
 
 
-def run(args):
+def run(args, worker_class=CardWorker):
     code_dump = Path(f'{args.ram_dump}.10000000').read_bytes()
     ram_dump = Path(f'{args.ram_dump}.B1800000').read_bytes()
     require(len(code_dump) == CODE_BYTES and len(ram_dump) == RAM_BYTES,
@@ -222,7 +231,7 @@ def run(args):
         aux = aux_dump.read_bytes()
     else:
         aux = b''
-    probe = CardWorker(code_dump, ram_dump, aux)
+    probe = worker_class(code_dump, ram_dump, aux)
     # Card worker entries from the captured slot table and the query path.
     probe.trace(0x4626A4)   # configured predicate (slot 0)
     probe.trace(0x4622CC)
@@ -238,6 +247,9 @@ def run(args):
     probe.trace(0x461BEA)
     probe.trace(0x462676)
     probe.trace(0x481594)
+    probe.trace(0x4F811E)  # bus enable and readiness polling
+    probe.trace(0x4F7212)  # readiness status read
+    probe.trace(0x47FDB2)  # SD protocol initializer
     # Unlock/release entries are RTOS boundaries; the lock-and-fetch
     # entry 0x481594 must run natively because it also returns the slot
     # object pointer. The runtime memory/lock/string primitives use the
@@ -269,6 +281,13 @@ def run(args):
                   enable_byte_forced=1,
                   platform_configuration_overridden=args.capability_all)
     probe.u.mem_write(ENABLE_BYTE, bytes((1,)))
+    if args.sd_host:
+        # Match the optional QEMU SD-host link prerequisites. This fixture
+        # supplies no endpoint or card data and cannot establish readiness.
+        probe.u.mem_write(0x2B200058, struct.pack('<I', 0x110000))
+        probe.u.mem_write(0x2B000010, struct.pack('<I', 1 << 10))
+        probe.u.mem_write(0x2A900098, struct.pack('<I', 2))
+    report['sd_host_link_prerequisites_synthetic'] = args.sd_host
     import struct as _s
     if args.capability_all:
         # All-one configuration is a synthetic diagnostic fixture. Active-low
@@ -310,6 +329,8 @@ def run(args):
     report['sd_controller_index'] = sd_index
     entries = (
             ('sd_board_context_init', 0x47D8E4, ()),
+            ('sd_bus_service_init', 0x4F7AE4, ()),
+            ('sd_bus_power_on', 0x47E21C, ()),
             ('card_service_init', 0x4630B0, ()),
             ('configured_slot0', 0x4626A4, (0,)),
             ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x8000)),
@@ -327,6 +348,7 @@ def run(args):
         if label not in selected:
             continue
         before_io = len(probe.peripheral_access)
+        before_io_count = probe.peripheral_access_count
         before_path, before_services, before_entries = len(probe.path), len(probe.services), len(probe.executed)
         result = probe.call(offset, *arguments)
         import struct as _struct
@@ -334,6 +356,7 @@ def run(args):
         count = _struct.unpack('<H', probe.u.mem_read(0xB1D28008, 2))[0]
         entry = dict(handle_pointers=[hex(word) for word in registry], handle_count=count)
         path = probe.path[before_path:]
+        io_count = probe.peripheral_access_count - before_io_count
         experiments.append(dict(
             experiment=label, entry=hex(offset), result=result,
             arguments=[hex(value) for value in arguments],
@@ -346,6 +369,9 @@ def run(args):
             path_length=len(path),
             path_tail=[hex(pc) for pc in path[-60:]],
             peripheral_access=probe.peripheral_access[before_io:],
+            peripheral_access_count=io_count,
+            peripheral_access_tail=list(probe.peripheral_tail)[-min(io_count, 64):]
+                if io_count else [],
             unmapped_count=len(probe.unmapped)))
         if result.get('fault'):
             break
@@ -376,6 +402,8 @@ def main():
                         help='memsave snapshot prefix from card_slot_probe')
     parser.add_argument('--capability-all', action='store_true',
                         help='Set platform configuration words to all ones (synthetic)')
+    parser.add_argument('--sd-host', action='store_true',
+                        help='Supply synthetic link prerequisites of the QEMU SD-host profile')
     parser.add_argument('--experiment', action='append',
                         help='Run a named worker entry; repeat to select multiple entries')
     parser.add_argument('--destination', required=True, type=Path)

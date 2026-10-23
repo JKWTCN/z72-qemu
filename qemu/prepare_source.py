@@ -27,7 +27,7 @@ def prepare(root):
             shutil.copyfile(source, destination)
     additions = {
         'hw/arm/meson.build': "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72.c'))\n",
-        'hw/arm/Kconfig': '\nconfig NIKON_Z72_LAB\n    bool\n    depends on TCG && ARM\n    select GENERIC_LOADER\n    select ARM_GIC\n    select ARM_V7M\n    select STM32F2XX_TIMER\n    select OR_IRQ\n    select I2C\n    select SSI\n    select STM32F2XX_USART\n',
+        'hw/arm/Kconfig': '\nconfig NIKON_Z72_LAB\n    bool\n    depends on TCG && ARM\n    select GENERIC_LOADER\n    select ARM_GIC\n    select ARM_V7M\n    select STM32F2XX_TIMER\n    select OR_IRQ\n    select I2C\n    select SSI\n    select STM32F2XX_USART\n    select SDHCI\n',
         'configs/devices/arm-softmmu/default.mak': '\nCONFIG_NIKON_Z72_LAB=y\n',
     }
     for name, addition in additions.items():
@@ -38,7 +38,7 @@ def prepare(root):
             if addition.strip() not in data:
                 variants = []
                 legacy = addition
-                for dependency in ('STM32F2XX_USART', 'SSI', 'I2C', 'OR_IRQ', 'STM32F2XX_TIMER', 'ARM_V7M', 'ARM_GIC'):
+                for dependency in ('SDHCI', 'STM32F2XX_USART', 'SSI', 'I2C', 'OR_IRQ', 'STM32F2XX_TIMER', 'ARM_V7M', 'ARM_GIC'):
                     legacy = legacy.removesuffix('    select ' + dependency + '\n')
                     variants.append(legacy)
                 for previous_config in variants:

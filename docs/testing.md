@@ -510,6 +510,24 @@ pointer resolved to a master file offset. See the
 Use `--registration-only` for a read-only startup check that stops after
 observing the table; it skips forced slot enable and the later key sequence.
 
+`tests/test_sd_host.py --qemu .build/build/qemu-system-arm` exercises the
+optional `sd-host` profile with a synthetic card image in snapshot mode. It checks
+the link prerequisites, the active-low clock request, controller reset,
+card address assignment and a complete 512-byte PIO sector read. The host
+uses QEMU's SDHCI implementation at the firmware-derived first BAR.
+This check does not execute firmware or establish its filesystem/IRQ path.
+The [SD host validation record](../artifacts/sd_host_validation/report.json)
+identifies the compiled binary and the checks that passed.
+
+`tools/sd_native_probe.py --qemu .build/build/qemu-system-arm
+--ram-dump .local/card-ram.bin --destination .local/sd-native` executes the
+captured card workers with the recovered MMIO windows forwarded to QEMU.
+It creates a temporary blank card by default; `--card-image` selects a raw
+image, with all writes confined to an overlay. Firmware execution remains
+bounded and RTOS responses remain synthetic. See the
+[native SD host record](../artifacts/sd_native_host/report.json) for the
+current stop after clock setup and the first card command.
+
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
 bounded environment, forces the slot enable byte and runs the original
 card worker entries, recording the executed chain and every peripheral
