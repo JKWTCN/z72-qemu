@@ -49,7 +49,9 @@ class CardWorker:
                               # through them; only genuinely new windows
                               # surface in the unmapped log.
                               (0x2B000000, 0x4000), (0x20010000, 0x1000000),
-                              (0x28000000, 0x1000), (0x2C000000, 0x200000)):
+                              (0x04200000, 0x100000),
+                              (0x28000000, 0x1000), (0x2C000000, 0x200000),
+                              (0xB6000000, 0x6000000)):
             self.u.mem_map(address, size)
         self.u.mem_write(CODE_BASE, code_dump)
         self.u.mem_write(RAM_BASE, ram_dump)
@@ -84,6 +86,14 @@ class CardWorker:
         self.u.hook_add(UC_HOOK_CODE, wrapper, begin=BASE + offset,
                         end=BASE + offset)
 
+    def full_trace(self, limit=0x800000):
+        from unicorn import UC_HOOK_CODE
+        self.path = []
+        self.u.hook_add(UC_HOOK_CODE,
+                        lambda u, address, size, unused:
+                            self.path.append(address - BASE),
+                        begin=BASE, end=BASE + limit)
+
     def trace(self, offset):
         from unicorn import UC_HOOK_CODE
         self.u.hook_add(UC_HOOK_CODE,
@@ -93,6 +103,26 @@ class CardWorker:
 
     def result(self, value):
         self.u.reg_write(self.regs[0], value)
+
+    def noop(self, *args):
+        pass
+
+    def copy(self, target, source, size, unused):
+        if size:
+            self.u.mem_write(target,
+                             bytes(self.u.mem_read(source, size)))
+        self.result(target)
+
+    def zero(self, target, size, *args):
+        if size:
+            self.u.mem_write(target, bytes(size))
+        self.result(target)
+
+    def upper(self, value, *args):
+        self.result(value - 32 if 97 <= value <= 122 else value)
+
+    def ctype(self, *args):
+        self.result(SCRATCH + 0x1000)
 
     def call(self, offset, *args, budget=2000000):
         for register, value in zip(self.regs, args):
@@ -134,22 +164,81 @@ def run(args):
     probe.trace(0x481594)
     # Unlock/release entries are RTOS boundaries; the lock-and-fetch
     # entry 0x481594 must run natively because it also returns the slot
-    # object pointer.
+    # object pointer. The runtime memory/lock/string primitives use the
+    # same boundary set as the bounded update probe.
     probe.hook(0x4815FC, lambda *a: None)
     probe.hook(0x48174A, lambda *a: None)
+    for offset, callback in (
+            (0x340F44, probe.copy), (0x340FAC, probe.copy),
+            (0x341034, probe.zero), (0x32FA28, probe.noop),
+            (0x32F9EC, probe.noop), (0x3802DA, probe.upper),
+            (0x3D7144, probe.ctype), (0x340F18, probe.noop),
+            (0x340F12, probe.noop), (0x4C09FE, probe.noop)):
+        probe.hook(offset, callback)
+    flags = bytes(0x20 if 48 <= c <= 57 else 16 if 65 <= c <= 90
+                  else 128 if 97 <= c <= 122 else 0 for c in range(256))
+    probe.u.mem_write(SCRATCH + 0x1000, bytes(4) + flags)
     report = dict(format=1, passed=False,
                   snapshot=str(args.ram_dump),
                   enable_byte_before=probe.u.mem_read(ENABLE_BYTE, 1)[0])
     probe.u.mem_write(ENABLE_BYTE, bytes((1,)))
+    import struct as _s
+    if args.capability_all:
+        # Present every platform capability bit so the driver chain does
+        # not exit early; the real machine registers these as device words.
+        probe.u.mem_write(0x04200000, bytes([0xFF]) * 0x100000)
+    descriptors = []
+    for index in range(3):
+        entry = 0xB1808AC4 + index * 0x18
+        words = _s.unpack('<6I', probe.u.mem_read(entry, 0x18))
+        if words[0]:
+            descriptors.append(words)
+    registry_entries = []
+    struct_base = SCRATCH + 0x2000
+    for index, words in enumerate(descriptors):
+        module = struct_base + index * 0x40
+        obj = 0xB1D28018 + index * 0x20
+        name = SCRATCH + 0x4000 + index * 8
+        probe.u.mem_write(name, b'MOD' + bytes((48 + index,)) + bytes(4))
+        record = _s.pack('<HHIIIIIIII', index, index, name, 0, 0,
+                         words[1], words[2], words[3], words[4], words[5])
+        probe.u.mem_write(module, record)
+        probe.u.mem_write(obj, record)
+        probe.u.mem_write(0xB1D28008 + index * 4,
+                          _s.pack('<I', module))
+        registry_entries.append(dict(module=index,
+                                     struct=hex(module), object=hex(obj)))
+    probe.u.mem_write(0xB1D28078, _s.pack('<H', len(descriptors)))
+    report['synthesized_registry'] = registry_entries
     experiments = []
+    probe.full_trace()
     for label, offset, arguments in (
             ('configured_slot0', 0x4626A4, (0,)),
-            ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x2000))):
+            ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x8000)),
+            ('configured_slot1', 0x4626A4, (1,)),
+            ('query_local_slot1', 0x462A0E, (1, SCRATCH + 0x8000)),
+            ('sd_module_op0', 0x481C70, (SCRATCH + 0x5000, SCRATCH + 0x5100,
+                                          0, 0)),
+            ('sd_module_op1', 0x481E30, (SCRATCH + 0x5000, SCRATCH + 0x5100,
+                                          0, 0)),
+            ('sd_module_op2', 0x481F06, (SCRATCH + 0x5000, SCRATCH + 0x5100,
+                                          0, 0)),
+            ('sd_module_op3', 0x482016, (SCRATCH + 0x5000, SCRATCH + 0x5100,
+                                          0, 0))):
         before_io = len(probe.peripheral_access)
         result = probe.call(offset, *arguments)
+        import struct as _struct
+        registry = list(_struct.unpack('<3I', probe.u.mem_read(0xB1D28008, 12)))
+        count = _struct.unpack('<H', probe.u.mem_read(0xB1D28078, 2))[0]
+        entry = dict(module_registry=[hex(word) for word in registry],
+                     module_count=count)
+        path = getattr(probe, 'path', [])
         experiments.append(dict(
             experiment=label, entry=hex(offset), result=result,
+            registry=entry,
             executed=probe.executed,
+            path_length=len(path),
+            path_tail=[hex(pc) for pc in path[-60:]],
             peripheral_access=probe.peripheral_access[before_io:],
             unmapped_count=len(probe.unmapped)))
         if result.get('fault'):
@@ -174,6 +263,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ram-dump', required=True, type=Path,
                         help='memsave snapshot prefix from card_slot_probe')
+    parser.add_argument('--capability-all', action='store_true',
+                        help='Set all platform capability bits to present')
     parser.add_argument('--destination', required=True, type=Path)
     arguments = parser.parse_args()
     run(arguments)
