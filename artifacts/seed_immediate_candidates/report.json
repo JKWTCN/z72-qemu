@@ -1,0 +1,127 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "scope": "Bounded ARM/Thumb immediate-constructor candidates from original engine members",
+  "assumptions": {
+    "movw_movt_max_span_bytes": 32,
+    "word_pair_max_span_bytes": 128,
+    "byte_orders": [
+      "little",
+      "big"
+    ],
+    "word_orders": [
+      "forward",
+      "reverse"
+    ],
+    "conditional_arm_and_thumb16_immediates_included": false
+  },
+  "samples": {
+    "z72": {
+      "bytes": 48494024,
+      "sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a"
+    },
+    "z62": {
+      "bytes": 49002888,
+      "sha256": "5a9640b4c07abe1ecbf5a52655cbec6b893bba045bb2a1a1d21055b9f8f9d06d"
+    }
+  },
+  "dependencies": {
+    "numpy": "2.2.6",
+    "capstone": "5.0.7"
+  },
+  "images": [
+    {
+      "model": "z72",
+      "member": "eg1840_mas_01700",
+      "bytes": 38239098,
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scans": {
+        "thumb": {
+          "prefilter_sites": 72065,
+          "immediate_values": 68805
+        },
+        "arm": {
+          "prefilter_sites": 126186,
+          "immediate_values": 5080
+        }
+      },
+      "new_candidates": 406157,
+      "boot_prefix_immediate_counts": {
+        "0x10000000": 125
+      },
+      "elapsed_seconds": 6.11
+    },
+    {
+      "model": "z72",
+      "member": "eg1840_sla_01700",
+      "bytes": 8834370,
+      "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "scans": {
+        "thumb": {
+          "prefilter_sites": 8061,
+          "immediate_values": 7942
+        },
+        "arm": {
+          "prefilter_sites": 21877,
+          "immediate_values": 2702
+        }
+      },
+      "new_candidates": 1198,
+      "boot_prefix_immediate_counts": {
+        "0x10000000": 49
+      },
+      "elapsed_seconds": 0.56
+    },
+    {
+      "model": "z62",
+      "member": "eg1850_mas_01700",
+      "bytes": 38750138,
+      "sha256": "bb83613121f843d65101da936d942acdc513d86dbd3abc26259d0d870d03f5d4",
+      "scans": {
+        "thumb": {
+          "prefilter_sites": 72289,
+          "immediate_values": 68913
+        },
+        "arm": {
+          "prefilter_sites": 126326,
+          "immediate_values": 5078
+        }
+      },
+      "new_candidates": 76448,
+      "boot_prefix_immediate_counts": {
+        "0x10000000": 125
+      },
+      "elapsed_seconds": 4.12
+    },
+    {
+      "model": "z62",
+      "member": "eg1850_sla_01700",
+      "bytes": 8832194,
+      "sha256": "3fd8c2cbdf57fadb03f6d69b596b58a8703efdd61ae82572d5afeea0241a9ed5",
+      "scans": {
+        "thumb": {
+          "prefilter_sites": 8013,
+          "immediate_values": 7897
+        },
+        "arm": {
+          "prefilter_sites": 21966,
+          "immediate_values": 2698
+        }
+      },
+      "new_candidates": 100,
+      "boot_prefix_immediate_counts": {
+        "0x10000000": 49
+      },
+      "elapsed_seconds": 0.48
+    }
+  ],
+  "candidates_tested": 483903,
+  "matches": [],
+  "header_digest_match_found": false,
+  "limitations": [
+    "Instruction-shaped bytes may be data; a match would require code-path validation.",
+    "Only nearby immediate-derived word pairs are covered, not general arithmetic or byte-store constructors.",
+    "No boot-window initializer or cross-model shared B8 is established by a negative result.",
+    "No camera update acceptance, native programming or persistence is executed."
+  ]
+}
