@@ -566,6 +566,11 @@ reaches normal directory end and selects nothing. The latter intentionally
 has `passed=false` because its requested candidate is absent.
 `--read-file` records the remaining asynchronous SDK file-open boundary;
 it does not supply file bytes from the host or report update acceptance.
+The read-only message trace records the native send result and shared queue
+indices. The [message boundary](../artifacts/native_file_message_boundary/report.json)
+shows resource 9, operation 13 queued with no consumer in the bounded snapshot.
+This distinguishes an unprocessed request from a package verification rejection;
+the peer file service and its reply still require execution on the second engine.
 
 To make a new synthetic FAT card from a directory, use `qemu-img convert
 -f raw -O raw fat:/path/to/directory card.raw`, then `qemu-img resize

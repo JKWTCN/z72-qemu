@@ -165,7 +165,7 @@
     "docs/porting.md": "c396ad9a79416797337917271cbdc01c78527dc0aafed838b0b3afdfcb3f85d6",
     "docs/publication.md": "9c0aaecc2bc2b4c17c17d881acf0c838d345d7c10aaabe2a857de037b2e68327",
     "docs/reference-sources.json": "638b788bc152e9d3228040064ccd5d5e32f763fe9475af07962c7ea6d1f6a584",
-    "docs/testing.md": "c82336c724afcbca8eae1074f3b94ec9fca2606a4bfb24b6a93ade46f04c8d9a",
+    "docs/testing.md": "d581b13660ba4de56c06d6b56c450ab030940b5f404e4b48be193b3c876ddf82",
     "qemu/nikon-gpu.h": "8e8d13c10b41569e15baa882aa06b401e84349d85a141672cca26fb17487368c",
     "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
     "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
@@ -228,7 +228,7 @@
     "research/z7ii/early_configuration.md": "02a9e38e2047ad4bf0d61fb163d596e9f4b4bc733adf25e81abd49b95ca0a79d",
     "research/z7ii/engine_i2c.md": "85c8165964eea35d858fcd6e0d1aacdc57cc74bbe72c2290d6dbd80e3c358f7b",
     "research/z7ii/engine_memory.md": "ffaf4fde8828b65955c65b8243ced2755bbafc0d26162c19d5af03bd23e80061",
-    "research/z7ii/firmware_update.md": "381ab79665ebef26ccbe040b466d405311de843686d779b380d77199ac706821",
+    "research/z7ii/firmware_update.md": "86f7efb22a0ef4e6bb268fd1dec9eb0ccb82df968aa360331cefc107dbb5a3ec",
     "research/z7ii/graphics_device.md": "1e438b770a7290fcd89a9ea2c9eb2cf91eadb0fa83a7fde6c970949351192ae1",
     "research/z7ii/input_configuration.md": "630bb6f323f4657e48ad958a7d0321fa90653625049f73af954647f4afe1acbc",
     "research/z7ii/input_path.md": "e31f3abb408ae4d9cc1fe78e1f3888c84a637f2fb6e1b3129c352a16ea6aed09",
@@ -343,7 +343,7 @@
     "tools/platform_boot_probe.py": "92ff6c29fddb24b8648af219bcd7e651d1ea063ec54a402fbb6c9df6fe277c7c",
     "tools/runtime_boot_probe.py": "78fea1f4532b084b1a5d867250ba4e1776e2bd82529b43e0fd7a10e2350d424f",
     "tools/runtime_wait_probe.py": "6605eeb9f6c6ba53a0034ee32ad37ee6f72412338f958d3ccf678e65c610e410",
-    "tools/sd_native_probe.py": "3940feca6322d447e8bc8f30be70a968013f982fbdad280df6de5eac53feecd6",
+    "tools/sd_native_probe.py": "b52b320aefb612b0177b8b9a4f3e4d0a755ada1d8424906c9ecc0b861e0d100a",
     "tools/sensor_frame_probe.py": "89f0d9b219d013104dfe55919e1ff8e4f3457ca93a8f322c9d1fd98ee5e5f8cb",
     "tools/sequencer_boot_probe.py": "c80dfffce78c7ad89e5e010bf176a96333e5db34d660e1eddb78465684ab0d66",
     "tools/service_boot_probe.py": "280a185ec7ad8e6daedf42d2858b356a76b3a76346a35e39b7e474eac04cfe6a",
@@ -366,6 +366,7 @@
     "artifacts/native_file_service_boundary/report.json": "394498c4cae227cc157ba2a206c7340927a8f971efb0a7ec47930b20ee17f7ab",
     "artifacts/native_update_card_directory/report.json": "d1f8ec78cfb7e837b9cfee0697dfd7d11a77ff70f603d347ffa774436cb125db",
     "artifacts/native_update_card_no_candidate/report.json": "63f53245ed0e824bc9c2180b0803b4fe2b3b4238efa981d05a8c9266ced1a7d8",
-    "artifacts/native_update_card_validation/report.json": "aaf12415b6d88ae2be3f6bf8ae7172a523064fa3f6441f8b4f438967dc1b9fe6"
+    "artifacts/native_update_card_validation/report.json": "aaf12415b6d88ae2be3f6bf8ae7172a523064fa3f6441f8b4f438967dc1b9fe6",
+    "artifacts/native_file_message_boundary/report.json": "37a57483797e2cb0a8b6bc0887dc77817354ef77c9e3860447c0ae998d15c5a7"
   }
 }

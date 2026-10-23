@@ -24,7 +24,7 @@ from tools.card_worker_probe import BASE, CardWorker, run as run_workers
 
 
 def run(args):
-    from unicorn import UC_HOOK_MEM_READ, UC_HOOK_MEM_WRITE, UC_MEM_READ
+    from unicorn import UC_HOOK_CODE, UC_HOOK_MEM_READ, UC_HOOK_MEM_WRITE, UC_MEM_READ
     with tempfile.TemporaryDirectory(prefix='sd-native-', dir=ROOT / '.local') as folder:
         image = args.card_image
         if image is None:
@@ -59,6 +59,7 @@ def run(args):
         workers = []
         clock_queries = []
         filesystem_events = []
+        filesystem_messages = []
         try:
             deadline = time.monotonic() + 10
             while wire is None:
@@ -223,6 +224,34 @@ def run(args):
                     self.pending_dma = None
                     self.pending_worker = None
                     self.in_worker = False
+                    def message_trace(u, address, size, unused):
+                        if not self.in_worker:
+                            return
+                        if address == BASE + 0x368666:
+                            resource, operation, length, payload = (
+                                u.reg_read(register) for register in self.regs)
+                            if len(filesystem_messages) >= 64:
+                                raise ValueError('Filesystem message capture bound exceeded')
+                            if length > 0x100:
+                                raise ValueError('Filesystem message exceeds native inline limit')
+                            filesystem_messages.append(dict(resource=resource,
+                                operation=operation, length=length,
+                                payload_sha256=hashlib.sha256(bytes(
+                                    u.mem_read(payload, length))).hexdigest(),
+                                submitted=False))
+                        elif filesystem_messages:
+                            # Observe the native sender's successful return.
+                            # The peer consumer is absent in this snapshot;
+                            # submission cannot satisfy a filesystem reply.
+                            message = filesystem_messages[-1]
+                            message['submitted'] = u.reg_read(self.regs[0]) == 1
+                            message['queue_indices'] = dict(zip(
+                                ('written', 'consumed'), struct.unpack('<II',
+                                    bytes(u.mem_read(0xB7CF0008, 4)) +
+                                    bytes(u.mem_read(0xB7CF0010, 4)))))
+                    for offset in (0x368666, 0x36843E):
+                        self.u.hook_add(UC_HOOK_CODE, message_trace,
+                            begin=BASE + offset, end=BASE + offset)
                     self.event_flags = {}
                     self.held_locks = set()
                     self.held_mutexes = set()
@@ -315,6 +344,8 @@ def run(args):
             report['clock_fixture'] = 'QEMU virtual nanoseconds converted to milliseconds, high word first'
             report['clock_queries_ms'] = clock_queries
             report['filesystem_events'] = filesystem_events
+            report['filesystem_messages'] = filesystem_messages
+            report['filesystem_peer_consumer_present'] = False
             report['completion_event_delivery_is_host_modeled'] = True
             report['card_commands'] = card_commands
             report['card_command_log_limit'] = 128
