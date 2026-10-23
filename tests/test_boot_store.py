@@ -5,7 +5,9 @@ Two tiny ARM images write distinguishable markers into state RAM and spin.
 The board starts on the first image, the store is reprogrammed with the
 second through its image property, and a whole-machine reset must make the
 core restart at the image entry so the second marker lands — the same
-programming-and-reset path the menu update uses, without any firmware.
+image-property reset path used by the experimental console, without any
+firmware. A decoded RAM container must not replace that image unless the
+laboratory window fixture is explicitly enabled.
 """
 import argparse
 from pathlib import Path
@@ -18,10 +20,11 @@ import time
 import os
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from analyze.decode_z72 import require
+from analyze.decode_z72 import crc, require
 from analyze.qemu_display import Remote
 
 MARKER_ADDRESS = 0xB2000100
+WINDOW = 0x52000000
 
 
 def image(marker):
@@ -29,6 +32,16 @@ def image(marker):
     return struct.pack('<6I',
                        0xE59F0008, 0xE59F1008, 0xE5810000, 0xEAFFFFFE,
                        marker, MARKER_ADDRESS)
+
+
+def decoded_window(marker):
+    """Synthetic CRC-valid container with no authenticated header digest."""
+    member = image(marker)
+    member += struct.pack('>H', crc(member))
+    body = b' ' * 0x20 + struct.pack('>4I', 1, 0x50, 0, 0)
+    body += struct.pack('>16s4I', b'eg1840_mas_test', 0x50, len(member), 0, 0) + member
+    body += struct.pack('>H', crc(body)) + bytes(14)
+    return bytes(0x20) + body
 
 
 class Monitor:
@@ -132,6 +145,35 @@ def run(qemu):
                 run_and_halt()
                 require(marker() == 0x55667788,
                         'The reset did not boot the reprogrammed image')
+
+                candidate = decoded_window(0x99AABBCC)
+                remote.write(WINDOW, candidate)
+                monitor.command('system_reset')
+                run_and_halt()
+                require(marker() == 0x55667788,
+                        'A decoded RAM fixture replaced the stored image without opt-in')
+                require(monitor.command('qom-get', {'path': '/machine/master-boot-store',
+                        'property': 'harvest-update'}) is False, 'Window harvesting defaults to enabled')
+
+                monitor.command('qom-set', {'path': '/machine/master-boot-store',
+                        'property': 'harvest-update', 'value': True})
+                monitor.command('system_reset')
+                run_and_halt()
+                require(marker() == 0x99AABBCC, 'Explicit decoded-window fixture did not boot')
+
+                damaged = bytearray(candidate)
+                damaged[0x20 + 0x50 + 16] ^= 1
+                remote.write(WINDOW, damaged)
+                monitor.command('system_reset')
+                run_and_halt()
+                require(marker() == 0x55667788, 'Damaged window replaced the stored image')
+
+                remote.write(WINDOW, candidate)
+                monitor.command('qom-set', {'path': '/machine/master-boot-store',
+                        'property': 'harvest-update', 'value': False})
+                monitor.command('system_reset')
+                run_and_halt()
+                require(marker() == 0x55667788, 'Disabled fixture still replaced the stored image')
                 remote.sock.close()
             finally:
                 process.terminate()
@@ -140,7 +182,7 @@ def run(qemu):
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=5)
-    print('PASS boot store reprogram and reset')
+    print('PASS stored image reset, explicit decoded-window fixture and damaged-window rejection')
 
 
 def main():

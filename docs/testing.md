@@ -485,15 +485,22 @@ on the default clock. See the
 `tests/test_boot_store.py --qemu .build/build/qemu-system-arm` checks the
 engine boot store with synthetic marker images only: the stored first image
 runs, the store is reprogrammed through the monitor, and a whole-machine
-reset restarts the core at the image entry so the second image runs — the
-programming-and-reset contract behind the menu update, without firmware.
+reset restarts the core at the image entry so the second image runs. This is
+the experimental console's image-property reset contract, without firmware.
+The check also places a CRC-valid decoded container with an unauthenticated
+header in RAM: default resets must keep the stored image. Explicitly enabling
+`harvest-update` permits the laboratory fixture to boot; a damaged container
+or disabling that option keeps the stored image as the reset source. See the
+[decoded-window opt-in checks](../artifacts/decoded_window_opt_in/report.json).
 
-`tools/update_window_probe.py` checks the original update staging window:
-a preloaded decoded package (standing in for the original dispatcher's
-writes, which the bounded update probe covers separately) boots as its own
-master member after a machine reset and survives a second reset, while a
+`tools/update_window_probe.py` explicitly enables
+`nikon-z72-boot-store.harvest-update=on` and checks a laboratory decoded-window
+fixture: a preloaded package boots as its own master member after a machine
+reset and survives a second reset, while a
 one-byte-corrupted copy is rejected by the container CRCs and keeps the
-stock master running. See the
+stock master running. The fixed window address is supplied by the experiment;
+native service execution allocates its own package buffer. This does not
+execute native flash programming or establish update authentication. See the historical
 [update window evidence](../artifacts/update_window_harvest/report.json).
 
 `tools/menu_fwupdate_probe.py` sweeps the original menu pages with real key

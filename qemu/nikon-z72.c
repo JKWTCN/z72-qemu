@@ -2002,8 +2002,8 @@ type_init(boot_config_register_types)
  * The body boots from its stored firmware, so a reset must copy the image
  * back into the code window and restart both cores at the image entry even
  * though the preloader only runs once. Writing the image property replaces
- * the stored firmware (the programming step of a firmware update); the next
- * machine reset then boots the replaced image. */
+ * the laboratory stored image; the next machine reset boots that image.
+ * This property does not implement the firmware's flash programming API. */
 #define TYPE_NIKON_Z72_BOOT_STORE "nikon-z72-boot-store"
 OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72BootStore, NIKON_Z72_BOOT_STORE)
 
@@ -2093,7 +2093,7 @@ static bool update_member_name_ok(const uint8_t *raw)
     return true;
 }
 
-/* Harvest a decoded update container from the programming window. Mirrors
+/* Harvest a decoded update container from an explicit laboratory window. Mirrors
  * the host-side container checks: 32-byte space marker, big-endian
  * directory (count 1..64, contiguous members, zero reserved fields), one
  * master member, every member CRC residue zero and the container CRC over
@@ -2295,9 +2295,9 @@ static void boot_store_harvest_set(Object *obj, bool value, Error **errp)
 /* Runs after the device tree reset: the code window and the cores are back
  * at their reset state, so the stored set is copied in and execution is
  * pointed at the image entry, matching the preloader's initial placement.
- * A valid decoded container in the programming window replaces the stored
- * image for this boot: the window is the body storage the original update
- * dispatcher programs, so the machine boots from whatever it holds. */
+ * The optional decoded-window fixture can replace the image for this boot.
+ * Its structural checks do not establish native update authentication or
+ * programming, so normal resets do not enable this fixture. */
 static void boot_store_reset(void *opaque)
 {
     NikonZ72BootStore *s = opaque;
@@ -2374,14 +2374,13 @@ static void boot_store_class_init(ObjectClass *oc, const void *data)
     object_class_property_add_bool(oc, "harvest-update",
         boot_store_harvest_get, boot_store_harvest_set);
     object_class_property_set_description(oc, "harvest-update",
-        "Boot a valid decoded container from the programming window");
+        "Explicit laboratory fixture: boot a CRC-valid decoded RAM container");
 }
 
 static void boot_store_init(Object *obj)
 {
-    /* Harvesting is on by default: an all-zero or invalid window fails the
-     * container checks and leaves the stored image untouched. */
-    NIKON_Z72_BOOT_STORE(obj)->harvest = true;
+    /* Normal resets use stored images. Decoded-window experiments opt in. */
+    NIKON_Z72_BOOT_STORE(obj)->harvest = false;
 }
 
 static void boot_store_register_types(void)

@@ -1,12 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Verify the update staging window programming and harvest behaviour.
+"""Verify the explicit decoded-window boot fixture.
 
-The original update dispatcher decodes an accepted package into the staging
-window inside the cached buffer pool; the boot store treats that window as
-the programmed body storage and boots a valid decoded container from it at
-every reset. This probe stands in for the dispatcher with a preloaded
-window (the in-machine dispatcher writes are covered separately by the
-bounded update probe), then checks the machine-visible consequences:
+The window address is a laboratory input, also supplied by the bounded
+update probe. It is not an observed fixed programming destination. This
+probe explicitly enables window harvesting and preloads a decoded container,
+then checks the machine-visible consequences:
 
 - a valid decoded container boots as its own master member after a machine
   reset, and keeps booting across a second reset;
@@ -15,7 +13,8 @@ bounded update probe), then checks the machine-visible consequences:
 
 Only the master engine harvests; the slave engine keeps its stored image
 and the mixed-version machine is not expected to reach a shooting state.
-Firmware bytes stay local; no firmware file is modified.
+Firmware bytes stay local; no firmware file is modified. This fixture does
+not execute authentication or native flash programming.
 """
 import argparse
 import hashlib
@@ -156,7 +155,8 @@ def launch_case(args, work, label, window_data, expect_version, second_reset):
                 icount='shift=0,sleep=off', trace='guest_errors',
                 controller_firmware=args.controller, controller_link=True,
                 controller_flash_data=work / 'resident.bin', devices=devices,
-                globals_=('nikon-z72-boot-config.frame-sync=on',),
+                globals_=('nikon-z72-boot-config.frame-sync=on',
+                          'nikon-z72-boot-store.harvest-update=on'),
                 machine_options=(f'master-boot-image={stock}',),
                 extra_arguments=(
                     '-device',
@@ -279,8 +279,9 @@ def run(args):
         firmware_sha256={'master': analyze_eg(master, 'master')['sha256']},
         controller_sha256=CONTROLLER_SHA256,
         firmware_modified=False, runtime_state_written=False,
-        dispatcher_write_is_original_evidence=True,
-        dispatcher_covered_separately='tools/native_update_probe.py integrity suite',
+        window_supplied_by_host=True, window_is_firmware_selected=False,
+        harvest_update_explicit=True, native_authentication_verified=False,
+        native_programming_verified=False,
         cases=[])
     with tempfile.TemporaryDirectory(prefix='window-', dir=ROOT / '.local') as folder:
         work = Path(folder)

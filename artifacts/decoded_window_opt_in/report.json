@@ -1,0 +1,78 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Stored-image reset and explicit laboratory decoded-window fixture",
+  "firmware_included": false,
+  "inputs": "Synthetic ARM marker images and a synthetic CRC-valid decoded container",
+  "fixture": {
+    "address": "0x52000000",
+    "bytes": 154,
+    "sha256": "87481455ff500b3538c50163c44643eb4befec16be0a94d75f7e6c4301c82425",
+    "header_digest_authenticated": false,
+    "window_is_firmware_selected": false
+  },
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "be664ded625e66304b2d98f157cf30bd8ac0f1aca2fbfa43f1546b02f30b13c2",
+    "sources": {
+      "qemu/nikon-z72.c": "c40074dc2f62d928a9e59a943c9a0dfe655e53e3f037d10bcdf4e0e17294c03c",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+      "qemu/nikon-z72-memory.c": "aa2807c776f3631c37f890ef1da8be41fcf1ef946998ffa07f0ee857a4df95e1",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "efdf308622ee3344dde0179ab137acb4d80f30c8b43e41c919e5dad14134e6b7",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "7af84a9f813377587579d393038bbaa852c2bd68933239ec90a52583eef991e8",
+      "qemu/nikon-z72-controller-gpio.c": "4ebb569ef3c74e7c0f8294e37da6cfbc3379ec266260bdcc7b91fb538fc971b0",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "0cf66c7829feeb9da1c230b3e66efb32a7609e1377fd0944c5e86b2bee718bb2",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "1f3cc83213b014afca6001ab194fca234a7bd9368e123d258b9568e344b234d0",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "9d50d0c81d92e72380cbf9a2e602e80b081cda9e567e0e241fdc1e5e36e406f3",
+      "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ]
+  },
+  "before": {
+    "binary_sha256": "f0a1508633574b388f902f824a1c354e4b4fcf0fc6717f9cad74f50864369ed6",
+    "default_harvest": true,
+    "valid_decoded_window_ignored": false,
+    "failed_assertion": "A decoded RAM fixture replaced the stored image without opt-in"
+  },
+  "checks": {
+    "stored_first_image_boots": true,
+    "image_property_replacement_boots_after_reset": true,
+    "valid_decoded_window_ignored_by_default": true,
+    "harvest_property_defaults_to_false": true,
+    "explicit_opt_in_boots_fixture": true,
+    "damaged_fixture_rejected": true,
+    "disabling_fixture_restores_stored_image": true,
+    "command_line_opt_in_property_true": true
+  },
+  "native_authentication_acceptance_verified": false,
+  "native_flash_programming_verified": false,
+  "native_menu_update_verified": false
+}
