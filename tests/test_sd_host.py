@@ -90,6 +90,12 @@ def run(qemu):
 
             assert command('readl 0x2b200058') & 0x3F0000 == 0x110000
             assert command('readl 0x2a900098') & 15 == 2
+            command('writel 0x2a90003c 0x000001ff')
+            assert command('readl 0x2a90003c') == 0x000001ff
+            command('writel 0x2a90003c 0')
+            assert command('readl 0x2a900104') == 0
+            command('writel 0x2a900104 0xffffffff')
+            assert command('readl 0x2a900104') == 0, 'Error acknowledgement created status'
             assert command('readl 0x2b000010') & 0x400
             command('writel 0x2b000004 4')
             assert command('readl 0x2b000010') & 0x400 == 0

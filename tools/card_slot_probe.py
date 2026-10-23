@@ -251,6 +251,18 @@ def run(args):
                                        if 0x20010000 <= value <= 0x2FFFFFFF]))
             report['contexts'] = contexts
         if args.sd_card_image is not None:
+            report['engine_states'] = []
+            for thread in (1, 2, 3, 4):
+                remote.select_thread(thread)
+                registers = remote.regs()
+                report['engine_states'].append(dict(thread=thread,
+                    pc=hex(remote.get(registers, 'pc')),
+                    cpsr=hex(remote.get(registers, 'cpsr')),
+                    faults={name: hex(remote.read_register(name)) for name in
+                            ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}))
+            report['engine_fault_free'] = all(
+                int(state['faults'][name], 0) == 0
+                for state in report['engine_states'] for name in ('DFSR_S', 'IFSR_S'))
             report['sd_host_registers'] = []
             for engine, thread in (('master', 1), ('slave', 3)):
                 remote.select_thread(thread)

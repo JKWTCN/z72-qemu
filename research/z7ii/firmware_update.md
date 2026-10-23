@@ -203,6 +203,11 @@ SD 卡的目录路径因此是 `B:\`。原始卷查找按 `0x88` 字节步长
 接下来需要在双引擎执行中跟踪资源 9 的接收、文件操作和回应分派，
 再验证返回字节来自同一张卡。记录见
 [文件服务消息边界](../../artifacts/native_file_message_boundary/report.json)。
+双引擎带卡启动的逐核异常检查进一步确认，从引擎先前已停在
+PCIe 配置访问异常中。补齐 `0x2A900104`、`0x2A90003C` 后，
+原厂代码已配置 SD 端点的两个 BAR，但继续读取 `0x2A810150`
+时仍发生外部访问异常。这是当前整机接收端的设备边界，详见
+[PCIe 与 SD 启动边界](pcie_configuration.md#带-sd-端点的启动边界)。
 本组输入身份、已通过条件及未完成边界汇总于
 [卡上更新文件验证](../../artifacts/native_update_card_validation/report.json)。
 

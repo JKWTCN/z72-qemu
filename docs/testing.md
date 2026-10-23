@@ -571,6 +571,11 @@ indices. The [message boundary](../artifacts/native_file_message_boundary/report
 shows resource 9, operation 13 queued with no consumer in the bounded snapshot.
 This distinguishes an unprocessed request from a package verification rejection;
 the peer file service and its reply still require execution on the second engine.
+With `--sd-card-image`, `tools/card_slot_probe.py` also records PC, CPSR and
+instruction/data fault registers for all four engine cores. Its `passed` field
+only covers table registration; inspect `engine_fault_free` before treating the
+peer as running. The [startup boundary](../artifacts/pcie_sd_startup_boundary/report.json)
+records configuration progress followed by an unsupported SD-host extension read.
 
 To make a new synthetic FAT card from a directory, use `qemu-img convert
 -f raw -O raw fat:/path/to/directory card.raw`, then `qemu-img resize

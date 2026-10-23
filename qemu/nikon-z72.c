@@ -633,9 +633,9 @@ static bool dbi_accepts(void *opaque, hwaddr offset, unsigned size,
                         bool is_write, MemTxAttrs attrs)
 {
     static const uint16_t offsets[] = {
-        0x004, 0x010, 0x014, 0x018, 0x01c, 0x050,
+        0x004, 0x010, 0x014, 0x018, 0x01c, 0x03c, 0x050,
         0x078, 0x07c, 0x080, 0x084, 0x088, 0x08c,
-        0x090, 0x098, 0x0a0, 0x168, 0x80c, 0x8a8, 0x8bc,
+        0x090, 0x098, 0x0a0, 0x104, 0x168, 0x80c, 0x8a8, 0x8bc,
     };
 
     if (size != 4 || (offset & 3)) {
@@ -683,6 +683,10 @@ static void dbi_write(void *opaque, hwaddr offset, uint64_t value,
 
     if (offset == 0x900) {
         s->dbi_viewport = value & 0x8000000f;
+    } else if (offset == 0x104) {
+        /* Uncorrectable error status is write-one-to-clear. No modeled
+         * error producer sets it; software cannot manufacture an error. */
+        *dbi_word(s, offset) &= ~(uint32_t)value;
     } else {
         *dbi_word(s, offset) = value;
     }
