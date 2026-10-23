@@ -1,0 +1,1191 @@
+{
+  "format": 1,
+  "passed": true,
+  "scope": "Native SDK file transport with an explicit diagnostic caller",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary_sha256": "f0a1508633574b388f902f824a1c354e4b4fcf0fc6717f9cad74f50864369ed6",
+    "sources": {
+      "qemu/nikon-z72.c": "49e32385ac8bb952cbe3c0255aab746120e3cafd280b30ee6262626cff1988f2",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
+      "qemu/nikon-z72-memory.c": "aa2807c776f3631c37f890ef1da8be41fcf1ef946998ffa07f0ee857a4df95e1",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "efdf308622ee3344dde0179ab137acb4d80f30c8b43e41c919e5dad14134e6b7",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "7af84a9f813377587579d393038bbaa852c2bd68933239ec90a52583eef991e8",
+      "qemu/nikon-z72-controller-gpio.c": "4ebb569ef3c74e7c0f8294e37da6cfbc3379ec266260bdcc7b91fb538fc971b0",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "0cf66c7829feeb9da1c230b3e66efb32a7609e1377fd0944c5e86b2bee718bb2",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "1f3cc83213b014afca6001ab194fca234a7bd9368e123d258b9568e344b234d0",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "3cd87652448d81dc9b5d0243115e638fd410e563554ec789e0201d48f97474f8",
+      "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ]
+  },
+  "firmware_included": false,
+  "firmware_modified": false,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "checks": {
+    "marker": {
+      "passed": true,
+      "expected_positive": true,
+      "engine_fault_free_before": true,
+      "sdk_file": {
+        "caller_fixture": true,
+        "camera_path": "B:\\PROBE.TXT",
+        "sdk_send_receive_native": true,
+        "sdk_replies_host_modeled": false,
+        "reference_bytes": 20,
+        "reference_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "chunk_capacity": 524288,
+        "blocks": [
+          {
+            "offset": 0,
+            "bytes": 20,
+            "sdk_status": "0x43a0080",
+            "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+            "reference_matches": true
+          },
+          {
+            "offset": 20,
+            "bytes": 0,
+            "sdk_status": "0x43a0080",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reference_matches": true
+          }
+        ],
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x104d3c04",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01023"
+          },
+          {
+            "pc": "0x105bdf84",
+            "thread": 2,
+            "sp": "0xb52cf7e8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x104d3d82",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f0103f"
+          },
+          {
+            "pc": "0x104d3c90",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01059"
+          },
+          {
+            "pc": "0x13f01066",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01063"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x13f01063"
+          }
+        ],
+        "caller_code_bytes": 180,
+        "caller_code_sha256": "9f221eab1307523a715974d6c9d0b8529d442ef12ee90abc88cc3d6f791062c3",
+        "sdk_file_verified": true,
+        "eof_observed": true,
+        "caller_returned": true,
+        "native_open_reply_operation": 14,
+        "sdk_results": [
+          3052404736,
+          70910080,
+          70910080,
+          70910080,
+          1,
+          65536
+        ],
+        "handle_after_close": 4294967295,
+        "read_buffer_cleared": true,
+        "actual_bytes": 20,
+        "actual_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "stream_matches": true,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      }
+    },
+    "stock_package": {
+      "passed": true,
+      "expected_positive": true,
+      "engine_fault_free_before": true,
+      "sdk_file": {
+        "caller_fixture": true,
+        "camera_path": "B:\\Z7_2_0~1.BIN",
+        "sdk_send_receive_native": true,
+        "sdk_replies_host_modeled": false,
+        "reference_bytes": 48494024,
+        "reference_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "chunk_capacity": 524288,
+        "blocks": [
+          {
+            "offset": 0,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "5c80c30ea7c1aeb2977c674298e215d5fb755c2cd7f2891ac73690257d0d48d1",
+            "reference_matches": true
+          },
+          {
+            "offset": 524288,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "ae2257614af6b0ce89181772862761057d6c40ad9f12d796d22a04a72d08592c",
+            "reference_matches": true
+          },
+          {
+            "offset": 1048576,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "ecedc22fd701d7a7490a4d2ed49d735179e5a3cf60ba946474109b364786161d",
+            "reference_matches": true
+          },
+          {
+            "offset": 1572864,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "c95ab67811def9c12d315eb956f78be16cdf14283e606d57860624472098d85b",
+            "reference_matches": true
+          },
+          {
+            "offset": 2097152,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "8a530ce0c8a0d31700ebbd597a704a51cb3b29c72750d85ca97039843de77d59",
+            "reference_matches": true
+          },
+          {
+            "offset": 2621440,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "39181310b928d45c916cd82819bd409787f7d6d1955cd9973335bdb79e3a3a68",
+            "reference_matches": true
+          },
+          {
+            "offset": 3145728,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "6efd97139d9a71aba0ca7bffc49e2f08760ec5dccee96dac6577438f8c434bba",
+            "reference_matches": true
+          },
+          {
+            "offset": 3670016,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "0f58c82f1e1c1774181322e1029791b7f423492f9bad2b6886d9dff892fe2cd8",
+            "reference_matches": true
+          },
+          {
+            "offset": 4194304,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "c5f4fdfa24d0e54bfa5392c98f0f32bde9cfd855e019e6d7743826d1ca28e592",
+            "reference_matches": true
+          },
+          {
+            "offset": 4718592,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "02666a71bd2686e02bfcd5b3b9c48f6e49f31e8dab8c722a4c9b3257fc081934",
+            "reference_matches": true
+          },
+          {
+            "offset": 5242880,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "f76974f2ba511e92ece05cc9da8f0d13cf0d922c43175eb5107967dec46c74be",
+            "reference_matches": true
+          },
+          {
+            "offset": 5767168,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "6945112a2b11210781800bc790f8d8e0041852ecfa02802e51137d07e68ed061",
+            "reference_matches": true
+          },
+          {
+            "offset": 6291456,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "9ae0478a1a050dc8fc7304adeaf7004882f56e925cf8e44064adf6e1732b5ddb",
+            "reference_matches": true
+          },
+          {
+            "offset": 6815744,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b8f965901956f815f1790cf4a58b11b3390d99b79c35df45961112e83b06b5be",
+            "reference_matches": true
+          },
+          {
+            "offset": 7340032,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "decec3011020cf8171e2a9cc96ce1c53ef85fbcb8eca8a6f7dabf33fa25792a4",
+            "reference_matches": true
+          },
+          {
+            "offset": 7864320,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "3b7f578da63026d6cc32b6c264bdc90c6d879dbc92c8d7978173a412ea3eca73",
+            "reference_matches": true
+          },
+          {
+            "offset": 8388608,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "7957558183435e4ef93c7f31f5a3288daf05e85677d2f32e7674b3bece0673cb",
+            "reference_matches": true
+          },
+          {
+            "offset": 8912896,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "44ec390847433686b4fc18ca2d41105e2dcede9b1302831f89c31ca9610cae5b",
+            "reference_matches": true
+          },
+          {
+            "offset": 9437184,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "220969a2e0a82f2ada1bb56c9de8393049ebd1352f962f2b16ea034cd7566e8f",
+            "reference_matches": true
+          },
+          {
+            "offset": 9961472,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "5c59440ab490f760c7756dfa72e5a39fc6b121678fc0e22b5568e75f70309f5f",
+            "reference_matches": true
+          },
+          {
+            "offset": 10485760,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "f8c364f6380af49de2a97392974dbdfd982d101d099c87faf5d4ced642142d2c",
+            "reference_matches": true
+          },
+          {
+            "offset": 11010048,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "6ab22ede07e047cd29d04ed4c9662027680ebe5c2bbc5924d84a4879561236af",
+            "reference_matches": true
+          },
+          {
+            "offset": 11534336,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "5e77a616a5957c2cf70814c177d9cae809942810472129e05cb6b029987aed1c",
+            "reference_matches": true
+          },
+          {
+            "offset": 12058624,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "9ec17493a6dc5a529cd4a6c248a34fdaa6743df60106ed23bf717f6afcd0773a",
+            "reference_matches": true
+          },
+          {
+            "offset": 12582912,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "636c491b69be8e885803768b977f39f1b859a9a4830336edd94d373c1a9b17f6",
+            "reference_matches": true
+          },
+          {
+            "offset": 13107200,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "a5264aa7cdb8fa296179b66d7a9202baa77b9401437db563e9e0d5374d2e08ca",
+            "reference_matches": true
+          },
+          {
+            "offset": 13631488,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "69be8cfac3a858b083e544e5b879e0e1814e83b073709017e8729537cb924108",
+            "reference_matches": true
+          },
+          {
+            "offset": 14155776,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "10c5bb517c2da059c3396810c288d3b013dfb95816927221fe47f32ffb30f9e7",
+            "reference_matches": true
+          },
+          {
+            "offset": 14680064,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "45a25260abae78b697d59439215e0fd08047ca8c95f3f620a6e15ffa768acbee",
+            "reference_matches": true
+          },
+          {
+            "offset": 15204352,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "bdb2e99da43d547a08efff6eee69aebe5296526698611ba34344ebfd21827455",
+            "reference_matches": true
+          },
+          {
+            "offset": 15728640,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "4beb2316b1c4b14f8f37e68c50fb506af1a4ed58c68f4e692d7b35549c274ae4",
+            "reference_matches": true
+          },
+          {
+            "offset": 16252928,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "aeb902f935655651020e0e081f312d37ae7c5e827ec9323565b99fbefbcbe45f",
+            "reference_matches": true
+          },
+          {
+            "offset": 16777216,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "79ac6609784b5e9cf3875077e78d74b508e30fab00a3301b0c3de73cbd62acdb",
+            "reference_matches": true
+          },
+          {
+            "offset": 17301504,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "5946a393e58d04202981f7dd59eee3190a5a4bc41de110b7afe2b0030389e6ac",
+            "reference_matches": true
+          },
+          {
+            "offset": 17825792,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "05fc91849f94bacaf6342ed6cb1801e2791c9f8e8f2ea77145b58e8be5f577d1",
+            "reference_matches": true
+          },
+          {
+            "offset": 18350080,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "db6523037b76ec506d3eee1c45b5944319b43bde1f933a580739fe3e0e8bcd29",
+            "reference_matches": true
+          },
+          {
+            "offset": 18874368,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "754048e92ec80eaf4d7a8d7685a50426b32e1f6bca752f2304caaf4bb18ba26e",
+            "reference_matches": true
+          },
+          {
+            "offset": 19398656,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "e6331b1b8daa67a8f172ba4b7bda4a8720949e798bf1c8c70a7ad0a2d2e4732c",
+            "reference_matches": true
+          },
+          {
+            "offset": 19922944,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "ea3eb8b87c7663a1bff27fc6fe1d9f4ec71fa9bafa1fc1f415a37a436204cfdc",
+            "reference_matches": true
+          },
+          {
+            "offset": 20447232,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "4f3d541334dece48c93461a285354b75a5c3ed826f2e399612d21159a99439f7",
+            "reference_matches": true
+          },
+          {
+            "offset": 20971520,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "3f0505cec40feb7e02be7e8c701d7bd8bf1b96a6ee9492c007f65fcb47fda2e5",
+            "reference_matches": true
+          },
+          {
+            "offset": 21495808,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "17617c35b816c5261513da59c57482af5e3b83eabc7a04b58f57d2ddaeab84d2",
+            "reference_matches": true
+          },
+          {
+            "offset": 22020096,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "823e4191ca34ecd84a020f18cddc51eae2f5f2a208fe7a064933d4f453e524f7",
+            "reference_matches": true
+          },
+          {
+            "offset": 22544384,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "f805e2572e6d28af1a447dec19388a58c34a367d490810ede9708ff6ed94d300",
+            "reference_matches": true
+          },
+          {
+            "offset": 23068672,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b2471c2b4ebf4ba75a21e65dcd67a124abff6fc8c019ee40a3895435e9edb513",
+            "reference_matches": true
+          },
+          {
+            "offset": 23592960,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "0d41164f58b82c0f0ffd192953f3524a69e22c8841f3a690ac35535fe3921b15",
+            "reference_matches": true
+          },
+          {
+            "offset": 24117248,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "305d44826dc1bc3031557d3efcd04396d583b54c098a481ddb844f7ece4c73c4",
+            "reference_matches": true
+          },
+          {
+            "offset": 24641536,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "38259c8ed8fa8de61a0ee954a552459568a61ea67a3f0b02e2435b179f59d843",
+            "reference_matches": true
+          },
+          {
+            "offset": 25165824,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "7394dc3a14fafb4942968c3f5a3221d38581c42b8f09a9ca28358e86ac0eb1ba",
+            "reference_matches": true
+          },
+          {
+            "offset": 25690112,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "22944a0219c8ac3e929a1faa2ecd3e6b2da189120f28099e77635275d18e08d0",
+            "reference_matches": true
+          },
+          {
+            "offset": 26214400,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b9d2847a2fb7d25984613f936c5f57a5fd1a7ed52698fa4379c98aded154b85e",
+            "reference_matches": true
+          },
+          {
+            "offset": 26738688,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "cad4639196bc3eb98125c59cc79fc3e2404f2323d00be9dcd2b115c66bffc6ae",
+            "reference_matches": true
+          },
+          {
+            "offset": 27262976,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "0c784046e4aee8d85cfa55ccd6887e19f7670e2e8584eba2c877e17bfb7ff876",
+            "reference_matches": true
+          },
+          {
+            "offset": 27787264,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "db3a7710242610144a6efdbc19267bdd98c2bbf3a9693bf58fb9eccd50221950",
+            "reference_matches": true
+          },
+          {
+            "offset": 28311552,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "effe325da545aeb948d765cf7381ef8f7ce119dbff0f800376f1bbe070ffaf1d",
+            "reference_matches": true
+          },
+          {
+            "offset": 28835840,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b2782aba1a340c1942bf791d9587dd29f0af132f64ac52e07977cc6e94d5874f",
+            "reference_matches": true
+          },
+          {
+            "offset": 29360128,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "0764e27f59d1af62f6e660632d9397c6fe29c802dcfe3fb40a9efb5526990f60",
+            "reference_matches": true
+          },
+          {
+            "offset": 29884416,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "64e7165bffb5ff689437b161394f74b1cf5d176871475146edf8366a84a2e763",
+            "reference_matches": true
+          },
+          {
+            "offset": 30408704,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "37fb487f7b345560e70e615501a62bafea716dbba9321141fd878c969c2fa9e8",
+            "reference_matches": true
+          },
+          {
+            "offset": 30932992,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "00ada8aeb39bad117e10a93ef2f145a94863671ac46d89729fb39d71f50b95c0",
+            "reference_matches": true
+          },
+          {
+            "offset": 31457280,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "47bbb1b35402f93df172f05951e0740e4ee2455e7da8fd58d7f07fc05c5fb29f",
+            "reference_matches": true
+          },
+          {
+            "offset": 31981568,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "f3888a4a694b07bd7ed7d1e37d1174618b20e8b082116b0d87eba81fe1244833",
+            "reference_matches": true
+          },
+          {
+            "offset": 32505856,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "13afe498f3adb2768bb53dead1e2757c4b09b2fdb686b8172718513ac978e02e",
+            "reference_matches": true
+          },
+          {
+            "offset": 33030144,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "6eb32e4472b49a7af421ec90055aacb2f1e84c4b03cf977408243a15268983b3",
+            "reference_matches": true
+          },
+          {
+            "offset": 33554432,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "8a7ba31af19fbe9a4bcabe4413af743d8cc7bcbbba69ce9c5491715c30cad26b",
+            "reference_matches": true
+          },
+          {
+            "offset": 34078720,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "7bd46233c0f2b70fe4ed0b6e934e49f75f3c95647c87024ee5b4fdecd04df3d8",
+            "reference_matches": true
+          },
+          {
+            "offset": 34603008,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b44771e0a4e5dd37e3ff74bdac5b40ded061ca1d74431ae8d0ae1647fc3d32a8",
+            "reference_matches": true
+          },
+          {
+            "offset": 35127296,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "1adb07e6afed952163604e826184bc30bcbf3c0663e878e91299b285ae67262b",
+            "reference_matches": true
+          },
+          {
+            "offset": 35651584,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "4b6a6c3dc20a916e825c04927e32de8210b300689db88ed1f38f8db426c47ce5",
+            "reference_matches": true
+          },
+          {
+            "offset": 36175872,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b89cdc80734c63a34bbfeec273b5f044b593a4a41c5fbb28bac59ab01569d778",
+            "reference_matches": true
+          },
+          {
+            "offset": 36700160,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "96a307463c272676ecc99f4484356a4b147e0be4b260466cbee3f5ccf24df974",
+            "reference_matches": true
+          },
+          {
+            "offset": 37224448,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "002b4e42652ea3a8b0a8e99594ab91eaa9963cbf6c2049d2d6437773afee4b7b",
+            "reference_matches": true
+          },
+          {
+            "offset": 37748736,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "45d097dd73f010f038271cc14cc3b447470b182f3c3427924a5cf36b1f45fca1",
+            "reference_matches": true
+          },
+          {
+            "offset": 38273024,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "cba5004118c931c56f34f33ca10dcf096c1b590e3ba29c301b7552b39601b538",
+            "reference_matches": true
+          },
+          {
+            "offset": 38797312,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "76d6ff671007063050b6d5a292f9caf7be02c6e9f37d6c08972249369cb31cb4",
+            "reference_matches": true
+          },
+          {
+            "offset": 39321600,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "ca7f454008a251dc46e7a6b6c97529fa039519ceee6db2285055c81da8b43cb6",
+            "reference_matches": true
+          },
+          {
+            "offset": 39845888,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "72e63b08bb3ad428bc9437eb3d4a413f4565911384dfd355548c13f4c13d2888",
+            "reference_matches": true
+          },
+          {
+            "offset": 40370176,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "dfa62f546cef9c56d808374474cae3f6c3fbaac482b642fde8773243470b3821",
+            "reference_matches": true
+          },
+          {
+            "offset": 40894464,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "67c0024715f41b4d5fdb53f1f7fea8209cf970a3e01415518e8e16998c8f7d8c",
+            "reference_matches": true
+          },
+          {
+            "offset": 41418752,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "c6f2cf3d11a8a117eed2b5cc1d00df6b68a2150e60e9cf8dc34e7afb30fbfa3c",
+            "reference_matches": true
+          },
+          {
+            "offset": 41943040,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "b7604c224a0ca8c54c8bf2ca47f3f61e8434e4292ff03d162cd8244ca6d9b930",
+            "reference_matches": true
+          },
+          {
+            "offset": 42467328,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "5f74231ced1550dc5cd9abffc13305f7987793254c5d7150699f75a5c0196732",
+            "reference_matches": true
+          },
+          {
+            "offset": 42991616,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "d8832a2d26a8d93cc6be49bec2c45a1b3f65e8a2d684a2bb2295452193c27546",
+            "reference_matches": true
+          },
+          {
+            "offset": 43515904,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "306ec7b4189094d11f89b3c217c29b73ab05817796476ea08b7079b9fe3fa498",
+            "reference_matches": true
+          },
+          {
+            "offset": 44040192,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "637211fd5b5dc13de29ca8133bbbc83066740d4fefaeab2efd4b26c710a78eed",
+            "reference_matches": true
+          },
+          {
+            "offset": 44564480,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "59e301363fd68fdf0500d318d18533a47b97bc705aa897c3ea6dc97ec1a7441f",
+            "reference_matches": true
+          },
+          {
+            "offset": 45088768,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "1f94d1be9d8709576d18308d83c5fcfd097d470765b78a0b962d38fcb221cfac",
+            "reference_matches": true
+          },
+          {
+            "offset": 45613056,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "995382ea9d5c87134ca848bbc19ee5d310abcad35fbd9bc2e1a8bc1ff8b7c954",
+            "reference_matches": true
+          },
+          {
+            "offset": 46137344,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "929a7234f450ff86a6b1877219daf0e6c994947c14dc5085ef88688f481d1959",
+            "reference_matches": true
+          },
+          {
+            "offset": 46661632,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "1641de8a46b687fecc0e640b916f77dcc58cf4696c2320ef4ba7414c3cb7496c",
+            "reference_matches": true
+          },
+          {
+            "offset": 47185920,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "87fff54f915d730a915d20e65268bf81b4ab5f178de97ef324eb85d5c90fc8ab",
+            "reference_matches": true
+          },
+          {
+            "offset": 47710208,
+            "bytes": 524288,
+            "sdk_status": "0x43a0080",
+            "sha256": "4db9a55c3084a2d59cb4d64c6cafc2d5432538348fb7dc9c4c710fccc11d7d63",
+            "reference_matches": true
+          },
+          {
+            "offset": 48234496,
+            "bytes": 259528,
+            "sdk_status": "0x43a0080",
+            "sha256": "05e6c096b98f76678ca6218d7e5fd5d906ea066cf76cf3b9bed16b8ae2e99337",
+            "reference_matches": true
+          },
+          {
+            "offset": 48494024,
+            "bytes": 0,
+            "sdk_status": "0x43a0080",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reference_matches": true
+          }
+        ],
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x104d3c04",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01023"
+          },
+          {
+            "pc": "0x105bdf84",
+            "thread": 2,
+            "sp": "0xb52cf7e8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x104d3d82",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f0103f"
+          },
+          {
+            "pc": "0x104d3c90",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01059"
+          },
+          {
+            "pc": "0x13f01066",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01063"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x13f01063"
+          }
+        ],
+        "caller_code_bytes": 180,
+        "caller_code_sha256": "9f221eab1307523a715974d6c9d0b8529d442ef12ee90abc88cc3d6f791062c3",
+        "sdk_file_verified": true,
+        "eof_observed": true,
+        "caller_returned": true,
+        "native_open_reply_operation": 14,
+        "sdk_results": [
+          3052404736,
+          70910080,
+          70910080,
+          70910080,
+          1,
+          65536
+        ],
+        "handle_after_close": 4294967295,
+        "read_buffer_cleared": true,
+        "actual_bytes": 48494024,
+        "actual_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "stream_matches": true,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      }
+    },
+    "missing_file": {
+      "passed": false,
+      "expected_positive": false,
+      "engine_fault_free_before": true,
+      "sdk_file": {
+        "caller_fixture": true,
+        "camera_path": "B:\\MISSING.BIN",
+        "sdk_send_receive_native": true,
+        "sdk_replies_host_modeled": false,
+        "reference_bytes": 20,
+        "reference_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+        "chunk_capacity": 524288,
+        "blocks": [],
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x104d3c04",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01023"
+          },
+          {
+            "pc": "0x105bdf84",
+            "thread": 2,
+            "sp": "0xb52cf7e8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x13f01066",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01063"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x13f01063"
+          }
+        ],
+        "caller_code_bytes": 180,
+        "caller_code_sha256": "9f221eab1307523a715974d6c9d0b8529d442ef12ee90abc88cc3d6f791062c3",
+        "sdk_file_verified": false,
+        "eof_observed": false,
+        "caller_returned": true,
+        "native_open_reply_operation": 14,
+        "sdk_results": [
+          3052404736,
+          70910084,
+          0,
+          0,
+          1,
+          0
+        ],
+        "handle_after_close": 4294967295,
+        "read_buffer_cleared": true,
+        "actual_bytes": 0,
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stream_matches": false,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      },
+      "interpretation": "Expected open rejection; no SDK read or close entered"
+    },
+    "update_lookup_boundary": {
+      "passed": false,
+      "expected_positive": false,
+      "engine_fault_free_before": true,
+      "sdk_file": {
+        "caller_fixture": true,
+        "camera_path": "B:\\",
+        "sdk_send_receive_native": true,
+        "sdk_replies_host_modeled": false,
+        "reference_bytes": 48494024,
+        "reference_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+        "chunk_capacity": 524288,
+        "blocks": [],
+        "events": [
+          {
+            "pc": "0x13f01000",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x103885d3"
+          },
+          {
+            "pc": "0x1039c236",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f01019",
+            "r0": "0x120a680c"
+          },
+          {
+            "pc": "0x1049d2e6",
+            "thread": 1,
+            "sp": "0xb5302fb0",
+            "lr": "0x1039c269",
+            "r0": "0x120a683c"
+          },
+          {
+            "pc": "0x1047e2fc",
+            "thread": 1,
+            "sp": "0xb5302f38",
+            "lr": "0x1010101"
+          },
+          {
+            "pc": "0x1039c268",
+            "thread": 1,
+            "sp": "0xb5302fb0",
+            "lr": "0x1010101",
+            "r0": "0x80001003"
+          },
+          {
+            "pc": "0x13f0107e",
+            "thread": 1,
+            "sp": "0xb5302fd0",
+            "lr": "0x13f0107b"
+          },
+          {
+            "pc": "0x103885d2",
+            "thread": 1,
+            "sp": "0xb5302fe8",
+            "lr": "0x13f0107b"
+          }
+        ],
+        "caller_code_bytes": 228,
+        "caller_code_sha256": "66de228015b21901bc58ae07c45d140fc82e056e9c39c0651a17b22691c4134c",
+        "sdk_file_verified": false,
+        "eof_observed": false,
+        "caller_returned": true,
+        "update_lookup_requested": true,
+        "update_selector_before": 19,
+        "update_selector_input": 18,
+        "local_volumes_before": [
+          {
+            "index": 0,
+            "name": "",
+            "readiness": 0,
+            "filesystem_kind": 0
+          },
+          {
+            "index": 1,
+            "name": "",
+            "readiness": 0,
+            "filesystem_kind": 0
+          }
+        ],
+        "unregistered_volume_name": "B:",
+        "sdk_results": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "update_lookup_result": 0,
+        "selected_path": "B:\\",
+        "selected_file_bytes": 0,
+        "handle_after_close": 0,
+        "read_buffer_cleared": true,
+        "actual_bytes": 0,
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stream_matches": false,
+        "update_selector_restored": true,
+        "callbacks_restored": true,
+        "faults_after": [
+          {
+            "thread": 1,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 2,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 3,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          },
+          {
+            "thread": 4,
+            "status": {
+              "DFSR_S": "0x0",
+              "IFSR_S": "0x0"
+            }
+          }
+        ],
+        "fault_free_after": true
+      },
+      "interpretation": "Local volume-name lookup failed before filename matching or package authentication"
+    }
+  },
+  "native_menu_update_verified": false,
+  "native_package_authentication_verified": false,
+  "native_programming_verified": false,
+  "native_restart_after_update_verified": false
+}

@@ -603,6 +603,38 @@ to a power of two satisfies the SD device's size requirement. The original
 directory remains outside the emulator's write path. The SVC return-stack
 regression is `python -m unittest checks.test_card_worker -v`.
 
+`tools/sdk_file_probe.py` checks complete file transport through the original
+SDK on a native task stack, including open, repeated reads, EOF and close:
+
+```sh
+python tools/sdk_file_probe.py --qemu .build/build/qemu-system-arm \
+  --master master.bin --slave slave.bin --controller controller.bin \
+  --card-image card.raw --camera-path 'B:\Z7_2_0~1.BIN' \
+  --reference Z7_2_0170.bin --destination .local/sdk-file
+```
+
+The supported SDK entry addresses are checked against both engine image
+hashes. A temporary resource-8 caller invokes original SDK functions; original
+senders, filesystem tasks and replies execute without host answers. Each guest
+block is captured through the monitor and compared with the reference, which
+does not supply bytes to the guest. Success requires matching whole-file length
+and SHA-256, the SDK success value for open/read/close, native EOF, an invalidated
+handle after close, restored task stack and fault-free engine states. Card writes
+use a temporary overlay. The [SDK file record](../artifacts/native_sdk_file_read/report.json)
+covers a marker, the entire stock update package and a missing-file negative case.
+The missing file intentionally exits with failure and records open error
+`0x043A0084`, without entering SDK read or close.
+
+`--find-update` first invokes the original update filename finder with SD selected
+and the existing other-root fallback flag retained. The current live observation
+returns `0x80001003` while resolving unregistered local volume `B:`. It intentionally
+fails verification before SDK open; this is neither a package authentication
+result nor a menu update result. The selector and callbacks are restored on exit.
+The earlier bounded directory experiment and this live native-task diagnostic
+have different initialization and scheduling conditions; neither substitutes
+for the normal menu service's media setup. Whole-file transport does not establish
+native update authentication, programming or restart acceptance.
+
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
 bounded environment, forces the SD logical-slot enable byte and runs the original
 card worker entries, recording the executed chain and every peripheral
