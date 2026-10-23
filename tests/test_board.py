@@ -111,8 +111,13 @@ def smoke(qemu, machine, addresses):
                                 'Unsupported transfer changed data or reported success')
                         sequencer_word(offset, good)
                     sequencer_word(32, 0)
+                # Check every reset value first: the CPU read/write test
+                # below writes side-effect words (the input enable word, for
+                # example, latches event bits into its event bank), and
+                # those latches are not reset-state failures.
                 for address in CONFIG_WORDS:
                     require(remote.read(address, 4) == bytes(4), 'Configuration reset value mismatch')
+                for address in CONFIG_WORDS:
                     if address in SPECIAL_WORDS:
                         continue
                     value = address ^ 0xA5A55A5A

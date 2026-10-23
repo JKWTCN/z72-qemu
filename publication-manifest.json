@@ -267,7 +267,7 @@
     "tests/interrupt_harness.S": "f98ef2ac85668fd9edcb1485b2f7d78e98d2bd1df021945fc6860738aef44147",
     "tests/run.sh": "5a06e287c1947e8656c96f89ee91f4721ca72f00cdba2a75b5df4674cb3ffa5f",
     "tests/smp_harness.S": "2d289aee3c32d3e59be893df313a7c34b5d47f4f2be21abc41b48665ed80ba41",
-    "tests/test_board.py": "07dad1394b4e85fc53a82f592a38b0031e53f2c87ddfbb03b8624ccbdf764c7d",
+    "tests/test_board.py": "90be500a1063fac92b67ca346acec2aa5e2146c7820c62bcb3531f10e05ec44a",
     "tests/test_boot_store.py": "028f2d5d6f9ab0964e305e0864d1f4af0dfc53374699da8927aadf986554ab9b",
     "tests/test_controller_adc.py": "21388ed810da5817f8d12715c73c42fa519ad9b322e25a90415f756e96bb0060",
     "tests/test_controller_battery.py": "5378082408bc33acbbe4614cbe8fc06a05dafa28b2efb1ee6c878ccdb4f2a258",
