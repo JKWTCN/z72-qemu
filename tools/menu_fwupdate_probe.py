@@ -2,10 +2,11 @@
 """Walk original menu pages with real key presses toward the update item.
 
 The machine boots with the interactive console inputs (controller key
-interrupt wired, periodic frame synchronization). The probe opens the
-original menu application, sweeps tab pages with the direction keys, walks
-each page to its lower items and presses OK, and records the display after
-every step. A breakpoint on the original firmware-management service
+interrupt wired, periodic frame synchronization). Every requested tab index
+gets its own fresh machine: the menu application opens once, the tab strip
+moves right to the index, the item list walks downward and the OK key
+confirms the lowest reached item, with the display recorded after each
+step. One fresh boot per tab avoids the documented menu reopen boundary. A breakpoint on the original firmware-management service
 eligibility entry reports whether the key path alone reaches the service
 that the whole update flow starts from. The probe changes no firmware
 bytes and writes no runtime state; menu settings changed by OK presses on
@@ -43,10 +44,14 @@ OK_PIN = 3
 DOWN_PIN = 4
 RIGHT_PIN = 7
 SYNC_WAIT = 0x102d949e
-# CFirmwareManagementService eligibility entry (master file offset 0x747048).
+# CFirmwareManagementService entries: the eligibility check (master file
+# offset 0x747048) runs when an update is offered; the version-list method
+# (0x747092) is what a firmware-version page would call first.
 SERVICE_ENTRY = BASE + 0x747048
-TAB_STEPS = 6
-ITEM_STEPS = 16
+VERSION_ENTRY = BASE + 0x747092
+WATCHED = (SERVICE_ENTRY, VERSION_ENTRY)
+DEFAULT_TABS = (4, 5, 3, 2, 1, 0)
+DEFAULT_ITEMS = 24
 
 
 def linux(path):
@@ -56,7 +61,7 @@ def linux(path):
                             m[0][3:].replace('\\', '/'), text)
 
 
-def run(args):
+def run_tab(args, tab):
     master, slave = args.master.read_bytes(), args.slave.read_bytes()
     identities = {role: analyze_eg(data, role)['sha256']
                   for role, data in (('master', master), ('slave', slave))}
@@ -67,7 +72,6 @@ def run(args):
     with socket.socket() as server:
         server.bind(('127.0.0.1', 0))
         qtest_port = server.getsockname()[1]
-    args.destination.mkdir(parents=True, exist_ok=False)
     with tempfile.TemporaryDirectory(prefix='menu-fwupdate-', dir=ROOT / '.local') as folder:
         work = Path(folder)
 
@@ -104,7 +108,7 @@ def run(args):
 
         subprocess.Popen = WslProcess
         remote = wire = None
-        report = dict(format=1, passed=False, menu_pin=MENU_PIN, exit_pin=EXIT_PIN,
+        report = dict(format=1, passed=False, tab=tab, menu_pin=MENU_PIN, exit_pin=EXIT_PIN,
                       ok_pin=OK_PIN, down_pin=DOWN_PIN, right_pin=RIGHT_PIN,
                       service_entry=hex(SERVICE_ENTRY), firmware_sha256=identities,
                       controller_sha256=CONTROLLER_SHA256, firmware_modified=False,
@@ -187,8 +191,9 @@ def run(args):
             require(remote.command(f'z0,{SYNC_WAIT:x},2') == 'OK',
                     'Could not remove the synchronization observation')
             report['sync_pulse_supplied'] = True
-            require(remote.command(f'Z0,{SERVICE_ENTRY:x},2') == 'OK',
-                    'Could not arm the service entry observation')
+            for watched in WATCHED:
+                require(remote.command(f'Z0,{watched:x},2') == 'OK',
+                'Could not arm the service entry observation')
 
             def step(window=4.0):
                 """Run one observation window; stop records go to the report."""
@@ -222,7 +227,7 @@ def run(args):
                     if ticks() >= target:
                         return None
                     stop = step()
-                    if stop and stop['pc'] == SERVICE_ENTRY:
+                    if stop and stop['pc'] in WATCHED:
                         return stop
                 return None
 
@@ -282,43 +287,36 @@ def run(args):
                                         display=capture('menu-open.ppm')))
             require(foreground() == 1, 'The menu application did not open')
 
-            for tab in range(TAB_STEPS):
-                stop = press(RIGHT_PIN)
-                display = capture(f'tab-{tab}.ppm')
-                walked = 0
-                for index in range(ITEM_STEPS):
-                    stop = press(DOWN_PIN) or stop
-                    walked = index + 1
-                    if stop and stop['pc'] == SERVICE_ENTRY:
-                        break
-                opened_page = False
-                if not (stop and stop['pc'] == SERVICE_ENTRY):
-                    before = capture(f'tab-{tab}-before-ok.ppm')
-                    stop = press(OK_PIN) or stop
-                    # An OK that redraws the page opened an item page; only
-                    # that case needs one EXIT to return to the item list.
-                    # EXIT from a list root closes the menu, and this machine
-                    # cannot reopen it afterwards (documented boundary).
-                    after = capture(f'tab-{tab}-after-ok.ppm')
-                    opened_page = (before['total_rows'] != after['total_rows'] or
-                                   before['bands'] != after['bands'])
-                    if opened_page:
-                        press(EXIT_PIN)
-                record = dict(step=f'tab-{tab}', down_presses=walked,
-                              foreground=foreground(), display=display,
-                              ok_opened_page=opened_page)
-                if stop and stop['pc'] == SERVICE_ENTRY:
-                    record['service_thread'] = stop['thread']
-                    record['service_return'] = hex(stop['lr'])
-                    report['service_activated'] = True
-                report['steps'].append(record)
-                if report['service_activated']:
+            # One tab per fresh boot: the EXIT key that leaves an opened
+            # item page closes the whole menu on this machine combination,
+            # and a closed menu cannot be reopened (documented boundary), so
+            # each tab index gets its own machine and the walk ends at OK.
+            stop = opened
+            for _ in range(tab):
+                stop = press(RIGHT_PIN) or stop
+                if stop and stop['pc'] in WATCHED:
                     break
-                if foreground() != 1:
-                    # The menu closed and cannot be reopened in this machine
-                    # combination; further key sweeps would leave the menu.
-                    report['menu_closed_after_tab'] = tab
+            display = capture(f'tab-{tab}.ppm')
+            walked = 0
+            for index in range(args.items):
+                stop = press(DOWN_PIN) or stop
+                walked = index + 1
+                if stop and stop['pc'] in WATCHED:
                     break
+            record = dict(step=f'tab-{tab}', down_presses=walked,
+                          display=display)
+            for _ in range(2):
+                if stop and stop['pc'] in WATCHED:
+                    break
+                stop = press(OK_PIN) or stop
+            record['after_ok_display'] = capture(f'tab-{tab}-after-ok.ppm')
+            if stop and stop['pc'] in WATCHED:
+                record['service_thread'] = stop['thread']
+                record['service_return'] = hex(stop['lr'])
+                record['entry'] = ('eligibility' if stop['pc'] == SERVICE_ENTRY
+                                   else 'version_list')
+                report['service_activated'] = True
+            report['steps'].append(record)
             report['final_foreground'] = foreground()
             report['final_display'] = capture('final.ppm')
             system = system_observation(remote)
@@ -343,12 +341,42 @@ def run(args):
                     except subprocess.TimeoutExpired:
                         item.kill()
                         item.wait(timeout=5)
-            (args.destination / 'report.json').write_text(
-                json.dumps(report, indent=2, ensure_ascii=False) + '\n',
-                encoding='utf-8')
+    return report
+
+
+def run(args):
+    require(0 < args.seconds <= 30, 'Window seconds must be in (0, 30]')
+    require(0 < args.windows <= 24, 'Window count must be in (0, 24]')
+    require(0 < args.items <= 40, 'Item count must be in (0, 40]')
+    tabs = tuple(int(value) for value in args.tabs.split(','))
+    report = dict(format=1, passed=False, tabs=list(tabs), items=args.items,
+                  service_entry=hex(SERVICE_ENTRY), service_activated=False,
+                  runs=[], errors=[])
+    for tab in tabs:
+        for attempt in range(3):
+            try:
+                record = run_tab(args, tab)
+                break
+            except ValueError as error:
+                # The gdb and qtest ports are picked through bind-and-release;
+                # retry a fresh pick when two launches race for one number.
+                if 'Address already in use' not in str(error) or attempt == 2:
+                    raise
+                time.sleep(2)
+        report['runs'].append(record)
+        if record.get('service_activated'):
+            report['service_activated'] = True
+            break
+    report['passed'] = bool(report['runs']) and all(
+        'steps' in record and record['steps'] for record in report['runs'])
+    args.destination.mkdir(parents=True, exist_ok=False)
+    (args.destination / 'report.json').write_text(
+        json.dumps(report, indent=2, ensure_ascii=False) + chr(10),
+        encoding='utf-8')
     print(('PASS ' if report['passed'] else 'FAIL ') +
-          f"menu update navigation, service activated: {report['service_activated']}",
-          flush=True)
+          f"menu update navigation, tabs={len(report["runs"])}, "
+          f"service activated: {report["service_activated"]}", flush=True)
+    require(report['passed'], 'Menu update navigation failed')
     return report
 
 
@@ -359,6 +387,9 @@ def main():
     parser.add_argument('--slave', required=True, type=Path)
     parser.add_argument('--controller', required=True, type=Path)
     parser.add_argument('--destination', required=True, type=Path)
+    parser.add_argument('--tabs', default=','.join(str(t) for t in DEFAULT_TABS),
+                        help='Comma separated tab indices, setup tab first')
+    parser.add_argument("--items", type=int, default=DEFAULT_ITEMS)
     parser.add_argument('--seconds', type=int, default=15)
     parser.add_argument('--windows', type=int, default=24)
     arguments = parser.parse_args()
