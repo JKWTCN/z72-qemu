@@ -242,61 +242,77 @@ def run(args):
                         register_like=[hex(value) for value in words
                                        if 0x20010000 <= value <= 0x2FFFFFFF]))
             report['contexts'] = contexts
-        # The slot driver reads its enabled byte at 0xB1808B50 + slot
-        # (0x4626DC). Force slot 0 on, then trigger card consumers (playback
-        # and menu open) and diff the platform peripheral span: the SD
-        # command registers live in that span and a mount attempt writes
-        # command words that stay visible in the RAM-backed window.
-        span_base, span_bytes = 0x20020000, 0x10000
-        def read_span(base, size):
-            words = {}
-            for block in range(0, size, 0x100):
-                try:
-                    data = remote.read(base + block, 0x100)
-                    for step in range(0, 0x100, 4):
-                        words[block + step] = struct.unpack_from('<I', data, step)[0]
-                    continue
-                except Exception:
-                    pass
-                for step in range(0, 0x100, 4):
+        if args.ram_dump is not None:
+            # Snapshot the initialized runtime RAM for bounded execution
+            # of the card worker chain outside the machine.
+            target = str(args.ram_dump)
+            if os.name == 'nt':
+                target = linux(args.ram_dump)
+            for base, size in ((0x10000000, 0x4000000),
+                               (0xB1800000, 0x4800000)):
+                reply = remote.command('qRcmd,' + (
+                    f'memsave {base:#x} {size:#x} ' + json.dumps(
+                        target + f'.{base:X}')
+                ).encode().hex())
+                while reply.startswith('O') and reply != 'OK':
+                    reply = remote.receive()
+                require(reply == 'OK', 'Runtime RAM snapshot failed')
+            report['ram_dump'] = str(args.ram_dump)
+        else:
+            # The slot driver reads its enabled byte at 0xB1808B50 + slot.
+            # Force slot 0 on, then trigger card consumers (playback and
+            # menu open) and diff the platform peripheral span: the SD
+            # command registers live in that span and a mount attempt
+            # writes command words that stay visible in the RAM window.
+            span_base, span_bytes = 0x20020000, 0x10000
+            def read_span(base, size):
+                words = {}
+                for block in range(0, size, 0x100):
                     try:
-                        words[block + step] = struct.unpack_from(
-                            '<I', remote.read(base + block + step, 4))[0]
-                    except Exception:
+                        data = remote.read(base + block, 0x100)
+                        for step in range(0, 0x100, 4):
+                            words[block + step] = struct.unpack_from(
+                                '<I', data, step)[0]
                         continue
-            return words
-        remote.select_thread(1)
-        before = read_span(span_base, span_bytes)
-        remote.write(0xB1808B50, struct.pack('<I', 1))
-        def tap(pin):
-            wire.sendall(f'set_irq_in /machine/peripheral/keys pins {pin} 0'
-                         .encode())
-            assert wire.recv(1024).strip() == b'OK'
-            remote.sock.settimeout(8)
+                    except Exception:
+                        pass
+                    for step in range(0, 0x100, 4):
+                        try:
+                            words[block + step] = struct.unpack_from(
+                                '<I', remote.read(base + block + step, 4))[0]
+                        except Exception:
+                            continue
+                return words
+            remote.select_thread(1)
+            before = read_span(span_base, span_bytes)
+            remote.write(0xB1808B50, struct.pack('<I', 1))
+            remote.sock.settimeout(4)
             try:
                 remote.command('vCont;c')
             except TimeoutError:
-                remote.interrupt()
-            wire.sendall(f'set_irq_in /machine/peripheral/keys pins {pin} 1'
-                         .encode())
-            assert wire.recv(1024).strip() == b'OK'
-            try:
-                remote.command('vCont;c')
-            except TimeoutError:
-                remote.interrupt()
-        for pin in (8, 8, 9, 0):
-            tap(pin)
-        remote.select_thread(1)
-        after = read_span(span_base, span_bytes)
-        changes = []
-        for offset, new_word in sorted(after.items()):
-            old_word = before.get(offset)
-            if old_word is not None and old_word != new_word:
-                changes.append(dict(address=hex(span_base + offset),
-                                    before=hex(old_word), after=hex(new_word)))
-        report['peripheral_words_readable'] = len(after)
-        report['slot0_forced'] = True
-        report['peripheral_span_changes'] = changes
+                pass
+            for pin in (8, 8, 9, 0):
+                wire.sendall(f'set_irq_in /machine/peripheral/keys pins '
+                             f'{pin} 0'.encode())
+                assert wire.recv(1024).strip() == b'OK'
+                time.sleep(4)
+                wire.sendall(f'set_irq_in /machine/peripheral/keys pins '
+                             f'{pin} 1'.encode())
+                assert wire.recv(1024).strip() == b'OK'
+                time.sleep(4)
+            remote.interrupt()
+            remote.select_thread(1)
+            after = read_span(span_base, span_bytes)
+            changes = []
+            for offset, new_word in sorted(after.items()):
+                old_word = before.get(offset)
+                if old_word is not None and old_word != new_word:
+                    changes.append(dict(address=hex(span_base + offset),
+                                        before=hex(old_word),
+                                        after=hex(new_word)))
+            report['peripheral_words_readable'] = len(after)
+            report['slot0_forced'] = True
+            report['peripheral_span_changes'] = changes
         report['passed'] = bool(report['registrations'])
     except Exception as error:
         import traceback
@@ -337,6 +353,8 @@ def main():
     parser.add_argument('--destination', required=True, type=Path)
     parser.add_argument('--registrations', type=int, default=4)
     parser.add_argument('--window', type=float, default=120.0)
+    parser.add_argument('--ram-dump', type=Path,
+                        help='Snapshot runtime RAM (0xB1800000, 14MB) and stop')
     parser.add_argument('--work', type=Path,
                         help='Persistent work directory (default: temporary)')
     arguments = parser.parse_args()

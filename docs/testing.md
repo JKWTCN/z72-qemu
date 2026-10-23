@@ -501,6 +501,12 @@ recording the table, the per-slot driver objects and every function
 pointer resolved to a master file offset. See the
 [card slot table evidence](../artifacts/card_slot_table/report.json).
 
+`tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
+bounded environment, forces the slot enable byte and runs the original
+card worker entries, recording the executed chain and every peripheral
+access; the snapshot comes from `tools/card_slot_probe.py --ram-dump`.
+See the [card worker evidence](../artifacts/card_worker_execution/report.json).
+
 `tools/console_update_check.py` drives the menu-gated firmware update over
 the same HTTP path with a signed update file and its eight boot-window key
 bytes supplied from outside the repository. It requires an install attempt

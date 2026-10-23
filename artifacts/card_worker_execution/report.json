@@ -1,0 +1,52 @@
+{
+  "format": 1,
+  "passed": true,
+  "snapshot": "D:\\code\\z72-qemu\\.local\\card-ram.bin",
+  "enable_byte_before": 0,
+  "experiments": [
+    {
+      "experiment": "configured_slot0",
+      "entry": "0x4626a4",
+      "result": {
+        "returned": null,
+        "pc": null,
+        "value": 4294966492
+      },
+      "executed": [
+        "0x4626a4",
+        "0x481594",
+        "0x462a0e",
+        "0x4628fc",
+        "0x462676",
+        "0x463222",
+        "0x4631f2",
+        "0x463212"
+      ],
+      "peripheral_access": [],
+      "unmapped_count": 0
+    },
+    {
+      "experiment": "query_local_slot0",
+      "entry": "0x462a0e",
+      "result": {
+        "returned": null,
+        "pc": null,
+        "value": 0
+      },
+      "executed": [
+        "0x4626a4",
+        "0x481594",
+        "0x462a0e",
+        "0x4628fc",
+        "0x462676",
+        "0x463222",
+        "0x4631f2",
+        "0x463212"
+      ],
+      "peripheral_access": [],
+      "unmapped_count": 0
+    }
+  ],
+  "peripheral_access_total": [],
+  "unmapped_total": []
+}
