@@ -552,7 +552,20 @@ style scripts; the shipped runs use one containing the stock update
 package under its 8.3 short name. See the
 [mount boundary evidence](../artifacts/sd_native_mount_boundary/report.json).
 
-These checks do not establish a mounted filesystem or native menu update.
+Card-open checks alone do not establish a mounted filesystem or native menu update.
+
+`--list-directory B:\` on `tools/sd_native_probe.py` now checks the original
+directory open, enumeration, native end marker `0x80000030` and close.
+The SD logical slot maps to B, while the other slot maps to A. No manual
+per-volume mount option is required for this path. `--find-update` then
+runs the original update filename finder with an explicit SD-root selector.
+The [card directory case](../artifacts/native_update_card_directory/report.json)
+selects the stock package's short name and length from actual FAT records;
+the [no-candidate case](../artifacts/native_update_card_no_candidate/report.json)
+reaches normal directory end and selects nothing. The latter intentionally
+has `passed=false` because its requested candidate is absent.
+`--read-file` records the remaining asynchronous SDK file-open boundary;
+it does not supply file bytes from the host or report update acceptance.
 
 To make a new synthetic FAT card from a directory, use `qemu-img convert
 -f raw -O raw fat:/path/to/directory card.raw`, then `qemu-img resize

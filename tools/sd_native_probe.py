@@ -57,6 +57,8 @@ def run(args):
         filesystem_dispatches = []
         filesystem_locks = []
         workers = []
+        clock_queries = []
+        filesystem_events = []
         try:
             deadline = time.monotonic() + 10
             while wire is None:
@@ -91,11 +93,13 @@ def run(args):
                         self.pending_worker = None
                         context = self.u.context_save()
                         self.in_worker = True
+                        worker_path_start = len(self.path)
                         worker_result = super().call(target, flags, stack=0x50070000)
                         self.in_worker = False
                         filesystem_dispatches.append(dict(entry=hex(target), flags=hex(flags),
                             operation=self.u.mem_read(request + 0xBC, 1)[0],
                             response=struct.unpack('<i', self.u.mem_read(request + 0xC8, 4))[0],
+                            path_tail=[hex(pc) for pc in self.path[worker_path_start:][-32:]],
                             result=worker_result))
                         if worker_result.get('fault') or worker_result.get('returned') == 'stopped':
                             return dict(fault='Filesystem worker did not return', worker_result=worker_result)
@@ -111,6 +115,8 @@ def run(args):
                         return struct.unpack('<I', self.u.mem_read(address, 4))[0]
                     def event_set(address, flags, *unused):
                         handle = event_handle(address)
+                        if len(filesystem_events) < 128:
+                            filesystem_events.append(dict(address=hex(address), handle=hex(handle), flags=hex(flags)))
                         self.event_flags[handle] = self.event_flags.get(handle, 0) | flags
                         self.result(0)
                     def event_clear(address, flags, *unused):
@@ -145,6 +151,12 @@ def run(args):
                     def event_response(service, registers):
                         caller = self.u.reg_read(self.lr)
                         handle, mask, mode, output = registers
+                        if service == 0x80510100 and (caller & ~1) == BASE + 0x3C355C:
+                            ticks = qtest('clock_step 1') // 1000000
+                            self.u.mem_write(handle, struct.pack('<II', ticks >> 32, ticks & 0xFFFFFFFF))
+                            if len(clock_queries) < 64:
+                                clock_queries.append(ticks)
+                            return 0
                         lock_callers = {0x80250300: 0x39F2FC, 0x80240200: 0x39F2E6}
                         if (self.in_worker and service in lock_callers and
                                 (caller & ~1) == BASE + lock_callers[service] and mask == 1):
@@ -300,6 +312,9 @@ def run(args):
             report['filesystem_task_scheduling_is_host_modeled'] = True
             report['filesystem_lock_operations'] = filesystem_locks
             report['filesystem_lock_fixture'] = 'Single worker; serialization semaphore initially available'
+            report['clock_fixture'] = 'QEMU virtual nanoseconds converted to milliseconds, high word first'
+            report['clock_queries_ms'] = clock_queries
+            report['filesystem_events'] = filesystem_events
             report['completion_event_delivery_is_host_modeled'] = True
             report['card_commands'] = card_commands
             report['card_command_log_limit'] = 128
@@ -319,13 +334,16 @@ def run(args):
                 and result.get('query_status') == 0) if args.slot_query else None
             if args.slot_query:
                 states = []
-                for index in range(4):
-                    base = 0xB2B464C0 + index * 0x38
+                # The original volume lookup uses a 0x88-byte stride;
+                # readiness and filesystem kind are separate byte fields.
+                for index in range(2):
+                    base = 0xB2B464C0 + index * 0x88
                     try:
-                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
-                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
-                        states.append(dict(index=index, mount_state=state,
-                                           words=[hex(word) for word in words]))
+                        state = workers[0].u.mem_read(base + 0x38, 1)[0]
+                        kind = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        name = bytes(workers[0].u.mem_read(base + 0xC, 12)).split(bytes(1))[0]
+                        states.append(dict(index=index, name=name.decode('ascii', errors='replace'),
+                                           readiness=state, filesystem_kind=kind))
                     except Exception as error:
                         states.append(dict(index=index, error=str(error)))
                 report['volume_table_states'] = states
@@ -558,36 +576,65 @@ def run(args):
                         directory['entries'].append(dict(short_name=short, long_name=wide,
                                                         size=struct.unpack_from('<I', raw, 0x218)[0]))
                     directory['close_result'] = worker.call(0x47D3F8, handle)
-                if not directory.get('entries') and directory.get('open_result', {}).get('value') == 0:
-                    # The original read APIs are the request senders that
-                    # post operations 53/54; with the volume mounted they
-                    # can fetch real directory records.
-                    for sender in (0x59F72C, 0x59F7BE):
-                        fallback = worker.u.context_save()
-                        worker.held_mutexes.clear()
-                        worker.held_locks.clear()
-                        fetched = worker.call(sender, handle, record, 0, 0)
-                        raw_record = bytes(worker.u.mem_read(record, 0x220))
-                        if fetched.get('value') == 0 and any(raw_record):
-                            directory['sender'] = hex(sender)
-                            short = raw_record[:13].split(bytes(1))[0].decode(
-                                'ascii', errors='replace')
-                            wide = raw_record[14:526].decode(
-                                'utf-16-le', errors='replace').split(chr(0))[0]
-                            directory['entries'].append(dict(
-                                short_name=short, long_name=wide,
-                                size=struct.unpack_from('<I', raw_record, 0x218)[0]))
-                            break
-                        worker.u.context_restore(fallback)
-                        directory.setdefault('sender_results', []).append(fetched)
                 report['directory'] = directory
                 report['filesystem_mount_verified'] = (
-                    opened.get('value') == 0 and directory.get('end_result', {}).get('value') == 1)
+                    opened.get('value') == 0 and directory.get('end_result', {}).get('value') == 0x80000030
+                    and directory.get('close_result', {}).get('value') == 0)
+            if args.read_file is not None and report['slot_query_succeeded']:
+                worker = workers[0]
+                obj, path, request, actual, buffer = (
+                    0x50009000, 0x50009200, 0x50009400, 0x50009500, 0x5000A000)
+                worker.u.mem_write(path, args.read_file.encode('ascii') + bytes(1))
+                initialized = worker.call(0x4B3C00, obj, path)
+                opened = worker.call(0x4B3C04, obj, 0, 0)
+                file = dict(path=args.read_file, init_result=initialized, open_result=opened)
+                if opened.get('value') == 0x043A0080:
+                    worker.u.mem_write(request, struct.pack('<3I', 1, buffer, 4096))
+                    worker.u.mem_write(actual, bytes(4))
+                    file['read_result'] = worker.call(0x4B3D82, obj, request, 4096, actual)
+                    count = struct.unpack('<I', worker.u.mem_read(actual, 4))[0]
+                    if count > 4096:
+                        raise ValueError('File read exceeds the requested buffer')
+                    file['bytes_read'] = count
+                    file['prefix_sha256'] = hashlib.sha256(bytes(worker.u.mem_read(buffer, count))).hexdigest()
+                    file['close_result'] = worker.call(0x4B3C90, obj)
+                report['file'] = file
+            if args.find_update and report['slot_query_succeeded']:
+                worker = workers[0]
+                entry, converted = 0x5000C000, 0x5000D000
+                # The bounded scan explicitly selects the SD card's B root.
+                # Directory entries and file bytes still come from the card.
+                worker.u.mem_write(0xB1887D10, struct.pack('<I', 2))
+                found = worker.call(0x37C236, BASE + 0x208680C, 4, entry)
+                scan = dict(result=found, selected_card_state=2)
+                if found.get('value') == 1:
+                    raw = bytes(worker.u.mem_read(entry, 0x220))
+                    scan['short_name'] = raw[:13].split(bytes(1))[0].decode('ascii', errors='replace')
+                    scan['size'] = struct.unpack_from('<I', raw, 0x218)[0]
+                    scan['name_conversion'] = worker.call(0x37C218, converted, entry)
+                    scan['converted_name'] = bytes(worker.u.mem_read(converted, 256)).split(bytes(1))[0].decode(
+                        'ascii', errors='replace')
+                report['update_name_scan'] = scan
+            if args.slot_query:
+                report['peripheral_access_count'] = workers[0].peripheral_access_count
+                report['unmapped_total'] = workers[0].unmapped[:200]
             report['passed'] = bool(report['first_sector_read_verified'] and
                 (report['slot_query_succeeded'] if args.slot_query else report['card_open_succeeded']))
+            if args.list_directory is not None:
+                report['passed'] &= report['filesystem_mount_verified']
+            if args.read_file is not None:
+                report['passed'] &= report.get('file', {}).get('read_result', {}).get('value') == 0x043A0080
+            if args.find_update:
+                report['passed'] &= report.get('update_name_scan', {}).get('result', {}).get('value') == 1
             report['pass_condition'] = (
                 ('Slot query returned one with status zero' if args.slot_query else 'Native SD open returned zero')
-                + ' and DMA delivered the image first sector; this does not establish filesystem mounting or menu update acceptance')
+                + ' and DMA delivered the image first sector; this does not establish native menu update acceptance')
+            if args.list_directory is not None:
+                report['pass_condition'] += '; directory open, native end marker and close must succeed'
+            if args.read_file is not None:
+                report['pass_condition'] += '; original file read must succeed'
+            if args.find_update:
+                report['pass_condition'] += '; original update filename finder must select a candidate'
             report['native_menu_update_verified'] = False
             (args.destination / 'report.json').write_text(
                 json.dumps(report, indent=2) + '\n', encoding='utf-8')
@@ -625,8 +672,11 @@ if __name__ == '__main__':
     parser.add_argument('--mount', action='store_true',
                         help='Drive filesystem worker operations two and three after the slot query')
     parser.add_argument('--list-directory', help='List a camera path after slot query, for example A:\\')
+    parser.add_argument('--read-file', help='Read up to 4096 bytes through the original file API')
+    parser.add_argument('--find-update', action='store_true',
+                        help='Run the original update filename finder on the mounted SD card')
     arguments = parser.parse_args()
-    if (arguments.list_directory is not None or arguments.mount
+    if (arguments.list_directory is not None or arguments.read_file is not None or arguments.find_update or arguments.mount
             or arguments.mount_api or arguments.mount_exec
             or arguments.mount_volume is not None):
         arguments.slot_query = True
