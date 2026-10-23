@@ -155,7 +155,7 @@ class CardWorker:
     def ctype(self, *args):
         self.result(SCRATCH + 0x1000)
 
-    def install_svc_trap(self):
+    def install_svc_trap(self, response=None):
         # The RTOS API layer calls svc #6 with ip holding a packed service
         # id (Thumb wrappers jump into ARM thunks at 0xE4xxxx). Emulate the
         # trap: record the service, answer success and skip the call.
@@ -168,13 +168,20 @@ class CardWorker:
             pc = u.reg_read(UC_ARM_REG_PC)
             service = u.reg_read(UC_ARM_REG_IP)
             self.services.append(dict(pc=hex(pc), service=hex(service)))
+            if response is not None:
+                value = response(service, tuple(u.reg_read(r) for r in self.regs))
+                if value is not None:
+                    self.services[-1]['device_response'] = hex(value)
+                    u.reg_write(UC_ARM_REG_R0, value)
+                    return
             # Success by default; pointer-shaped answers come from a
             # per-service scratch slot so pointer-expecting callers do not
             # dereference zero.
             slot = SCRATCH + 0x50000 + (len(self.services) & 0xFF) * 0x40
             u.mem_write(slot, bytes(0x40))
             u.reg_write(UC_ARM_REG_R0, slot)
-            u.reg_write(UC_ARM_REG_PC, pc + 4)
+            # The trap exposes the instruction after SVC. Advancing again
+            # skips the wrapper's LR restore and corrupts its return stack.
         self.u.hook_add(UC_HOOK_INTR, trap)
 
     def install_allocators(self):
@@ -221,7 +228,7 @@ class CardWorker:
                     else self.u.reg_read(self.regs[0]))
 
 
-def run(args, worker_class=CardWorker):
+def run(args, worker_class=CardWorker, quiet=False):
     code_dump = Path(f'{args.ram_dump}.10000000').read_bytes()
     ram_dump = Path(f'{args.ram_dump}.B1800000').read_bytes()
     require(len(code_dump) == CODE_BYTES and len(ram_dump) == RAM_BYTES,
@@ -277,10 +284,11 @@ def run(args, worker_class=CardWorker):
     report = dict(format=2, passed=False,
                   snapshot=dict(code_sha256=digest(code_dump), ram_sha256=digest(ram_dump),
                                 auxiliary_bytes=len(aux), auxiliary_sha256=digest(aux)),
-                  enable_byte_before=probe.u.mem_read(ENABLE_BYTE, 1)[0],
+                  enable_byte_address=hex(ENABLE_BYTE + 1),
+                  enable_byte_before=probe.u.mem_read(ENABLE_BYTE + 1, 1)[0],
                   enable_byte_forced=1,
                   platform_configuration_overridden=args.capability_all)
-    probe.u.mem_write(ENABLE_BYTE, bytes((1,)))
+    probe.u.mem_write(ENABLE_BYTE + 1, bytes((1,)))
     if args.sd_host:
         # Match the optional QEMU SD-host link prerequisites. This fixture
         # supplies no endpoint or card data and cannot establish readiness.
@@ -373,6 +381,9 @@ def run(args, worker_class=CardWorker):
             peripheral_access_tail=list(probe.peripheral_tail)[-min(io_count, 64):]
                 if io_count else [],
             unmapped_count=len(probe.unmapped)))
+        if label.startswith('query_local_slot'):
+            experiments[-1]['query_status'] = _s.unpack(
+                '<I', probe.u.mem_read(SCRATCH + 0x8000, 4))[0]
         if result.get('fault'):
             break
     report['experiments'] = experiments
@@ -390,9 +401,10 @@ def run(args, worker_class=CardWorker):
     (args.destination / 'report.json').write_text(
         json.dumps(report, indent=2, ensure_ascii=False, default=str) + '\n',
         encoding='utf-8')
-    print(('PASS ' if report['passed'] else 'FAIL ') +
-          f"card worker execution, peripheral accesses: "
-          f"{len(probe.peripheral_access)}", flush=True)
+    if not quiet:
+        print(('PASS ' if report['passed'] else 'FAIL ') +
+              f"card worker execution, peripheral accesses: "
+              f"{len(probe.peripheral_access)}", flush=True)
     return report
 
 

@@ -609,6 +609,7 @@ struct NikonZ72BootConfig {
     MemoryRegion sd_clock_status;
     DeviceState *sd_controller;
     bool sd_host;
+    bool sd_irq_level;
     uint32_t dbi_table[0x8c0 / 4];
     uint32_t dbi_viewport;
     uint32_t dbi_regions[2 * 16 * 7];
@@ -726,6 +727,22 @@ static const MemoryRegionOps sd_clock_ops = {
     .valid = { .min_access_size = 4, .max_access_size = 4 },
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
+
+static void sd_update_irq(NikonZ72BootConfig *s)
+{
+    if (s->sd_host && s->intc) {
+        /* The original vector 243 handler decodes INTA in status bit 28,
+         * then invokes the card callback registered on the bus object. */
+        qemu_set_irq(qdev_get_gpio_in(s->intc, 243 - 32), s->sd_irq_level);
+    }
+}
+
+static void sd_irq_input(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+    s->sd_irq_level = level != 0;
+    sd_update_irq(s);
+}
 
 static hwaddr peer_ready_address(NikonZ72BootConfig *s)
 {
@@ -958,6 +975,9 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
         boot_config_addresses[word->index] == 0x2b200058) {
         value = (value & ~0x3f0000u) | 0x110000u;
     }
+    if (s->sd_host && boot_config_addresses[word->index] == 0x2b200024) {
+        value = (value & ~(1u << 28)) | (s->sd_irq_level ? 1u << 28 : 0);
+    }
     /* The firmware polls the input-path status word 0x20068060 on every
      * frame period; a running sensor interface would latch a ready
      * pattern here so the capture initialization can proceed. */
@@ -985,6 +1005,12 @@ static void boot_config_write(void *opaque, hwaddr offset,
     NikonZ72BootConfig *s = word->device;
     hwaddr address = boot_config_addresses[word->index];
     uint32_t *stored = &s->values[word->index];
+    if (s->sd_host && address == 0x2b200024) {
+        /* INTA follows its source. A status acknowledgement cannot clear
+         * an asserted source or create an interrupt while it is low. */
+        *stored = (uint32_t)value & ~(1u << 28);
+        return;
+    }
     if (address == 0x20060038 || address == 0x20060044 ||
         address == 0x20060050) {
         *stored &= ~(uint32_t)value;
@@ -1555,6 +1581,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
     memset(s->dbi_regions, 0, sizeof(s->dbi_regions));
     s->dbi_viewport = 0;
+    s->sd_irq_level = false;
+    sd_update_irq(s);
     if (s->sd_host && s->release_config) {
         memset(memory_region_get_ram_ptr(&s->sd_config_ram), 0, 0x2000);
     }
@@ -1603,6 +1631,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     transport_update_irq(s);
     input_update_irqs(s);
     sync_update_irqs(s);
+    sd_update_irq(s);
     if (s->intc) {
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), s->gate_pending);
         if (s->release_config) {
@@ -1617,8 +1646,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 34,
-    .minimum_version_id = 34,
+    .version_id = 35,
+    .minimum_version_id = 35,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1632,6 +1661,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
         VMSTATE_BOOL(pcie_link, NikonZ72BootConfig),
         VMSTATE_BOOL(sd_host, NikonZ72BootConfig),
+        VMSTATE_BOOL(sd_irq_level, NikonZ72BootConfig),
         VMSTATE_UINT32(sample_lines, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
@@ -1667,6 +1697,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), sync_event, "sync-event", 11 + 32);
     qdev_init_gpio_in_named(DEVICE(obj), frame_sync_enable, "frame-sync-enable", 1);
     qdev_init_gpio_in_named(DEVICE(obj), auto_sample_event, "auto-sample-event", 1);
+    qdev_init_gpio_in_named(DEVICE(obj), sd_irq_input, "sd-irq", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
     /* Sparse containers keep unsupported words unassigned and avoid the
@@ -1706,6 +1737,7 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         if (s->sd_host) {
             DeviceState *sd = qdev_new("generic-sdhci");
 
+            sd->id = g_strdup_printf("z72-sd-%s", tag);
             s->sd_controller = sd;
 
             /* Fixed windows recovered from the original board setup:
@@ -1722,11 +1754,12 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
             memory_region_add_subregion(root, 0x2a810000,
                                         sysbus_mmio_get_region(
                                             SYS_BUS_DEVICE(sd), 0));
+            sysbus_connect_irq(SYS_BUS_DEVICE(sd), 0,
+                               qdev_get_gpio_in_named(dev, "sd-irq", 0));
             memory_region_init_io(&s->sd_clock_status, OBJECT(dev),
                                   &sd_clock_ops, s, "z72-sd-clock-status", 4);
             memory_region_add_subregion_overlap(root, 0x2a800064,
                                                 &s->sd_clock_status, 1);
-            /* Polling works independently of the unresolved PCIe IRQ path. */
         }
         memory_region_init_io(&s->transport_ram, OBJECT(dev), &transport_ops, s,
                               "z72-transport-control", 0x10000);

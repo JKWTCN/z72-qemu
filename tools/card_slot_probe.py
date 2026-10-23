@@ -146,13 +146,21 @@ def run(args):
         devices += tuple(
             f"nikon-z72-controller-register-bank,bus=master-i2c{i},address=104"
             for i in range(4))
+        globals_ = ('nikon-z72-boot-config.frame-sync=on',)
+        extra_arguments = ()
+        if args.sd_card_image is not None:
+            globals_ += ('nikon-z72-boot-config.sd-host=on',)
+            extra_arguments = ('-drive',
+                f'if=none,id=research-card,file={args.sd_card_image.resolve()},format=raw,snapshot=on')
+            devices += (f'sd-card,drive=research-card,bus=/z72-sd-{args.sd_card_engine}/sd-bus',)
+            report['sd_card_engine'] = args.sd_card_engine
+            report['sd_card_writes_use_overlay'] = True
         process, remote = dual_machine(
             args.qemu, work, master, slave, work / 'console.txt',
             icount='shift=0,sleep=off', trace='guest_errors',
             controller_firmware=args.controller, controller_link=True,
             controller_flash_data=work / 'resident.bin', devices=devices,
-            globals_=('nikon-z72-boot-config.frame-sync=on',),
-            extra_arguments=())
+            globals_=globals_, extra_arguments=extra_arguments)
         wire = socket.create_connection(('127.0.0.1', qtest_port), timeout=10)
         reply = remote.command('qRcmd,' + 'qom-list /machine/unattached'.encode().hex())
         listing = bytearray()
@@ -242,6 +250,25 @@ def run(args):
                         register_like=[hex(value) for value in words
                                        if 0x20010000 <= value <= 0x2FFFFFFF]))
             report['contexts'] = contexts
+        if args.sd_card_image is not None:
+            report['sd_host_registers'] = []
+            for engine, thread in (('master', 1), ('slave', 3)):
+                remote.select_thread(thread)
+                registers = {}
+                for address in (0x2B000010, 0x2B200000, 0x2B200024, 0x2B200058,
+                                0x2A900004, 0x2A900098,
+                                0x2A800010, 0x2A800014, 0x2A800064,
+                                0x2A810024, 0x2A81002C, 0x2A810030):
+                    try:
+                        registers[hex(address)] = hex(struct.unpack(
+                            '<I', remote.read(address, 4))[0])
+                    except Exception as error:
+                        registers[hex(address)] = dict(error=str(error))
+                report['sd_host_registers'].append(dict(engine=engine, registers=registers))
+            remote.select_thread(1)
+            report['card_slot_enable_bytes'] = list(remote.read(0xB1808B50, 2))
+            report['foreground_application_index'] = remote.read(0xB1811E50, 1)[0]
+            report['observation_window_seconds'] = args.window
         if args.ram_dump is not None:
             # Snapshot the initialized runtime RAM for bounded execution
             # of the card worker chain outside the machine.
@@ -358,6 +385,10 @@ def main():
                         help='Snapshot runtime RAM (0xB1800000, 14MB) and stop')
     parser.add_argument('--registration-only', action='store_true',
                         help='Observe registration without forcing slot state or sending keys')
+    parser.add_argument('--sd-card-image', type=Path,
+                        help='Attach a raw card image through the optional SD host, with an overlay')
+    parser.add_argument('--sd-card-engine', choices=('master', 'slave'), default='slave',
+                        help='Engine owning the attached card (default: slave)')
     parser.add_argument('--work', type=Path,
                         help='Persistent work directory (default: temporary)')
     arguments = parser.parse_args()

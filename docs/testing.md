@@ -509,13 +509,20 @@ pointer resolved to a master file offset. See the
 [card slot table evidence](../artifacts/card_slot_table/report.json).
 Use `--registration-only` for a read-only startup check that stops after
 observing the table; it skips forced slot enable and the later key sequence.
+`--sd-card-image` enables the optional hosts and attaches a raw card before
+boot; `--sd-card-engine master|slave` selects its owner, defaulting to slave.
+The card uses an overlay. The
+[runtime startup observation](../artifacts/sd_runtime_startup/report.json)
+records the shooting foreground with both slot enable bytes still zero.
 
 `tests/test_sd_host.py --qemu .build/build/qemu-system-arm` exercises the
 optional `sd-host` profile with a synthetic card image in snapshot mode. It checks
 the link prerequisites, the active-low clock request, controller reset,
-card address assignment and a complete 512-byte PIO sector read. The host
+card address assignment and a complete 512-byte PIO sector read. It also
+checks PCIe INTA status and GIC input 243 assertion, acknowledgement while
+the source remains high, and deassertion after SDHCI status clear. The host
 uses QEMU's SDHCI implementation at the firmware-derived first BAR.
-This check does not execute firmware or establish its filesystem/IRQ path.
+This check does not execute firmware or establish its filesystem path.
 The [SD host validation record](../artifacts/sd_host_validation/report.json)
 identifies the compiled binary and the checks that passed.
 
@@ -523,13 +530,29 @@ identifies the compiled binary and the checks that passed.
 --ram-dump .local/card-ram.bin --destination .local/sd-native` executes the
 captured card workers with the recovered MMIO windows forwarded to QEMU.
 It creates a temporary blank card by default; `--card-image` selects a raw
-image, with all writes confined to an overlay. Firmware execution remains
-bounded and RTOS responses remain synthetic. See the
-[native SD host record](../artifacts/sd_native_host/report.json) for the
-current stop after clock setup and the first card command.
+image, with all writes confined to an overlay. The SD completion wait uses
+actual QEMU status and a 1 ms device-clock step. ADMA2 descriptors and
+transferred buffers are synchronized between the two execution memories;
+other RTOS service/caller combinations stop immediately. Firmware execution
+remains bounded. The
+[native SD host record](../artifacts/sd_native_host/report.json) proves an
+original open return of zero and a DMA first-sector digest matching its
+input image. A one-byte damaged boot signature still reads successfully
+but the original open rejects it with -830; see the
+[negative control](../artifacts/sd_native_bad_signature/report.json).
+`--slot-query` reaches the filesystem task's unmodeled response wait,
+recorded in the [filesystem boundary](../artifacts/sd_native_slot_query/report.json).
+These checks do not establish a mounted filesystem or native menu update.
+
+To make a new synthetic FAT card from a directory, use `qemu-img convert
+-f raw -O raw fat:/path/to/directory card.raw`, then `qemu-img resize
+-f raw card.raw 512M`. The conversion creates a 504 MiB disk; extending it
+to a power of two satisfies the SD device's size requirement. The original
+directory remains outside the emulator's write path. The SVC return-stack
+regression is `python -m unittest checks.test_card_worker -v`.
 
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
-bounded environment, forces the slot enable byte and runs the original
+bounded environment, forces the SD logical-slot enable byte and runs the original
 card worker entries, recording the executed chain and every peripheral
 access; the snapshot comes from `tools/card_slot_probe.py --ram-dump`.
 See the [card worker evidence](../artifacts/card_worker_execution/report.json).

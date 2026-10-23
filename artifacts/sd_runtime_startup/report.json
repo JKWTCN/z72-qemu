@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "date": "2026-10-23",
+  "qemu_version": "10.2.4",
+  "binary_sha256": "7b2029dee9023e0bdd3af8cee8f5182f2906bef4edd27c78e0a3b7953f2205a5",
+  "startup_observation_completed": true,
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "firmware_modified": false,
+  "runtime_ram_written": false,
+  "sd_card_engine": "slave",
+  "card_image": {
+    "size": 536870912,
+    "sha256": "c29bc05cbe03d090fe53b7f4e903f7197b8fa846015e19dd82857d18af4a8c42",
+    "first_sector_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef"
+  },
+  "card_writes_use_overlay": true,
+  "foreground_application_index": 3,
+  "card_slot_enable_bytes": [
+    0,
+    0
+  ],
+  "observation_window_seconds": 60.0,
+  "sd_host_registers": [
+    {
+      "engine": "master",
+      "registers": {
+        "0x2b000010": "0x300",
+        "0x2b200000": "0x0",
+        "0x2b200024": "0x0",
+        "0x2b200058": "0x110000",
+        "0x2a900004": "0x0",
+        "0x2a900098": "0x2",
+        "0x2a800010": "0x0",
+        "0x2a800014": "0x0",
+        "0x2a800064": "0x0",
+        "0x2a810024": "0x1fa0000",
+        "0x2a81002c": "0x0",
+        "0x2a810030": "0x0"
+      }
+    },
+    {
+      "engine": "slave",
+      "registers": {
+        "0x2b000010": "0x400",
+        "0x2b200000": "0x14",
+        "0x2b200024": "0x0",
+        "0x2b200058": "0x110000",
+        "0x2a900004": "0x106",
+        "0x2a900098": "0x2",
+        "0x2a800010": "0x0",
+        "0x2a800014": "0x0",
+        "0x2a800064": "0x0",
+        "0x2a810024": "0x1ff0000",
+        "0x2a81002c": "0x0",
+        "0x2a810030": "0x0"
+      }
+    }
+  ],
+  "native_runtime_card_mount_verified": false,
+  "native_menu_update_verified": false
+}

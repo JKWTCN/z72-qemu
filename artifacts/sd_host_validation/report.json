@@ -3,9 +3,9 @@
   "date": "2026-10-23",
   "qemu_version": "10.2.4",
   "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
-  "binary_sha256": "5d5dea5e7f408b015e181ef83e13b1c968bbec91ec55a8d0eb178c362660debc",
+  "binary_sha256": "7b2029dee9023e0bdd3af8cee8f5182f2906bef4edd27c78e0a3b7953f2205a5",
   "sources": {
-    "qemu/nikon-z72.c": "365593929967cd24b87596f98253b2ed49f6e8b9699b0699db13c3fa6ece9385",
+    "qemu/nikon-z72.c": "7108a69f641ebb73924fe4a412f82feb043be5fa87e495dedc01ac06cdbec65f",
     "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
     "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
     "qemu/nikon-z72-input-config.c": "c03af22712279b2c92116281dca2bd102353b33cabbb02378a46920cb1f3d583",
@@ -36,14 +36,27 @@
     "Controller reset",
     "Card address assignment",
     "Full 512-byte PIO read matches synthetic image",
-    "Reset clears transfer state"
+    "Reset clears transfer state",
+    "SDHCI command completion asserts PCIe INTA and GIC input 243",
+    "Acknowledgement cannot hide an active source",
+    "SDHCI source clear lowers the GIC input"
   ],
-  "native_card_open_verified": false,
+  "native_card_open_verified": true,
   "native_menu_update_verified": false,
   "boundaries": [
-    "PCIe IRQ forwarding is not connected",
     "Second BAR is not implemented",
-    "Native worker execution still uses synthetic RTOS boundaries"
+    "Bounded SD completion events and DMA RAM coherence are host modeled",
+    "Filesystem task request is an unmodeled RTOS boundary",
+    "Runtime card slots remain disabled in the observed original startup"
   ],
-  "native_execution_report": "artifacts/sd_native_host/report.json"
+  "native_execution_report": "artifacts/sd_native_host/report.json",
+  "svc_return_stack_regression_passed": true,
+  "native_first_sector_read_verified": true,
+  "invalid_boot_signature_rejected": true,
+  "invalid_signature_input_byte": 510,
+  "negative_control_differs_only_at_that_byte": true,
+  "native_runtime_card_mount_verified": false,
+  "native_negative_report": "artifacts/sd_native_bad_signature/report.json",
+  "filesystem_boundary_report": "artifacts/sd_native_slot_query/report.json",
+  "runtime_startup_report": "artifacts/sd_runtime_startup/report.json"
 }
