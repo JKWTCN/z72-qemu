@@ -18,7 +18,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from analyze.decode_z72 import BASE, require
+from analyze.decode_z72 import BASE, digest, require
 
 CODE_BASE = 0x10000000
 CODE_BYTES = 0x4000000
@@ -43,7 +43,7 @@ class CardWorker:
         self.u = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
         self.u.ctl_set_cpu_model(UC_CPU_ARM_CORTEX_A15)
         for address, size in ((CODE_BASE, CODE_BYTES), (RAM_BASE, RAM_BYTES),
-                              (0x00000000, 0x100000), (0x04000000, 0x1000), (SCRATCH, 0x100000),
+                              (0x04000000, 0x1000), (SCRATCH, 0x100000),
                               # Timer family and platform configuration
                               # spans read as RAM so the worker chain passes
                               # through them; only genuinely new windows
@@ -55,29 +55,53 @@ class CardWorker:
             self.u.mem_map(address, size)
         self.u.mem_write(CODE_BASE, code_dump)
         self.u.mem_write(RAM_BASE, ram_dump)
-        self.u.mem_write(0x0, aux_dump[:0x100000])
+        if aux_dump:
+            require(len(aux_dump) == 0x100000, 'Unexpected low-memory snapshot size')
+            self.u.mem_map(0, 0x100000)
+            self.u.mem_write(0, aux_dump)
         self.u.hook_add(UC_HOOK_CODE, lambda u, *a: u.emu_stop(),
                         begin=STOP, end=STOP)
         self.executed = []
         self.peripheral_access = []
+        self.peripheral_access_count = 0
         self.unmapped = []
         from unicorn import (UC_HOOK_MEM_UNMAPPED, UC_HOOK_MEM_READ,
                              UC_HOOK_MEM_WRITE)
-        def memory(u, access, address, size, value, unused):
+        def entry(u, access, address, size, value):
             kind = {16: 'read', 17: 'write', 18: 'fetch',
                     19: 'read', 20: 'write', 21: 'fetch'}.get(access)
-            entry = dict(kind=kind, address=hex(address), size=size,
+            return dict(kind=kind, address=hex(address), size=size,
+                         pc=hex(u.reg_read(self.pc)),
                          value=None if kind == 'read' or value is None
                          else hex(value))
+        def peripheral(u, access, address, size, value, unused):
+            self.peripheral_access_count += 1
+            if len(self.peripheral_access) < 512:
+                self.peripheral_access.append(entry(u, access, address, size, value))
+        def memory(u, access, address, size, value, unused):
+            record = entry(u, access, address, size, value)
             if address in PERIPHERAL:
-                self.peripheral_access.append(entry)
-            else:
-                self.unmapped.append(entry)
-            # Every unmapped read returns zero and writes are absorbed, so
-            # the original chain keeps running past missing devices.
-            return True
+                peripheral(u, access, address, size, value, unused)
+            self.unmapped.append(record)
+            # Stop at missing memory; returning true without mapping it does
+            # not supply a zero-valued device and obscures the original fault.
+            return False
         self.u.hook_add(UC_HOOK_MEM_UNMAPPED, memory)
+        self.u.hook_add(UC_HOOK_MEM_READ | UC_HOOK_MEM_WRITE, peripheral,
+                        begin=PERIPHERAL.start, end=PERIPHERAL.stop - 1)
         self.rtos = set()
+        self.bus_guard_states = []
+        def bus_guard(u, address, size, unused):
+            context = u.reg_read(self.regs[0])
+            # Do not read an absent window from the host hook: let the
+            # original instruction produce the unmapped-access diagnostic.
+            enabled = None if context == 0 and not aux_dump else struct.unpack(
+                '<I', u.mem_read(context + 0x14, 4))[0]
+            state = dict(context=hex(context), enabled=enabled)
+            if state not in self.bus_guard_states:
+                self.bus_guard_states.append(state)
+        self.u.hook_add(UC_HOOK_CODE, bus_guard,
+                        begin=BASE + 0x4F87F4, end=BASE + 0x4F87F4)
 
     def hook(self, offset, callback):
         from unicorn import UC_HOOK_CODE
@@ -173,6 +197,8 @@ class CardWorker:
         for register, value in zip(self.regs, args):
             self.u.reg_write(register, value)
         self.u.reg_write(self.sp, STACK)
+        if len(args) > 4:
+            self.u.mem_write(STACK, struct.pack('<' + 'I' * (len(args) - 4), *args[4:]))
         self.u.reg_write(self.lr, STOP | 1)
         try:
             self.u.emu_start((BASE + offset) | 1, STOP, count=budget)
@@ -195,7 +221,7 @@ def run(args):
     if aux_dump.exists():
         aux = aux_dump.read_bytes()
     else:
-        aux = bytes(0x100000)
+        aux = b''
     probe = CardWorker(code_dump, ram_dump, aux)
     # Card worker entries from the captured slot table and the query path.
     probe.trace(0x4626A4)   # configured predicate (slot 0)
@@ -235,14 +261,17 @@ def run(args):
     flags = bytes(0x20 if 48 <= c <= 57 else 16 if 65 <= c <= 90
                   else 128 if 97 <= c <= 122 else 0 for c in range(256))
     probe.u.mem_write(SCRATCH + 0x1000, bytes(4) + flags)
-    report = dict(format=1, passed=False,
-                  snapshot=str(args.ram_dump),
-                  enable_byte_before=probe.u.mem_read(ENABLE_BYTE, 1)[0])
+    report = dict(format=2, passed=False,
+                  snapshot=dict(code_sha256=digest(code_dump), ram_sha256=digest(ram_dump),
+                                auxiliary_bytes=len(aux), auxiliary_sha256=digest(aux)),
+                  enable_byte_before=probe.u.mem_read(ENABLE_BYTE, 1)[0],
+                  enable_byte_forced=1,
+                  platform_configuration_overridden=args.capability_all)
     probe.u.mem_write(ENABLE_BYTE, bytes((1,)))
     import struct as _s
     if args.capability_all:
-        # Present every platform capability bit so the driver chain does
-        # not exit early; the real machine registers these as device words.
+        # All-one configuration is a synthetic diagnostic fixture. Active-low
+        # presence tests can interpret it as absence rather than readiness.
         probe.u.mem_write(0x04200000, bytes([0xFF]) * 0x100000)
     descriptors = []
     for index in range(3):
@@ -250,52 +279,57 @@ def run(args):
         words = _s.unpack('<6I', probe.u.mem_read(entry, 0x18))
         if words[0]:
             descriptors.append(words)
-    registry_entries = []
-    struct_base = SCRATCH + 0x2000
-    for index, words in enumerate(descriptors):
-        module = struct_base + index * 0x40
-        obj = 0xB1D28018 + index * 0x20
-        name = SCRATCH + 0x4000 + index * 8
-        probe.u.mem_write(name, b'MOD' + bytes((48 + index,)) + bytes(4))
-        record = _s.pack('<HHIIIIIIII', index, index, name, 0, 0,
-                         words[1], words[2], words[3], words[4], words[5])
-        probe.u.mem_write(module, record)
-        probe.u.mem_write(obj, record)
-        probe.u.mem_write(0xB1D28008 + index * 4,
-                          _s.pack('<I', module))
-        registry_entries.append(dict(module=index,
-                                     struct=hex(module), object=hex(obj)))
-    probe.u.mem_write(0xB1D28078, _s.pack('<H', len(descriptors)))
-    report['synthesized_registry'] = registry_entries
+    # The table at 0xB1D28008 is a private handle table: uint16 count,
+    # three pointers and three 32-byte objects. Descriptor records do not
+    # belong there; the original open operation creates these objects.
+    report['private_handle_count_before'] = _s.unpack(
+        '<H', probe.u.mem_read(0xB1D28008, 2))[0]
+    report['sd_context_before'] = dict(
+        presence_slots=[hex(word) for word in _s.unpack(
+            '<2I', probe.u.mem_read(0xB18019F4, 8))],
+        bus_handle=hex(_s.unpack('<I', probe.u.mem_read(0xB18019A0, 4))[0]),
+        low_memory_snapshot_mapped=bool(aux))
+    require(len(descriptors) == 3, 'Requires the CF/SD/XQD module descriptor table')
+    sd = descriptors[1]
+    require(bytes(probe.u.mem_read(sd[0], 3)) == b'SD\0', 'Unexpected SD descriptor')
+    sd_targets = [(word & ~1) - BASE for word in (sd[1], sd[2], sd[4], sd[5])]
+    for offset in sd_targets:
+        probe.trace(offset)
+    report['sd_entries'] = [dict(runtime=hex(BASE + offset), member_offset=hex(offset),
+                                 code_sha256=digest(bytes(probe.u.mem_read(BASE + offset, 32))))
+                            for offset in sd_targets]
     experiments = []
     probe.full_trace()
-    for label, offset, arguments in (
+    entries = (
             ('card_service_init', 0x4630B0, ()),
             ('configured_slot0', 0x4626A4, (0,)),
             ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x8000)),
             ('configured_slot1', 0x4626A4, (1,)),
             ('query_local_slot1', 0x462A0E, (1, SCRATCH + 0x8000)),
-            ('sd_module_op0', 0x481C70, (SCRATCH + 0x5000, SCRATCH + 0x5100,
-                                          0, 0)),
-            ('sd_module_op1', 0x481E30, (SCRATCH + 0x5000, SCRATCH + 0x5100,
-                                          0, 0)),
-            ('sd_module_op2', 0x481F06, (SCRATCH + 0x5000, SCRATCH + 0x5100,
-                                          0, 0)),
-            ('sd_module_op3', 0x482016, (SCRATCH + 0x5000, SCRATCH + 0x5100,
-                                          0, 0))):
+            ('sd_module_op0', sd_targets[0], (1,)),
+            ('sd_module_op1', sd_targets[1], (1, 1, SCRATCH + 0x5100)),
+            ('sd_module_op2', sd_targets[2], (1, SCRATCH + 0x5100)),
+            ('sd_module_op3', sd_targets[3], (1, SCRATCH + 0x5100)),
+            ('sd_protocol_init', 0x47FDB2, (1, SCRATCH + 0x10000, 0x8000,
+                                          SCRATCH + 0x20000, 0x1000, SCRATCH + 0x25000)))
+    selected = set(args.experiment or [e[0] for e in entries])
+    require(selected <= {e[0] for e in entries}, 'Unknown worker experiment')
+    for label, offset, arguments in entries:
+        if label not in selected:
+            continue
         before_io = len(probe.peripheral_access)
+        before_path, before_services, before_entries = len(probe.path), len(probe.services), len(probe.executed)
         result = probe.call(offset, *arguments)
         import struct as _struct
-        registry = list(_struct.unpack('<3I', probe.u.mem_read(0xB1D28008, 12)))
-        count = _struct.unpack('<H', probe.u.mem_read(0xB1D28078, 2))[0]
-        entry = dict(module_registry=[hex(word) for word in registry],
-                     module_count=count)
-        path = getattr(probe, 'path', [])
+        registry = list(_struct.unpack('<3I', probe.u.mem_read(0xB1D2800C, 12)))
+        count = _struct.unpack('<H', probe.u.mem_read(0xB1D28008, 2))[0]
+        entry = dict(handle_pointers=[hex(word) for word in registry], handle_count=count)
+        path = probe.path[before_path:]
         experiments.append(dict(
             experiment=label, entry=hex(offset), result=result,
-            registry=entry,
-            services=probe.services,
-            executed=probe.executed,
+            private_handles=entry,
+            services=list(probe.services[before_services:]),
+            executed=list(probe.executed[before_entries:]),
             path_length=len(path),
             path_tail=[hex(pc) for pc in path[-60:]],
             peripheral_access=probe.peripheral_access[before_io:],
@@ -305,9 +339,14 @@ def run(args):
     report['experiments'] = experiments
     report['peripheral_access_total'] = probe.peripheral_access
     report['unmapped_total'] = probe.unmapped[:200]
-    report['passed'] = bool(probe.peripheral_access) or all(
-        e['result'].get('returned') == 'stopped' or e['result'].get('value') is not None
-        for e in experiments)
+    report['peripheral_access_count'] = probe.peripheral_access_count
+    report['peripheral_log_limit'] = 512
+    report['passed'] = all(e['result'].get('value') == 0 for e in experiments)
+    report['pass_condition'] = 'All selected entries returned zero; this does not establish card operation'
+    report['rtos_responses_are_synthetic'] = True
+    report['mapped_device_words_are_synthetic'] = True
+    report['bus_guard_states'] = probe.bus_guard_states
+    report['experiments_share_state'] = True
     args.destination.mkdir(parents=True, exist_ok=True)
     (args.destination / 'report.json').write_text(
         json.dumps(report, indent=2, ensure_ascii=False, default=str) + '\n',
@@ -323,7 +362,9 @@ def main():
     parser.add_argument('--ram-dump', required=True, type=Path,
                         help='memsave snapshot prefix from card_slot_probe')
     parser.add_argument('--capability-all', action='store_true',
-                        help='Set all platform capability bits to present')
+                        help='Set platform configuration words to all ones (synthetic)')
+    parser.add_argument('--experiment', action='append',
+                        help='Run a named worker entry; repeat to select multiple entries')
     parser.add_argument('--destination', required=True, type=Path)
     arguments = parser.parse_args()
     run(arguments)

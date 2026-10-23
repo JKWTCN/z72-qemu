@@ -1,118 +1,128 @@
 {
-  "format": 1,
+  "format": 2,
   "passed": false,
-  "snapshot": "D:\\code\\z72-qemu\\.local\\card-ram.bin",
+  "snapshot": {
+    "code_sha256": "06de10343665ebce481b17f0f4a17346f714641b8f31876992b889cb6b4ba6c6",
+    "ram_sha256": "a12651892842934ad55ce8b4ff32a3a082038fa4edf6ee828da2bca338c7c579",
+    "auxiliary_bytes": 0,
+    "auxiliary_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
   "enable_byte_before": 0,
-  "synthesized_registry": [
+  "enable_byte_forced": 1,
+  "platform_configuration_overridden": false,
+  "private_handle_count_before": 0,
+  "sd_context_before": {
+    "presence_slots": [
+      "0x0",
+      "0x0"
+    ],
+    "bus_handle": "0x0",
+    "low_memory_snapshot_mapped": false
+  },
+  "sd_entries": [
     {
-      "module": 0,
-      "struct": "0x50002000",
-      "object": "0xb1d28018"
+      "runtime": "0x10481c70",
+      "member_offset": "0x461c70",
+      "code_sha256": "5388656b66929e34d24add8921938cae570d3d1810758103acc6ed6bc2244877"
     },
     {
-      "module": 1,
-      "struct": "0x50002040",
-      "object": "0xb1d28038"
+      "runtime": "0x10481e30",
+      "member_offset": "0x461e30",
+      "code_sha256": "4fd441e9c1d126a01f5e4ee53f7c4be41637fbfcd2c100a398269f382b5f55f8"
     },
     {
-      "module": 2,
-      "struct": "0x50002080",
-      "object": "0xb1d28058"
+      "runtime": "0x10481f06",
+      "member_offset": "0x461f06",
+      "code_sha256": "61d39b2f9f8d4ddcf76eae82bd18f9d55ab64727810718854d74630a1133d8aa"
+    },
+    {
+      "runtime": "0x10482016",
+      "member_offset": "0x462016",
+      "code_sha256": "16757684981e9f67e9e7946656f08337dfb9a2e47861727ef56335bace97e108"
     }
   ],
   "experiments": [
     {
-      "experiment": "card_service_init",
-      "entry": "0x4630b0",
+      "experiment": "sd_module_op1",
+      "entry": "0x461e30",
       "result": {
-        "fault": "Invalid memory mapping (UC_ERR_MAP)",
-        "pc": "-0xff20000"
+        "fault": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+        "pc": "0x365d76"
       },
-      "registry": {
-        "module_registry": [
-          "0x50002000",
-          "0x50002040",
-          "0x50002080"
+      "private_handles": {
+        "handle_pointers": [
+          "0xb1d28018",
+          "0x0",
+          "0x0"
         ],
-        "module_count": 3
+        "handle_count": 1
       },
-      "services": [
-        {
-          "pc": "0x101043bc",
-          "service": "0x802f0200"
-        },
-        {
-          "pc": "0x10104a28",
-          "service": "0x80300500"
-        },
-        {
-          "pc": "0x10104a28",
-          "service": "0x80300500"
-        }
+      "services": [],
+      "executed": [
+        "0x461e30"
       ],
-      "executed": [],
-      "path_length": 240,
+      "path_length": 116,
       "path_tail": [
-        "0xe43b4",
-        "0xe43b8",
-        "0xe43c0",
-        "0xe43c4",
-        "0x59e89c",
-        "0x59e89e",
-        "0x59e8a0",
-        "0x3406e4",
-        "0x3406e6",
-        "0x3410cc",
-        "0x59e8a4",
-        "0x59e8a6",
-        "0x59e8a8",
-        "0x59e8aa",
-        "0x3410da",
-        "0x3410dc",
-        "0x3410de",
-        "0x3410e2",
-        "0x3410e6",
-        "0x3410ea",
-        "0x3410ec",
-        "0x3410ee",
-        "0x3410f0",
-        "0xe4a14",
-        "0xe4a18",
-        "0xe4a1c",
-        "0xe4a20",
-        "0xe4a24",
-        "0xe4a2c",
-        "0xe4a30",
-        "0x3410f4",
-        "0x3410f6",
-        "0x59e89c",
-        "0x59e89e",
-        "0x59e8a0",
-        "0x3406e4",
-        "0x3406e6",
-        "0x3410cc",
-        "0x59e8a4",
-        "0x59e8a6",
-        "0x59e8a8",
-        "0x59e8aa",
-        "0x3410da",
-        "0x3410dc",
-        "0x3410de",
-        "0x3410e2",
-        "0x3410e6",
-        "0x3410ea",
-        "0x3410ec",
-        "0x3410ee",
-        "0x3410f0",
-        "0xe4a14",
-        "0xe4a18",
-        "0xe4a1c",
-        "0xe4a20",
-        "0xe4a24",
-        "0xe4a2c",
-        "0xe4a30",
-        "0x3410f4",
-        "0x3410f6"
+        "0x4814e0",
+        "0x4814e2",
+        "0x341034",
+        "0x4814e6",
+        "0x4814ea",
+        "0x4814ee",
+        "0x4814f0",
+        "0x4814f2",
+        "0x4814f4",
+        "0x4814f6",
+        "0x4814f8",
+        "0x4814fc",
+        "0x4814cc",
+        "0x4814ce",
+        "0x4814ac",
+        "0x461e42",
+        "0x461e44",
+        "0x461e46",
+        "0x461e48",
+        "0x461e4a",
+        "0x461e4c",
+        "0x461e4e",
+        "0x461e52",
+        "0x461e54",
+        "0x481602",
+        "0x481604",
+        "0x340f18",
+        "0x461e58",
+        "0x461e5a",
+        "0x48174a",
+        "0x461e5e",
+        "0x461e60",
+        "0x461e62",
+        "0x461e64",
+        "0x461e66",
+        "0x461e6a",
+        "0x461e6c",
+        "0x461e70",
+        "0x461e74",
+        "0x461e78",
+        "0x461e7c",
+        "0x461e80",
+        "0x461e82",
+        "0x461e84",
+        "0x461e88",
+        "0x461e8a",
+        "0x47fdb2",
+        "0x47fdb6",
+        "0x47fdb8",
+        "0x47fdba",
+        "0x47fdbc",
+        "0x47fdbe",
+        "0x47fdc0",
+        "0x47da10",
+        "0x47da12",
+        "0x47da14",
+        "0x47da16",
+        "0x47da18",
+        "0x47da1c",
+        "0x365d76"
       ],
       "peripheral_access": [],
       "unmapped_count": 1
@@ -121,10 +131,18 @@
   "peripheral_access_total": [],
   "unmapped_total": [
     {
-      "kind": "fetch",
-      "address": "0x100000",
+      "kind": "read",
+      "address": "0x8",
       "size": 4,
-      "value": "0x0"
+      "pc": "0x10385d76",
+      "value": null
     }
-  ]
+  ],
+  "peripheral_access_count": 0,
+  "peripheral_log_limit": 512,
+  "pass_condition": "All selected entries returned zero; this does not establish card operation",
+  "rtos_responses_are_synthetic": true,
+  "mapped_device_words_are_synthetic": true,
+  "bus_guard_states": [],
+  "experiments_share_state": true
 }
