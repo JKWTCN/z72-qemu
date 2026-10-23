@@ -321,6 +321,43 @@ def run(args):
                     except Exception as error:
                         states.append(dict(index=index, error=str(error)))
                 report['volume_table_states'] = states
+            if args.mount and report['slot_query_succeeded']:
+                # The filesystem worker request block is a fixed structure;
+                # write an operation number and invoke the worker entry the
+                # way the posted event does, then watch the volume states.
+                attempts = []
+                for operation in (3, 2):
+                    context = workers[0].u.context_save()
+                    workers[0].held_mutexes.clear()
+                    workers[0].held_locks.clear()
+                    workers[0].u.mem_write(0xB1D1B0C0 + 0xBC, bytes((operation,)))
+                    workers[0].u.mem_write(0xB1D1B0C0 + 0xC8, struct.pack('<I', 0xDEADBEEF))
+                    workers[0].in_worker = True
+                    result = workers[0].call(0x59DD08, 1)
+                    workers[0].in_worker = False
+                    states = [workers[0].u.mem_read(0xB2B464C0 + index * 0x38 + 0x3A, 1)[0]
+                              for index in range(2)]
+                    response = struct.unpack('<I', workers[0].u.mem_read(0xB1D1B0C0 + 0xC8, 4))[0]
+                    attempts.append(dict(operation=operation, result=result,
+                                         response=response, volume_states=states))
+                    if 4 in states:
+                        break
+                    if result.get('fault'):
+                        workers[0].u.context_restore(context)
+                report['mount_attempts'] = attempts
+                report['mount_verified'] = any(4 in a['volume_states'] for a in attempts)
+                states = []
+                for index in range(4):
+                    base = 0xB2B464C0 + index * 0x38
+                    try:
+                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
+                        states.append(dict(index=index, mount_state=state,
+                                           words=[hex(word) for word in words]))
+                    except Exception as error:
+                        states.append(dict(index=index, error=str(error)))
+                report['volume_table_states_after_mount'] = states
+
             if args.list_directory is not None and report['slot_query_succeeded']:
                 worker = workers[0]
                 path, output, record = 0x50006000, 0x50006400, 0x50006800
@@ -376,8 +413,10 @@ if __name__ == '__main__':
                         help='Optional raw card image; writes stay in a temporary overlay')
     parser.add_argument('--slot-query', action='store_true',
                         help='Continue through the original slot query toward filesystem attachment')
+    parser.add_argument('--mount', action='store_true',
+                        help='Drive filesystem worker operations two and three after the slot query')
     parser.add_argument('--list-directory', help='List a camera path after slot query, for example A:\\')
     arguments = parser.parse_args()
-    if arguments.list_directory is not None:
+    if arguments.list_directory is not None or arguments.mount:
         arguments.slot_query = True
     run(arguments)
