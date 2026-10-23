@@ -164,6 +164,14 @@ def run(args):
                                 raise ValueError('Filesystem worker has not produced a response')
                             self.u.mem_write(output, struct.pack('<I', available))
                             return 0
+                        if service == 0x80470400 and (caller & ~1) == BASE + 0x32FF5C:
+                            # Object handle query used by the request
+                            # senders: hand back a zeroed scratch object
+                            # through the output parameter.
+                            self.u.mem_write(registers[2],
+                                             struct.pack('<I', 0x50078000))
+                            self.u.mem_write(0x50078000, bytes(0x40))
+                            return 0
                         if service != 0x80300500 or (caller & ~1) != BASE + 0x34112C:
                             unmodeled_services.append(dict(service=hex(service), caller=hex(caller)))
                             raise ValueError('Unmodeled RTOS service or event caller')
@@ -358,6 +366,80 @@ def run(args):
                         states.append(dict(index=index, error=str(error)))
                 report['volume_table_states_after_mount'] = states
 
+            if args.mount_api and report['slot_query_succeeded']:
+                # Sweep the original request senders: each builds a request
+                # with its own operation number and posts it through
+                # 0x59DF2A, which copies the request correctly. Calling the
+                # sender beats synthesizing the operation byte.
+                senders = (0x59f564, 0x59f65e, 0x59f6c6, 0x59f72c, 0x59f7be,
+                           0x59f8da, 0x59f94c, 0x59f9d2, 0x59fa3c, 0x59fabc,
+                           0x59fbbe, 0x59fc24, 0x59fcb8, 0x59fe5e, 0x59ff5e)
+                sweeps = []
+                module_object = 0xB2B464C0
+                for sender in senders:
+                    context = workers[0].u.context_save()
+                    workers[0].held_mutexes.clear()
+                    workers[0].held_locks.clear()
+                    dispatches_before = len(filesystem_dispatches)
+                    result = workers[0].call(sender, module_object, 0x50060000,
+                                              0x50061000, 0x50062000)
+                    states = [workers[0].u.mem_read(0xB2B464C0 + index * 0x38 + 0x3A, 1)[0]
+                              for index in range(2)]
+                    dispatched = filesystem_dispatches[dispatches_before:]
+                    sweeps.append(dict(sender=hex(sender), result=result,
+                                       volume_states=states,
+                                       unmapped=[dict(kind=e['kind'], address=e['address'])
+                                                 for e in workers[0].unmapped[-3:]],
+                                       dispatched=[dict(operation=d['operation'],
+                                                        response=d['response'])
+                                                   for d in dispatched]))
+                    if 4 in states:
+                        break
+                    if result.get('fault'):
+                        workers[0].u.context_restore(context)
+                report['mount_api_sweeps'] = sweeps
+                report['mount_verified'] = any(4 in s['volume_states'] for s in sweeps)
+                states = []
+                for index in range(4):
+                    base = 0xB2B464C0 + index * 0x38
+                    try:
+                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
+                        states.append(dict(index=index, mount_state=state,
+                                           words=[hex(word) for word in words]))
+                    except Exception as error:
+                        states.append(dict(index=index, error=str(error)))
+                report['volume_table_states_after_mount'] = states
+            if args.mount_exec and report['slot_query_succeeded']:
+                # The mount-all executor is a plain function: run it directly
+                # instead of synthesizing a worker request. It initializes
+                # the volume table and enumerates volumes through 0x42CA8C.
+                context = workers[0].u.context_save()
+                workers[0].held_mutexes.clear()
+                workers[0].held_locks.clear()
+                path_before = len(getattr(workers[0], 'path', []))
+                result = workers[0].call(0x424A88)
+                path = getattr(workers[0], 'path', [])
+                report['mount_executor_path'] = [hex(pc) for pc in path[path_before:]]
+                report['mount_executor_unmapped'] = [
+                    dict(kind=e['kind'], address=e['address'])
+                    for e in workers[0].unmapped[-6:]]
+                states = [workers[0].u.mem_read(0xB2B464C0 + index * 0x38 + 0x3A, 1)[0]
+                          for index in range(2)]
+                report['mount_executor_result'] = result
+                report['mount_executor_volume_states'] = states
+                report['mount_verified'] = 4 in states
+                states = []
+                for index in range(4):
+                    base = 0xB2B464C0 + index * 0x38
+                    try:
+                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
+                        states.append(dict(index=index, mount_state=state,
+                                           words=[hex(word) for word in words]))
+                    except Exception as error:
+                        states.append(dict(index=index, error=str(error)))
+                report['volume_table_states_after_mount'] = states
             if args.list_directory is not None and report['slot_query_succeeded']:
                 worker = workers[0]
                 path, output, record = 0x50006000, 0x50006400, 0x50006800
@@ -413,10 +495,15 @@ if __name__ == '__main__':
                         help='Optional raw card image; writes stay in a temporary overlay')
     parser.add_argument('--slot-query', action='store_true',
                         help='Continue through the original slot query toward filesystem attachment')
+    parser.add_argument('--mount-exec', action='store_true',
+                        help='Run the mount-all executor directly after the slot query')
+    parser.add_argument('--mount-api', action='store_true',
+                        help='Sweep the original filesystem request senders after the slot query')
     parser.add_argument('--mount', action='store_true',
                         help='Drive filesystem worker operations two and three after the slot query')
     parser.add_argument('--list-directory', help='List a camera path after slot query, for example A:\\')
     arguments = parser.parse_args()
-    if arguments.list_directory is not None or arguments.mount:
+    if (arguments.list_directory is not None or arguments.mount
+            or arguments.mount_api or arguments.mount_exec):
         arguments.slot_query = True
     run(arguments)
