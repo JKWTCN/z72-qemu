@@ -54,6 +54,9 @@ def run(args):
         card_commands = []
         dma_transfers = []
         unmodeled_services = []
+        filesystem_dispatches = []
+        filesystem_locks = []
+        workers = []
         try:
             deadline = time.monotonic() + 10
             while wire is None:
@@ -78,13 +81,92 @@ def run(args):
                 return int(reply[1], 0) if len(reply) > 1 else None
 
             class SDHostWorker(CardWorker):
+                def call(self, offset, *arguments, **options):
+                    from unicorn.arm_const import UC_ARM_REG_CPSR
+                    result = super().call(offset, *arguments, **options)
+                    for _ in range(8):
+                        if self.pending_worker is None or result.get('fault'):
+                            return result
+                        target, flags, request = self.pending_worker
+                        self.pending_worker = None
+                        context = self.u.context_save()
+                        self.in_worker = True
+                        worker_result = super().call(target, flags, stack=0x50070000)
+                        self.in_worker = False
+                        filesystem_dispatches.append(dict(entry=hex(target), flags=hex(flags),
+                            operation=self.u.mem_read(request + 0xBC, 1)[0],
+                            response=struct.unpack('<i', self.u.mem_read(request + 0xC8, 4))[0],
+                            result=worker_result))
+                        if worker_result.get('fault') or worker_result.get('returned') == 'stopped':
+                            return dict(fault='Filesystem worker did not return', worker_result=worker_result)
+                        self.u.context_restore(context)
+                        start = self.u.reg_read(self.pc)
+                        if self.u.reg_read(UC_ARM_REG_CPSR) & 0x20:
+                            start |= 1
+                        result = self.execute(start, 2000000)
+                    return dict(fault='Filesystem dispatch bound exceeded')
+
                 def install_svc_trap(self):
+                    def event_handle(address):
+                        return struct.unpack('<I', self.u.mem_read(address, 4))[0]
+                    def event_set(address, flags, *unused):
+                        handle = event_handle(address)
+                        self.event_flags[handle] = self.event_flags.get(handle, 0) | flags
+                        self.result(0)
+                    def event_clear(address, flags, *unused):
+                        handle = event_handle(address)
+                        self.event_flags[handle] = self.event_flags.get(handle, 0) & ~flags
+                        self.result(0)
+                    def post_request(address, flags, *unused):
+                        target = event_handle(address + 0x24)
+                        if self.in_worker or target != BASE + 0x59DD09:
+                            raise ValueError('Unsupported filesystem task request')
+                        self.pending_worker = ((target & ~1) - BASE, flags, address + 0x58)
+                        self.result(0)
+                        self.u.emu_stop()
+                    if args.slot_query:
+                        def mutex_acquire(address, *unused):
+                            if address in self.held_mutexes:
+                                raise ValueError('Filesystem request mutex is already held')
+                            self.held_mutexes.add(address)
+                            filesystem_locks.append(dict(object=hex(address), acquire=True))
+                            self.result(0)
+                        def mutex_release(address, *unused):
+                            if address not in self.held_mutexes:
+                                raise ValueError('Filesystem request mutex is not held')
+                            self.held_mutexes.remove(address)
+                            filesystem_locks.append(dict(object=hex(address), acquire=False))
+                            self.result(0)
+                        self.hook(0x3B5918, mutex_acquire)
+                        self.hook(0x3B58FA, mutex_release)
+                        self.hook(0x3406E4, post_request)
+                        self.hook(0x3410CC, event_set)
+                        self.hook(0x3410D2, event_clear)
                     def event_response(service, registers):
                         caller = self.u.reg_read(self.lr)
+                        handle, mask, mode, output = registers
+                        lock_callers = {0x80250300: 0x39F2FC, 0x80240200: 0x39F2E6}
+                        if (self.in_worker and service in lock_callers and
+                                (caller & ~1) == BASE + lock_callers[service] and mask == 1):
+                            acquire = service == 0x80250300
+                            if (handle in self.held_locks) == acquire:
+                                raise ValueError('Filesystem serialization lock is not uncontended')
+                            if acquire:
+                                self.held_locks.add(handle)
+                            else:
+                                self.held_locks.remove(handle)
+                            filesystem_locks.append(dict(handle=hex(handle), acquire=acquire))
+                            return 0
+                        if (args.slot_query and service == 0x80300500 and
+                                (caller & ~1) == BASE + 0x3410F4):
+                            available = self.event_flags.get(handle, 0)
+                            if not available & mask:
+                                raise ValueError('Filesystem worker has not produced a response')
+                            self.u.mem_write(output, struct.pack('<I', available))
+                            return 0
                         if service != 0x80300500 or (caller & ~1) != BASE + 0x34112C:
                             unmodeled_services.append(dict(service=hex(service), caller=hex(caller)))
                             raise ValueError('Unmodeled RTOS service or event caller')
-                        handle, mask, mode, output = registers
                         if mode != 1:
                             raise ValueError('Unsupported card event wait mode')
                         qtest('clock_step 1000000')
@@ -116,8 +198,14 @@ def run(args):
 
                 def __init__(self, *inputs):
                     super().__init__(*inputs)
+                    workers.append(self)
                     self.u.mem_map(0x2A800000, 0x20000)
                     self.pending_dma = None
+                    self.pending_worker = None
+                    self.in_worker = False
+                    self.event_flags = {}
+                    self.held_locks = set()
+                    self.held_mutexes = set()
 
                     def prepare_dma(command_word, mode):
                         if not (command_word & 0x20 and mode & 1):
@@ -200,6 +288,10 @@ def run(args):
             report['host_register_write_limit'] = 256
             report['completion_events'] = completion_events
             report['unmodeled_services'] = unmodeled_services
+            report['filesystem_dispatches'] = filesystem_dispatches
+            report['filesystem_task_scheduling_is_host_modeled'] = True
+            report['filesystem_lock_operations'] = filesystem_locks
+            report['filesystem_lock_fixture'] = 'Single worker; serialization semaphore initially available'
             report['completion_event_delivery_is_host_modeled'] = True
             report['card_commands'] = card_commands
             report['card_command_log_limit'] = 128
@@ -217,6 +309,40 @@ def run(args):
             report['filesystem_mount_verified'] = False
             report['slot_query_succeeded'] = (result['result'].get('value') == 1
                 and result.get('query_status') == 0) if args.slot_query else None
+            if args.slot_query:
+                states = []
+                for index in range(4):
+                    base = 0xB2B464C0 + index * 0x38
+                    try:
+                        state = workers[0].u.mem_read(base + 0x3A, 1)[0]
+                        words = struct.unpack('<7I', workers[0].u.mem_read(base, 0x1C))
+                        states.append(dict(index=index, mount_state=state,
+                                           words=[hex(word) for word in words]))
+                    except Exception as error:
+                        states.append(dict(index=index, error=str(error)))
+                report['volume_table_states'] = states
+            if args.list_directory is not None and report['slot_query_succeeded']:
+                worker = workers[0]
+                path, output, record = 0x50006000, 0x50006400, 0x50006800
+                worker.u.mem_write(path, args.list_directory.encode('ascii') + bytes(1))
+                opened = worker.call(0x47D2E6, path, output)
+                directory = dict(path=args.list_directory, open_result=opened, entries=[])
+                if opened.get('value') == 0:
+                    handle = struct.unpack('<I', worker.u.mem_read(output, 4))[0]
+                    for _ in range(64):
+                        fetched = worker.call(0x47D3DA, handle, record)
+                        if fetched.get('value') != 0:
+                            directory['end_result'] = fetched
+                            break
+                        raw = bytes(worker.u.mem_read(record, 0x220))
+                        short = raw[:13].split(bytes(1))[0].decode('ascii', errors='replace')
+                        wide = raw[14:526].decode('utf-16-le', errors='replace').split(chr(0))[0]
+                        directory['entries'].append(dict(short_name=short, long_name=wide,
+                                                        size=struct.unpack_from('<I', raw, 0x218)[0]))
+                    directory['close_result'] = worker.call(0x47D3F8, handle)
+                report['directory'] = directory
+                report['filesystem_mount_verified'] = (
+                    opened.get('value') == 0 and directory.get('end_result', {}).get('value') == 1)
             report['passed'] = bool(report['first_sector_read_verified'] and
                 (report['slot_query_succeeded'] if args.slot_query else report['card_open_succeeded']))
             report['pass_condition'] = (
@@ -250,4 +376,8 @@ if __name__ == '__main__':
                         help='Optional raw card image; writes stay in a temporary overlay')
     parser.add_argument('--slot-query', action='store_true',
                         help='Continue through the original slot query toward filesystem attachment')
-    run(parser.parse_args())
+    parser.add_argument('--list-directory', help='List a camera path after slot query, for example A:\\')
+    arguments = parser.parse_args()
+    if arguments.list_directory is not None:
+        arguments.slot_query = True
+    run(arguments)

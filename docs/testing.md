@@ -542,6 +542,16 @@ but the original open rejects it with -830; see the
 [negative control](../artifacts/sd_native_bad_signature/report.json).
 `--slot-query` reaches the filesystem task's unmodeled response wait,
 recorded in the [filesystem boundary](../artifacts/sd_native_slot_query/report.json).
+`--list-directory` continues after the slot query: the probe calls the
+original directory functions on the synthetic FAT card. The current record
+shows the volume recognized (mount state two, not mounted) and the original
+directory open returning the original not-mounted status; the filesystem
+worker's mount operation and its nested task forward remain the boundary.
+A synthetic FAT16 card can also be built with `.local/build_fat16.py`
+style scripts; the shipped runs use one containing the stock update
+package under its 8.3 short name. See the
+[mount boundary evidence](../artifacts/sd_native_mount_boundary/report.json).
+
 These checks do not establish a mounted filesystem or native menu update.
 
 To make a new synthetic FAT card from a directory, use `qemu-img convert

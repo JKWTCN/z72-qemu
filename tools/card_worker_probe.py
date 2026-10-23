@@ -42,6 +42,7 @@ class CardWorker:
         self.regs = (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R3)
         self.sp, self.lr, self.pc = UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC
         self.u = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
+        self.call_hooks = {}
         self.u.ctl_set_cpu_model(UC_CPU_ARM_CORTEX_A15)
         for address, size in ((CODE_BASE, CODE_BYTES), (RAM_BASE, RAM_BYTES),
                               (0x04000000, 0x1000), (SCRATCH, 0x100000),
@@ -111,11 +112,14 @@ class CardWorker:
 
     def hook(self, offset, callback):
         from unicorn import UC_HOOK_CODE
+        previous = self.call_hooks.pop(offset, None)
+        if previous is not None:
+            self.u.hook_del(previous)
         def wrapper(u, address, size, unused):
             callback(*(u.reg_read(r) for r in self.regs))
             u.reg_write(self.pc, u.reg_read(self.lr))
-        self.u.hook_add(UC_HOOK_CODE, wrapper, begin=BASE + offset,
-                        end=BASE + offset)
+        self.call_hooks[offset] = self.u.hook_add(
+            UC_HOOK_CODE, wrapper, begin=BASE + offset, end=BASE + offset)
 
     def full_trace(self, limit=0x800000):
         from unicorn import UC_HOOK_CODE
@@ -206,15 +210,18 @@ class CardWorker:
         self.hook(0x32FE30, allocate)
         self.hook(0x32FE7E, release)
 
-    def call(self, offset, *args, budget=2000000):
+    def call(self, offset, *args, budget=2000000, stack=STACK):
         for register, value in zip(self.regs, args):
             self.u.reg_write(register, value)
-        self.u.reg_write(self.sp, STACK)
+        self.u.reg_write(self.sp, stack)
         if len(args) > 4:
-            self.u.mem_write(STACK, struct.pack('<' + 'I' * (len(args) - 4), *args[4:]))
+            self.u.mem_write(stack, struct.pack('<' + 'I' * (len(args) - 4), *args[4:]))
         self.u.reg_write(self.lr, STOP | 1)
+        return self.execute((BASE + offset) | 1, budget)
+
+    def execute(self, start, budget):
         try:
-            self.u.emu_start((BASE + offset) | 1, STOP, count=budget)
+            self.u.emu_start(start, STOP, count=budget)
         except Exception as error:
             reached = self.u.reg_read(self.pc)
             return dict(fault=str(error),
