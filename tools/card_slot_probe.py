@@ -259,7 +259,7 @@ def run(args):
                     reply = remote.receive()
                 require(reply == 'OK', 'Runtime RAM snapshot failed')
             report['ram_dump'] = str(args.ram_dump)
-        else:
+        elif not args.registration_only:
             # The slot driver reads its enabled byte at 0xB1808B50 + slot.
             # Force slot 0 on, then trigger card consumers (playback and
             # menu open) and diff the platform peripheral span: the SD
@@ -356,6 +356,8 @@ def main():
     parser.add_argument('--window', type=float, default=120.0)
     parser.add_argument('--ram-dump', type=Path,
                         help='Snapshot runtime RAM (0xB1800000, 14MB) and stop')
+    parser.add_argument('--registration-only', action='store_true',
+                        help='Observe registration without forcing slot state or sending keys')
     parser.add_argument('--work', type=Path,
                         help='Persistent work directory (default: temporary)')
     arguments = parser.parse_args()

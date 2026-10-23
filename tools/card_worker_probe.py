@@ -251,6 +251,7 @@ def run(args):
             (0x3D7144, probe.ctype), (0x340F18, probe.noop),
             (0x340F12, probe.noop), (0x4C09FE, probe.noop),
             (0x3410CC, lambda *a: probe.result(0)),
+            (0x3410D2, lambda *a: probe.result(0)),
             (0x3BC538, probe.noop), (0x39099C, probe.noop),
             (0x37FB8A, probe.noop), (0x3B3E3E, lambda *a: probe.result(0)),
             (0x3BC514, lambda *a: probe.result(0)),
@@ -300,17 +301,25 @@ def run(args):
                             for offset in sd_targets]
     experiments = []
     probe.full_trace()
+    # Logical slot 1 selects SD, but its module-local controller index is
+    # recovered by the original slot mapping helper rather than assumed.
+    sd_index = probe.call(0x463212, 1)
+    require(sd_index.get('value') is not None, 'Cannot resolve SD controller index')
+    sd_index = sd_index['value']
+    report['sd_logical_slot'] = 1
+    report['sd_controller_index'] = sd_index
     entries = (
+            ('sd_board_context_init', 0x47D8E4, ()),
             ('card_service_init', 0x4630B0, ()),
             ('configured_slot0', 0x4626A4, (0,)),
             ('query_local_slot0', 0x462A0E, (0, SCRATCH + 0x8000)),
             ('configured_slot1', 0x4626A4, (1,)),
             ('query_local_slot1', 0x462A0E, (1, SCRATCH + 0x8000)),
             ('sd_module_op0', sd_targets[0], (1,)),
-            ('sd_module_op1', sd_targets[1], (1, 1, SCRATCH + 0x5100)),
+            ('sd_module_op1', sd_targets[1], (1, sd_index, SCRATCH + 0x5100)),
             ('sd_module_op2', sd_targets[2], (1, SCRATCH + 0x5100)),
             ('sd_module_op3', sd_targets[3], (1, SCRATCH + 0x5100)),
-            ('sd_protocol_init', 0x47FDB2, (1, SCRATCH + 0x10000, 0x8000,
+            ('sd_protocol_init', 0x47FDB2, (sd_index, SCRATCH + 0x10000, 0x8000,
                                           SCRATCH + 0x20000, 0x1000, SCRATCH + 0x25000)))
     selected = set(args.experiment or [e[0] for e in entries])
     require(selected <= {e[0] for e in entries}, 'Unknown worker experiment')
@@ -327,6 +336,10 @@ def run(args):
         path = probe.path[before_path:]
         experiments.append(dict(
             experiment=label, entry=hex(offset), result=result,
+            arguments=[hex(value) for value in arguments],
+            sd_context=dict(presence_slots=[hex(word) for word in _s.unpack(
+                '<2I', probe.u.mem_read(0xB18019F4, 8))],
+                bus_handle=hex(_s.unpack('<I', probe.u.mem_read(0xB18019A0, 4))[0])),
             private_handles=entry,
             services=list(probe.services[before_services:]),
             executed=list(probe.executed[before_entries:]),

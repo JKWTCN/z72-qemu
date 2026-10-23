@@ -1,5 +1,12 @@
 # Validation
 
+The 2026-10-23 source build produced QEMU 10.2.4 and passed the synthetic
+boot-store reprogram/reset check. The stock combined machine also reached
+the original card slot table registration in read-only observation mode.
+The full card-consumer probe timed out during key injection; this does not
+establish native menu update acceptance. Binary and source identities are in
+the [build/runtime record](../artifacts/build_runtime_validation/report.json).
+
 `tools/gate_boot_probe.py` follows stock reset through runtime bank-zero gate
 enable and disable, interrupt 250 acknowledgement and original task resumption.
 Its disabled-completion control requires both the handler and continuation to
@@ -500,6 +507,8 @@ runtime write that registers the card slot driver table (0xB18105BC),
 recording the table, the per-slot driver objects and every function
 pointer resolved to a master file offset. See the
 [card slot table evidence](../artifacts/card_slot_table/report.json).
+Use `--registration-only` for a read-only startup check that stops after
+observing the table; it skips forced slot enable and the later key sequence.
 
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
 bounded environment, forces the slot enable byte and runs the original
