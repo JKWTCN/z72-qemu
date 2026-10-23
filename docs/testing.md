@@ -662,6 +662,24 @@ fault status on all four engine cores. See the
 Candidate collection does not authenticate the package, activate menu dispatch
 or exercise storage programming and restart.
 
+Add `--execute-service` to the collection diagnostic to check the original
+service's authentication rejection with the default laboratory boot material.
+It calls the original card-log initializer, selects record 13, checks propriety
+and requests execution only if that check succeeds. The original allocator,
+worker task, whole-package read/decode/SHA-1, completion event, error logging
+and return to the caller must execute. The option expects rejection with zero
+raw boot-window material; a passing diagnostic does not mean installation was
+accepted. It checks service results and reasons, buffer release, event mask
+`0x20`, restored caller state and fault-free cores. See the
+[native service record](../artifacts/native_update_service/report.json).
+
+The complete encoded guest buffer is captured in 512 KiB pieces for SHA-256
+before native decoding; capture files are temporary and never supply input to
+the guest. A slow monitor reply is awaited on the same command and connection.
+Native decode and SHA-1 may take several minutes: unchanged message indices do
+not establish a stall, so service observations also sample all engine PCs and
+fault registers. The ordinary collection-only case retains its shorter bound.
+
 `tools/card_worker_probe.py` loads a captured machine RAM snapshot into a
 bounded environment, forces the SD logical-slot enable byte and runs the original
 card worker entries, recording the executed chain and every peripheral

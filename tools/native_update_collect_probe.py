@@ -3,11 +3,13 @@
 
 A temporary resource-8 caller invokes the original collection entry on its
 native task stack. Directory records, file reads, candidate classification,
-allocation and release are executed by firmware. This diagnostic does not
-invoke the menu, authenticate a package or program storage.
+allocation and release are executed by firmware. The optional service case
+also checks native authentication rejection with default laboratory boot
+material. It does not establish menu dispatch or installation acceptance.
 """
 import argparse
 import hashlib
+import json
 import re
 import struct
 import sys
@@ -17,7 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import require
-from tools.card_slot_probe import run as run_slots
+from tools.card_slot_probe import linux, run as run_slots
 from tools.sdk_file_probe import (CODE, OBJECT, CALLBACK, ORIGINAL_CALLBACK,
                                  FS_CALLBACK, FS_WORKER, UPDATE_SELECTOR)
 
@@ -26,7 +28,7 @@ UPDATE_STATE = 0xB1887C80
 PACKAGE_RECORD = 0xB25EC904 + 13 * 0x1CC
 
 
-def caller_code():
+def caller_code(execute_service=False):
     """Build the diagnostic Thumb caller; collection itself is original code."""
     code, literals = bytearray(), []
 
@@ -48,6 +50,32 @@ def caller_code():
     emit(0x4798)
     literal(1, OBJECT)
     emit(0x6008)                 # store original return value
+    if execute_service:
+        emit(0x2000)
+        literal(3, 0x104E08C5)    # original card-log initialization
+        emit(0x4798)
+        literal(1, OBJECT)
+        emit(0x6188)
+        emit(0x200D)             # select the whole-camera record
+        literal(3, 0x1039DAA5)
+        emit(0x4798)
+        emit(0x2000)
+        emit(0x2100)
+        literal(2, OBJECT + 8)
+        literal(3, 0x10767049)    # original service propriety check
+        emit(0x4798)
+        literal(1, OBJECT)
+        emit(0x60C8)
+        emit(0x2801)             # execute only after the propriety check succeeds
+        skip_execute = len(code)
+        emit(0)
+        literal(2, OBJECT + 16)
+        literal(3, 0x10767109)    # original service execute request
+        emit(0x4798)
+        literal(1, OBJECT)
+        emit(0x6148)
+        struct.pack_into('<H', code, skip_execute,
+                         0xD100 | ((len(code) - skip_execute - 4) // 2))
     emit(0x2001)
     emit(0x6048)                 # completion marker
     done = CODE + len(code)
@@ -67,13 +95,15 @@ def caller_code():
     return bytes(code), done
 
 
-def observe_collection(remote, report, expected_path):
+def observe_collection(remote, report, expected_path, execute_service=False):
     require(report['engine_fault_free'], 'Engine fault precedes update collection')
-    code, done = caller_code()
+    require(not execute_service or expected_path, 'Service observation requires a candidate path')
+    code, done = caller_code(execute_service)
     result = dict(caller_fixture=True, requested_mode=0, expected_path=expected_path,
         sdk_replies_host_modeled=False, directory_records_host_supplied=False,
         caller_code_sha256=hashlib.sha256(code).hexdigest(), events=[],
-        caller_returned=False, collection_verified=False)
+        caller_returned=False, collection_verified=False, service_requested=execute_service,
+        authentication_rejection_verified=False)
     report['collection'] = result
     report['runtime_state_written'] = True
     report['native_menu_update_verified'] = False
@@ -93,6 +123,35 @@ def observe_collection(remote, report, expected_path):
         remote.breakpoint(pc)
         active.add(pc)
 
+    def buffer_digest(address, size, thread):
+        require(0 < size <= 0x3C00000, 'Whole-file capture exceeds the native allocation')
+
+        def monitor(command):
+            # A slow monitor capture stays on the same command and connection.
+            try:
+                response = remote.command('qRcmd,' + command.encode().hex())
+            except TimeoutError:
+                response = None
+            while response is None or (response.startswith('O') and response != 'OK'):
+                try:
+                    response = remote.receive()
+                except TimeoutError:
+                    print('WAIT native buffer capture', flush=True)
+            require(response == 'OK', 'Native whole-file capture failed')
+
+        with tempfile.TemporaryDirectory(prefix='service-bytes-', dir=ROOT / '.local') as folder:
+            path = Path(folder) / 'buffer.bin'
+            monitor(f'cpu {thread - 1}')
+            digest = hashlib.sha256()
+            for offset in range(0, size, 0x80000):
+                count = min(0x80000, size - offset)
+                monitor(f'memsave {address + offset:#x} {count:#x} ' + json.dumps(linux(path)))
+                data = path.read_bytes()
+                require(len(data) == count, 'Short native whole-file capture')
+                digest.update(data)
+                path.unlink()
+            return digest.hexdigest()
+
     remote.select_thread(1)
     require(word(CALLBACK) == ORIGINAL_CALLBACK and word(FS_CALLBACK) == 0x105BDF85 and
             word(FS_WORKER) == 0x105BDD09, 'Unexpected native service callbacks')
@@ -103,6 +162,8 @@ def observe_collection(remote, report, expected_path):
             'Update collection already owns directory buffers')
     result['selector_before'] = selector
     result['selector_input'] = (selector & ~0xF) | 2
+    if execute_service:
+        result['log_buffer_before'] = hex(word(0xB181A4F4))
     result['local_volumes_before'] = [dict(index=index,
         name=string(0xB2B464C0 + index * 0x88 + 0xC, 12),
         readiness=remote.read(0xB2B464C0 + index * 0x88 + 0x38, 1)[0])
@@ -116,6 +177,15 @@ def observe_collection(remote, report, expected_path):
                    0x1039D6B4, 0x1039D71C, 0x104D3C04, 0x1039D5BC,
                    0x1039D4D4, 0x1039DA30, 0x1039DA44, 0x1039D922):
             arm(pc)
+        if execute_service:
+            for pc in (0x1039DAA4, 0x10767048, 0x10767054, 0x10767108,
+                       0x104E08C4,
+                       0x103F6474, 0x103F6482, 0x103F6520, 0x103F60CA,
+                       0x103F6526, 0x103F6938, 0x1039C638, 0x1039C334,
+                       0x1039C64A, 0x103AD2C2, 0x1039C668, 0x103AED3E,
+                       0x103AFE82, 0x1039C6A4, 0x103F6962, 0x103F6982,
+                       0x103F6588, 0x103F659E):
+                arm(pc)
         remote.select_thread(3)
         ring, sequence_address = 0xC60F0000, 0xC1006F74
         written, consumed = word(ring + 8), word(ring + 16)
@@ -128,7 +198,7 @@ def observe_collection(remote, report, expected_path):
         store(ring + 8, (written + 1) % 192)
         store(0x20136008, 1)
         previous, stagnant, entry_sp, return_pc = None, 0, None, None
-        for _ in range(80):
+        for _ in range(256 if execute_service else 80):
             remote.sock.settimeout(12)
             try:
                 response = remote.command('vCont;c')
@@ -143,7 +213,23 @@ def observe_collection(remote, report, expected_path):
                 previous = sample
                 result.setdefault('wait_samples', []).append(sample)
                 print('WAIT native collection; message indices ' + str(sample), flush=True)
-                require(stagnant < 3, 'Collection wait made no message progress across repeated observations')
+                if execute_service:
+                    # Large original decode/SHA loops do not advance message queues.
+                    states = []
+                    for engine_thread in (1, 2, 3, 4):
+                        remote.select_thread(engine_thread)
+                        current = remote.regs()
+                        state = dict(thread=engine_thread, pc=hex(remote.get(current, 'pc')),
+                            faults={name: hex(remote.read_register(name)) for name in ('DFSR_S', 'IFSR_S')})
+                        if 0x103AD2C2 <= int(state['pc'], 0) < 0x103AD360:
+                            state['decode_pointer'] = hex(remote.get(current, 'r0'))
+                        states.append(state)
+                    result.setdefault('compute_samples', []).append(states)
+                    require(all(int(value, 0) == 0 for state in states for value in state['faults'].values()),
+                            'Native engine fault during service execution')
+                    print('COMPUTE ' + str(states), flush=True)
+                else:
+                    require(stagnant < 3, 'Collection wait made no message progress across repeated observations')
                 continue
             match = re.search(r'thread:([0-9a-f]+)', response)
             require(match is not None, 'Missing collection observation thread')
@@ -169,7 +255,39 @@ def observe_collection(remote, report, expected_path):
                 event['attributes'] = remote.read(r0 + 0x20E, 1)[0]
             elif pc in (0x1039DA30, 0x1039DA44):
                 event['directory_path'] = string(0xB25EC802)
+            elif pc == 0x103F6526:
+                result['native_package_buffer'] = hex(r0)
+                require(not r0 or not r0 <= OBJECT < r0 + 0x3C00000,
+                        'Native package allocation overlaps diagnostic scratch')
+            elif pc == 0x1039C638:
+                if 0x103AD2C2 not in active:
+                    arm(0x103AD2C2)
+            elif pc == 0x1039C334:
+                count = word(remote.get(registers, 'sp'))
+                result['native_whole_read'] = dict(status=hex(r0), actual_bytes=count,
+                    requested_bytes=remote.get(registers, 'r5'))
+                require(r0 == 0x043A0080 and count == remote.get(registers, 'r5'),
+                        'Original whole-package read did not complete successfully')
+                result['native_whole_read']['sha256'] = buffer_digest(remote.get(registers, 'r8'), count, thread)
+            elif pc == 0x103AED3E:
+                require(r0 == 0x10000088, 'Unexpected whole-package boot-material source')
+                result['boot_material_zero'] = remote.read(r0, 8) == bytes(8)
+            elif pc == 0x1039C6A4:
+                result['native_digest_result'] = r0
+            elif pc == 0x103F6962:
+                result['native_package_result'] = r0
+            elif pc == 0x103F6982:
+                result['completion_event'] = dict(address=hex(r0), mask=hex(remote.get(registers, 'r1')))
+            elif pc == 0x103F6588:
+                result['consumed_event_mask'] = hex(word(remote.get(registers, 'sp') + 0x44))
             elif pc == done:
+                if execute_service:
+                    result['service_request'] = dict(
+                        log_init_return=word(OBJECT + 24), log_buffer_after=hex(word(0xB181A4F4)),
+                        propriety_return=word(OBJECT + 12), propriety_reason=word(OBJECT + 8),
+                        execute_return=word(OBJECT + 20), execute_reason=word(OBJECT + 16),
+                        buffer_owner_after=word(0xB1887D20 + 0x2C),
+                        updater_status=int.from_bytes(remote.read(0xB1887D22, 2), 'little'))
                 result['returned'] = word(OBJECT)
                 result['completed'] = word(OBJECT + 4)
                 result['summary_head'] = word(SUMMARY)
@@ -201,6 +319,22 @@ def observe_collection(remote, report, expected_path):
             result['caller_returned'] and result['summary_head'] == 19 and
             result['allocation_pointers_after'] == [0, 0] and required_stages <= stages and
             path_matches and candidate_matches)
+        if execute_service:
+            service, whole_read = result['service_request'], result.get('native_whole_read', {})
+            service_stages = {0x1039DAA4, 0x10767048, 0x10767108, 0x103F60CA,
+                0x104E08C4,
+                0x103F6938, 0x1039C638, 0x1039C334, 0x1039C668, 0x103AED3E,
+                0x103AFE82, 0x1039C6A4, 0x103F6962, 0x103F6982, 0x103F6588}
+            result['authentication_rejection_verified'] = (
+                service_stages <= stages and service['log_init_return'] == 1 and
+                int(service['log_buffer_after'], 0) != 0 and service['propriety_return'] == 1 and
+                service['propriety_reason'] == 0 and service['execute_return'] == 3 and
+                service['execute_reason'] == 5 and service['buffer_owner_after'] == 0 and
+                service['updater_status'] == result.get('native_package_result') == 3 and
+                result.get('native_digest_result') == 0 and result.get('boot_material_zero') is True and
+                result.get('completion_event') == dict(address='0xb1887d24', mask='0x20') and
+                result.get('consumed_event_mask') == '0x20' and whole_read.get('status') == '0x43a0080' and
+                whole_read.get('actual_bytes') == whole_read.get('requested_bytes') == word(PACKAGE_RECORD + 0x100))
     finally:
         remote.select_thread(1)
         store(CALLBACK, ORIGINAL_CALLBACK)
@@ -216,11 +350,14 @@ def observe_collection(remote, report, expected_path):
         for thread in (1, 2, 3, 4):
             remote.select_thread(thread)
             result['faults_after'].append(dict(thread=thread,
+                pc=hex(remote.get(remote.regs(), 'pc')),
+                address={name: hex(remote.read_register(name)) for name in ('DFAR_S', 'IFAR_S')},
                 status={name: hex(remote.read_register(name)) for name in ('DFSR_S', 'IFSR_S')}))
         result['fault_free_after'] = all(int(value, 0) == 0
             for state in result['faults_after'] for value in state['status'].values())
         report['passed'] = (report['passed'] and result['collection_verified'] and
-            result['callbacks_restored'] and result['selector_restored'] and result['fault_free_after'])
+            result['callbacks_restored'] and result['selector_restored'] and result['fault_free_after'] and
+            (not execute_service or result['authentication_rejection_verified']))
 
 
 def main():
@@ -229,6 +366,8 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--expected-path', default='',
                         help='Expected whole-camera candidate path; default requires no matching package')
+    parser.add_argument('--execute-service', action='store_true',
+                        help='Also verify native service authentication rejection with default lab boot material')
     args = parser.parse_args()
     for role, expected in (
         ('master', '478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe'),
@@ -241,8 +380,10 @@ def main():
     args.sd_card_image, args.sd_card_engine = args.card_image, 'slave'
     with tempfile.TemporaryDirectory(prefix='update-collect-', dir=ROOT / '.local') as folder:
         args.work = Path(folder)
-        run_slots(args, observe=lambda remote, report: observe_collection(remote, report, args.expected_path))
-    print('PASS native update collection; menu, authentication and programming remain unverified')
+        run_slots(args, observe=lambda remote, report:
+                  observe_collection(remote, report, args.expected_path, args.execute_service))
+    print('PASS native service authentication rejection; installation remains unverified' if args.execute_service
+          else 'PASS native update collection; menu, authentication and programming remain unverified')
 
 
 if __name__ == '__main__':
