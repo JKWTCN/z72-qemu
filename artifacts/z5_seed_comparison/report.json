@@ -1,0 +1,277 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "k8_recovered": false,
+  "z5": {
+    "file": "Z_5_0150.bin",
+    "bytes": 36011790,
+    "sha256": "efc0ce70dcafdd96c64e95d8d50f6b7f0509fc0c2840b28d12b6f9e4877ee776",
+    "member_count": 4,
+    "engine_bytes": 34603578,
+    "engine_sha256": "1d9742a951ea8a8ebe695fa9bb1f29a3be73e16dfe4a8372d997e903bbc58e98",
+    "member_crcs_verified": true,
+    "container_crc_verified": true,
+    "boot_material_address": "0x10000088",
+    "seed_parameter": "0x448",
+    "model_string": "Z_5",
+    "folded_table_indexes": [
+      76,
+      55
+    ],
+    "tables_identical_to_z72": true,
+    "whole_check_member_offset": "0x1B6E10",
+    "key_setup_member_offset": "0x1BDD96",
+    "sha1_check_member_offset": "0x1BEEDA",
+    "byte_transform_member_offset": "0x1BDCA8",
+    "decoded_body_sha256": "26b901e8c9967c2cce38458ab5cafb3b2e197c7cff39d94ae79c0df82ca4bab5"
+  },
+  "original_decoder_check": {
+    "member_offset": "0x1BC0DA",
+    "input_bytes": 1024,
+    "initial_index": 0,
+    "returned": true,
+    "marker_bytes_preserved": 32,
+    "decoded_payload_matches": true,
+    "scope": "Original decode routine on a package prefix; no authentication acceptance claimed"
+  },
+  "searches": {
+    "z5_contiguous_windows_for_z72": {
+      "source": "Z5 decoded marked body",
+      "windows": 36011751,
+      "sha1_comparisons": 72023502,
+      "interpretations": [
+        "B8",
+        "K8"
+      ],
+      "body_hash_matches_independent_computation": true,
+      "matches": []
+    },
+    "z5_contiguous_windows_for_z5": {
+      "source": "Z5 decoded marked body",
+      "windows": 36011751,
+      "sha1_comparisons": 72023502,
+      "interpretations": [
+        "B8",
+        "K8"
+      ],
+      "body_hash_matches_independent_computation": true,
+      "matches": []
+    },
+    "small_immediates_z62_z72": {
+      "scope": "Consecutive sets of eight byte-valued or four halfword-valued immediates, span at most 256 bytes; includes Thumb16",
+      "distinct_candidates": 1698343,
+      "matches": [],
+      "images": [
+        {
+          "model": "z72",
+          "member": "eg1840_mas_01700",
+          "scans": {
+            "thumb": {
+              "prefilter_sites": 543555,
+              "immediate_values": 540295
+            },
+            "arm": {
+              "prefilter_sites": 126186,
+              "immediate_values": 5080
+            }
+          },
+          "distinct_immediate_values": 10182,
+          "new_candidates": 1567051,
+          "elapsed_seconds": 23.98
+        },
+        {
+          "model": "z72",
+          "member": "eg1840_sla_01700",
+          "scans": {
+            "thumb": {
+              "prefilter_sites": 60825,
+              "immediate_values": 60706
+            },
+            "arm": {
+              "prefilter_sites": 21877,
+              "immediate_values": 2702
+            }
+          },
+          "distinct_immediate_values": 2022,
+          "new_candidates": 14795,
+          "elapsed_seconds": 2.19
+        },
+        {
+          "model": "z62",
+          "member": "eg1850_mas_01700",
+          "scans": {
+            "thumb": {
+              "prefilter_sites": 545034,
+              "immediate_values": 541658
+            },
+            "arm": {
+              "prefilter_sites": 126326,
+              "immediate_values": 5078
+            }
+          },
+          "distinct_immediate_values": 10208,
+          "new_candidates": 113357,
+          "elapsed_seconds": 16.11
+        },
+        {
+          "model": "z62",
+          "member": "eg1850_sla_01700",
+          "scans": {
+            "thumb": {
+              "prefilter_sites": 60733,
+              "immediate_values": 60617
+            },
+            "arm": {
+              "prefilter_sites": 21966,
+              "immediate_values": 2698
+            }
+          },
+          "distinct_immediate_values": 2011,
+          "new_candidates": 3140,
+          "elapsed_seconds": 1.73
+        }
+      ]
+    },
+    "small_immediates_z5": {
+      "scope": "Consecutive sets of eight byte-valued or four halfword-valued immediates, span at most 256 bytes; includes Thumb16",
+      "distinct_candidates": 1524205,
+      "matches": [],
+      "images": [
+        {
+          "model": "z5",
+          "member": "eg1650_015001.bi",
+          "scans": {
+            "thumb": {
+              "prefilter_sites": 524935,
+              "immediate_values": 521847
+            },
+            "arm": {
+              "prefilter_sites": 120133,
+              "immediate_values": 5002
+            }
+          },
+          "distinct_immediate_values": 10325,
+          "new_candidates": 1524205,
+          "elapsed_seconds": 26.99
+        }
+      ]
+    },
+    "computed_stores_z62_z72": {
+      "scope": "Up to 48 straight-line instructions from selected immediate starts; arithmetic, literal loads and contiguous stores; stops at branches/calls",
+      "distinct_candidates": 3443,
+      "matches": [],
+      "images": [
+        {
+          "model": "z72",
+          "member": "eg1840_mas_01700",
+          "blocks": 198251,
+          "store_instructions": 71330,
+          "new_candidates": 2652,
+          "elapsed_seconds": 17.77
+        },
+        {
+          "model": "z72",
+          "member": "eg1840_sla_01700",
+          "blocks": 29938,
+          "store_instructions": 27911,
+          "new_candidates": 147,
+          "elapsed_seconds": 5.88
+        },
+        {
+          "model": "z62",
+          "member": "eg1850_mas_01700",
+          "blocks": 198615,
+          "store_instructions": 71380,
+          "new_candidates": 541,
+          "elapsed_seconds": 19.61
+        },
+        {
+          "model": "z62",
+          "member": "eg1850_sla_01700",
+          "blocks": 29979,
+          "store_instructions": 27987,
+          "new_candidates": 103,
+          "elapsed_seconds": 5.67
+        }
+      ]
+    },
+    "computed_stores_z5": {
+      "scope": "Up to 48 straight-line instructions from selected immediate starts; arithmetic, literal loads and contiguous stores; stops at branches/calls",
+      "distinct_candidates": 2738,
+      "matches": [],
+      "images": [
+        {
+          "model": "z5",
+          "member": "eg1650_015001.bi",
+          "blocks": 190788,
+          "store_instructions": 71631,
+          "new_candidates": 2738,
+          "elapsed_seconds": 17.41
+        }
+      ]
+    },
+    "all_ordered_immediate_word_pairs": {
+      "distinct_words": 13106,
+      "word_pool_sha256": "81d5d3d8ef36770f68cd5418a2fdad92bd80f736e1e25e8ca3ebbb1a7b35a751",
+      "scope": "Every ordered pair, both byte orders, B8 and K8 interpretations; no distance limit",
+      "targets": {
+        "z72": {
+          "sha1_comparisons": 687068944,
+          "body_hash_matches_independent_computation": true,
+          "matches": []
+        },
+        "z62": {
+          "sha1_comparisons": 687068944,
+          "body_hash_matches_independent_computation": true,
+          "matches": []
+        },
+        "z5": {
+          "sha1_comparisons": 687068944,
+          "body_hash_matches_independent_computation": true,
+          "matches": []
+        }
+      }
+    }
+  },
+  "synthetic_controls": {
+    "arithmetic_to_store_B8_match": true,
+    "contiguous_window_B8_match": true,
+    "negative_digest_rejected": true,
+    "ordered_word_pair_B8_match": true
+  },
+  "older_z72_readers": [
+    {
+      "file": "Z7_2_0161.bin",
+      "sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "member": "eg1840_mas_01610",
+      "member_sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+      "aligned_boot_key_literals": [
+        "0x37baec",
+        "0xf6e344"
+      ],
+      "boot_key_literal_readers": [
+        "0x37b7b4"
+      ]
+    },
+    {
+      "file": "Z7_2_0110_01.bin",
+      "sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "member": "eg1840_mas_0110e",
+      "member_sha256": "7b7ff96dbe2d0ef79941dd21726a56893b722b5d3636e51ae1839d34c18e7b64",
+      "aligned_boot_key_literals": [
+        "0x2ac7f8",
+        "0x96422c",
+        "0xe8b590"
+      ],
+      "boot_key_literal_readers": [
+        "0x2ac45a"
+      ]
+    }
+  ],
+  "limitations": [
+    "These finite candidate families do not exhaust the 64-bit key space or general constructors.",
+    "Instruction-shaped data can enter the candidate pool; a match would require code-path validation.",
+    "The common read address and tables do not establish shared B8 or shared K8.",
+    "No native authentication acceptance, camera installation or storage programming is established."
+  ]
+}
