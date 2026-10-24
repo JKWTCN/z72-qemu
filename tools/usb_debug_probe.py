@@ -56,6 +56,9 @@ class Probe:
     CAPTURE_BUFFER = 0xB1C81898
     WINDOW_LIMIT = 0xB1CF16E0
     TRANSPORT_SLOT = 0xB188B7C8
+    TRANSPORT_OBJECT = 0xB1811874
+    REPLY_CONTEXT = INPUT + 0x8000
+    FREE_SLOT = INPUT + 0x8400
 
     def __init__(self, image):
         validate_master(image)
@@ -82,6 +85,7 @@ class Probe:
         self.regs = (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R3)
         self.responses, self.prints, self.reads = [], [], []
         self.publications, self.service_calls = [], []
+        self.queue_log = []
         self.supervisor_calls = 0
         self.hooks = {BASE + 0x61C384: self.input_buffer,
                       BASE + 0x61C4FC: self.reply,
@@ -98,7 +102,15 @@ class Probe:
                       module_offset(0x2429240): self.service_submit,
                       module_offset(0x2429412): self.platform_time,
                       module_offset(0x242942C): self.platform_time,
-                      module_offset(0x2428ED8): self.environment_init}
+                      module_offset(0x2428ED8): self.environment_init,
+                      # Host boundaries for the response-container leg.
+                      BASE + 0x4FE798: self.queue_query,
+                      BASE + 0x4FE7EA: self.queue_get,
+                      BASE + 0x4FE7A6: self.queue_put,
+                      BASE + 0x4A101C: self.buffer_alloc,
+                      BASE + 0x4B21C0: self.buffer_free,
+                      BASE + 0x4B21BC: self.buffer_free,
+                      BASE + 0x4B21C8: self.buffer_free}
         self.reseed = {module_offset(0x2429260): self.WINDOW_LIMIT}
         self.u.hook_add(UC_HOOK_CODE, self.code)
         self.u.hook_add(UC_HOOK_INTR, self.supervisor)
@@ -198,6 +210,25 @@ class Probe:
     def environment_init(self, *args):
         """Host boundary: module environment lazy initialization."""
         self.service_calls.append('environment-init')
+        return 0
+
+    def queue_query(self, queue, *args):
+        self.queue_log.append('query')
+        return 1
+
+    def queue_get(self, queue, *args):
+        self.queue_log.append('get')
+        return self.FREE_SLOT
+
+    def queue_put(self, queue, item, *args):
+        self.queue_log.append('put')
+        return 0
+
+    def buffer_alloc(self, size, *args):
+        self.queue_log.append('alloc-%#x' % size)
+        return self.INPUT + 0x10000
+
+    def buffer_free(self, *args):
         return 0
 
     def call(self, offset, *args, limit=12000000):
@@ -375,6 +406,29 @@ class Probe:
         require(window == expected_capture,
                 'Verified upload copy must place the capture in the window')
 
+        # 9. Response container framing through the original reply builder.
+        # The transport object is runtime-initialized, so the reply context
+        # and queues are seeded from scratch; queues and buffers stay host
+        # boundaries while the container build executes original code.
+        context = self.INPUT + 0x8800
+        params = self.INPUT + 0x8C00
+        self.put_word(self.INPUT + 0x2800 + 0xC, self.INPUT)
+        self.put_word(self.TRANSPORT_OBJECT, self.INPUT + 0x2800)
+        self.put_word(self.TRANSPORT_OBJECT + 0x10, self.REPLY_CONTEXT)
+        self.put_word(context + 8, 0x11223344)
+        self.u.mem_write(params, struct.pack('<4I', 0xA1, 0xA2, 0xA3, 0xA4))
+        self.u.mem_write(self.INPUT + 0x18000, struct.pack('<I', 0))  # mode 0
+        self.queue_log.clear()
+        del self.hooks[BASE + 0x61C4FC]  # the original builder must run
+        self.call(0x61C4FC, context, 0x2001, 2, params)
+        self.hooks[BASE + 0x61C4FC] = self.reply
+        expected_container = (struct.pack('<IHHI', 20, 3, 0x2001, 0x11223344) +
+                              struct.pack('<2I', 0xA1, 0xA2))
+        require(bytes(self.u.mem_read(self.REPLY_CONTEXT, 20)) == expected_container,
+                'Reply builder must frame the twelve-byte response container')
+        require('alloc-0xc00' in self.queue_log,
+                'Reply builder must release its staging buffer')
+
         return dict(format=1, master_sha256=MASTER_SHA,
                     registered_commands=records,
                     console_publication=self.publications[0],
@@ -414,7 +468,18 @@ class Probe:
                     transport=dict(object_slot=hex(self.TRANSPORT_SLOT),
                                    boot_slot_value=hex(slot),
                                    ring_constants=constants,
-                                   object_runtime_initialized=False),
+                                   object_runtime_initialized=False,
+                                   reply_container=dict(
+                                       builder='0x1063c4fc',
+                                       header='<u32 length><u16 type=3>'
+                                              '<u16 code><u32 transaction>',
+                                       executed=True,
+                                       queue_path='instruction-observed',
+                                       free_slot_queue='0xb1811874+0x14',
+                                       transmit_queue='0xb1811874+0x1c',
+                                       queue_library='0x104057xx',
+                                       packet_enqueue='0x1063c5a2',
+                                       submit='0x1063c3d8')),
                     usb_descriptors=usb_personalities(self.image, self.records),
                     host_boundaries=['transport input buffer', 'transport response',
                                      'bulk copy', 'print sink', 'numeric conversion',
@@ -425,7 +490,8 @@ class Probe:
                                      'module environment initialization',
                                      'upload-window limit seed',
                                      'supervisor-call success returns',
-                                     'passive console/timer register pages'],
+                                     'passive console/timer register pages',
+                                     'transport queues and buffers'],
                     camera_usb_access_verified=False, real_boot_material_recovered=False,
                     k8_recovered=False)
 
@@ -440,5 +506,5 @@ if __name__ == '__main__':
     args.output.write_text(json.dumps(report, indent=2) + '\n',
                            encoding='utf-8', newline='\n')
     print('PASS 17 debug commands, consumer dispatch, USB log-output gate, '
-          'PTP admission link, capture route, verified upload, transport '
-          'constants, descriptor personalities')
+          'PTP admission link, response container, capture route, verified '
+          'upload, transport constants, descriptor personalities')

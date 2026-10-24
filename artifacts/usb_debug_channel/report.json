@@ -211,7 +211,18 @@
       "ring_mask": 2097144,
       "packet_limit": 512
     },
-    "object_runtime_initialized": false
+    "object_runtime_initialized": false,
+    "reply_container": {
+      "builder": "0x1063c4fc",
+      "header": "<u32 length><u16 type=3><u16 code><u32 transaction>",
+      "executed": true,
+      "queue_path": "instruction-observed",
+      "free_slot_queue": "0xb1811874+0x14",
+      "transmit_queue": "0xb1811874+0x1c",
+      "queue_library": "0x104057xx",
+      "packet_enqueue": "0x1063c5a2",
+      "submit": "0x1063c3d8"
+    }
   },
   "usb_descriptors": {
     "vendor_bulk": {
@@ -762,7 +773,8 @@
     "module environment initialization",
     "upload-window limit seed",
     "supervisor-call success returns",
-    "passive console/timer register pages"
+    "passive console/timer register pages",
+    "transport queues and buffers"
   ],
   "camera_usb_access_verified": false,
   "real_boot_material_recovered": false,
