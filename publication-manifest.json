@@ -216,7 +216,7 @@
     "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
     "qemu/nikon-z72.c": "c40074dc2f62d928a9e59a943c9a0dfe655e53e3f037d10bcdf4e0e17294c03c",
     "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249",
-    "research/README.md": "02ba5b1a413b92ddd495501aaf751da3427c5bd57f366b0a4e57271e587d2eb2",
+    "research/README.md": "4b7b9c1dcb8db12bff51dfa27efbd8a462be530f8dbcab0f9c791351e3433c5f",
     "research/firmware_identity.json": "3ae73f19db98854e0876a3b7da5567ea9149143ff5e5ef0a20dcc54624fede85",
     "research/z7ii/battery_serial.md": "f648ab6ec403a674338a636e500b50345104adb26a84c3939bf45dce65bf2c1d",
     "research/z7ii/body_vr_member.md": "802ddeb2b574ea410e957a3780890c90e2be994904f39624a771a5d7a38e5aa9",
@@ -265,7 +265,7 @@
     "research/z7ii/peer_memory.md": "4c64e9098e13a800ae27c61e9e603ff7663e5334ee065ec591b2b1647d51edc8",
     "research/z7ii/platform_comparison.md": "d1f1735c7e45052cd45d86ef33eaf33d990991661ac3c20ea983d06f48cc75dd",
     "research/z7ii/platform_initialization.md": "8dcbcfcfaeb55a4fa93603b65c9ac31eee07c40131cd929999d9912f43429631",
-    "research/z7ii/ptp_dispatch.md": "6cdfa101e33be07f8dfe06b8bf1e91e50110db6f4beec70e47f64953166d1023",
+    "research/z7ii/ptp_dispatch.md": "df075e7636b72b31371e6196f1b39c60d7162a23010c630022c07c28aa277c7f",
     "research/z7ii/public_update_evidence.md": "fe840534100df6ccd1e9132997fbcebf0c4859e19a43c08ffc9ce53459ad687a",
     "research/z7ii/reset_prefix.md": "d80de4796b307b8b741195276e438e5d5025c9940fda1be06f7d939127f6d768",
     "research/z7ii/runtime_bootstrap.md": "cb0755bc04f5f4c675ca29094f057c3156eed41e0fe53db76ad689ae5c7618c9",
@@ -397,6 +397,9 @@
     "artifacts/boot_region/report.json": "3f3b5e08ec282fa8d758e6c064c6a7d492a520eb070ceb67e198377ae9da3889",
     "tools/boot_region_probe.py": "7e29d711199386d170e7ae4337d7e0591451e72181f7cb9f1cf83b0ab49e2ce5",
     "artifacts/boot_region/auxiliary_values.json": "61c757612c344e22373b2c0b55c3659d63b275e1ee844257a002cd30411c9205",
-    "artifacts/boot_region/reference_audit.json": "e764da0e9367003ac13be11c053f498b1d9c6fa1328e416671fc6cbd7d4dd868"
+    "artifacts/boot_region/reference_audit.json": "e764da0e9367003ac13be11c053f498b1d9c6fa1328e416671fc6cbd7d4dd868",
+    "artifacts/ptp_device_info/report.json": "4a7ace21cb795f3c2e835338f8299890598be617bab79fd4ab9e068f07c9b276",
+    "research/z7ii/ptp_device_info.md": "af2259951c78a54c37d23c2defce8ea26b0bef116e3cb26f82a3a3ed40e16ade",
+    "tools/ptp_device_info_probe.py": "c82bb9a84976cf4668c7e7d75c44b4c084d72955697ed289f8580d489491be8a"
   }
 }

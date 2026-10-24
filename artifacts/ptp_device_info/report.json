@@ -1,0 +1,374 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "capture_sha256": "6a4a9def035fa1cdbcb645ce251b59a37244f20365cc7174e57c747f079cdfa8",
+  "identity": {
+    "model": "Z 7_2",
+    "device_version": "V1.70"
+  },
+  "addresses": {
+    "get_device_info": "0x104643f6",
+    "initialize": "0x10464354",
+    "operations_builder": "0x10464228",
+    "merge": "0x1046417c",
+    "conditional_extras": "0x104641f0",
+    "serializer": "0x10482844",
+    "standard_table": "0xb188b934",
+    "vendor_table": "0xb188b97c",
+    "built_dataset": "0xb2a4e71c",
+    "cached_profile": "0xb188b911"
+  },
+  "baseline": {
+    "standard_count": 19,
+    "vendor_count": 76,
+    "count": 95,
+    "ordered_capture_match": true,
+    "operations": [
+      "0x1001",
+      "0x1002",
+      "0x1003",
+      "0x1004",
+      "0x1005",
+      "0x1006",
+      "0x1007",
+      "0x1008",
+      "0x1009",
+      "0x100A",
+      "0x100B",
+      "0x100C",
+      "0x100D",
+      "0x100E",
+      "0x100F",
+      "0x1014",
+      "0x1015",
+      "0x1016",
+      "0x101B",
+      "0x90C0",
+      "0x90C1",
+      "0x90C2",
+      "0x90C3",
+      "0x90C4",
+      "0x90C7",
+      "0x90C8",
+      "0x90C9",
+      "0x90CA",
+      "0x90CB",
+      "0x90CC",
+      "0x90CD",
+      "0x90CE",
+      "0x90CF",
+      "0x9201",
+      "0x9202",
+      "0x9203",
+      "0x9204",
+      "0x9205",
+      "0x9206",
+      "0x9207",
+      "0x9209",
+      "0x920A",
+      "0x920B",
+      "0x920C",
+      "0x920F",
+      "0x9400",
+      "0x9402",
+      "0x9403",
+      "0x9404",
+      "0x9405",
+      "0x9406",
+      "0x940C",
+      "0x9414",
+      "0x9415",
+      "0x9416",
+      "0x9417",
+      "0x9418",
+      "0x9419",
+      "0x941A",
+      "0x941B",
+      "0x941C",
+      "0x9420",
+      "0x9421",
+      "0x9422",
+      "0x9423",
+      "0x9424",
+      "0x9425",
+      "0x9426",
+      "0x9428",
+      "0x9431",
+      "0x9432",
+      "0x9433",
+      "0x9434",
+      "0x9435",
+      "0x9436",
+      "0x9455",
+      "0x9456",
+      "0x9457",
+      "0x9458",
+      "0x9459",
+      "0x945A",
+      "0x9464",
+      "0x9520",
+      "0x9521",
+      "0x9522",
+      "0x9523",
+      "0x9527",
+      "0x9528",
+      "0x9529",
+      "0x952A",
+      "0x9530",
+      "0x9531",
+      "0x9532",
+      "0x9533",
+      "0x9535"
+    ],
+    "serialized_bytes": 194,
+    "serialized_sha256": "f9fe89255204a0fd946319c7d4948c5b08a87f206e390969e80aeb683dea64a5"
+  },
+  "profile_cases": [
+    {
+      "mode": 0,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 0,
+      "count": 95,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 0,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 1,
+      "count": 97,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 1,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 2,
+      "count": 12,
+      "configuration_reads": [
+        "0x21c"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 1,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 3,
+      "count": 11,
+      "configuration_reads": [
+        "0x21c"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 2,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 4,
+      "count": 5,
+      "configuration_reads": [],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 2,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 4,
+      "count": 5,
+      "configuration_reads": [],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 3,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 5,
+      "count": 96,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 3,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 6,
+      "count": 98,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 4,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 0,
+      "count": 95,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 4,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 1,
+      "count": 97,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 1,
+      "state_flag": 0,
+      "marker_feature": 0,
+      "config_21c": 1,
+      "config_4d6": 0,
+      "profile": 2,
+      "count": 26,
+      "configuration_reads": [
+        "0x21c"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 0,
+      "state_flag": 0,
+      "marker_feature": 1,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 0,
+      "count": 97,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    },
+    {
+      "mode": 1,
+      "state_flag": 1,
+      "marker_feature": 0,
+      "config_21c": 1,
+      "config_4d6": 0,
+      "profile": 3,
+      "count": 29,
+      "configuration_reads": [
+        "0x21c"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": false
+    },
+    {
+      "mode": 0,
+      "state_flag": 1,
+      "marker_feature": 1,
+      "config_21c": 0,
+      "config_4d6": 0,
+      "profile": 1,
+      "count": 99,
+      "configuration_reads": [
+        "0x14"
+      ],
+      "advertises_92f0": false,
+      "advertises_9535": true
+    }
+  ],
+  "diagnostic_cases": [
+    {
+      "config_4d6": 0,
+      "operations_unchanged": true,
+      "advertised": false,
+      "prepare_result": 0,
+      "responses": [
+        "0x2005"
+      ],
+      "builder_configuration_reads": [
+        "0x14"
+      ]
+    },
+    {
+      "config_4d6": 1,
+      "operations_unchanged": true,
+      "advertised": false,
+      "prepare_result": 1,
+      "responses": [],
+      "builder_configuration_reads": [
+        "0x14"
+      ]
+    }
+  ],
+  "cache_case": {
+    "before": 95,
+    "after_marker_change": 95,
+    "after_invalidation": 97,
+    "added_after_invalidation": [
+      "0x942B",
+      "0x944B"
+    ]
+  },
+  "opcode_9535": {
+    "advertised": true,
+    "record": "0x119e1d24",
+    "catalog_selector": 1,
+    "classifier_selector": 5,
+    "lookup_result": 0,
+    "packet_result": 0,
+    "packet_response": "0x2005",
+    "handler_callbacks_reached": false,
+    "physical_request_response_available": false
+  },
+  "host_boundaries": [
+    "synthetic mutex creation",
+    "locks",
+    "bulk copy",
+    "PTP response capture"
+  ],
+  "physical_usb_commands_sent": false,
+  "full_device_info_transaction_emulated": false,
+  "alternate_route_verified": false
+}
