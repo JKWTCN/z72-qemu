@@ -1,0 +1,2342 @@
+{
+  "format": 1,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "tables": [
+    {
+      "selector": 0,
+      "table": "0x119e1480",
+      "records": [
+        {
+          "opcode": "0x1001",
+          "address": "0x119e1480",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104643cf",
+            "0x104643f7",
+            "0x10464355"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1002",
+          "address": "0x119e149c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104797b9",
+            "0x10479839",
+            "0x104797a9"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1003",
+          "address": "0x119e14b8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104797b9",
+            "0x10479891",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1004",
+          "address": "0x119e14d4",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10771e03",
+            "0x10771e85",
+            "0x10771e01"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1005",
+          "address": "0x119e14f0",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10771e2b",
+            "0x10771f41",
+            "0x10771e01"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1006",
+          "address": "0x119e150c",
+          "fields": [
+            "0x1",
+            "0xb2a4e0dc",
+            "0x0",
+            "0x107710e1",
+            "0x107711c3",
+            "0x107710bb"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1007",
+          "address": "0x119e1528",
+          "fields": [
+            "0x1",
+            "0xb2a4e0f8",
+            "0x0",
+            "0x107710e1",
+            "0x107711c3",
+            "0x107710bb"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1008",
+          "address": "0x119e1544",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10501a37",
+            "0x10501abd",
+            "0x10501a35"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1009",
+          "address": "0x119e1560",
+          "fields": [
+            "0x1",
+            "0xb2a4e118",
+            "0x0",
+            "0x104ae8e5",
+            "0x104aea9f",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100a",
+          "address": "0x119e157c",
+          "fields": [
+            "0x1",
+            "0xb2a4e158",
+            "0x0",
+            "0x104aedb3",
+            "0x104aeec1",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100b",
+          "address": "0x119e1598",
+          "fields": [
+            "0x0",
+            "0xb2a4e1f8",
+            "0x0",
+            "0x104c1bed",
+            "0x104c1d05",
+            "0x104c1bbf"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100c",
+          "address": "0x119e15b4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x10771c3b",
+            "0x10771c63",
+            "0x10771c39"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100d",
+          "address": "0x119e15d0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x10771c3b",
+            "0x10771c63",
+            "0x10771c39"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100e",
+          "address": "0x119e15ec",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490695",
+            "0x10490a03",
+            "0x1049063f"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x100f",
+          "address": "0x119e1608",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1076f1d9",
+            "0x1076f2d1",
+            "0x1076f1d1"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1014",
+          "address": "0x119e1624",
+          "fields": [
+            "0x1",
+            "0xb188b7ac",
+            "0x0",
+            "0x1050181f",
+            "0x1050186f",
+            "0x10501809"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1015",
+          "address": "0x119e1640",
+          "fields": [
+            "0x1",
+            "0xb188b7b0",
+            "0x0",
+            "0x10501847",
+            "0x1050186f",
+            "0x10501809"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x1016",
+          "address": "0x119e165c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x105018e3",
+            "0x10501945",
+            "0x10501809"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x101b",
+          "address": "0x119e1678",
+          "fields": [
+            "0x1",
+            "0xb2a4e138",
+            "0x0",
+            "0x104ae91b",
+            "0x104aea9f",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 1,
+      "table": "0x119e16b0",
+      "records": [
+        {
+          "opcode": "0x90c0",
+          "address": "0x119e16b0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490a7b",
+            "0x10490ac9",
+            "0x1049063f"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c1",
+          "address": "0x119e16cc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104ae3e1",
+            "0x104ae445",
+            "0x104ae3df"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c2",
+          "address": "0x119e16e8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c1929",
+            "0x104c19b1",
+            "0x104c18e1"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c3",
+          "address": "0x119e1704",
+          "fields": [
+            "0x0",
+            "0xb2a4e204",
+            "0x0",
+            "0x104c1eb7",
+            "0x104c1f23",
+            "0x104c1bbf"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c4",
+          "address": "0x119e1720",
+          "fields": [
+            "0x1",
+            "0xb2a4e178",
+            "0x0",
+            "0x104aedb3",
+            "0x104aef79",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c7",
+          "address": "0x119e173c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1076f5cf",
+            "0x1076f5f7",
+            "0x1076f5cd"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c8",
+          "address": "0x119e1758",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1076f133",
+            "0x1076f15b",
+            "0x1076f131"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90c9",
+          "address": "0x119e1774",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10771d37",
+            "0x10771c6b",
+            "0x10771d5d",
+            "0x10771c69"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ca",
+          "address": "0x119e1790",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x105019ad",
+            "0x105019d5",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90cb",
+          "address": "0x119e17ac",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490b35",
+            "0x10490b77",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90cc",
+          "address": "0x119e17c8",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104c2e4d",
+            "0x104c3237",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90cd",
+          "address": "0x119e17e4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x104c32cb",
+            "0x104c3c11",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ce",
+          "address": "0x119e1800",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c3da3",
+            "0x104c3e75",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90cf",
+          "address": "0x119e181c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104c3ec9",
+            "0x104c3f19",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9201",
+          "address": "0x119e1838",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c2085",
+            "0x104c2101",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9202",
+          "address": "0x119e1854",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c21bb",
+            "0x104c21f7",
+            "0x104c21b9"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9203",
+          "address": "0x119e1870",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104c2231",
+            "0x104c272d",
+            "0x104c2217"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9204",
+          "address": "0x119e188c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104ae4ef",
+            "0x104ae55d",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9205",
+          "address": "0x119e18a8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c2c35",
+            "0x104c2c8b",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9206",
+          "address": "0x119e18c4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104ae49b",
+            "0x104ae4c1",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9207",
+          "address": "0x119e18e0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490acf",
+            "0x10490b2f",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9209",
+          "address": "0x119e18fc",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10771e03",
+            "0x10771e85",
+            "0x10771e01"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x920a",
+          "address": "0x119e1918",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c2d57",
+            "0x104c2dab",
+            "0x104c2d55"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x920b",
+          "address": "0x119e1934",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c2df1",
+            "0x104c2e19",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x920c",
+          "address": "0x119e1950",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490b9f",
+            "0x10490bdb",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x920f",
+          "address": "0x119e196c",
+          "fields": [
+            "0x1",
+            "0xb2a4e1b8",
+            "0x0",
+            "0x104af0e9",
+            "0x104af16d",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9400",
+          "address": "0x119e1988",
+          "fields": [
+            "0x1",
+            "0xb2a4e198",
+            "0x0",
+            "0x104aead3",
+            "0x104aeb99",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9402",
+          "address": "0x119e19a4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10502955",
+            "0x10502a4d",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9403",
+          "address": "0x119e19c0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10502adb",
+            "0x10502b33",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9404",
+          "address": "0x119e19dc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10502b6d",
+            "0x10502baf",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9405",
+          "address": "0x119e19f8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10502bd9",
+            "0x10502c1b",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9406",
+          "address": "0x119e1a14",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10502c41",
+            "0x10502c81",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x940c",
+          "address": "0x119e1a30",
+          "fields": [
+            "0x0",
+            "0xb2a4e210",
+            "0x0",
+            "0x104c1fb9",
+            "0x104c2023",
+            "0x104c1bbf"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9414",
+          "address": "0x119e1a4c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10771583",
+            "0x107715c3",
+            "0x10771581"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9415",
+          "address": "0x119e1a68",
+          "fields": [
+            "0x1",
+            "0xb188b7b4",
+            "0x0",
+            "0x1077166b",
+            "0x107717a7",
+            "0x10771615"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9416",
+          "address": "0x119e1a84",
+          "fields": [
+            "0x1",
+            "0xb188b7b8",
+            "0x0",
+            "0x107717af",
+            "0x107717b1",
+            "0x107717a9"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9417",
+          "address": "0x119e1aa0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x107717b5",
+            "0x10771815",
+            "0x107717b3"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9418",
+          "address": "0x119e1abc",
+          "fields": [
+            "0x1",
+            "0xb188b7bc",
+            "0x0",
+            "0x1077192b",
+            "0x10771a7b",
+            "0x107718d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9419",
+          "address": "0x119e1ad8",
+          "fields": [
+            "0x1",
+            "0xb188b7c0",
+            "0x0",
+            "0x10771a83",
+            "0x10771a85",
+            "0x10771a7d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x941a",
+          "address": "0x119e1af4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x10771a89",
+            "0x10771adf",
+            "0x10771a87"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x941b",
+          "address": "0x119e1b10",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10771ba1",
+            "0x10771c0d",
+            "0x10771b9f"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x941c",
+          "address": "0x119e1b2c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1076f5cf",
+            "0x1076f6d3",
+            "0x1076f5cd"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9420",
+          "address": "0x119e1b48",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c1837",
+            "0x104c189b",
+            "0x104c1835"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9421",
+          "address": "0x119e1b64",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104af201",
+            "0x104af205",
+            "0x104af1ff"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9422",
+          "address": "0x119e1b80",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490c17",
+            "0x10490cd5",
+            "0x10490c15"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9423",
+          "address": "0x119e1b9c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104c2cbd",
+            "0x104c2ce5",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9424",
+          "address": "0x119e1bb8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x107720a5",
+            "0x10772107",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9425",
+          "address": "0x119e1bd4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1077217d",
+            "0x107721cb",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9426",
+          "address": "0x119e1bf0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1049028f",
+            "0x1049035f",
+            "0x1049028d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9428",
+          "address": "0x119e1c0c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104c27cd",
+            "0x104c2bb5",
+            "0x104c27b1"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x942b",
+          "address": "0x119e1c28",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x107721fb",
+            "0x10772225",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9431",
+          "address": "0x119e1c44",
+          "fields": [
+            "0x1",
+            "0xb2a4e1d8",
+            "0x0",
+            "0x104ae97d",
+            "0x104aea9f",
+            "0x104ae7d7"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9432",
+          "address": "0x119e1c60",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10770341",
+            "0x10770383",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9433",
+          "address": "0x119e1c7c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104c444d",
+            "0x104c44b5",
+            "0x104c444b"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9434",
+          "address": "0x119e1c98",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10502089",
+            "0x1050234b",
+            "0x10502087"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9435",
+          "address": "0x119e1cb4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10490503",
+            "0x10490553",
+            "0x10490501"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9436",
+          "address": "0x119e1cd0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1077138f",
+            "0x107714f1",
+            "0x1077138d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x944b",
+          "address": "0x119e1cec",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x107722a7",
+            "0x107722cb",
+            "0x107722a5"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9464",
+          "address": "0x119e1d08",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104ae5ad",
+            "0x104ae61f",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9535",
+          "address": "0x119e1d24",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1076f0e9",
+            "0x1076f111",
+            "0x1076f0e7"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x9455",
+          "address": "0x119e1d40",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x104793e3",
+            "0x1047940b",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9456",
+          "address": "0x119e1d5c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10478fe9",
+            "0x1047905d",
+            "0x10478fe1"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9457",
+          "address": "0x119e1d78",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x10479117",
+            "0x10479315",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9458",
+          "address": "0x119e1d94",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104794c7",
+            "0x1047950d",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9459",
+          "address": "0x119e1db0",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10479563",
+            "0x1047958b",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x945a",
+          "address": "0x119e1dcc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x10479619",
+            "0x10479657",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9801",
+          "address": "0x119e1de8",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10770419",
+            "0x10770457",
+            "0x10770411"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9802",
+          "address": "0x119e1e04",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x107704b5",
+            "0x1077050b",
+            "0x10770411"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9803",
+          "address": "0x119e1e20",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10770585",
+            "0x107705f5",
+            "0x10770411"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9805",
+          "address": "0x119e1e3c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1077065b",
+            "0x10770f59",
+            "0x10770411"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 2,
+      "table": "0x119e1e74",
+      "records": [
+        {
+          "opcode": "0x94fd",
+          "address": "0x119e1e74",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x107722e5",
+            "0x107722eb",
+            "0x107722e3"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x94fe",
+          "address": "0x119e1e90",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x107722f1",
+            "0x10772301",
+            "0x10772307",
+            "0x107722e3"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x94ff",
+          "address": "0x119e1eac",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1077230d",
+            "0x10772313",
+            "0x107722e3"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 3,
+      "table": "0x119e1ee4",
+      "records": [
+        {
+          "opcode": "0x90e8",
+          "address": "0x119e1ee4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90e9",
+          "address": "0x119e1f00",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ea",
+          "address": "0x119e1f1c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90eb",
+          "address": "0x119e1f38",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ec",
+          "address": "0x119e1f54",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ed",
+          "address": "0x119e1f70",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ee",
+          "address": "0x119e1f8c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90ef",
+          "address": "0x119e1fa8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f0",
+          "address": "0x119e1fc4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f1",
+          "address": "0x119e1fe0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f3",
+          "address": "0x119e1ffc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f4",
+          "address": "0x119e2018",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f5",
+          "address": "0x119e2034",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f6",
+          "address": "0x119e2050",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f7",
+          "address": "0x119e206c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f8",
+          "address": "0x119e2088",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90f9",
+          "address": "0x119e20a4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90fa",
+          "address": "0x119e20c0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x90fb",
+          "address": "0x119e20dc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9350",
+          "address": "0x119e20f8",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9351",
+          "address": "0x119e2114",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9352",
+          "address": "0x119e2130",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9353",
+          "address": "0x119e214c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9354",
+          "address": "0x119e2168",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9355",
+          "address": "0x119e2184",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9356",
+          "address": "0x119e21a0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9357",
+          "address": "0x119e21bc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9358",
+          "address": "0x119e21d8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9359",
+          "address": "0x119e21f4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935a",
+          "address": "0x119e2210",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935b",
+          "address": "0x119e222c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935c",
+          "address": "0x119e2248",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052dc13",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935d",
+          "address": "0x119e2264",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935e",
+          "address": "0x119e2280",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x935f",
+          "address": "0x119e229c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9360",
+          "address": "0x119e22b8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9361",
+          "address": "0x119e22d4",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x10501a37",
+            "0x10501e55",
+            "0x10501a35"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9411",
+          "address": "0x119e22f0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 4,
+      "table": "0x119e2328",
+      "records": [
+        {
+          "opcode": "0x9509",
+          "address": "0x119e2328",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950a",
+          "address": "0x119e2344",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950b",
+          "address": "0x119e2360",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950c",
+          "address": "0x119e237c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950d",
+          "address": "0x119e2398",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950e",
+          "address": "0x119e23b4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x950f",
+          "address": "0x119e23d0",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x9407",
+          "address": "0x119e23ec",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x9408",
+          "address": "0x119e2408",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x9409",
+          "address": "0x119e2424",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        },
+        {
+          "opcode": "0x940a",
+          "address": "0x119e2440",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": false
+        }
+      ]
+    },
+    {
+      "selector": 5,
+      "table": "0x119e2478",
+      "records": [
+        {
+          "opcode": "0x9520",
+          "address": "0x119e2478",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9521",
+          "address": "0x119e2494",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9522",
+          "address": "0x119e24b0",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1076f867",
+            "0x1076f98d",
+            "0x1076f863"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9523",
+          "address": "0x119e24cc",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9527",
+          "address": "0x119e24e8",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1076f463",
+            "0x1076f48b",
+            "0x1076f339"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9528",
+          "address": "0x119e2504",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1076f53d",
+            "0x1076f565",
+            "0x1076f339"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9529",
+          "address": "0x119e2520",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1076f33b",
+            "0x1076f429",
+            "0x1076f339"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x952a",
+          "address": "0x119e253c",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1052da0f",
+            "0x1052dacb",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9530",
+          "address": "0x119e2558",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1076fa1b",
+            "0x1076fa4b",
+            "0x1076fa17"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9531",
+          "address": "0x119e2574",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9532",
+          "address": "0x119e2590",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x9533",
+          "address": "0x119e25ac",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052da3d",
+            "0x1052da0d"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 6,
+      "table": "0x119e25e4",
+      "records": [
+        {
+          "opcode": "0x9010",
+          "address": "0x119e25e4",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x952b",
+          "address": "0x119e2600",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x1052da0f",
+            "0x1052db63",
+            "0x1052da0d"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 7,
+      "table": "0x0",
+      "records": []
+    },
+    {
+      "selector": 8,
+      "table": "0x119e2638",
+      "records": [
+        {
+          "opcode": "0x92f0",
+          "address": "0x119e2638",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x1044415f",
+            "0x1044418b",
+            "0x1044415d"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x92f3",
+          "address": "0x119e2654",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104443bd",
+            "0x1044461b",
+            "0x104443af"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x92f4",
+          "address": "0x119e2670",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x104443bd",
+            "0x10444681",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x92f5",
+          "address": "0x119e268c",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104443bd",
+            "0x104443e1",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x92f6",
+          "address": "0x119e26a8",
+          "fields": [
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x104443bd",
+            "0x1044444f",
+            "0x0"
+          ],
+          "routed": true
+        },
+        {
+          "opcode": "0x92f7",
+          "address": "0x119e26c4",
+          "fields": [
+            "0x0",
+            "0x0",
+            "0x10478fb3",
+            "0x104443bd",
+            "0x1044453f",
+            "0x0"
+          ],
+          "routed": true
+        }
+      ]
+    },
+    {
+      "selector": 9,
+      "table": "0x0",
+      "records": []
+    }
+  ],
+  "negative_routes": [
+    "0x0",
+    "0x1000",
+    "0x90ff",
+    "0x9100",
+    "0x92e0",
+    "0x92f1",
+    "0x94fc",
+    "0xffff"
+  ],
+  "unrouted_opcodes": [
+    "0x9535",
+    "0x9509",
+    "0x950a",
+    "0x950b",
+    "0x950c",
+    "0x950d",
+    "0x950e",
+    "0x950f",
+    "0x9407",
+    "0x9408",
+    "0x9409",
+    "0x940a"
+  ],
+  "diagnostic_gate_address": "0xb20d2d6a",
+  "debug_enable_address": "0xb1800474",
+  "initial_fixture_bytes": {
+    "diagnostic": 0,
+    "debug": 0
+  },
+  "gate_cases": [
+    {
+      "callback": "0x1044415e",
+      "flag": 0,
+      "result": 0,
+      "responses": [
+        "0x2005"
+      ]
+    },
+    {
+      "callback": "0x1044415e",
+      "flag": 1,
+      "result": 1,
+      "responses": []
+    },
+    {
+      "callback": "0x104443bc",
+      "flag": 0,
+      "result": 0,
+      "responses": [
+        "0x2005"
+      ]
+    },
+    {
+      "callback": "0x104443bc",
+      "flag": 1,
+      "result": 1,
+      "responses": []
+    }
+  ],
+  "text_commands": [
+    {
+      "name": "help",
+      "callback": "0x10444237"
+    },
+    {
+      "name": "print on",
+      "callback": "0x104441fd"
+    },
+    {
+      "name": "print off",
+      "callback": "0x104441ff"
+    },
+    {
+      "name": "pc mode on",
+      "callback": "0x10444201"
+    },
+    {
+      "name": "pc mode off",
+      "callback": "0x10444205"
+    },
+    {
+      "name": "firm up 0",
+      "callback": "0x10444211"
+    },
+    {
+      "name": "firm up 1",
+      "callback": "0x10444215"
+    },
+    {
+      "name": "screen on",
+      "callback": "0x10444209"
+    },
+    {
+      "name": "screen off",
+      "callback": "0x1044420d"
+    },
+    {
+      "name": "mem w",
+      "callback": "0x1044425b"
+    },
+    {
+      "name": "debug",
+      "callback": "0x10444219"
+    },
+    {
+      "name": "app",
+      "callback": "0x1044424d"
+    }
+  ],
+  "queue_cases": [
+    {
+      "case": "enabled",
+      "admitted": true,
+      "queued_length": 5,
+      "response": "0x2001"
+    },
+    {
+      "case": "disabled",
+      "admitted": false,
+      "queued_length": 0,
+      "response": "0x2001"
+    },
+    {
+      "case": "busy",
+      "admitted": false,
+      "queued_length": 0,
+      "response": "0x2001"
+    },
+    {
+      "case": "maximum",
+      "admitted": true,
+      "queued_length": 128,
+      "response": "0x2001"
+    },
+    {
+      "case": "too_long",
+      "admitted": false,
+      "queued_length": 0,
+      "response": "0x2001"
+    },
+    {
+      "case": "unknown",
+      "admitted": false,
+      "queued_length": 0,
+      "response": "0x2001"
+    }
+  ],
+  "memory_dump_cases": [
+    {
+      "argument_count": 2,
+      "requested_size": 8,
+      "synthetic_bytes_read": 16,
+      "print_calls": 2
+    },
+    {
+      "argument_count": 2,
+      "requested_size": 0,
+      "synthetic_bytes_read": 512,
+      "print_calls": 33
+    },
+    {
+      "argument_count": 1,
+      "requested_size": 0,
+      "synthetic_bytes_read": 512,
+      "print_calls": 33
+    }
+  ],
+  "print_appender": {
+    "entry": "0xb2bb0000",
+    "buffer": "0xb1c81898",
+    "count": "0xb18004f0",
+    "capacity": 393216,
+    "synthetic_append_verified": true,
+    "capacity_rejection_verified": true
+  },
+  "host_boundaries": [
+    "transport input buffer",
+    "transport response",
+    "bulk copy",
+    "memory dump print sink"
+  ],
+  "camera_usb_access_verified": false,
+  "real_boot_material_recovered": false,
+  "k8_recovered": false
+}
