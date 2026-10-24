@@ -39,6 +39,7 @@
 - [启动后的五秒时限与供电状态](z7ii/startup_idle_timer.md)
 - [菜单固件更新路径与实验更新存储](z7ii/firmware_update.md)
 - [USB/PTP 厂商命令分派、诊断门槛与内存输出](z7ii/ptp_dispatch.md)
+- [USB 日志通道、描述符与异步调试消费者](z7ii/usb_debug_channel.md)
 - [Z6 II / Z7 II C 1.70 更新结构与目录检查对照](z7ii/z6ii_update_comparison.md)
 - [机身 VR 成员(Body VR / NikonBVR)结构](z7ii/body_vr_member.md)
 - [传感器采样事件与捕获管线结构](z7ii/sensor_frames.md)

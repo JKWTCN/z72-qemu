@@ -1,0 +1,730 @@
+{
+  "format": 1,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "registered_commands": [
+    {
+      "name": "echo",
+      "callback": "0x103bcbc7",
+      "argument_hint": 0,
+      "raw_form": true
+    },
+    {
+      "name": "help",
+      "callback": "0x103bcb99",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "watchdog",
+      "callback": "0x103bc85d",
+      "argument_hint": 1,
+      "raw_form": false
+    },
+    {
+      "name": "stackdump",
+      "callback": "0x103bc849",
+      "argument_hint": 2,
+      "raw_form": false
+    },
+    {
+      "name": "memdump",
+      "callback": "0x103bc82d",
+      "argument_hint": 2,
+      "raw_form": false
+    },
+    {
+      "name": "logoutputchg",
+      "callback": "0x103bc7ff",
+      "argument_hint": 1,
+      "raw_form": false
+    },
+    {
+      "name": "loglevelallchg",
+      "callback": "0x103bc73b",
+      "argument_hint": 1,
+      "raw_form": false
+    },
+    {
+      "name": "loglevelchg",
+      "callback": "0x103bc703",
+      "argument_hint": 3,
+      "raw_form": false
+    },
+    {
+      "name": "pt",
+      "callback": "0x103bc6ff",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "tt",
+      "callback": "0x103bc6f7",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "smt",
+      "callback": "0x103bc6e9",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "et",
+      "callback": "0x103bc6e5",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "qt",
+      "callback": "0x103bc6d7",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "act",
+      "callback": "0x103bc6c9",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "mt",
+      "callback": "0x103bc6bb",
+      "argument_hint": 0,
+      "raw_form": false
+    },
+    {
+      "name": "kernelsysmem",
+      "callback": "0x103bc6a1",
+      "argument_hint": 0,
+      "raw_form": true
+    },
+    {
+      "name": "interrupt",
+      "callback": "0x103a05c5",
+      "argument_hint": 0,
+      "raw_form": true
+    }
+  ],
+  "console_publication": {
+    "control": "0xb18aff30",
+    "handler": "0x103bc65d"
+  },
+  "consumer": {
+    "execution_entry": "0x103bc5f6",
+    "dispatch_entry": "0x103bc5a2",
+    "tokenizer_entry": "0x103bcc8e",
+    "name_argument_split": "host boundary",
+    "memory_dump": {
+      "command": "memdump <address> <size>",
+      "requested_size": 8,
+      "row_bytes": 16,
+      "synthetic_bytes_read": 16,
+      "print_calls": 2,
+      "busy_cleared": true,
+      "length_field_retained": true
+    },
+    "whole_line_lookup_miss": true,
+    "help_print_calls": 19
+  },
+  "log_output_gate": {
+    "selector": "0x103da664",
+    "output_select_address": "0xb1800474",
+    "log_gate_address": "0xb180048c",
+    "cases": [
+      {
+        "command": "logoutputchg 2",
+        "output_select": 1,
+        "log_gate": 1,
+        "reply": "logoutputchg Output:0x%x"
+      },
+      {
+        "command": "logoutputchg 1",
+        "output_select": 0,
+        "log_gate": 0,
+        "reply": "logoutputchg Output:0x%x"
+      },
+      {
+        "command": "logoutputchg 3",
+        "output_select": 0,
+        "log_gate": 0,
+        "reply": "logoutputchg : Error parameter."
+      },
+      {
+        "command": "logoutputchg",
+        "output_select": 0,
+        "log_gate": 0,
+        "reply": "logoutputchg [Output(1:Serial 2:USB)]"
+      }
+    ],
+    "gate_shared_with_ptp_debug_admission": true
+  },
+  "ptp_debug_admission": [
+    {
+      "output_selected": 0,
+      "queued_length": 0,
+      "response": "0x2001"
+    },
+    {
+      "output_selected": 1,
+      "queued_length": 21,
+      "response": "0x2001"
+    }
+  ],
+  "transport": {
+    "object_slot": "0xb188b7c8",
+    "boot_slot_value": "0x0",
+    "ring_constants": {
+      "ring_size": 2097152,
+      "ring_mask": 2097144,
+      "packet_limit": 512
+    },
+    "object_runtime_initialized": false
+  },
+  "usb_descriptors": {
+    "vendor_bulk": {
+      "file_offset": "0x238381c",
+      "repetition_count": 3,
+      "ram_address": "0xb1809888",
+      "interface_classes": [
+        "ff/f0/00"
+      ],
+      "device_versions": [
+        "02.10"
+      ],
+      "endpoint_transfers": [
+        "bulk"
+      ],
+      "endpoint_addresses": [
+        "0x02",
+        "0x81"
+      ],
+      "bulk_max_packets": [
+        512
+      ],
+      "interrupt_max_packets": [],
+      "super_speed_companions": false,
+      "nearby_strings": {
+        "NIKON": "0x23839d2",
+        "NIKON DSC Z 7_2": "0x2383bcc"
+      },
+      "sets": [
+        {
+          "offset": 37238812,
+          "device": {
+            "kind": "device",
+            "usb_version": "02.10",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 64,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 32,
+              "interface_count": 1,
+              "attributes": 0,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 0
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 255,
+              "subclass": 240,
+              "protocol": 0,
+              "string_index": 4,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37238862
+        },
+        {
+          "offset": 37238887,
+          "device": {
+            "kind": "device",
+            "usb_version": "02.10",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 64,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 32,
+              "interface_count": 1,
+              "attributes": 0,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 0
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 255,
+              "subclass": 240,
+              "protocol": 0,
+              "string_index": 4,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37238937
+        },
+        {
+          "offset": 37238962,
+          "device": {
+            "kind": "device",
+            "usb_version": "02.10",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 64,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 32,
+              "interface_count": 1,
+              "attributes": 0,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 0
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 255,
+              "subclass": 240,
+              "protocol": 0,
+              "string_index": 4,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37239012
+        }
+      ]
+    },
+    "still_image": {
+      "file_offset": "0x2386da0",
+      "repetition_count": 3,
+      "ram_address": "0xb180ce0c",
+      "interface_classes": [
+        "06/01/01"
+      ],
+      "device_versions": [
+        "02.10",
+        "03.20"
+      ],
+      "endpoint_transfers": [
+        "bulk",
+        "interrupt"
+      ],
+      "endpoint_addresses": [
+        "0x02",
+        "0x81",
+        "0x83"
+      ],
+      "bulk_max_packets": [
+        64,
+        512,
+        1024
+      ],
+      "interrupt_max_packets": [
+        8,
+        24
+      ],
+      "super_speed_companions": true,
+      "nearby_strings": {
+        "NIKON": "0x2386f56",
+        "NIKON DSC Z 7_2": "0x2387150"
+      },
+      "sets": [
+        {
+          "offset": 37252512,
+          "device": {
+            "kind": "device",
+            "usb_version": "02.10",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 64,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 39,
+              "interface_count": 1,
+              "attributes": 128,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 250
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 6,
+              "subclass": 1,
+              "protocol": 1,
+              "string_index": 0,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 64,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 64,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 131,
+                  "direction": "in",
+                  "number": 3,
+                  "transfer": "interrupt",
+                  "max_packet": 8,
+                  "interval": 9,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37252569
+        },
+        {
+          "offset": 37252587,
+          "device": {
+            "kind": "device",
+            "usb_version": "02.10",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 64,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 39,
+              "interface_count": 1,
+              "attributes": 128,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 250
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 6,
+              "subclass": 1,
+              "protocol": 1,
+              "string_index": 0,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 131,
+                  "direction": "in",
+                  "number": 3,
+                  "transfer": "interrupt",
+                  "max_packet": 8,
+                  "interval": 9,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37252644
+        },
+        {
+          "offset": 37252662,
+          "device": {
+            "kind": "device",
+            "usb_version": "03.20",
+            "class_code": 0,
+            "subclass": 0,
+            "protocol": 0,
+            "max_packet_zero": 9,
+            "vendor_id": 1200,
+            "product_id": 1099,
+            "release": "0001.0000",
+            "string_indices": [
+              1,
+              2,
+              3
+            ],
+            "configuration_count": 1
+          },
+          "configurations": [
+            {
+              "kind": "configuration",
+              "total_length": 57,
+              "interface_count": 1,
+              "attributes": 128,
+              "attributes_self_powered": false,
+              "attributes_remote_wakeup": false,
+              "max_power_units": 63
+            },
+            {
+              "kind": "qualifier",
+              "usb_version": "02.10",
+              "max_packet_zero": 64
+            },
+            {
+              "kind": "other_speed",
+              "raw": "0907270001010080fa"
+            }
+          ],
+          "interfaces": [
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 6,
+              "subclass": 1,
+              "protocol": 1,
+              "string_index": 0,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 1024,
+                  "interval": 0,
+                  "companion": {
+                    "max_burst": 15,
+                    "attributes": 0,
+                    "bytes_per_interval": 0
+                  }
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 1024,
+                  "interval": 0,
+                  "companion": {
+                    "max_burst": 15,
+                    "attributes": 0,
+                    "bytes_per_interval": 0
+                  }
+                },
+                {
+                  "address": 131,
+                  "direction": "in",
+                  "number": 3,
+                  "transfer": "interrupt",
+                  "max_packet": 24,
+                  "interval": 10,
+                  "companion": {
+                    "max_burst": 0,
+                    "attributes": 0,
+                    "bytes_per_interval": 24
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "interface",
+              "number": 0,
+              "alternate": 0,
+              "class_code": 6,
+              "subclass": 1,
+              "protocol": 1,
+              "string_index": 0,
+              "endpoints": [
+                {
+                  "address": 129,
+                  "direction": "in",
+                  "number": 1,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 2,
+                  "direction": "out",
+                  "number": 2,
+                  "transfer": "bulk",
+                  "max_packet": 512,
+                  "interval": 0,
+                  "companion": null
+                },
+                {
+                  "address": 131,
+                  "direction": "in",
+                  "number": 3,
+                  "transfer": "interrupt",
+                  "max_packet": 8,
+                  "interval": 9,
+                  "companion": null
+                }
+              ]
+            }
+          ],
+          "descriptor_end": 37252786
+        }
+      ]
+    },
+    "vendor_id": "0x04b0",
+    "product_id": "0x044b",
+    "serial_string_stock_content": false
+  },
+  "host_boundaries": [
+    "transport input buffer",
+    "transport response",
+    "bulk copy",
+    "print sink",
+    "numeric conversion",
+    "console-handler registration service",
+    "queued-line name/argument split"
+  ],
+  "camera_usb_access_verified": false,
+  "real_boot_material_recovered": false,
+  "k8_recovered": false
+}
