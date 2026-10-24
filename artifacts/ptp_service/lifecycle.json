@@ -1,0 +1,353 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "registered_receiver": "0x102054fe",
+  "interface_registry": "0x1197ffb0",
+  "interface_record": "0x119800a0",
+  "message_encoder": "0x104328ba",
+  "queue_sender": "0x10205698",
+  "reply_decoder": "0x104328de",
+  "message_cases": [
+    {
+      "mode": 0,
+      "supplied_reply_flag": 0,
+      "packets": [
+        {
+          "interface": 15,
+          "channel": 1,
+          "bytes": 8,
+          "command": 9,
+          "mode": 0
+        }
+      ],
+      "events": [
+        {
+          "kind": "worker_event",
+          "mask": "0x40"
+        },
+        {
+          "kind": "worker_event",
+          "mask": "0x80"
+        },
+        {
+          "kind": "service_completion_event",
+          "mask": "0x80000000"
+        }
+      ],
+      "acknowledgement": "0x3010003",
+      "success": 1,
+      "pending_callback_released": true,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "hardware_reply_verified": false
+    },
+    {
+      "mode": 0,
+      "supplied_reply_flag": 1,
+      "packets": [
+        {
+          "interface": 15,
+          "channel": 1,
+          "bytes": 8,
+          "command": 9,
+          "mode": 0
+        }
+      ],
+      "events": [
+        {
+          "kind": "worker_event",
+          "mask": "0x40"
+        },
+        {
+          "kind": "worker_event",
+          "mask": "0x80"
+        },
+        {
+          "kind": "service_completion_event",
+          "mask": "0x80000000"
+        }
+      ],
+      "acknowledgement": "0x3010003",
+      "success": 0,
+      "pending_callback_released": true,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "hardware_reply_verified": false
+    },
+    {
+      "mode": 1,
+      "supplied_reply_flag": 0,
+      "packets": [
+        {
+          "interface": 15,
+          "channel": 1,
+          "bytes": 8,
+          "command": 9,
+          "mode": 1
+        }
+      ],
+      "events": [
+        {
+          "kind": "worker_event",
+          "mask": "0x40"
+        },
+        {
+          "kind": "worker_event",
+          "mask": "0x80"
+        },
+        {
+          "kind": "service_completion_event",
+          "mask": "0x80000000"
+        }
+      ],
+      "acknowledgement": "0x3010004",
+      "success": 1,
+      "pending_callback_released": true,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "hardware_reply_verified": false
+    },
+    {
+      "mode": 1,
+      "supplied_reply_flag": 1,
+      "packets": [
+        {
+          "interface": 15,
+          "channel": 1,
+          "bytes": 8,
+          "command": 9,
+          "mode": 1
+        }
+      ],
+      "events": [
+        {
+          "kind": "worker_event",
+          "mask": "0x40"
+        },
+        {
+          "kind": "worker_event",
+          "mask": "0x80"
+        },
+        {
+          "kind": "service_completion_event",
+          "mask": "0x80000000"
+        }
+      ],
+      "acknowledgement": "0x3010004",
+      "success": 0,
+      "pending_callback_released": true,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "hardware_reply_verified": false
+    }
+  ],
+  "session_close": {
+    "opcode": "0x1003",
+    "callback": "0x10479890",
+    "cleanup_controller": "0x10478bf2",
+    "returned": 1,
+    "session_identifier_cleared": true,
+    "context_preserved": true,
+    "native_context_writes": [],
+    "responses": [
+      {
+        "outer": 8193,
+        "parameters": []
+      }
+    ],
+    "peer_state_requests": [
+      {
+        "resource": 3,
+        "operation": "0x28",
+        "bytes": 12,
+        "state_argument": 1
+      }
+    ],
+    "host_boundaries": [
+      {
+        "address": "0x104c0f4e",
+        "first_argument": 68092032
+      },
+      {
+        "address": "0x104828f4",
+        "first_argument": 7
+      },
+      {
+        "address": "0x104c0f20",
+        "first_argument": 68091932
+      },
+      {
+        "address": "0x10492a46",
+        "first_argument": 2147483648
+      },
+      {
+        "address": "0x10492b4a",
+        "first_argument": 0
+      },
+      {
+        "address": "0x1047a0ac",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c7578",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10361192",
+        "first_argument": 2978368976
+      },
+      {
+        "address": "0x103610d2",
+        "first_argument": 2978368976
+      },
+      {
+        "address": "0x104c17ea",
+        "first_argument": 0
+      },
+      {
+        "address": "0x1050590c",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10486e28",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10490b7c",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104ae666",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10478bc6",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104903c2",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104796e2",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104ae716",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104910aa",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10490f3e",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104b2c00",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10491990",
+        "first_argument": 255
+      },
+      {
+        "address": "0x10491b48",
+        "first_argument": 0
+      },
+      {
+        "address": "0x1049263e",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104b2872",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c6d36",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104b2544",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c78f4",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c1b0a",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10490580",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c1b22",
+        "first_argument": 0
+      },
+      {
+        "address": "0x10490d68",
+        "first_argument": 0
+      },
+      {
+        "address": "0x103bb5f6",
+        "first_argument": 0
+      },
+      {
+        "address": "0x1063c59e",
+        "first_argument": 0
+      },
+      {
+        "address": "0x104c0f20",
+        "first_argument": 68091953
+      }
+    ],
+    "actual_ui_transition_executed": false
+  },
+  "update_result_wait_entry": "0x10767136",
+  "update_result_wait_cases": [
+    {
+      "supplied_result_bits": 1,
+      "waits": [
+        {
+          "supplied_bits": 1,
+          "timeout": 300
+        }
+      ],
+      "returned": 1,
+      "reason": 0,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "native_update_executed": false
+    },
+    {
+      "supplied_result_bits": 2,
+      "waits": [
+        {
+          "supplied_bits": 2,
+          "timeout": 300
+        }
+      ],
+      "returned": 3,
+      "reason": 6,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "native_update_executed": false
+    }
+  ],
+  "actual_camera_access": false,
+  "menu_cancel_executed": false,
+  "actual_mode_change_executed": false,
+  "boot_material_recovered": false,
+  "limitations": [
+    "The registry pointer is restored from its original table, not full startup.",
+    "Queue capacity, queue submission, scheduling and mode replies are synthetic.",
+    "Peripheral and task cleanup endpoints in CloseSession are host boundaries.",
+    "No native menu No callback, physical USB disconnect or display output is executed.",
+    "Preservation only covers the native instructions executed by these cases."
+  ]
+}
