@@ -1,0 +1,176 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "image_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "qemu_sha256": "be664ded625e66304b2d98f157cf30bd8ac0f1aca2fbfa43f1546b02f30b13c2",
+  "boot_prefix": [
+    "0x10000000",
+    "0x10020000"
+  ],
+  "material_address": "0x10000088",
+  "controls": [
+    {
+      "role": "master",
+      "mmu_enabled": false,
+      "original_store_offset": "0xbda4",
+      "stop_pc": "0x1002bda8",
+      "stop_response": "T05thread:01;",
+      "system_registers": {
+        "SCTLR_EL1_S": 12910712,
+        "SCTLR_EL1": 12910712,
+        "TTBR0_S": 0,
+        "TTBR0": 0,
+        "TTBCR_S": 0,
+        "TTBCR": 0,
+        "DACR_S": 0,
+        "DACR": 0,
+        "DFAR_S": 0,
+        "DFSR_S": 0
+      },
+      "write_completed": true,
+      "permission_abort": false,
+      "write_watchpoint_positive_control": true
+    },
+    {
+      "role": "master",
+      "mmu_enabled": true,
+      "original_store_offset": "0xbda4",
+      "stop_pc": "0x10100010",
+      "stop_response": "T05thread:01;",
+      "system_registers": {
+        "SCTLR_EL1_S": 12914813,
+        "SCTLR_EL1": 12910712,
+        "TTBR0_S": 268632064,
+        "TTBR0": 0,
+        "TTBCR_S": 0,
+        "TTBCR": 0,
+        "DACR_S": 1431655765,
+        "DACR": 0,
+        "DFAR_S": 268435592,
+        "DFSR_S": 2077
+      },
+      "write_completed": false,
+      "permission_abort": true,
+      "write_watchpoint_positive_control": false
+    },
+    {
+      "role": "slave",
+      "mmu_enabled": false,
+      "original_store_offset": "0xbdf0",
+      "stop_pc": "0x1002bdf4",
+      "stop_response": "T05thread:01;",
+      "system_registers": {
+        "SCTLR_EL1_S": 12910712,
+        "SCTLR_EL1": 12910712,
+        "TTBR0_S": 0,
+        "TTBR0": 0,
+        "TTBCR_S": 0,
+        "TTBCR": 0,
+        "DACR_S": 0,
+        "DACR": 0,
+        "DFAR_S": 0,
+        "DFSR_S": 0
+      },
+      "write_completed": true,
+      "permission_abort": false,
+      "write_watchpoint_positive_control": true
+    },
+    {
+      "role": "slave",
+      "mmu_enabled": true,
+      "original_store_offset": "0xbdf0",
+      "stop_pc": "0x10034110",
+      "stop_response": "T05thread:01;",
+      "system_registers": {
+        "SCTLR_EL1_S": 12914813,
+        "SCTLR_EL1": 12910712,
+        "TTBR0_S": 268632064,
+        "TTBR0": 0,
+        "TTBCR_S": 0,
+        "TTBCR": 0,
+        "DACR_S": 1431655765,
+        "DACR": 0,
+        "DFAR_S": 268435592,
+        "DFSR_S": 2077
+      },
+      "write_completed": false,
+      "permission_abort": true,
+      "write_watchpoint_positive_control": false
+    }
+  ],
+  "actual_boot_material_supplied": false,
+  "initializer_found": false,
+  "k8_recovered": false,
+  "native_query": {
+    "entry": "0xb2bb04e0",
+    "entry_injected_after_original_table_switch": true,
+    "arguments": [
+      0,
+      0,
+      0
+    ],
+    "result": 2,
+    "program_data_routine_reached": false,
+    "observed_halfword_writes": [
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x10000aaa",
+        "halfword": "0xaa",
+        "table_record": "0xb2bb0fd8",
+        "descriptor": "0x10000432"
+      },
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x10000554",
+        "halfword": "0x55",
+        "table_record": "0xb2bb0fe4",
+        "descriptor": "0x10000432"
+      },
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x10000aaa",
+        "halfword": "0x90",
+        "table_record": "0xb2bb0ff0",
+        "descriptor": "0x10000432"
+      },
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x10000aaa",
+        "halfword": "0xf0",
+        "table_record": "0xb2bb0fa8",
+        "descriptor": "0x10000432"
+      },
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x100000aa",
+        "halfword": "0x98",
+        "table_record": "0xb2bb0fc0",
+        "descriptor": "0x10000432"
+      },
+      {
+        "pc": "0xb2bb0686",
+        "address": "0x10000aaa",
+        "halfword": "0xf0",
+        "table_record": "0xb2bb0fa8",
+        "descriptor": "0x10000432"
+      }
+    ],
+    "material_write_observed": false,
+    "original_table_sha256": "d97210fc0347e946c69e5fff1475c52653d9d8fb29f7f47fd1d0a7b3b4edf9cd",
+    "ordinary_section_aliases": [
+      {
+        "virtual_base": "0x10000000",
+        "descriptor": "0x1000c426",
+        "ap": 5,
+        "domain": 1
+      }
+    ],
+    "table_restored": true,
+    "laboratory_zero_material_preserved": true,
+    "real_nor_device_emulated": false,
+    "earlier_camera_loader_executed": false
+  }
+}

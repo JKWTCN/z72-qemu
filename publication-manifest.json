@@ -216,7 +216,7 @@
     "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
     "qemu/nikon-z72.c": "c40074dc2f62d928a9e59a943c9a0dfe655e53e3f037d10bcdf4e0e17294c03c",
     "qemu/prepare_source.py": "9c243f35086e3b03752c25e9f5536abcf726e7b9c61541147bcff615f8c34249",
-    "research/README.md": "3e32a58cb4681baeb76c3a8ffdafd3e1e174d7ab32cc095b82a6739b6b191650",
+    "research/README.md": "02ba5b1a413b92ddd495501aaf751da3427c5bd57f366b0a4e57271e587d2eb2",
     "research/firmware_identity.json": "3ae73f19db98854e0876a3b7da5567ea9149143ff5e5ef0a20dcc54624fede85",
     "research/z7ii/battery_serial.md": "f648ab6ec403a674338a636e500b50345104adb26a84c3939bf45dce65bf2c1d",
     "research/z7ii/body_vr_member.md": "802ddeb2b574ea410e957a3780890c90e2be994904f39624a771a5d7a38e5aa9",
@@ -390,6 +390,9 @@
     "tools/web_console.py": "71847381d216dcb588290cc942e57875c8eb1cc7636f419505acf4824ee7da46",
     "web/console.js": "c87b36aad5aa9e3366686b37cfb002710a534dc8c5c5ea9ca7731117792412ae",
     "web/index.html": "0de94dc74207d2f5876fa4825fe1e566f76245b646ecc8054e203476c0d25874",
-    "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e"
+    "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e",
+    "artifacts/boot_material_access/report.json": "81bb1cb5965e7ff44498c63056181eb1c4b4f87143bd50014ae790b0f7b2e68d",
+    "research/z7ii/boot_material_storage.md": "e533547687f1cb8d945cbe13df6387ac5c55e44344b3f194acc0e3c4be71bd5d",
+    "tools/boot_material_access_probe.py": "d004e91b21327d418fb528f5fec7be4b722fe569468931269c15517047562b95"
   }
 }
