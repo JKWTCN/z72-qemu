@@ -262,7 +262,7 @@
     "research/z7ii/temperature_parameters.md": "add54ed8243b13d8af2a58da2524673ce8e003c7028e2311bc4ead668fc951cb",
     "research/z7ii/update_versions.json": "2fc6b8168a25e8ef49c98f85a18af6d294b155431dd7171090ac123d22475b74",
     "research/z7ii/z6ii_update_comparison.json": "7f23085609b4bbfa1108a09c51be482c5ac68ce2e639b485a0c3be313e9c3727",
-    "research/z7ii/z6ii_update_comparison.md": "4c3e481ead9757d3801fd0233894d7145453286862e00fdee168fcebe269b1ef",
+    "research/z7ii/z6ii_update_comparison.md": "9182247926c7cbae85d82de61a4c04714ef2050827041d431e88b2add548f092",
     "tests/counter_harness.S": "a84a9d6a3cd7673c6a9a8eeb04f702fc079fcc2cb927f28427ac462a28db6e4c",
     "tests/interrupt_harness.S": "f98ef2ac85668fd9edcb1485b2f7d78e98d2bd1df021945fc6860738aef44147",
     "tests/run.sh": "5a06e287c1947e8656c96f89ee91f4721ca72f00cdba2a75b5df4674cb3ffa5f",
@@ -380,6 +380,7 @@
     "artifacts/decoded_window_opt_in/report.json": "43ac62d6895036cf5159d409457e87bf5db84e2edc9316e375a964c1def03aae",
     "artifacts/seed_immediate_candidates/report.json": "2b6d7cec6c6f551cfdd56dea0b6a1ff8b18f09c801393a0663c183832eb71a4c",
     "tools/seed_immediate_probe.py": "1a21e0846eab0f36cddd2c3ba9ab6f8ab2cd0e308152e5c3c092d433638d59ed",
-    "artifacts/z5_seed_comparison/report.json": "76b75ac1ebb306ed733bfd59a1c4ae00c403f9c4ef206ecd6d6fcde84c685cf6"
+    "artifacts/z5_seed_comparison/report.json": "76b75ac1ebb306ed733bfd59a1c4ae00c403f9c4ef206ecd6d6fcde84c685cf6",
+    "artifacts/boot_material_origin/report.json": "592f93fd618077ad71c4c111ffac2787cc869262533e4f442848fde2df9e3a56"
   }
 }

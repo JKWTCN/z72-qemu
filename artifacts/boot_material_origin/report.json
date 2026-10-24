@@ -1,0 +1,215 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "k8_recovered": false,
+  "scope": "Boot-window mapping, startup initialization ranges and bounded literal-load store candidates",
+  "mapping": {
+    "format": 1,
+    "firmware_included": false,
+    "scope": "Static short-descriptor table lookup; not a live register observation",
+    "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "ttbr0_literal_file_offset": "0xbfcc",
+    "ttbr0_literal": "0x10030000",
+    "ttbr0_write_member_offset": "0xbcf4",
+    "virtual_address": "0x10000088",
+    "descriptor_member_offset": "0x10400",
+    "descriptor": "0x1000c426",
+    "derived_physical_address": "0x10000088",
+    "assumptions": [
+      "Short-descriptor translation is selected.",
+      "TTBCR selects TTBR0 for this address and the packaged table is active.",
+      "No other translation stage changes the address."
+    ],
+    "boot_material_content_recovered": false,
+    "initializer_found": false
+  },
+  "startup_initialization": {
+    "record_count": 20,
+    "boot_prefix": [
+      "0x10000000",
+      "0x10020000"
+    ],
+    "overlapping_records": [],
+    "records": [
+      {
+        "kind": "copy",
+        "destination": "0xb1800000",
+        "bytes": 716216
+      },
+      {
+        "kind": "copy",
+        "destination": "0xb2bb0000",
+        "bytes": 4188
+      },
+      {
+        "kind": "copy",
+        "destination": "0xb2bb1080",
+        "bytes": 289748
+      },
+      {
+        "kind": "copy",
+        "destination": "0xb5f00000",
+        "bytes": 29048
+      },
+      {
+        "kind": "zero",
+        "destination": "0x4008fe0",
+        "bytes": 32
+      },
+      {
+        "kind": "zero",
+        "destination": "0x40000000",
+        "bytes": 65536
+      },
+      {
+        "kind": "zero",
+        "destination": "0x50300000",
+        "bytes": 3407872
+      },
+      {
+        "kind": "zero",
+        "destination": "0x50700000",
+        "bytes": 68624640
+      },
+      {
+        "kind": "zero",
+        "destination": "0x54900000",
+        "bytes": 184361984
+      },
+      {
+        "kind": "zero",
+        "destination": "0x5f900000",
+        "bytes": 48109568
+      },
+      {
+        "kind": "zero",
+        "destination": "0x62700000",
+        "bytes": 1236029440
+      },
+      {
+        "kind": "zero",
+        "destination": "0xafa00000",
+        "bytes": 5692416
+      },
+      {
+        "kind": "zero",
+        "destination": "0xb18aedc0",
+        "bytes": 19593040
+      },
+      {
+        "kind": "zero",
+        "destination": "0xb5f07178",
+        "bytes": 30674760
+      },
+      {
+        "kind": "zero",
+        "destination": "0xb7cf0000",
+        "bytes": 50712
+      },
+      {
+        "kind": "zero",
+        "destination": "0xbb300000",
+        "bytes": 14286848
+      },
+      {
+        "kind": "zero",
+        "destination": "0xbc100000",
+        "bytes": 17694720
+      },
+      {
+        "kind": "zero",
+        "destination": "0xbd200000",
+        "bytes": 113030144
+      },
+      {
+        "kind": "zero",
+        "destination": "0xc3e00000",
+        "bytes": 142848000
+      },
+      {
+        "kind": "zero",
+        "destination": "0xcc700000",
+        "bytes": 863917056
+      }
+    ]
+  },
+  "store_candidates": {
+    "instruction_limit": 48,
+    "distinct_candidates": 15461,
+    "images": [
+      {
+        "model": "z72",
+        "member": "eg1840_mas_01700",
+        "blocks": 481537,
+        "store_instructions": 591634,
+        "new_candidates": 7908,
+        "elapsed_seconds": 81.16
+      },
+      {
+        "model": "z72",
+        "member": "eg1840_sla_01700",
+        "blocks": 59970,
+        "store_instructions": 121586,
+        "new_candidates": 680,
+        "elapsed_seconds": 13.14
+      },
+      {
+        "model": "z62",
+        "member": "eg1850_mas_01700",
+        "blocks": 483077,
+        "store_instructions": 596656,
+        "new_candidates": 3847,
+        "elapsed_seconds": 83.45
+      },
+      {
+        "model": "z62",
+        "member": "eg1850_sla_01700",
+        "blocks": 60096,
+        "store_instructions": 125861,
+        "new_candidates": 539,
+        "elapsed_seconds": 13.92
+      },
+      {
+        "model": "z5",
+        "member": "eg1650_015001.bi",
+        "blocks": 466133,
+        "store_instructions": 554810,
+        "new_candidates": 2487,
+        "elapsed_seconds": 81.97
+      }
+    ],
+    "matches": [],
+    "boot_window_store_sites": [],
+    "start_forms": [
+      "Selected ARM and Thumb-2 immediate moves",
+      "Thumb16 and Thumb-2 PC-relative word loads",
+      "ARM PC-relative word loads"
+    ],
+    "operations": [
+      "Immediate combination",
+      "Shift and bitwise operations",
+      "Addition and subtraction",
+      "Literal loads",
+      "Contiguous byte, halfword, word and doubleword stores",
+      "Pre/post-index store writeback"
+    ],
+    "assumptions": [
+      "At most 48 decoded instructions per start; stop at branch or call.",
+      "Decode both ARM and Thumb without proving every start is executable code.",
+      "Symbolic initial register bases let independent constant stores form candidates."
+    ],
+    "synthetic_control": {
+      "separated_literal_loads": true,
+      "arithmetic": true,
+      "postincrement_stores": true,
+      "exact_B8_digest_match": true
+    }
+  },
+  "limitations": [
+    "No initializer has been identified; the finite search does not prove that none exists in the package.",
+    "Static translation assumptions are not live register observations or proof of the backing storage type.",
+    "The startup scatter table alone does not cover all runtime writers, DMA or earlier boot stages.",
+    "No independent boot-region image or defined seed candidate library is available for cross-checking.",
+    "The package digest alone has not supplied the unknown eight-byte material."
+  ]
+}
