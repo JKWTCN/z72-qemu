@@ -506,6 +506,10 @@ python tools/native_update_probe.py --master <stock-master> --stock-package <sto
 
 ## 包完整性检查库
 
+后续已验证 PTP 服务可读取原厂校验上下文的合成内容，但尚未证明
+最终确认前会执行整包认证，认证成功后也未找到额外可靠取消点。
+实机观察须保留这一边界，见[PTP 服务与菜单确认](ptp_service.md)。
+
 文件偏移 `0x38F11C` 与 `0x38FFA4` 有两处断言文件名
 `FirmwareChkLib.c`,其前部为 Thumb 代码,代码池内出现
 `0x5A827999`(`0x38F0xx` 一带)——SHA-1 轮常数。结合本地更新包
@@ -594,6 +598,10 @@ SHA1(解码主体 || (B8 XOR S8)) == 文件头[0:20]
   裸 EG 安装支持。该结果仍限于局部执行,见[双机型对照](z6ii_update_comparison.md)。
 
 ### 三版本容器对照
+
+后续已扩展到本地全部十二版本，完成结构校验、引导材料设置函数的
+合成输入执行与有限候选比较，见[历史更新包复核](update_history.md)。
+该扩展仍未恢复真实 B8/K8 或验证原厂头部摘要。
 
 本地 C 1.10-01、C 1.61、C 1.70 样本的结构与身份记录见
 [版本对照数据](update_versions.json)。本次只在内存中检查包体,

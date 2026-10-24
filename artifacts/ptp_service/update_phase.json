@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "scope": "Original execute controller after host-supplied worker completion",
+  "cases": [
+    {
+      "supplied_authentication_result": 3,
+      "events": [
+        {
+          "kind": "event_post",
+          "mask": 16
+        },
+        {
+          "kind": "authentication_result_consumed",
+          "result": 3
+        }
+      ],
+      "execute_controller_returned": 3,
+      "preparation_entered": false,
+      "preparation_body_executed": false,
+      "programming_executed": false
+    },
+    {
+      "supplied_authentication_result": 0,
+      "events": [
+        {
+          "kind": "event_post",
+          "mask": 16
+        },
+        {
+          "kind": "authentication_result_consumed",
+          "result": 0
+        },
+        {
+          "kind": "update_preparation_entered",
+          "offset": "0x37c8fe"
+        }
+      ],
+      "execute_controller_returned": 2,
+      "preparation_entered": true,
+      "preparation_body_executed": false,
+      "programming_executed": false
+    }
+  ],
+  "original_controller_entry": "0x103f6474",
+  "authentication_worker_entry": "0x103f6938",
+  "post_authentication_preparation": "0x1039c8fe",
+  "host_boundaries": [
+    "synthetic selected whole-package snapshot",
+    "controller readiness and state",
+    "allocated work buffer",
+    "event completion and supplied authentication result",
+    "progress callbacks and locks",
+    "refused preparation and cleanup"
+  ],
+  "original_authentication_executed": false,
+  "menu_confirmation_order_verified": false,
+  "safe_pre_confirmation_checksum_cancel_route_established": false,
+  "limitations": [
+    "This run proves the controller branch, not that a real package authenticates.",
+    "The first preparation call is refused before its body; no flash operation is attempted.",
+    "The menu caller and the final Yes/No dialog are outside this isolated execution."
+  ]
+}

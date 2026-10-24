@@ -1,0 +1,1741 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "reference_package_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+  "packages": [
+    {
+      "file": "Z7_2_0101.bin",
+      "bytes": 47621576,
+      "sha256": "6e06b6ef9f0b86f9c20a6cb1a2a86b719674ae4cc9416e4d65430b9413f43099",
+      "body_sha256": "ec06282cd45e3e4e904850bab8eaadd782fb521072bb3745c921e4627d4f7fbe",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_0100b0.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "977eb3050622729dc0fe8f2241ebdee1a5752c4dcf1578f49d78d178be66bb14",
+          "crc": "0944"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01010",
+          "offset": 581844,
+          "length": 37418554,
+          "sha256": "d84d5399b7fc9a3c198410e4989a8bd784fda746dc991c018bde3cb93075a701",
+          "crc": "8371",
+          "version": "Ver.01.01.00",
+          "boot_reader_candidates": [
+            {
+              "offset": 2801770,
+              "literal_offset": 2802696,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3438470,
+              "check_target": 3442890
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33224914,
+          "setup_execution": [
+            {
+              "context_address": 2998026632,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38000398,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_01010",
+          "offset": 38839062,
+          "length": 8782466,
+          "sha256": "def08adcb490acb30f83706bb035b7a92fa28732c361c130f8886673290a2d86",
+          "crc": "2b0c",
+          "version": "Ver.01.01.00",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8243422,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0110_01.bin",
+      "bytes": 47640392,
+      "sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "body_sha256": "29a639757e783722bd1231d662b5ba405150caf1967d9ed80ce0ba0c5ced8568",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0110e",
+          "offset": 581844,
+          "length": 37437242,
+          "sha256": "7b7ff96dbe2d0ef79941dd21726a56893b722b5d3636e51ae1839d34c18e7b64",
+          "crc": "f352",
+          "version": "Ver.01.10.e0",
+          "boot_reader_candidates": [
+            {
+              "offset": 2802778,
+              "literal_offset": 2803704,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3440202,
+              "check_target": 3444622
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33234218,
+          "setup_execution": [
+            {
+              "context_address": 2998037896,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38019086,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_0110e",
+          "offset": 38857750,
+          "length": 8782594,
+          "sha256": "6e577407ac8f01ab50c0c7b3c11f902ba3a57e4622647bd504f0fc4b9325f85f",
+          "crc": "273d",
+          "version": "Ver.01.10.e0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8243550,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0120.bin",
+      "bytes": 47642376,
+      "sha256": "78d2b91abbb9cca6c438538bc2d4a59cb604187296dfe8d7ed75f6853a53beb9",
+      "body_sha256": "86e7a939d1488628170401e6dbbcd6c39d9d0094e31ef7a4354e879ed47e46d6",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0120c",
+          "offset": 581844,
+          "length": 37439226,
+          "sha256": "1b9295d9185b92d3a1a0f0e2ab753a1d70ab7c89f979a821585387a7379be528",
+          "crc": "2f43",
+          "version": "Ver.01.20.c0",
+          "boot_reader_candidates": [
+            {
+              "offset": 2804054,
+              "literal_offset": 2804980,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3441478,
+              "check_target": 3445898
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33235946,
+          "setup_execution": [
+            {
+              "context_address": 2998044552,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38021070,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_0120c",
+          "offset": 38859734,
+          "length": 8782594,
+          "sha256": "b4d5ffa0d9d7bb885acf07172af4b33ae2eb5ef175b569a504895ae1218d332a",
+          "crc": "e5f0",
+          "version": "Ver.01.20.c0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8243550,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0121.bin",
+      "bytes": 47643400,
+      "sha256": "cd70fe4acf53bc56c9b8380b6368d3ed40b25fd4f17dbd3c21f9e0a2ea6789c7",
+      "body_sha256": "0ad15c1b16c8c28d48350e55c2126dd83bdda6571777c116794f6430dc209628",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01210",
+          "offset": 581844,
+          "length": 37439738,
+          "sha256": "775f596a3b9655121ac83f088dcadc6473f903b00872303a694216004e44d991",
+          "crc": "276b",
+          "version": "Ver.01.21.00",
+          "boot_reader_candidates": [
+            {
+              "offset": 2804042,
+              "literal_offset": 2804968,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3441998,
+              "check_target": 3446418
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33236458,
+          "setup_execution": [
+            {
+              "context_address": 2998044552,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38021582,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_01210",
+          "offset": 38860246,
+          "length": 8783106,
+          "sha256": "e43e50cb86aa669f79ef7fdf0b82af6da8c04b8ca568ce5843c59af6744d4de9",
+          "crc": "8d50",
+          "version": "Ver.01.21.00",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8244062,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0130.bin",
+      "bytes": 47879112,
+      "sha256": "ed096994c005fff0692255d93fba2917f823f1e982ea541655f8631aedff910a",
+      "body_sha256": "d15dec139e068bdb47c44411010fd1e62080a782fb2c88bccc59941ea9c1aaf0",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0130f",
+          "offset": 581844,
+          "length": 37624570,
+          "sha256": "05bd4aca38a0d3abdc1247163b1d8a56effe0f18ea2c9f2d26476c21f7a8b65d",
+          "crc": "3674",
+          "version": "Ver.01.30.f0",
+          "boot_reader_candidates": [
+            {
+              "offset": 2805482,
+              "literal_offset": 2806408,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3449978,
+              "check_target": 3454398
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33410158,
+          "setup_execution": [
+            {
+              "context_address": 2998071880,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010000.bi",
+          "offset": 38206414,
+          "length": 838664,
+          "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+          "crc": "fd57"
+        },
+        {
+          "name": "eg1840_sla_0130f",
+          "offset": 39045078,
+          "length": 8833986,
+          "sha256": "edb66b15e2304e4e822fb2feda96327119ba6d73b6b81760ab40a4ad6ce5d1dd",
+          "crc": "8a71",
+          "version": "Ver.01.30.f0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8294886,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0131.bin",
+      "bytes": 47879560,
+      "sha256": "17b424a2d3f0de715be013ff88699623ed14786adac381144f0656c2fc7d1cb3",
+      "body_sha256": "ef0b16139077f4a3cff44e72da6a8f5e79f961df7f9290a3e476fef297d50270",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0131a",
+          "offset": 581844,
+          "length": 37625018,
+          "sha256": "82021770cca00be44d84b3faa19a23019ddaa8b2e91fbaa4e7f8bda17b591615",
+          "crc": "858b",
+          "version": "Ver.01.31.a0",
+          "boot_reader_candidates": [
+            {
+              "offset": 2805534,
+              "literal_offset": 2806460,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3450030,
+              "check_target": 3454450
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33410606,
+          "setup_execution": [
+            {
+              "context_address": 2998071880,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38206862,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_0131a",
+          "offset": 39045526,
+          "length": 8833986,
+          "sha256": "3a93fa113dab1c76e1c3fcc3f72c78c6346db4bc42fa8fad1d0737ea88d2e6fb",
+          "crc": "2e52",
+          "version": "Ver.01.31.a0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8294886,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0140.bin",
+      "bytes": 48147720,
+      "sha256": "fe52d3135c01a91bd88ccb923390de05e73e8231a818d560a3aa9022a057e58e",
+      "body_sha256": "5a82ccee5d6f85ed33289b7dfc561835a4bd3f8fcad1a39d18e636aa7efbbb98",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_011000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+          "crc": "257f"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0140d",
+          "offset": 581844,
+          "length": 37893178,
+          "sha256": "61da9ba974d98ae0a52e1cdb5c9bf14a9eea3858f51a649ba6e5a06e43158394",
+          "crc": "c472",
+          "version": "Ver.01.40.d0",
+          "boot_reader_candidates": [
+            {
+              "offset": 3648502,
+              "literal_offset": 3649428,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3723722,
+              "check_target": 3728142
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33615518,
+          "setup_execution": [
+            {
+              "context_address": 2998121544,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38475022,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_0140d",
+          "offset": 39313686,
+          "length": 8833986,
+          "sha256": "f461186a03d4605cb72d6bec8dbb59300530dc6759cb582867795dfcf11fa686",
+          "crc": "49bb",
+          "version": "Ver.01.40.d0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8294886,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0150.bin",
+      "bytes": 48176264,
+      "sha256": "5ed3dd815e95061d2daabef4ffb69a2a401e00e1624180ba5ea420d0547ff2b1",
+      "body_sha256": "5fd4a98feee8208b2aa8c48aadc8d3521ad4fbe0e1f00027660a4d9a41c471c4",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_012000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "553a813ce24726485bd9c60d2aafc46c90cc6e077de53e4611431f23d5b240f2",
+          "crc": "05a2"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0150c",
+          "offset": 581844,
+          "length": 37921402,
+          "sha256": "0448fc1b768fdc41fd18529c72cda60a90d03347b748787caa8fb5b8600adcbc",
+          "crc": "1023",
+          "version": "Ver.01.50.c0",
+          "boot_reader_candidates": [
+            {
+              "offset": 3649432,
+              "literal_offset": 3650256,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3724842,
+              "check_target": 3729262
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33642758,
+          "setup_execution": [
+            {
+              "context_address": 2998123592,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38503246,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_0150c",
+          "offset": 39341910,
+          "length": 8834306,
+          "sha256": "c46a32c6de8db8c13e2122a4dcf2d622bf9cbaf17e479f39313d5440fed073f6",
+          "crc": "7289",
+          "version": "Ver.01.50.c0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8295206,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0160.bin",
+      "bytes": 48381064,
+      "sha256": "921a9f92cfc394300fc9c26a92d9e3fa15c2be37ca3eb01862711c4609799904",
+      "body_sha256": "119d50636a9df90b76c0be325b5041b2ce26d8cc26b8315e9ca82096a514fb14",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_012000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "553a813ce24726485bd9c60d2aafc46c90cc6e077de53e4611431f23d5b240f2",
+          "crc": "05a2"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0160b",
+          "offset": 581844,
+          "length": 38126522,
+          "sha256": "eb8dc5838605a0feda7e3c9e6e433713ff88143d6f1a068383eb564faa46a6b6",
+          "crc": "7ea3",
+          "version": "Ver.01.60.b1",
+          "boot_reader_candidates": [
+            {
+              "offset": 3651508,
+              "literal_offset": 3652332,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3726918,
+              "check_target": 3731338
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33748654,
+          "setup_execution": [
+            {
+              "context_address": 2998138696,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38708366,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_0160b",
+          "offset": 39547030,
+          "length": 8833986,
+          "sha256": "315e959cb5eb21d43588a96c523f2f99cbe1bb1548d15b3f827501403cdcc8bb",
+          "crc": "4802",
+          "version": "Ver.01.60.b1",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8294886,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0161.bin",
+      "bytes": 48381064,
+      "sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "body_sha256": "33fb556b056eeb3f7182ff28471b4037dd61ecbbd4dd49befce2d0825a01a282",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01610",
+          "offset": 581844,
+          "length": 38126522,
+          "sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+          "crc": "fb89",
+          "version": "Ver.01.61.00",
+          "boot_reader_candidates": [
+            {
+              "offset": 3651508,
+              "literal_offset": 3652332,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3726918,
+              "check_target": 3731338
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33748654,
+          "setup_execution": [
+            {
+              "context_address": 2998138696,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38708366,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_01610",
+          "offset": 39547030,
+          "length": 8833986,
+          "sha256": "8e4bf306f7fba697426f9625d2771272d61575e9502d4ace205263fef50fa028",
+          "crc": "ba9b",
+          "version": "Ver.01.61.00",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8294886,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0162.bin",
+      "bytes": 48381960,
+      "sha256": "4e1b865bda9a3fda1cbce09be4cae3b67d5a05551f44720306c6f426aad7941c",
+      "body_sha256": "13a82612f9d0eac6f24aef96ff93097ef5edc20d02350cf7189a4cab6a8f45e7",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_0162a",
+          "offset": 581844,
+          "length": 38127034,
+          "sha256": "d063cfecc196f1d4b4b3e5581348801f5e0d1041db0627f41f997d207d380c9d",
+          "crc": "8097",
+          "version": "Ver.01.62.a0",
+          "boot_reader_candidates": [
+            {
+              "offset": 3651960,
+              "literal_offset": 3652784,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3727370,
+              "check_target": 3731790
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33749166,
+          "setup_execution": [
+            {
+              "context_address": 2998138696,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38708878,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_0162a",
+          "offset": 39547542,
+          "length": 8834370,
+          "sha256": "26a2ad1381cf07c710faf25620972946370da1af895531fad45d4093ea942f3b",
+          "crc": "7da0",
+          "version": "Ver.01.62.a0",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8295270,
+          "setup_execution": []
+        }
+      ]
+    },
+    {
+      "file": "Z7_2_0170.bin",
+      "bytes": 48494024,
+      "sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "body_sha256": "f53ab7dd6eb417adaac98d617bbf95f89b09f9176ba93a48853e3d825a24fe17",
+      "member_crcs_verified": true,
+      "container_crc_verified": true,
+      "header_digest_verified": false,
+      "members": [
+        {
+          "name": "ex1840_013000.bi",
+          "offset": 208,
+          "length": 524290,
+          "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+          "crc": "eb60"
+        },
+        {
+          "name": "_tpj01_v140.bin",
+          "offset": 524498,
+          "length": 57346,
+          "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+          "crc": "a0f2"
+        },
+        {
+          "name": "eg1840_mas_01700",
+          "offset": 581844,
+          "length": 38239098,
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "crc": "9d06",
+          "version": "Ver.01.70.02",
+          "boot_reader_candidates": [
+            {
+              "offset": 3655316,
+              "literal_offset": 3656140,
+              "address": 268435592,
+              "seed": 1099,
+              "setup_target": 3730750,
+              "check_target": 3735170
+            }
+          ],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 20,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 33849974,
+          "setup_execution": [
+            {
+              "context_address": 2998149832,
+              "synthetic_cases": [
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                },
+                {
+                  "boot_reads": [
+                    {
+                      "address": 268435592,
+                      "bytes": 4
+                    },
+                    {
+                      "address": 268435596,
+                      "bytes": 4
+                    }
+                  ],
+                  "boot_writes": 0,
+                  "synthetic_bytes_copied": true,
+                  "seed_and_model_stored": true,
+                  "returned": true
+                }
+              ],
+              "original_copy_and_string_routines": true,
+              "host_function_stubs": 0,
+              "original_caller_executed": false,
+              "actual_boot_material_recovered": false
+            }
+          ]
+        },
+        {
+          "name": "vr1840_010100.bi",
+          "offset": 38820942,
+          "length": 838664,
+          "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+          "crc": "1394"
+        },
+        {
+          "name": "eg1840_sla_01700",
+          "offset": 39659606,
+          "length": 8834370,
+          "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+          "crc": "b691",
+          "version": "Ver.01.70.02",
+          "boot_reader_candidates": [],
+          "boot_mapping": {
+            "virtual_address": 268435592,
+            "descriptor": 268485670,
+            "physical_address": 268435592,
+            "domain": 1,
+            "access_permissions": 5,
+            "execute_never": false
+          },
+          "scatter_record_count": 15,
+          "boot_prefix_overlaps": [],
+          "matching_transform_tables_offset": 8295270,
+          "setup_execution": []
+        }
+      ]
+    }
+  ],
+  "candidate_scope": "Every eight-byte window in unique auxiliary members and the first 0x20000 bytes of each unique engine member",
+  "candidate_target": "Original C 1.70 header only; both B8 and K8 interpretations",
+  "candidate_regions": [
+    {
+      "file": "Z7_2_0101.bin",
+      "member": "ex1840_0100b0.bi",
+      "offset": 0,
+      "bytes": 524290,
+      "sha256": "977eb3050622729dc0fe8f2241ebdee1a5752c4dcf1578f49d78d178be66bb14"
+    },
+    {
+      "file": "Z7_2_0101.bin",
+      "member": "_tpj01_v140.bin",
+      "offset": 0,
+      "bytes": 57346,
+      "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e"
+    },
+    {
+      "file": "Z7_2_0101.bin",
+      "member": "eg1840_mas_01010",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "cbcc27ff9a8dbeeb9380b0dec36e41127fe41a86880bcb55afeb6949f0b5f61b"
+    },
+    {
+      "file": "Z7_2_0101.bin",
+      "member": "vr1840_010000.bi",
+      "offset": 0,
+      "bytes": 838664,
+      "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72"
+    },
+    {
+      "file": "Z7_2_0101.bin",
+      "member": "eg1840_sla_01010",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "92a06d89168eaf94a48c493bf0a6789025a508c835311c1d4f98b8b2f31b8b6b"
+    },
+    {
+      "file": "Z7_2_0110_01.bin",
+      "member": "ex1840_011000.bi",
+      "offset": 0,
+      "bytes": 524290,
+      "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb"
+    },
+    {
+      "file": "Z7_2_0110_01.bin",
+      "member": "eg1840_mas_0110e",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "66813a515aec53e8a3969b8dd7873ffabc3140cd0564e0c44127cf0584b7cf22"
+    },
+    {
+      "file": "Z7_2_0110_01.bin",
+      "member": "eg1840_sla_0110e",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "187c7b4b8c363eb048719160a6e487f0f0c7edc21edfcdcce043d2ce0284cfcc"
+    },
+    {
+      "file": "Z7_2_0120.bin",
+      "member": "eg1840_mas_0120c",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "bfedde5c0b420007d5f5a8a4d92f5e983a0e5118f80cd1fa47420db93d7a7a37"
+    },
+    {
+      "file": "Z7_2_0120.bin",
+      "member": "eg1840_sla_0120c",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "9a5ca2d3e361f12e42ca33ef2e0be30c9f0a5492890cf456f071b9fe2568ae7d"
+    },
+    {
+      "file": "Z7_2_0121.bin",
+      "member": "eg1840_mas_01210",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "3f6371791c44f3ed9c8499fc1bbf8a3294cdd4c7a75fda6fb2b37b717b357be2"
+    },
+    {
+      "file": "Z7_2_0121.bin",
+      "member": "eg1840_sla_01210",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "ec103e58b159d45705686c5d8b7e807b6cff05db860280f4d0c8962e83c5aacf"
+    },
+    {
+      "file": "Z7_2_0130.bin",
+      "member": "eg1840_mas_0130f",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "4f47df3a8acfe0e4b3862b69f2e31c10daa850b9f8828ab226103a408205904e"
+    },
+    {
+      "file": "Z7_2_0130.bin",
+      "member": "eg1840_sla_0130f",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "a628a7ec77dc691e220008a88f0ec04aee946f34d31363db9940b9521ea76b7b"
+    },
+    {
+      "file": "Z7_2_0131.bin",
+      "member": "eg1840_mas_0131a",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "3506d3e0c3b49a13fc51b6e08bed1d03e8311722e707ac5d273c5524629b4738"
+    },
+    {
+      "file": "Z7_2_0131.bin",
+      "member": "vr1840_010100.bi",
+      "offset": 0,
+      "bytes": 838664,
+      "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2"
+    },
+    {
+      "file": "Z7_2_0131.bin",
+      "member": "eg1840_sla_0131a",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "5d34900cb697b0d12885adf2e21a0ea0c797c567d0d5411bdd6c0eab1d3cffeb"
+    },
+    {
+      "file": "Z7_2_0140.bin",
+      "member": "eg1840_mas_0140d",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "9da61a560faaec36ec890208a4e082aba107b08804f482371132d5eea2569e7f"
+    },
+    {
+      "file": "Z7_2_0140.bin",
+      "member": "eg1840_sla_0140d",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "45ac7e0d94c8c3d238c0ea1f46d51045deb75590392507934c5b8471d96c19e7"
+    },
+    {
+      "file": "Z7_2_0150.bin",
+      "member": "ex1840_012000.bi",
+      "offset": 0,
+      "bytes": 524290,
+      "sha256": "553a813ce24726485bd9c60d2aafc46c90cc6e077de53e4611431f23d5b240f2"
+    },
+    {
+      "file": "Z7_2_0150.bin",
+      "member": "eg1840_mas_0150c",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "6a158d996683e9bb17f58d53bf77bf395f3485ea3a844af360bdc129e7601c7d"
+    },
+    {
+      "file": "Z7_2_0150.bin",
+      "member": "eg1840_sla_0150c",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "527a1020ffa67c8a502c80acd598b65225d3fc6564720f6cc158a16f7433efff"
+    },
+    {
+      "file": "Z7_2_0160.bin",
+      "member": "eg1840_mas_0160b",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "8d4617a0983eece9fa987303aeccd72d9997addd29ce4162dba613039304f944"
+    },
+    {
+      "file": "Z7_2_0160.bin",
+      "member": "eg1840_sla_0160b",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "b51dfc298d49684773b8341a605832e3905add1d87d250423b1f588824c78699"
+    },
+    {
+      "file": "Z7_2_0161.bin",
+      "member": "ex1840_013000.bi",
+      "offset": 0,
+      "bytes": 524290,
+      "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+    },
+    {
+      "file": "Z7_2_0161.bin",
+      "member": "eg1840_mas_01610",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "19f7f9aa7f32397782bcb853cb0606aa8fbbefade5a8d8c3201d895c321d0003"
+    },
+    {
+      "file": "Z7_2_0161.bin",
+      "member": "eg1840_sla_01610",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "20e4f7f58d512d091b97bc1fd82366bb9420d8dc92f809f63a18714972777d17"
+    },
+    {
+      "file": "Z7_2_0162.bin",
+      "member": "eg1840_mas_0162a",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "c16e0d8ff9c2a9ea89bff6022039a493675cbd46bee35ad8bbb3dc4e141d0029"
+    },
+    {
+      "file": "Z7_2_0162.bin",
+      "member": "eg1840_sla_0162a",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "9a304a7287d45fd67b0214a02b9f524d024b1980546e4744eb6c66a41944970a"
+    },
+    {
+      "file": "Z7_2_0170.bin",
+      "member": "eg1840_mas_01700",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "1e80204ed3b64d953765607f4942c546fa8736f6195e2fe13888713052c9bd22"
+    },
+    {
+      "file": "Z7_2_0170.bin",
+      "member": "eg1840_sla_01700",
+      "offset": 0,
+      "bytes": 131072,
+      "sha256": "7661719cf88921faa7f6418e67a618d55d253ad95b16978ad9a86f67adaa323e"
+    }
+  ],
+  "windows_tested": 6977345,
+  "sha1_comparisons": 13954690,
+  "matches": [],
+  "header_digest_match_found": false,
+  "limitations": [
+    "Historical decode tables are borrowed from C 1.70; directory and all CRCs are checked independently.",
+    "Static instruction candidates do not prove reachability, initialization or equivalent historical digest algorithms.",
+    "Setup executions use synthetic boot bytes and host-supplied arguments; they do not authenticate historical packages or recover real boot contents.",
+    "Only auxiliary members and packaged engine prefixes are searched for contiguous values, not entire historical engine images or arbitrary constructors.",
+    "A negative result does not locate the real boot material or prove it absent from the packages.",
+    "No native menu update, storage programming or reset persistence is exercised."
+  ]
+}

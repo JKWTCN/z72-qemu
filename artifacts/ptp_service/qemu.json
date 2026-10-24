@@ -1,0 +1,184 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "qemu_sha256": "be664ded625e66304b2d98f157cf30bd8ac0f1aca2fbfa43f1546b02f30b13c2",
+  "original_startup_stop": 268621548,
+  "service_gate_address": 2978528384,
+  "cases": [
+    {
+      "service_enabled": 0,
+      "address": 2977968128,
+      "bytes": 16,
+      "accepted": false,
+      "responses": [
+        {
+          "outer": 40964,
+          "parameters": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "submissions": []
+    },
+    {
+      "service_enabled": 1,
+      "address": 268435592,
+      "bytes": 8,
+      "accepted": false,
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8221,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "submissions": []
+    },
+    {
+      "service_enabled": 1,
+      "address": 268566528,
+      "bytes": 16,
+      "accepted": false,
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8221,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "submissions": []
+    },
+    {
+      "service_enabled": 1,
+      "address": 2977968128,
+      "bytes": 0,
+      "accepted": false,
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8221,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "submissions": []
+    },
+    {
+      "service_enabled": 1,
+      "address": 2977968128,
+      "bytes": 16,
+      "accepted": true,
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8193,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "submissions": [
+        {
+          "boundary": "fragmented_data",
+          "source": 2977968128,
+          "bytes": 16,
+          "timeout": 5000,
+          "sha256": "a23d99f2cc2b11f42045500d5073b1128068fff05d23d61a8e90152099e1e647"
+        }
+      ]
+    }
+  ],
+  "checksum_context": {
+    "address": 2998149832,
+    "material_address": 2998149844,
+    "cases": [
+      {
+        "digest_matches": true,
+        "checker_returned": 1,
+        "context_bytes_transformed": true,
+        "submissions": [
+          {
+            "boundary": "fragmented_data",
+            "source": 2998149832,
+            "bytes": 52,
+            "timeout": 5000,
+            "sha256": "8295f0754a2166fd4b6ef37cf099670a1ff54b13d9dc57a8b798e39fbb84ede7"
+          }
+        ],
+        "responses": [
+          {
+            "outer": 8193,
+            "parameters": [
+              8193,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "digest_matches": false,
+        "checker_returned": 0,
+        "context_bytes_transformed": true,
+        "submissions": [
+          {
+            "boundary": "fragmented_data",
+            "source": 2998149832,
+            "bytes": 52,
+            "timeout": 5000,
+            "sha256": "05d0ee05f95c33ca6183354583537c62fd191fd0f0a178959be4a55a524808f9"
+          }
+        ],
+        "responses": [
+          {
+            "outer": 8193,
+            "parameters": [
+              8193,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "original_reset_clears_context": true,
+    "synthetic_material": true,
+    "menu_caller_executed": false
+  },
+  "host_boundaries": [
+    "debugger-arranged isolated calls",
+    "synthetic service flag and sample RAM",
+    "synthetic checksum inputs and ASCII digit flags",
+    "assertion logging",
+    "response and data submission capture"
+  ],
+  "real_usb_verified": false,
+  "flash_programming_executed": false,
+  "actual_boot_material_recovered": false
+}
