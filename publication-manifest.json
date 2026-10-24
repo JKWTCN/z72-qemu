@@ -392,7 +392,9 @@
     "web/index.html": "0de94dc74207d2f5876fa4825fe1e566f76245b646ecc8054e203476c0d25874",
     "web/style.css": "6112ea14ae4ba1cd62571ab5bb373c2d0d85372ce3c7fe6c5fb04d805449684e",
     "artifacts/boot_material_access/report.json": "81bb1cb5965e7ff44498c63056181eb1c4b4f87143bd50014ae790b0f7b2e68d",
-    "research/z7ii/boot_material_storage.md": "e533547687f1cb8d945cbe13df6387ac5c55e44344b3f194acc0e3c4be71bd5d",
-    "tools/boot_material_access_probe.py": "d004e91b21327d418fb528f5fec7be4b722fe569468931269c15517047562b95"
+    "research/z7ii/boot_material_storage.md": "273a879fda270098b2b4c85f07c9b715068c4cb0bf69d6f15601c5fa6bdc3f27",
+    "tools/boot_material_access_probe.py": "d004e91b21327d418fb528f5fec7be4b722fe569468931269c15517047562b95",
+    "artifacts/boot_region/report.json": "3f3b5e08ec282fa8d758e6c064c6a7d492a520eb070ceb67e198377ae9da3889",
+    "tools/boot_region_probe.py": "7e29d711199386d170e7ae4337d7e0591451e72181f7cb9f1cf83b0ab49e2ce5"
   }
 }
