@@ -57,6 +57,8 @@ class Probe:
     WINDOW_LIMIT = 0xB1CF16E0
     TRANSPORT_SLOT = 0xB188B7C8
     TRANSPORT_OBJECT = 0xB1811874
+    TX_QUEUE = TRANSPORT_OBJECT + 0x1C
+    PUMP_ALT_QUEUE = TRANSPORT_OBJECT + 0x24
     REPLY_CONTEXT = INPUT + 0x8000
     FREE_SLOT = INPUT + 0x8400
 
@@ -110,7 +112,8 @@ class Probe:
                       BASE + 0x4A101C: self.buffer_alloc,
                       BASE + 0x4B21C0: self.buffer_free,
                       BASE + 0x4B21BC: self.buffer_free,
-                      BASE + 0x4B21C8: self.buffer_free}
+                      BASE + 0x4B21C8: self.buffer_free,
+                      BASE + 0x4674B4: self.pump_notify}
         self.reseed = {module_offset(0x2429260): self.WINDOW_LIMIT}
         self.u.hook_add(UC_HOOK_CODE, self.code)
         self.u.hook_add(UC_HOOK_INTR, self.supervisor)
@@ -229,6 +232,11 @@ class Probe:
         return self.INPUT + 0x10000
 
     def buffer_free(self, *args):
+        return 0
+
+    def pump_notify(self, *args):
+        """Host boundary: the post-write peer notification."""
+        self.service_calls.append('pump-notify')
         return 0
 
     def call(self, offset, *args, limit=12000000):
@@ -429,6 +437,46 @@ class Probe:
         require('alloc-0xc00' in self.queue_log,
                 'Reply builder must release its staging buffer')
 
+        # 10. Transport pump: transmit slot to channel ring (executed).
+        # The queues are seeded as real intrusive lists so the original pop
+        # runs; the channel pool and state blocks are scratch seeds. The
+        # post-write peer notification is the host boundary.
+        message = b'PTP-CHAIN-RESPONSE\n'
+        slot = self.INPUT + 0x21000
+        payload = self.INPUT + 0x22000
+        pool = self.INPUT + 0x24000
+        self.u.mem_write(payload, message)
+        self.u.mem_write(slot + 8, b'\x01')
+        self.put_word(slot + 0xC, len(message))
+        self.put_word(slot + 0x10, payload)
+        self.u.mem_write(self.TX_QUEUE, struct.pack('<II', slot, slot))
+        self.u.mem_write(slot, struct.pack('<II', self.TX_QUEUE, self.TX_QUEUE))
+        self.u.mem_write(self.PUMP_ALT_QUEUE,
+                         struct.pack('<II', self.PUMP_ALT_QUEUE, self.PUMP_ALT_QUEUE))
+        free_queue = self.TRANSPORT_OBJECT + 0x14
+        self.u.mem_write(free_queue, struct.pack('<II', free_queue, free_queue))
+        self.put_word(0xB18118C4, pool)
+        for index in range(16):
+            self.put_word(0xB1F6E4DC + index * 4, self.INPUT + 0x26000 + index * 0x100)
+        self.put_word(0xB1F6E528, self.INPUT + 0x27000)
+        self.u.mem_write(self.INPUT + 0x26000, b'\x00' * 0x1000)
+        self.service_calls.clear()
+        # The queue-library hooks belong to the container leg; the pump must
+        # exercise the original intrusive-list operations.
+        for entry in (BASE + 0x4FE798, BASE + 0x4FE7EA, BASE + 0x4FE7A6):
+            del self.hooks[entry]
+        self.call(0x467DAC, 0)
+        self.hooks[BASE + 0x4FE798] = self.queue_query
+        self.hooks[BASE + 0x4FE7EA] = self.queue_get
+        self.hooks[BASE + 0x4FE7A6] = self.queue_put
+        ring = bytes(self.u.mem_read(pool, 0x40))
+        position = ring.find(message)
+        require(position == 0xC,
+                'Pump must write the slot payload into the channel ring')
+        head, tail = struct.unpack('<II', self.u.mem_read(self.TX_QUEUE, 8))
+        require(head == self.TX_QUEUE and tail == self.TX_QUEUE,
+                'Pump must drain the transmit queue')
+
         return dict(format=1, master_sha256=MASTER_SHA,
                     registered_commands=records,
                     console_publication=self.publications[0],
@@ -479,7 +527,16 @@ class Probe:
                                        transmit_queue='0xb1811874+0x1c',
                                        queue_library='0x104057xx',
                                        packet_enqueue='0x1063c5a2',
-                                       submit='0x1063c3d8')),
+                                       submit='0x1063c3d8',
+                                       pump=dict(
+                                           entry='0x10487dac',
+                                           channel='0xa',
+                                           channel_state='0xb1f6e4dc',
+                                           positions='0xb18118c4',
+                                           write_entry='0x1049e114',
+                                           executed=True,
+                                           payload_ring_offset=0xC,
+                                           peer_notification='host boundary'))),
                     usb_descriptors=usb_personalities(self.image, self.records),
                     host_boundaries=['transport input buffer', 'transport response',
                                      'bulk copy', 'print sink', 'numeric conversion',
@@ -491,7 +548,8 @@ class Probe:
                                      'upload-window limit seed',
                                      'supervisor-call success returns',
                                      'passive console/timer register pages',
-                                     'transport queues and buffers'],
+                                     'transport queues and buffers',
+                                     'post-write peer notification'],
                     camera_usb_access_verified=False, real_boot_material_recovered=False,
                     k8_recovered=False)
 
@@ -506,5 +564,6 @@ if __name__ == '__main__':
     args.output.write_text(json.dumps(report, indent=2) + '\n',
                            encoding='utf-8', newline='\n')
     print('PASS 17 debug commands, consumer dispatch, USB log-output gate, '
-          'PTP admission link, response container, capture route, verified '
-          'upload, transport constants, descriptor personalities')
+          'PTP admission link, response container, transport pump, capture '
+          'route, verified upload, transport constants, descriptor '
+          'personalities')

@@ -190,22 +190,14 @@
     "chunk_bytes": 131072,
     "chunks": 3,
     "services": [
-      "stub",
-      "stub",
-      "object",
-      "lock-1",
-      "submit-0x14b-3",
-      "time",
-      "environment-init",
-      "time",
-      "lock-0"
+      "pump-notify"
     ],
     "supervisor_calls": 0,
     "window_bytes_verified": 45
   },
   "transport": {
     "object_slot": "0xb188b7c8",
-    "boot_slot_value": "0x0",
+    "boot_slot_value": "0x50021000",
     "ring_constants": {
       "ring_size": 2097152,
       "ring_mask": 2097144,
@@ -221,7 +213,17 @@
       "transmit_queue": "0xb1811874+0x1c",
       "queue_library": "0x104057xx",
       "packet_enqueue": "0x1063c5a2",
-      "submit": "0x1063c3d8"
+      "submit": "0x1063c3d8",
+      "pump": {
+        "entry": "0x10487dac",
+        "channel": "0xa",
+        "channel_state": "0xb1f6e4dc",
+        "positions": "0xb18118c4",
+        "write_entry": "0x1049e114",
+        "executed": true,
+        "payload_ring_offset": 12,
+        "peer_notification": "host boundary"
+      }
     }
   },
   "usb_descriptors": {
@@ -774,7 +776,8 @@
     "upload-window limit seed",
     "supervisor-call success returns",
     "passive console/timer register pages",
-    "transport queues and buffers"
+    "transport queues and buffers",
+    "post-write peer notification"
   ],
   "camera_usb_access_verified": false,
   "real_boot_material_recovered": false,
