@@ -1,12 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Inspect an existing checksum context; never initiate a firmware update.
 
-Default is an offline transaction plan. --execute uses WPD or a USB PTP
+Default is an offline transaction plan. --execute uses a USB PTP
 interface for one fixed RAM snapshot. --context reads a local snapshot
 instead. No menu interaction or checksum-triggering command is sent.
 """
 import argparse
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -47,8 +46,8 @@ class UsbCamera:
             try:
                 self.util.claim_interface(self.device, self.interface)
             except (usb.core.USBError, NotImplementedError) as exc:
-                raise RuntimeError('Cannot claim PTP interface. On Windows use --backend wpd '
-                                   'with --transport; keep the existing camera driver.') from exc
+                raise RuntimeError('Cannot claim PTP interface. Close other camera programs and '
+                                   'check USB permissions; keep the existing camera driver.') from exc
             self.claimed = True
         except BaseException:
             self.util.dispose_resources(self.device)
@@ -126,27 +125,13 @@ class UsbCamera:
                 self.util.dispose_resources(self.device)
 
 
-def camera(args):
-    if args.backend == 'usb':
-        require(args.device is None, '--device is only supported by WPD')
-        return UsbCamera()
-    require(args.transport is not None, 'WPD needs --transport <wpd_transport.py>')
-    spec = importlib.util.spec_from_file_location('local_wpd_transport', args.transport)
-    require(spec is not None and spec.loader is not None, 'Cannot load transport module')
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.WpdCamera(args.device)
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group()
     source.add_argument('--execute', action='store_true')
     source.add_argument('--context', type=Path)
-    parser.add_argument('--backend', choices=('wpd', 'usb'), default='wpd' if os.name == 'nt' else 'usb')
+    parser.add_argument('--backend', choices=('usb',), default='usb')
     parser.add_argument('--info-only', action='store_true', help='Only query DeviceInfo; do not enter service')
-    parser.add_argument('--transport', type=Path, help='Local module providing WpdCamera')
-    parser.add_argument('--device')
     parser.add_argument('--master', type=Path)
     parser.add_argument('--package', type=Path)
     parser.add_argument('--destination', type=Path)
@@ -167,7 +152,7 @@ def main():
         return
     if args.info_only:
         require(args.execute and args.context is None, '--info-only requires --execute')
-        with camera(args) as connected:
+        with UsbCamera() as connected:
             data, reply = connected.read(0x1001, [])
             require(reply[0] == 0x2001, 'DeviceInfo failed')
             print(json.dumps(identity(data), indent=2))
@@ -185,7 +170,7 @@ def main():
     if args.context is not None:
         context, camera_identity = args.context.read_bytes(), None
     else:
-        with camera(args) as connected:
+        with UsbCamera() as connected:
             context, camera_identity = capture(connected)
     report, material = inspect_context(context, package, master)
     report.update(format=1, firmware_included=False, identity=camera_identity,

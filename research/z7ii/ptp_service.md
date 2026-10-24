@@ -99,15 +99,14 @@
 
 ## 固定 RAM 观察工具
 
-完整 PowerShell 命令、基线对照、确认页选否和结果判读见
+完整 WSL 命令、基线对照、确认页选否和结果判读见
 [实机 PTP 观察流程](../../docs/z72-ptp-observation.zh-CN.md)。
 
 [读取工具](../../tools/ptp_checksum_context_probe.py)只进行机型查询、
 进入服务、固定 52 字节读取和退出服务，没有菜单输入、更新请求、
 参数写入或编程。默认仅打印离线计划；显式 `--execute` 才连接相机。
-Windows 可加载单独提供的本地 WPD 模块，另有原始 USB 后端。
-当前机器没有检测到 Nikon USB 接口，
-本轮未发送实机命令。
+工具通过 PyUSB 直接访问 USB PTP 接口，不加载外部传输模块。
+用户已在 WSL 中看到 04b0:044b 设备；实机服务读取仍待验证。
 
 该工具只观察既有上下文，不触发校验。在没有新的时序证据前，
 实机观察只能停在最终 Yes 以前：
@@ -130,7 +129,7 @@ Windows 可加载单独提供的本地 WPD 模块，另有原始 USB 后端。
 
 ```text
 python -B tools/ptp_checksum_context_probe.py
-python -B tools/ptp_checksum_context_probe.py --execute --transport <wpd_transport.py> --master <C1.70-master> --package <original-package> --destination .local/ptp-baseline
+python -B tools/ptp_checksum_context_probe.py --execute --master <C1.70-master> --package <original-package> --destination .local/ptp-baseline
 ```
 
 输出目录保存私有 `context.bin` 和不含材料字节的 `report.json`。
