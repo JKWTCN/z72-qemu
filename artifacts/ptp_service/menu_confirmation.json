@@ -97,14 +97,19 @@
       "0x107017a0",
       "0x10701812",
       "0x10701820",
-      "0x10701d8a"
+      "0x10701d8a",
+      "0x1063a54e",
+      "0x1063aa2c",
+      "0x1063ab70"
     ],
     "context_preserved": true,
     "native_context_writes": [],
     "confirmation_display_resource_released": true,
     "target_initializer_executed": true,
-    "stopped_at": "0x1063aa28",
-    "parent_page_initialization_completed": false,
+    "parent_page_initialization_completed": true,
+    "generic_navigation_controller_returned": true,
+    "asynchronous_display_work_executed": false,
+    "remaining_runtime_ram_uses_zero_state": true,
     "generic_page_return_completed": false,
     "supplied_boundaries": {
       "0x1053ca5c": "input-state notification",
@@ -123,7 +128,8 @@
       "0x10635a8a": "display refresh scheduling",
       "0x103dc538": "task delay",
       "0x103f342c": "capture subsystem state",
-      "0x103610d2": "event clear"
+      "0x103610d2": "event clear",
+      "0x10360f2e": "runtime lock acquisition"
     },
     "display_release_is_supplied": true,
     "event_acknowledgement_is_synthetic": true,
@@ -140,7 +146,7 @@
     "Original menu objects, row metadata and callback tables are restored from initialization data.",
     "The display tree is absent; the Yes callback uses supplied UI/task readiness.",
     "Return navigation uses a synthetic stack, display objects, parameters and event acknowledgement.",
-    "The navigation case stops after target initialization, before parent-page initialization and asynchronous display work.",
+    "The navigation controller and parent initialization return with zero-filled peripheral RAM and supplied display/task boundaries; asynchronous display work is not executed.",
     "The Yes case stops before posting the authentication event and never runs programming.",
     "This does not establish retention across physical USB reconnect or full PTP lifecycle."
   ]

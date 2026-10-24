@@ -142,6 +142,58 @@
       "hardware_reply_verified": false
     }
   ],
+  "session_open": {
+    "opcode": "0x1002",
+    "callback": "0x10479838",
+    "notification": "0x40f0080",
+    "registered_listener": "0x1050c3de",
+    "operation_handler": "0x1050c6c4",
+    "native_queue_consumer": "0x10510ad0",
+    "consumed_events": [
+      50,
+      9
+    ],
+    "event_9_handler": "0x1050b7ac",
+    "emitted_notifications": [
+      {
+        "event": "0x4090004",
+        "words": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "parameter_writes": [
+      {
+        "number": "0x2300",
+        "value": 0
+      }
+    ],
+    "context_preserved": true,
+    "native_context_writes": [],
+    "notification_replayed_after_callback": true,
+    "downstream_notification_listeners_registered": false,
+    "host_boundaries": [
+      "0x104c7568",
+      "0x1047a0a6",
+      "0x104c8128",
+      "0x104c17fe",
+      "0x104c0f20",
+      "0x104c101c",
+      "0x104c1048",
+      "0x1052e450",
+      "0x1052e320",
+      "0x10544c3a",
+      "0x10543f92",
+      "0x10545b84",
+      "0x10463618",
+      "0x1054419e"
+    ],
+    "allocation_and_queue_and_parameter_storage_are_supplied": true,
+    "actual_ui_transition_executed": false
+  },
   "session_close": {
     "opcode": "0x1003",
     "callback": "0x10479890",
@@ -346,6 +398,7 @@
   "limitations": [
     "The registry pointer is restored from its original table, not full startup.",
     "Queue capacity, queue submission, scheduling and mode replies are synthetic.",
+    "OpenSession notifications are replayed after the callback; downstream UI listeners are absent.",
     "Peripheral and task cleanup endpoints in CloseSession are host boundaries.",
     "No native menu No callback, physical USB disconnect or display output is executed.",
     "Preservation only covers the native instructions executed by these cases."

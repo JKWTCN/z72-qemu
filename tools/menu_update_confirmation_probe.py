@@ -179,6 +179,20 @@ def menu_yes(master, package):
 
 
 class NavigationProbe(ConfirmationProbe):
+    def __init__(self, master, package):
+        super().__init__(master, package)
+        # Preserve restored data and fill the remaining runtime RAM with the
+        # startup zero state. Peripheral state is not a captured camera image.
+        cursor, end = 0xB1800000, 0xB2C00000
+        for first, last, permissions in sorted(self.u.mem_regions()):
+            if last < cursor or first >= end:
+                continue
+            if first > cursor:
+                self.u.mem_map(cursor, first - cursor)
+            cursor = max(cursor, last + 1)
+        if cursor < end:
+            self.u.mem_map(cursor, end - cursor)
+
     def install_hook(self, offset, callback):
         # Navigation replaces the earlier directory-only parameter fixture.
         if not hasattr(self, 'runtime_hooks'):
@@ -197,10 +211,6 @@ class NavigationProbe(ConfirmationProbe):
 def menu_no_navigation(master, package):
     probe = NavigationProbe(master, package)
     probe.prepare()
-    for address, size in ((0xB201C000, 0x1000), (0xB2017000, 0x1000),
-                          (0xB2009000, 0x1000), (0xB2011000, 0x1000),
-                          (0xB2015000, 0x2000), (0xB23F6000, 0x1000)):
-        probe.u.mem_map(address, size)
     stack = probe.SCRATCH + 0x8000
     root, target = 0xB2BB7238, OBJECT - 44
     # The navigation stack and display allocations are synthetic runtime state.
@@ -210,6 +220,7 @@ def menu_no_navigation(master, package):
     probe.call(0x5FDA98, 2, 0xB2BB720C)
     probe.put_word(OBJECT + 12, stack + 0x200)
     probe.put_word(OBJECT + 0x24, stack + 0x400)
+    probe.put_word(root + 12, stack + 0x1000)
     boundaries = {
         0x1053CA5C: 'input-state notification',
         0x106345B4: 'display allocation',
@@ -228,9 +239,11 @@ def menu_no_navigation(master, package):
         0x103DC538: 'task delay',
         0x103F342C: 'capture subsystem state',
         0x103610D2: 'event clear',
+        0x10360F2E: 'runtime lock acquisition',
     }
     supplied = {0x106345B4: stack + 0x400, 0x10634710: stack + 0x600,
-                0x10635CEE: stack + 0x2000, 0x10634622: stack + 0x2400}
+                0x10635CEE: stack + 0x2000, 0x10634622: stack + 0x2400,
+                0x10360F2E: 1}
     for address in boundaries:
         probe.fixed(address, supplied.get(address, 0))
     released, events = [], []
@@ -255,25 +268,30 @@ def menu_no_navigation(master, package):
     probe.install_hook(0x10361116 - BASE, wait)
     milestones = []
     for address in (0x1063837C, 0x1063A7A6, 0x10639E20, 0x1063C260,
-                    0x107017A0, 0x10701812, 0x10701820, 0x10701D8A):
+                    0x107017A0, 0x10701812, 0x10701820, 0x10701D8A,
+                    0x1063A54E, 0x1063AA2C, 0x1063AB70):
         probe.u.hook_add(UC_HOOK_CODE,
                         lambda u, a, size, unused: milestones.append(hex(a)),
                         begin=address, end=address)
     returned = probe.dispatch(1)
     require(returned == 0x43B, 'Return navigation result differs')
-    probe.call(0x61837C, returned, stop_offset=0x61AA28)
-    require(probe.u.reg_read(probe.pc) == 0x1063AA28 and
+    probe.call(0x61837C, returned)
+    require(probe.u.reg_read(probe.pc) == probe.STOP and
             probe.call(0x61C2B2) == target and probe.word(stack + 8) == 2 and
             probe.word(OBJECT + 0x24) == 0 and released == [stack + 0x400] and
-            '0x10701d8a' in milestones and probe.retained(),
-            'Navigation did not exit confirmation and initialize the target')
+            all(hex(a) in milestones for a in
+                (0x10701D8A, 0x1063A54E, 0x1063AA2C, 0x1063AB70)) and
+            probe.retained(), 'Navigation controller did not complete its return path')
     return dict(synthetic_stack_pages=['0x1', '0x2d7', '0x2d8'],
                 current_page_after='0x2d7', stack_depth_after=2,
                 native_milestones=milestones, context_preserved=probe.retained(),
                 native_context_writes=probe.context_writes,
                 confirmation_display_resource_released=True,
-                target_initializer_executed=True, stopped_at='0x1063aa28',
-                parent_page_initialization_completed=False,
+                target_initializer_executed=True,
+                parent_page_initialization_completed=True,
+                generic_navigation_controller_returned=True,
+                asynchronous_display_work_executed=False,
+                remaining_runtime_ram_uses_zero_state=True,
                 generic_page_return_completed=False,
                 supplied_boundaries={hex(a): name for a, name in boundaries.items()},
                 display_release_is_supplied=True, event_acknowledgement_is_synthetic=True,
@@ -298,7 +316,7 @@ def run(master, package):
                     'Original menu objects, row metadata and callback tables are restored from initialization data.',
                     'The display tree is absent; the Yes callback uses supplied UI/task readiness.',
                     'Return navigation uses a synthetic stack, display objects, parameters and event acknowledgement.',
-                    'The navigation case stops after target initialization, before parent-page initialization and asynchronous display work.',
+                    'The navigation controller and parent initialization return with zero-filled peripheral RAM and supplied display/task boundaries; asynchronous display work is not executed.',
                     'The Yes case stops before posting the authentication event and never runs programming.',
                     'This does not establish retention across physical USB reconnect or full PTP lifecycle.'])
 

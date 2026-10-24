@@ -15,7 +15,7 @@ from analyze.decode_z72 import BASE, MASTER_SHA, require, validate_master
 from analyze.firmware_structure import thumb_literal
 from analyze.ptp_checksum_context import CONTEXT, CONTEXT_SIZE
 from tools.ptp_service_probe import Probe
-from unicorn import UC_HOOK_MEM_WRITE
+from unicorn import UC_HOOK_CODE, UC_HOOK_MEM_WRITE
 from unicorn.arm_const import UC_ARM_REG_PC
 
 
@@ -153,6 +153,96 @@ def session_close(image):
                 host_boundaries=boundaries, actual_ui_transition_executed=False)
 
 
+def session_open(image):
+    probe = Probe(image)
+    sentinel, writes = context_watch(probe)
+    frames, queued, allocations, consumed = [], [], [], []
+    parameters, notifications = [], []
+    boundaries = (0x104C7568, 0x1047A0A6, 0x104C8128, 0x104C17FE,
+                  0x104C0F20, 0x104C101C, 0x104C1048, 0x1052E450,
+                  0x1052E320, 0x10544C3A, 0x10543F92, 0x10545B84,
+                  0x10463618, 0x1054419E)
+    for address in boundaries:
+        probe.hooks[address - BASE] = lambda *args: 0
+
+    def zero(address, size, *args):
+        require(size <= 0x100, 'Unexpected session initialization size')
+        probe.u.mem_write(address, bytes(size))
+        return address
+
+    def capture(event, source, *args):
+        require(event == 0x040F0080, 'Unexpected OpenSession notification')
+        frames.append(bytes(probe.u.mem_read(source, 40)))
+        return 0
+
+    def allocate(size, *args):
+        require(size == 100 and len(allocations) < 4, 'Unexpected session allocation')
+        address = probe.INPUT + 0x4000 + len(allocations) * 0x100
+        allocations.append(address)
+        return address
+
+    def enqueue(queue, source, *args):
+        require(queue == 0xB2B2CBBC, 'Unexpected session work queue')
+        queued.append(source)
+        return 1
+
+    def release(address, *args):
+        require(address in allocations, 'Unexpected session work release')
+        consumed.append(probe.word(address + 0x10))
+        return 0
+
+    def parameter(number, value, *args):
+        parameters.append(dict(number=hex(number), value=value))
+        return 0
+
+    def observe(u, address, size, unused):
+        event, payload = (u.reg_read(r) for r in probe.regs[:2])
+        notifications.append(dict(event=hex(event), words=list(struct.unpack(
+            '<4I', u.mem_read(payload, 16)))))
+
+    probe.hooks.update({0x341034: zero, 0x340F44: probe.copy,
+                        0x4A0F4E: capture, 0x38ECF8: allocate,
+                        0x3846AC: enqueue, 0x38ED0C: release,
+                        0x526440: parameter})
+    probe.u.hook_add(UC_HOOK_CODE, observe, begin=0x1052E3AE, end=0x1052E3AE)
+    probe.packet(7, opcode=0x1002, length=16)
+    require(probe.call(0x459838, 0, probe.INPUT) == 1 and len(frames) == 1 and
+            struct.unpack_from('<H', frames[0])[0] == 0x1002,
+            'Original OpenSession did not publish its notification')
+    # Register the native listeners, then replay the captured notification.
+    # Task scheduling and notification waits are supplied, not a live timeline.
+    probe.call(0x4F09E8, 1)
+    require(probe.word(0xB2A4E00C) == 0x1050C3DF,
+            'OpenSession listener registration differs')
+    del probe.hooks[0x4A0F4E]
+    frame = probe.INPUT + 0x3000
+    probe.u.mem_write(frame, frames[0])
+    probe.call(0x4A0F4E, 0x040F0080, frame)
+    require(len(queued) == 1 and probe.word(queued[0] + 0x10) == 50 and
+            probe.word(queued[0] + 12) == 0x1050C6C5,
+            'Notification did not queue the original OpenSession handler')
+    probe.call(0x4F0AD0, queued.pop(0))
+    require(len(queued) == 1 and probe.word(queued[0] + 0x10) == 9,
+            'Original OpenSession handler did not queue event 9')
+    probe.call(0x4F0AD0, queued.pop(0))
+    require(consumed == [50, 9] and not queued and
+            notifications == [dict(event='0x4090004', words=[0, 0, 0, 1])] and
+            parameters == [dict(number='0x2300', value=0)] and
+            bytes(probe.u.mem_read(CONTEXT, CONTEXT_SIZE)) == sentinel and not writes,
+            'Covered OpenSession work chain changed')
+    return dict(opcode='0x1002', callback='0x10479838',
+                notification='0x40f0080', registered_listener='0x1050c3de',
+                operation_handler='0x1050c6c4', native_queue_consumer='0x10510ad0',
+                consumed_events=consumed, event_9_handler='0x1050b7ac',
+                emitted_notifications=notifications, parameter_writes=parameters,
+                context_preserved=True, native_context_writes=writes,
+                notification_replayed_after_callback=True,
+                downstream_notification_listeners_registered=False,
+                host_boundaries=[hex(a) for a in boundaries],
+                allocation_and_queue_and_parameter_storage_are_supplied=True,
+                actual_ui_transition_executed=False)
+
+
 def update_result_wait(image, result_bits):
     """Identify the fifth update-service function without executing an update."""
     probe = Probe(image)
@@ -188,7 +278,7 @@ def run(image):
                 queue_sender='0x10205698', reply_decoder='0x104328de',
                 message_cases=[service_message(image, mode, flag)
                                for mode in (0, 1) for flag in (0, 1)],
-                session_close=session_close(image),
+                session_open=session_open(image), session_close=session_close(image),
                 update_result_wait_entry='0x10767136',
                 update_result_wait_cases=[update_result_wait(image, bits) for bits in (1, 2)],
                 actual_camera_access=False, menu_cancel_executed=False,
@@ -196,6 +286,7 @@ def run(image):
                 limitations=[
                     'The registry pointer is restored from its original table, not full startup.',
                     'Queue capacity, queue submission, scheduling and mode replies are synthetic.',
+                    'OpenSession notifications are replayed after the callback; downstream UI listeners are absent.',
                     'Peripheral and task cleanup endpoints in CloseSession are host boundaries.',
                     'No native menu No callback, physical USB disconnect or display output is executed.',
                     'Preservation only covers the native instructions executed by these cases.'])
@@ -209,7 +300,7 @@ def main():
     report = run(args.master.read_bytes())
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS four message round trips, CloseSession cleanup and two update-result waits')
+    print('PASS four message round trips, session open/close paths and two update-result waits')
 
 
 if __name__ == '__main__':
