@@ -1,0 +1,726 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "context_address": "0xb2b422c8",
+  "context_bytes": 52,
+  "startup_initialization": {
+    "table_offset": 82112,
+    "kind": "zero",
+    "source": 306482560,
+    "destination": 2978672064,
+    "size": 19593040,
+    "handler": 268566664
+  },
+  "direct_branch_candidates": {
+    "0x10383bbc": [
+      "0x1020230a"
+    ],
+    "0x103aed1c": [
+      "0x1039c66e"
+    ],
+    "0x10383c26": [
+      "0x10479924"
+    ]
+  },
+  "native_cases": [
+    {
+      "action": "enter",
+      "initial_service": 0,
+      "supplied_manager_result": "0x2001",
+      "supplied_worker_success": true,
+      "returned": 1,
+      "final_service": 1,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8193,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": [
+        {
+          "boundary": "mode-manager request",
+          "arguments": [
+            0,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            53,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            17,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            80,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            10,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            9,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            70,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            71,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            8,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            11,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            12,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            67,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "event reset",
+          "arguments": [
+            2147483648,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "worker event post",
+          "arguments": [
+            2998117388,
+            64,
+            2978642812,
+            0
+          ]
+        },
+        {
+          "boundary": "synthetic worker completion",
+          "success": true
+        }
+      ]
+    },
+    {
+      "action": "enter",
+      "initial_service": 1,
+      "supplied_manager_result": "0x2001",
+      "supplied_worker_success": true,
+      "returned": 0,
+      "final_service": 1,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8222,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": []
+    },
+    {
+      "action": "enter",
+      "initial_service": 0,
+      "supplied_manager_result": "0x2019",
+      "supplied_worker_success": true,
+      "returned": 0,
+      "final_service": 0,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8217,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": [
+        {
+          "boundary": "mode-manager request",
+          "arguments": [
+            0,
+            5,
+            5,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "action": "enter",
+      "initial_service": 0,
+      "supplied_manager_result": "0x2001",
+      "supplied_worker_success": false,
+      "returned": 0,
+      "final_service": 0,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            40961,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": [
+        {
+          "boundary": "mode-manager request",
+          "arguments": [
+            0,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            53,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            17,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            80,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            10,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            9,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            70,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            71,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            8,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            11,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            12,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "object initialization",
+          "arguments": [
+            67,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "event reset",
+          "arguments": [
+            2147483648,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "boundary": "worker event post",
+          "arguments": [
+            2998117388,
+            64,
+            2978642812,
+            0
+          ]
+        },
+        {
+          "boundary": "synthetic worker completion",
+          "success": false
+        }
+      ]
+    },
+    {
+      "action": "exit",
+      "initial_service": 1,
+      "supplied_manager_result": "0x2001",
+      "supplied_worker_success": true,
+      "returned": 1,
+      "final_service": 0,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8193,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": [
+        {
+          "boundary": "0x104910aa",
+          "arguments": [
+            1342275556,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10490f3e",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2c00",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10491990",
+          "arguments": [
+            255,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10491b48",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x1049263e",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2872",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104c6d36",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2544",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "configuration 0x126",
+          "arguments": [
+            294,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "mode-manager request",
+          "arguments": [
+            1,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2f76",
+          "arguments": [
+            8193,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "event reset",
+          "arguments": [
+            2147483648,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "worker event post",
+          "arguments": [
+            2998117388,
+            64,
+            2978642812,
+            0
+          ]
+        },
+        {
+          "boundary": "synthetic worker completion",
+          "success": true
+        },
+        {
+          "boundary": "0x104b1cf2",
+          "arguments": [
+            1,
+            50397188,
+            2000,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b1bb8",
+          "arguments": [
+            0,
+            50397188,
+            2000,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b1e72",
+          "arguments": [
+            0,
+            50397188,
+            2000,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "action": "exit",
+      "initial_service": 0,
+      "supplied_manager_result": "0x2001",
+      "supplied_worker_success": true,
+      "returned": 1,
+      "final_service": 0,
+      "context_preserved": true,
+      "native_context_writes": [],
+      "responses": [
+        {
+          "outer": 8193,
+          "parameters": [
+            8193,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "host_calls": [
+        {
+          "boundary": "0x104910aa",
+          "arguments": [
+            1342275556,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10490f3e",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2c00",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10491990",
+          "arguments": [
+            255,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x10491b48",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x1049263e",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2872",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104c6d36",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "boundary": "0x104b2544",
+          "arguments": [
+            0,
+            20,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "worker_bridge_cases": [
+    {
+      "mode": 0,
+      "messages": [
+        {
+          "request_type": 3,
+          "mode": 0,
+          "cookie": 4660,
+          "completion_callback": "0x1038368d"
+        }
+      ],
+      "context_preserved": true,
+      "final_mode_receiver_executed": false
+    },
+    {
+      "mode": 1,
+      "messages": [
+        {
+          "request_type": 3,
+          "mode": 1,
+          "cookie": 4660,
+          "completion_callback": "0x1038368d"
+        }
+      ],
+      "context_preserved": true,
+      "final_mode_receiver_executed": false
+    }
+  ],
+  "async_request": {
+    "entry": "0x10383c26",
+    "worker_flag": "0x40",
+    "state": "0xb18a7b7c",
+    "vtable_slot": "0x1c",
+    "bridge": "0x10206e04",
+    "bridge_request_type": 3
+  },
+  "worker_dispatcher_executed": true,
+  "actual_mode_receiver_executed": false,
+  "menu_cancel_executed": false,
+  "actual_camera_access": false,
+  "boot_material_recovered": false,
+  "limitations": [
+    "Subsystem cleanup, mode-manager and worker completion are host boundaries.",
+    "A preserved synthetic context proves only the covered native handler instructions.",
+    "Aligned direct-branch scanning includes data; indirect calls and broad clears are not excluded.",
+    "The worker dispatcher and bridge execute; the final registered mode receiver is synthetic.",
+    "USB reconnect, actual menu cancellation and screen behavior remain unverified."
+  ]
+}
