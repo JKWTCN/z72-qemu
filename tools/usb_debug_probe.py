@@ -1,13 +1,16 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Exercise the USB log channel and the asynchronous debug consumer.
+"""Exercise the USB log channel through the capture buffer and upload window.
 
 Requires Unicorn and a locally supplied original master image. Command
 registration, queue admission, consumer dispatch, token splitting, memory
-dumping and the log-output gate all execute original code on the
-startup-restored fixture. The transport buffer/reply, bulk copy, print sink,
-numeric conversion, console-handler registration service and the queued-line
-name/argument split are host boundaries. No USB device is opened and no
-firmware or key bytes are exported.
+dumping, the log-output gate, the print routing decision, the capture
+formatter, the RAM appender and the verified upload copy all execute original
+code on the startup-restored fixture. The transport buffer/reply, bulk copy,
+print sink for synchronous commands, numeric conversion, console-handler
+registration service, queued-line name/argument split, kernel service layer,
+cache maintenance, platform time service, module environment initialization
+and the upload-window limit are host boundaries. No USB device is opened and
+no firmware or key bytes are exported.
 """
 import argparse
 import json
@@ -19,7 +22,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import BASE, MASTER_SHA, require, validate_master
 from analyze.firmware_structure import scatter_records
 from analyze.usb_descriptors import usb_personalities
-from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_HOOK_CODE, UC_HOOK_MEM_READ
+from unicorn import (Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_HOOK_CODE,
+                     UC_HOOK_MEM_READ, UC_HOOK_INTR)
 from unicorn.arm_const import (UC_CPU_ARM_CORTEX_A15, UC_ARM_REG_R0,
                                UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R3,
                                UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC)
@@ -28,6 +32,15 @@ COMMAND_COUNT = 17
 COMMAND_NAMES = ('echo', 'help', 'watchdog', 'stackdump', 'memdump',
                  'logoutputchg', 'loglevelallchg', 'loglevelchg', 'pt', 'tt',
                  'smt', 'et', 'qt', 'act', 'mt', 'kernelsysmem', 'interrupt')
+
+MODULE_BASE = 0xB2BB0000        # startup-copied RAM appender module
+MODULE_SOURCE = 0x2428D80       # its file offset
+UPLOAD_WINDOW = 0x12960000      # drain destination window (3 x 128 KiB)
+
+
+def module_offset(offset):
+    """Map a module file offset to its RAM address."""
+    return MODULE_BASE + offset - MODULE_SOURCE
 
 
 class Probe:
@@ -38,6 +51,10 @@ class Probe:
     LINE_BUFFER = 0xB18AFFD0
     OUTPUT_SELECT = 0xB1800474
     LOG_GATE = 0xB180048C
+    CAPTURE_FLAG = 0xB1800060
+    CAPTURE_COUNT = 0xB18004F0
+    CAPTURE_BUFFER = 0xB1C81898
+    WINDOW_LIMIT = 0xB1CF16E0
     TRANSPORT_SLOT = 0xB188B7C8
 
     def __init__(self, image):
@@ -48,7 +65,14 @@ class Probe:
         self.u.mem_map(BASE, (len(image) + 4095) & ~4095)
         self.u.mem_map(0xB1800000, 0x4800000)
         self.u.mem_map(self.INPUT, 0x30000)
+        # Upload window, passive console/timer registers and the low scratch
+        # region below the mapped image, all passive fixtures.
+        self.u.mem_map(UPLOAD_WINDOW, 0x60000)
+        self.u.mem_map(0x2C090000, 0x1000)
+        self.u.mem_map(0x10000000, 0x20000)
+        self.u.mem_map(0x04264000, 0x1000)
         self.u.mem_write(BASE, image)
+        self.u.mem_write(0x2C090003, b'\x02')  # console transmit-ready line
         self.records = scatter_records(image)
         for record in self.records:
             if record['kind'] == 'copy':
@@ -57,11 +81,27 @@ class Probe:
                                  image[start:start + record['size']])
         self.regs = (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R3)
         self.responses, self.prints, self.reads = [], [], []
-        self.publications = []
-        self.hooks = {0x61C384: self.input_buffer, 0x61C4FC: self.reply,
-                      0x340FAC: self.copy, 0x3BA804: self.print_sink,
-                      0x3BC46A: self.publish, 0x222588: self.strtol}
+        self.publications, self.service_calls = [], []
+        self.supervisor_calls = 0
+        self.hooks = {BASE + 0x61C384: self.input_buffer,
+                      BASE + 0x61C4FC: self.reply,
+                      BASE + 0x340FAC: self.copy,
+                      BASE + 0x3BA804: self.print_sink,
+                      BASE + 0x3BC46A: self.publish,
+                      BASE + 0x222588: self.strtol,
+                      # Host boundaries for the upload leg.
+                      BASE + 0x348150: self.cache_maintenance,
+                      module_offset(0x2429968): self.service_stub,
+                      module_offset(0x2429970): self.service_stub,
+                      module_offset(0x2429978): self.service_object,
+                      module_offset(0x2429998): self.service_lock,
+                      module_offset(0x2429240): self.service_submit,
+                      module_offset(0x2429412): self.platform_time,
+                      module_offset(0x242942C): self.platform_time,
+                      module_offset(0x2428ED8): self.environment_init}
+        self.reseed = {module_offset(0x2429260): self.WINDOW_LIMIT}
         self.u.hook_add(UC_HOOK_CODE, self.code)
+        self.u.hook_add(UC_HOOK_INTR, self.supervisor)
         self.u.hook_add(UC_HOOK_MEM_READ, self.memory_read,
                         begin=self.SAMPLE, end=self.SAMPLE + 0x3FF)
 
@@ -83,11 +123,19 @@ class Probe:
     def code(self, u, address, size, unused):
         if address == self.STOP:
             u.emu_stop()
-        elif address - BASE in self.hooks:
+        elif address in self.reseed:
+            # Observation point: restore a runtime-seeded limit, then run.
+            self.put_word(self.reseed[address], 0x4000000)
+        elif address in self.hooks:
             args = [u.reg_read(r) for r in self.regs]
-            result = self.hooks[address - BASE](*args)
+            result = self.hooks[address](*args)
             u.reg_write(UC_ARM_REG_R0, result)
             u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+
+    def supervisor(self, u, intno, unused):
+        """Host boundary: supervisor calls report success."""
+        self.supervisor_calls += 1
+        u.reg_write(UC_ARM_REG_R0, 0)
 
     def memory_read(self, u, access, address, size, value, unused):
         self.reads.extend(range(address, address + size))
@@ -123,7 +171,36 @@ class Probe:
             token.append(value)
         return int(token.decode('ascii'), base if base else 10)
 
-    def call(self, offset, *args, limit=3000000):
+    def cache_maintenance(self, *args):
+        return 0
+
+    def service_stub(self, *args):
+        self.service_calls.append('stub')
+        return 0
+
+    def service_object(self, *args):
+        self.service_calls.append('object')
+        return self.INPUT + 0x4000
+
+    def service_lock(self, obj, mode, *args):
+        self.service_calls.append('lock-%d' % mode)
+        return 0
+
+    def service_submit(self, code, count, *args):
+        self.service_calls.append('submit-%#x-%d' % (code, count))
+        return 0
+
+    def platform_time(self, *args):
+        self.service_calls.append('time')
+        self.put_word(0xB1806F5C, self.INPUT + 0x4000)
+        return self.INPUT + 0x4000
+
+    def environment_init(self, *args):
+        """Host boundary: module environment lazy initialization."""
+        self.service_calls.append('environment-init')
+        return 0
+
+    def call(self, offset, *args, limit=12000000):
         for reg, value in zip(self.regs, (*args, 0, 0, 0, 0)):
             self.u.reg_write(reg, value)
         self.u.reg_write(UC_ARM_REG_SP, self.INPUT + 0x18000)
@@ -133,11 +210,19 @@ class Probe:
                 'Native function did not return: ' + hex(offset))
         return self.u.reg_read(UC_ARM_REG_R0)
 
+    def call_absolute(self, address, *args, limit=12000000):
+        for reg, value in zip(self.regs, (*args, 0, 0, 0, 0)):
+            self.u.reg_write(reg, value)
+        self.u.reg_write(UC_ARM_REG_SP, self.INPUT + 0x18000)
+        self.u.reg_write(UC_ARM_REG_LR, self.STOP | 1)
+        self.u.emu_start(address | 1, self.STOP, count=limit)
+        require(self.u.reg_read(UC_ARM_REG_PC) == self.STOP,
+                'Native function did not return: ' + hex(address))
+        return self.u.reg_read(UC_ARM_REG_R0)
+
     def enqueue(self, text):
         """Admit one line through the original queue entry point."""
         self.u.mem_write(self.INPUT, text.encode('ascii') + b'\0')
-        # The queue line buffer spans exactly 0x80 bytes; the command record
-        # array begins right after it at 0xB18B0050.
         self.u.mem_write(self.LINE_BUFFER, b'\0' * 0x80)
         self.put_word(self.QUEUE + 0x18, 0)
         self.call(0x39C620, self.INPUT, len(text))
@@ -259,6 +344,37 @@ class Probe:
                                   packet_limit=0x200),
                 'Transport ring constant mismatch')
 
+        # 7. Capture route: replicate the fatal entry's capture-flag store,
+        # then run the real print router, formatter and RAM appender.
+        self.u.mem_write(self.OUTPUT_SELECT, b'\x01')
+        self.put_word(self.CAPTURE_FLAG, 1)
+        self.put_word(self.CAPTURE_COUNT, 0)
+        del self.hooks[BASE + 0x3BA804]  # the original routing must run
+        lines = []
+        for index in range(3):
+            line = 'capture-line-%d' % index
+            self.u.mem_write(self.INPUT, line.encode('ascii') + b'\0')
+            self.call(0x3BA804, self.INPUT, index)
+            lines.append(line)
+        expected_capture = b''.join(
+            (line + '\n').encode('ascii') for line in lines)
+        captured = self.word(self.CAPTURE_COUNT)
+        require(captured == len(expected_capture) and bytes(
+            self.u.mem_read(self.CAPTURE_BUFFER, captured)) == expected_capture,
+            'Capture route must land formatted text in the capture buffer')
+        self.hooks[BASE + 0x3BA804] = self.print_sink
+
+        # 8. Drain: upload the capture buffer into the service window.
+        self.service_calls.clear()
+        self.call_absolute(MODULE_BASE + 0x52, 0)
+        require('submit-0x14b-3' in self.service_calls,
+                'Drain must submit its upload request')
+        require(self.word(self.CAPTURE_COUNT) == captured + 1,
+                'Drain advances the capture count by one')
+        window = bytes(self.u.mem_read(UPLOAD_WINDOW, len(expected_capture)))
+        require(window == expected_capture,
+                'Verified upload copy must place the capture in the window')
+
         return dict(format=1, master_sha256=MASTER_SHA,
                     registered_commands=records,
                     console_publication=self.publications[0],
@@ -279,6 +395,22 @@ class Probe:
                                          cases=log_cases,
                                          gate_shared_with_ptp_debug_admission=True),
                     ptp_debug_admission=gate_cases,
+                    capture_route=dict(
+                        flag_address=hex(self.CAPTURE_FLAG),
+                        flag_set_by='fatal entry 0x10202688 store, replicated by host',
+                        print_entry='0x103da804', formatter='0x1020265a',
+                        trampoline='0x1032b76c', appender='0xb2bb0000',
+                        buffer=hex(self.CAPTURE_BUFFER),
+                        count_address=hex(self.CAPTURE_COUNT),
+                        formatted_lines=len(lines),
+                        captured_bytes=captured),
+                    upload=dict(drain_entry='0xb2bb0053',
+                                trigger='0x10202b14', trigger_flag='0xb1800064',
+                                window=hex(UPLOAD_WINDOW), chunk_bytes=0x20000,
+                                chunks=3,
+                                services=self.service_calls,
+                                supervisor_calls=self.supervisor_calls,
+                                window_bytes_verified=len(expected_capture)),
                     transport=dict(object_slot=hex(self.TRANSPORT_SLOT),
                                    boot_slot_value=hex(slot),
                                    ring_constants=constants,
@@ -287,7 +419,13 @@ class Probe:
                     host_boundaries=['transport input buffer', 'transport response',
                                      'bulk copy', 'print sink', 'numeric conversion',
                                      'console-handler registration service',
-                                     'queued-line name/argument split'],
+                                     'queued-line name/argument split',
+                                     'kernel service layer', 'cache maintenance',
+                                     'platform time service',
+                                     'module environment initialization',
+                                     'upload-window limit seed',
+                                     'supervisor-call success returns',
+                                     'passive console/timer register pages'],
                     camera_usb_access_verified=False, real_boot_material_recovered=False,
                     k8_recovered=False)
 
@@ -302,4 +440,5 @@ if __name__ == '__main__':
     args.output.write_text(json.dumps(report, indent=2) + '\n',
                            encoding='utf-8', newline='\n')
     print('PASS 17 debug commands, consumer dispatch, USB log-output gate, '
-          'PTP admission link, transport constants, descriptor personalities')
+          'PTP admission link, capture route, verified upload, transport '
+          'constants, descriptor personalities')

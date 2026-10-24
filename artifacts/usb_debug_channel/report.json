@@ -170,6 +170,39 @@
       "response": "0x2001"
     }
   ],
+  "capture_route": {
+    "flag_address": "0xb1800060",
+    "flag_set_by": "fatal entry 0x10202688 store, replicated by host",
+    "print_entry": "0x103da804",
+    "formatter": "0x1020265a",
+    "trampoline": "0x1032b76c",
+    "appender": "0xb2bb0000",
+    "buffer": "0xb1c81898",
+    "count_address": "0xb18004f0",
+    "formatted_lines": 3,
+    "captured_bytes": 45
+  },
+  "upload": {
+    "drain_entry": "0xb2bb0053",
+    "trigger": "0x10202b14",
+    "trigger_flag": "0xb1800064",
+    "window": "0x12960000",
+    "chunk_bytes": 131072,
+    "chunks": 3,
+    "services": [
+      "stub",
+      "stub",
+      "object",
+      "lock-1",
+      "submit-0x14b-3",
+      "time",
+      "environment-init",
+      "time",
+      "lock-0"
+    ],
+    "supervisor_calls": 0,
+    "window_bytes_verified": 45
+  },
   "transport": {
     "object_slot": "0xb188b7c8",
     "boot_slot_value": "0x0",
@@ -722,7 +755,14 @@
     "print sink",
     "numeric conversion",
     "console-handler registration service",
-    "queued-line name/argument split"
+    "queued-line name/argument split",
+    "kernel service layer",
+    "cache maintenance",
+    "platform time service",
+    "module environment initialization",
+    "upload-window limit seed",
+    "supervisor-call success returns",
+    "passive console/timer register pages"
   ],
   "camera_usb_access_verified": false,
   "real_boot_material_recovered": false,
