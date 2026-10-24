@@ -81,12 +81,66 @@
     "authentication_worker_executed": false,
     "programming_executed": false
   },
+  "no_navigation": {
+    "synthetic_stack_pages": [
+      "0x1",
+      "0x2d7",
+      "0x2d8"
+    ],
+    "current_page_after": "0x2d7",
+    "stack_depth_after": 2,
+    "native_milestones": [
+      "0x1063837c",
+      "0x1063a7a6",
+      "0x10639e20",
+      "0x1063c260",
+      "0x107017a0",
+      "0x10701812",
+      "0x10701820",
+      "0x10701d8a"
+    ],
+    "context_preserved": true,
+    "native_context_writes": [],
+    "confirmation_display_resource_released": true,
+    "target_initializer_executed": true,
+    "stopped_at": "0x1063aa28",
+    "parent_page_initialization_completed": false,
+    "generic_page_return_completed": false,
+    "supplied_boundaries": {
+      "0x1053ca5c": "input-state notification",
+      "0x106345b4": "display allocation",
+      "0x10634710": "display object lookup",
+      "0x106366d2": "modal display absent",
+      "0x10635c6c": "display command",
+      "0x10639a36": "widget population",
+      "0x1063b414": "shared display layout",
+      "0x103e0700": "attached-component snapshot unavailable",
+      "0x10100490": "scalar parameter snapshot",
+      "0x101004a0": "parameter batch snapshot unavailable",
+      "0x10635cee": "widget lookup",
+      "0x10636a06": "text rendering",
+      "0x10634622": "display item lookup",
+      "0x10635a8a": "display refresh scheduling",
+      "0x103dc538": "task delay",
+      "0x103f342c": "capture subsystem state",
+      "0x103610d2": "event clear"
+    },
+    "display_release_is_supplied": true,
+    "event_acknowledgement_is_synthetic": true,
+    "intercepted_events": [
+      {
+        "object": "0xb181b3a8",
+        "mask": "0x8"
+      }
+    ]
+  },
   "actual_camera_access": false,
   "limitations": [
     "Directory, file I/O and installed versions are runtime fixtures.",
     "Original menu objects, row metadata and callback tables are restored from initialization data.",
     "The display tree is absent; the Yes callback uses supplied UI/task readiness.",
-    "The No callback returns its navigation result; subsequent generic page teardown is not covered.",
+    "Return navigation uses a synthetic stack, display objects, parameters and event acknowledgement.",
+    "The navigation case stops after target initialization, before parent-page initialization and asynchronous display work.",
     "The Yes case stops before posting the authentication event and never runs programming.",
     "This does not establish retention across physical USB reconnect or full PTP lifecycle."
   ]

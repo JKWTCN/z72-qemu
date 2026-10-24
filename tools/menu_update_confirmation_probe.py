@@ -178,6 +178,108 @@ def menu_yes(master, package):
                 programming_executed=False)
 
 
+class NavigationProbe(ConfirmationProbe):
+    def install_hook(self, offset, callback):
+        # Navigation replaces the earlier directory-only parameter fixture.
+        if not hasattr(self, 'runtime_hooks'):
+            self.runtime_hooks = {}
+        if offset in self.runtime_hooks:
+            self.u.hook_del(self.runtime_hooks[offset])
+
+        def hook(u, address, size, unused):
+            callback(*(u.reg_read(r) for r in self.regs))
+            u.reg_write(self.pc, u.reg_read(self.lr))
+
+        self.runtime_hooks[offset] = self.u.hook_add(
+            UC_HOOK_CODE, hook, begin=BASE + offset, end=BASE + offset)
+
+
+def menu_no_navigation(master, package):
+    probe = NavigationProbe(master, package)
+    probe.prepare()
+    for address, size in ((0xB201C000, 0x1000), (0xB2017000, 0x1000),
+                          (0xB2009000, 0x1000), (0xB2011000, 0x1000),
+                          (0xB2015000, 0x2000), (0xB23F6000, 0x1000)):
+        probe.u.mem_map(address, size)
+    stack = probe.SCRATCH + 0x8000
+    root, target = 0xB2BB7238, OBJECT - 44
+    # The navigation stack and display allocations are synthetic runtime state.
+    probe.u.mem_write(stack, struct.pack('<IIIIIII', 4, 8, 3, stack + 16,
+                                         root, target, OBJECT))
+    probe.put_word(0xB181C570, stack)
+    probe.call(0x5FDA98, 2, 0xB2BB720C)
+    probe.put_word(OBJECT + 12, stack + 0x200)
+    probe.put_word(OBJECT + 0x24, stack + 0x400)
+    boundaries = {
+        0x1053CA5C: 'input-state notification',
+        0x106345B4: 'display allocation',
+        0x10634710: 'display object lookup',
+        0x106366D2: 'modal display absent',
+        0x10635C6C: 'display command',
+        0x10639A36: 'widget population',
+        0x1063B414: 'shared display layout',
+        0x103E0700: 'attached-component snapshot unavailable',
+        0x10100490: 'scalar parameter snapshot',
+        0x101004A0: 'parameter batch snapshot unavailable',
+        0x10635CEE: 'widget lookup',
+        0x10636A06: 'text rendering',
+        0x10634622: 'display item lookup',
+        0x10635A8A: 'display refresh scheduling',
+        0x103DC538: 'task delay',
+        0x103F342C: 'capture subsystem state',
+        0x103610D2: 'event clear',
+    }
+    supplied = {0x106345B4: stack + 0x400, 0x10634710: stack + 0x600,
+                0x10635CEE: stack + 0x2000, 0x10634622: stack + 0x2400}
+    for address in boundaries:
+        probe.fixed(address, supplied.get(address, 0))
+    released, events = [], []
+
+    def release(address, *args):
+        require(address == stack + 0x400, 'Unexpected display release')
+        released.append(address)
+        probe.result(0)
+
+    def post(event, mask, *args):
+        require(event == 0xB181B3A8 and mask == 8,
+                'Unexpected event in return navigation')
+        events.append(dict(object=hex(event), mask=hex(mask)))
+        probe.result(0)
+
+    def wait(event, mask, output, *args):
+        probe.put_word(output, mask)
+        probe.result(1)
+
+    probe.install_hook(0x10634698 - BASE, release)
+    probe.install_hook(0x103610CC - BASE, post)
+    probe.install_hook(0x10361116 - BASE, wait)
+    milestones = []
+    for address in (0x1063837C, 0x1063A7A6, 0x10639E20, 0x1063C260,
+                    0x107017A0, 0x10701812, 0x10701820, 0x10701D8A):
+        probe.u.hook_add(UC_HOOK_CODE,
+                        lambda u, a, size, unused: milestones.append(hex(a)),
+                        begin=address, end=address)
+    returned = probe.dispatch(1)
+    require(returned == 0x43B, 'Return navigation result differs')
+    probe.call(0x61837C, returned, stop_offset=0x61AA28)
+    require(probe.u.reg_read(probe.pc) == 0x1063AA28 and
+            probe.call(0x61C2B2) == target and probe.word(stack + 8) == 2 and
+            probe.word(OBJECT + 0x24) == 0 and released == [stack + 0x400] and
+            '0x10701d8a' in milestones and probe.retained(),
+            'Navigation did not exit confirmation and initialize the target')
+    return dict(synthetic_stack_pages=['0x1', '0x2d7', '0x2d8'],
+                current_page_after='0x2d7', stack_depth_after=2,
+                native_milestones=milestones, context_preserved=probe.retained(),
+                native_context_writes=probe.context_writes,
+                confirmation_display_resource_released=True,
+                target_initializer_executed=True, stopped_at='0x1063aa28',
+                parent_page_initialization_completed=False,
+                generic_page_return_completed=False,
+                supplied_boundaries={hex(a): name for a, name in boundaries.items()},
+                display_release_is_supplied=True, event_acknowledgement_is_synthetic=True,
+                intercepted_events=events)
+
+
 def run(master, package):
     validate_master(master)
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
@@ -189,12 +291,14 @@ def run(master, package):
                                  dict(row=1, widget='0x20bf', event_table='0x1180c3f8',
                                       callback='0x1063aec2', purpose='return to preceding page')],
                 no=menu_no(master, package), yes=menu_yes(master, package),
+                no_navigation=menu_no_navigation(master, package),
                 actual_camera_access=False,
                 limitations=[
                     'Directory, file I/O and installed versions are runtime fixtures.',
                     'Original menu objects, row metadata and callback tables are restored from initialization data.',
                     'The display tree is absent; the Yes callback uses supplied UI/task readiness.',
-                    'The No callback returns its navigation result; subsequent generic page teardown is not covered.',
+                    'Return navigation uses a synthetic stack, display objects, parameters and event acknowledgement.',
+                    'The navigation case stops after target initialization, before parent-page initialization and asynchronous display work.',
                     'The Yes case stops before posting the authentication event and never runs programming.',
                     'This does not establish retention across physical USB reconnect or full PTP lifecycle.'])
 
