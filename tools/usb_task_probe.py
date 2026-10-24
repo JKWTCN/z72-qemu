@@ -23,10 +23,13 @@ from tools.dual_boot_probe import dual_machine
 from tools.smp_boot_probe import reach, stop_registers
 
 TASK_ARRAY_STRUCT = 0xB1800028
+CURRENT_TASK_TABLE = 0xB2B41604
+TCB_POOL_SCAN = (0xB2C30000, 0x30000)
 WANTED_NAMES = (b'EXSUSB', b'LSPTP', b'DBGCMD', b'DBGUART', b'PTPSIC',
                 b'PTPPOS', b'PTPPIP', b'IAPONUSB', b'POSTLOG')
 WANTED_INDICES = (58, 59, 60, 61, 86, 144, 145, 146, 147, 149, 150, 177,
                   187, 188, 189, 190)
+WANTED_KERNEL_IDS = {0x2F, 0x30, 0x31, 0x32, 0xB9, 0xE7}
 
 
 def scenario(qemu, directory, master, slave):
@@ -91,6 +94,104 @@ def scenario(qemu, directory, master, slave):
                     seen += 1
                     position = blob.find(key, position + 1)
         result['name_hits'] = hits
+
+        # Control-block hunt: the running-task pointers fix the layout, the
+        # pool scan collects entry candidates keyed by nearby kernel ids.
+        current = {}
+        for core in range(4):
+            pointer = struct.unpack('<I', remote.read(
+                CURRENT_TASK_TABLE + core * 4, 4))[0]
+            if 0xB0000000 <= pointer < 0xC0000000:
+                current[core] = dict(at=hex(pointer),
+                                     data=remote.read(pointer, 0x60).hex())
+        result['current_tasks'] = current
+
+        entries = []
+        start, length = TCB_POOL_SCAN
+        blob = b''.join(remote.read(start + chunk, min(0x1000, length - chunk))
+                        for chunk in range(0, length, 0x1000))
+        total_blocks = 0
+        for offset in range(0, len(blob) - 0x18, 4):
+            flags = struct.unpack_from('<I', blob, offset + 8)[0]
+            entry = struct.unpack_from('<I', blob, offset + 0x14)[0]
+            if not 0x10020000 <= entry < 0x10700000:
+                continue
+            if flags >> 16 not in (0x0000, 0x0100, 0x0101, 0x0001):
+                continue
+            total_blocks += 1
+            kernel_id = flags & 0xFFFF
+            context = blob[max(0, offset - 0x10):offset + 0x28]
+            record = dict(pool=hex(start + offset), id=kernel_id,
+                          entry=hex(entry), context=context.hex(),
+                          wanted=kernel_id in WANTED_KERNEL_IDS)
+            entries.append(record)
+            if record['wanted']:
+                # One window per task anchored at its deepest stack pointer;
+                # the task's own loop frame lies at the highest addresses.
+                head = blob[offset:offset + 0x60]
+                pointers = [word for word in struct.unpack(
+                    '<%dI' % (len(head) // 4), head)
+                    if 0xB5000000 <= word < 0xB6000000]
+                if pointers:
+                    anchor = min(pointers)
+                    try:
+                        frame = remote.read(anchor, 0x600)
+                        code = [hex(value) for value in
+                                struct.unpack('<%dI' % (len(frame) // 4), frame)
+                                if 0x10020000 <= value < 0x10700000]
+                        record['stacks'] = [dict(stack=hex(anchor), code=code)]
+                    except Exception:
+                        record['stacks'] = []
+                # The dispatcher loop calls the handler stored at its
+                # control object +0x24; the wait object (context word seven)
+                # sits at object +0x20.
+                context_words = struct.unpack(
+                    '<%dI' % (len(record['context']) // 8), 
+                    bytes.fromhex(record['context']))
+                wait_object = context_words[7]
+                record['wait_object'] = hex(wait_object)
+                if 0xB0000000 <= wait_object < 0xC0000000:
+                    try:
+                        obj = remote.read(wait_object - 0x20, 0x28)
+                        fields = struct.unpack('<10I', obj)
+                        record['dispatcher'] = dict(
+                            base=hex(wait_object - 0x20),
+                            handler=hex(fields[9]),
+                            words=[hex(word) for word in fields])
+                    except Exception:
+                        pass
+        result['pool_blocks_with_entries'] = total_blocks
+        result['pool_entry_candidates'] = entries
+
+        # Follow the USB task event blocks into their wait queues.
+        event_follow = []
+        for block in (0x1206F7C0, 0x1206F840, 0x1206F8C0, 0x1206F9C0,
+                      0x12070440):
+            window = remote.read(block, 0x120)
+            event_follow.append(dict(block=hex(block), data=window.hex()))
+            for word in struct.unpack('<%dI' % (len(window) // 4), window):
+                if 0xB2B00000 <= word < 0xB2D00000:
+                    try:
+                        event_follow.append(dict(
+                            block=hex(word),
+                            data=remote.read(word, 0x60).hex()))
+                    except Exception:
+                        pass
+                    break
+        result['event_follow'] = event_follow
+
+        # Walk the scheduler queues to sample blocked-task control blocks.
+        samples = []
+        for head in (0xB2B4171C, 0xB2B4174C):
+            node = struct.unpack('<I', remote.read(head, 4))[0]
+            for _ in range(6):
+                if not 0xB0000000 <= node < 0xC0000000 or node == head:
+                    break
+                samples.append(dict(at=hex(node),
+                                    data=remote.read(node, 0x60).hex()))
+                node = struct.unpack('<I', remote.read(node, 4))[0]
+        result['queue_samples'] = samples
+        result['passed'] = True
 
         faults = []
         for core in (1, 2, 3, 4):
