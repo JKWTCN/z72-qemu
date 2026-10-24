@@ -140,6 +140,33 @@
       }
     ]
   },
+  "session_event": {
+    "event": "0x17e",
+    "rows": [
+      {
+        "row": 0,
+        "default_record": "0x1180c3e8",
+        "returned": "0x430"
+      },
+      {
+        "row": 1,
+        "default_record": "0x1180c5d8",
+        "returned": "0x430"
+      }
+    ],
+    "choice_callback_invoked": false,
+    "context_preserved": true,
+    "native_context_writes": [],
+    "ancestor_dispatch_executed": true,
+    "dispatched_objects": [
+      "0xb2bbef2c",
+      "0xb2bb7238"
+    ],
+    "current_page_after": "0x2d8",
+    "stack_depth_after": 3,
+    "parent_selection_is_synthetic": true,
+    "global_event_worker_executed": false
+  },
   "actual_camera_access": false,
   "limitations": [
     "Directory, file I/O and installed versions are runtime fixtures.",

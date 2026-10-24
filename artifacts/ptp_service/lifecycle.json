@@ -171,10 +171,28 @@
         "value": 0
       }
     ],
+    "ui_events": [
+      {
+        "event": "0x4030026",
+        "words": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "menu_event": "0x17e",
+    "menu_event_enabled_is_synthetic": true,
+    "menu_event_enabled": false,
+    "menu_event_pending": false,
+    "wake_events": [],
     "context_preserved": true,
     "native_context_writes": [],
     "notification_replayed_after_callback": true,
-    "downstream_notification_listeners_registered": false,
+    "downstream_notification_listeners_registered": true,
+    "display_parameter_refresh_executed": false,
+    "menu_event_consumed": false,
     "host_boundaries": [
       "0x104c7568",
       "0x1047a0a6",
@@ -189,7 +207,90 @@
       "0x10543f92",
       "0x10545b84",
       "0x10463618",
-      "0x1054419e"
+      "0x1054419e",
+      "0x104ba790",
+      "0x1043ad0c",
+      "0x10736896",
+      "0x1062e472"
+    ],
+    "allocation_and_queue_and_parameter_storage_are_supplied": true,
+    "actual_ui_transition_executed": false
+  },
+  "session_open_menu_event_enabled": {
+    "opcode": "0x1002",
+    "callback": "0x10479838",
+    "notification": "0x40f0080",
+    "registered_listener": "0x1050c3de",
+    "operation_handler": "0x1050c6c4",
+    "native_queue_consumer": "0x10510ad0",
+    "consumed_events": [
+      50,
+      9
+    ],
+    "event_9_handler": "0x1050b7ac",
+    "emitted_notifications": [
+      {
+        "event": "0x4090004",
+        "words": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "parameter_writes": [
+      {
+        "number": "0x2300",
+        "value": 0
+      }
+    ],
+    "ui_events": [
+      {
+        "event": "0x4030026",
+        "words": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "menu_event": "0x17e",
+    "menu_event_enabled_is_synthetic": true,
+    "menu_event_enabled": true,
+    "menu_event_pending": true,
+    "wake_events": [
+      {
+        "event_object": "0x0",
+        "mask": "0x4"
+      }
+    ],
+    "context_preserved": true,
+    "native_context_writes": [],
+    "notification_replayed_after_callback": true,
+    "downstream_notification_listeners_registered": true,
+    "display_parameter_refresh_executed": false,
+    "menu_event_consumed": false,
+    "host_boundaries": [
+      "0x104c7568",
+      "0x1047a0a6",
+      "0x104c8128",
+      "0x104c17fe",
+      "0x104c0f20",
+      "0x104c101c",
+      "0x104c1048",
+      "0x1052e450",
+      "0x1052e320",
+      "0x10544c3a",
+      "0x10543f92",
+      "0x10545b84",
+      "0x10463618",
+      "0x1054419e",
+      "0x104ba790",
+      "0x1043ad0c",
+      "0x10736896",
+      "0x1062e472"
     ],
     "allocation_and_queue_and_parameter_storage_are_supplied": true,
     "actual_ui_transition_executed": false
@@ -398,7 +499,8 @@
   "limitations": [
     "The registry pointer is restored from its original table, not full startup.",
     "Queue capacity, queue submission, scheduling and mode replies are synthetic.",
-    "OpenSession notifications are replayed after the callback; downstream UI listeners are absent.",
+    "OpenSession notifications are replayed after the callback; UI listeners run with supplied display-parameter refresh and event wakeup.",
+    "Menu event admission is synthetic; the UI event is marked pending but not consumed by the menu worker.",
     "Peripheral and task cleanup endpoints in CloseSession are host boundaries.",
     "No native menu No callback, physical USB disconnect or display output is executed.",
     "Preservation only covers the native instructions executed by these cases."

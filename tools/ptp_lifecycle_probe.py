@@ -153,15 +153,16 @@ def session_close(image):
                 host_boundaries=boundaries, actual_ui_transition_executed=False)
 
 
-def session_open(image):
+def session_open(image, menu_event_enabled=False):
     probe = Probe(image)
     sentinel, writes = context_watch(probe)
     frames, queued, allocations, consumed = [], [], [], []
-    parameters, notifications = [], []
+    parameters, notifications, ui_events, wake_events = [], [], [], []
     boundaries = (0x104C7568, 0x1047A0A6, 0x104C8128, 0x104C17FE,
                   0x104C0F20, 0x104C101C, 0x104C1048, 0x1052E450,
                   0x1052E320, 0x10544C3A, 0x10543F92, 0x10545B84,
-                  0x10463618, 0x1054419E)
+                  0x10463618, 0x1054419E, 0x104BA790, 0x1043AD0C,
+                  0x10736896, 0x1062E472)
     for address in boundaries:
         probe.hooks[address - BASE] = lambda *args: 0
 
@@ -200,11 +201,30 @@ def session_open(image):
         notifications.append(dict(event=hex(event), words=list(struct.unpack(
             '<4I', u.mem_read(payload, 16)))))
 
+    def ui_event(u, address, size, unused):
+        event, payload = (u.reg_read(r) for r in probe.regs[:2])
+        ui_events.append(dict(event=hex(event), words=list(struct.unpack(
+            '<4I', u.mem_read(payload, 16)))))
+
+    def wake(event, mask, *args):
+        wake_events.append(dict(event_object=hex(event), mask=hex(mask)))
+        return 0
+
     probe.hooks.update({0x341034: zero, 0x340F44: probe.copy,
                         0x4A0F4E: capture, 0x38ECF8: allocate,
                         0x3846AC: enqueue, 0x38ED0C: release,
-                        0x526440: parameter})
+                        0x526440: parameter, 0x3410CC: wake})
     probe.u.hook_add(UC_HOOK_CODE, observe, begin=0x1052E3AE, end=0x1052E3AE)
+    probe.u.hook_add(UC_HOOK_CODE, ui_event, begin=0x107392D6, end=0x107392D6)
+    # Register the original notification bridge and UI event receiver through
+    # their native APIs. Display-parameter refresh remains a host boundary.
+    probe.call(0x716462, 2)
+    probe.call(0x60D708, 1, 0x104BE04D)
+    require(probe.word(0xB2B2CB7C) == 0x107363F3 and
+            probe.word(0xB2989C40) == 0x104BE04D,
+            'Native UI listener registration differs')
+    if menu_event_enabled:
+        probe.call(0x49F2D4, 0x17E)
     probe.packet(7, opcode=0x1002, length=16)
     require(probe.call(0x459838, 0, probe.INPUT) == 1 and len(frames) == 1 and
             struct.unpack_from('<H', frames[0])[0] == 0x1002,
@@ -227,6 +247,11 @@ def session_open(image):
     probe.call(0x4F0AD0, queued.pop(0))
     require(consumed == [50, 9] and not queued and
             notifications == [dict(event='0x4090004', words=[0, 0, 0, 1])] and
+            ui_events == [dict(event='0x4030026', words=[0, 0, 0, 1])] and
+            bytes(probe.u.mem_read(0xB201BD50, 16)) == struct.pack('<4I', 0, 0, 0, 1) and
+            probe.u.mem_read(0xB201C739 + 0x17E, 1)[0] == int(menu_event_enabled) and
+            wake_events == ([dict(event_object='0x0', mask='0x4')]
+                            if menu_event_enabled else []) and
             parameters == [dict(number='0x2300', value=0)] and
             bytes(probe.u.mem_read(CONTEXT, CONTEXT_SIZE)) == sentinel and not writes,
             'Covered OpenSession work chain changed')
@@ -235,9 +260,16 @@ def session_open(image):
                 operation_handler='0x1050c6c4', native_queue_consumer='0x10510ad0',
                 consumed_events=consumed, event_9_handler='0x1050b7ac',
                 emitted_notifications=notifications, parameter_writes=parameters,
+                ui_events=ui_events, menu_event='0x17e',
+                menu_event_enabled_is_synthetic=True,
+                menu_event_enabled=menu_event_enabled,
+                menu_event_pending=bool(probe.u.mem_read(0xB201C739 + 0x17E, 1)[0]),
+                wake_events=wake_events,
                 context_preserved=True, native_context_writes=writes,
                 notification_replayed_after_callback=True,
-                downstream_notification_listeners_registered=False,
+                downstream_notification_listeners_registered=True,
+                display_parameter_refresh_executed=False,
+                menu_event_consumed=False,
                 host_boundaries=[hex(a) for a in boundaries],
                 allocation_and_queue_and_parameter_storage_are_supplied=True,
                 actual_ui_transition_executed=False)
@@ -278,7 +310,9 @@ def run(image):
                 queue_sender='0x10205698', reply_decoder='0x104328de',
                 message_cases=[service_message(image, mode, flag)
                                for mode in (0, 1) for flag in (0, 1)],
-                session_open=session_open(image), session_close=session_close(image),
+                session_open=session_open(image),
+                session_open_menu_event_enabled=session_open(image, True),
+                session_close=session_close(image),
                 update_result_wait_entry='0x10767136',
                 update_result_wait_cases=[update_result_wait(image, bits) for bits in (1, 2)],
                 actual_camera_access=False, menu_cancel_executed=False,
@@ -286,7 +320,8 @@ def run(image):
                 limitations=[
                     'The registry pointer is restored from its original table, not full startup.',
                     'Queue capacity, queue submission, scheduling and mode replies are synthetic.',
-                    'OpenSession notifications are replayed after the callback; downstream UI listeners are absent.',
+                    'OpenSession notifications are replayed after the callback; UI listeners run with supplied display-parameter refresh and event wakeup.',
+                    'Menu event admission is synthetic; the UI event is marked pending but not consumed by the menu worker.',
                     'Peripheral and task cleanup endpoints in CloseSession are host boundaries.',
                     'No native menu No callback, physical USB disconnect or display output is executed.',
                     'Preservation only covers the native instructions executed by these cases.'])

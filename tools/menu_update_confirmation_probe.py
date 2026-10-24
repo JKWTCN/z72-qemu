@@ -107,13 +107,13 @@ class ConfirmationProbe(NativeUpdateProbe):
                     default_selected_row=selected, context_preserved=self.retained(),
                     authentication_entered=False)
 
-    def dispatch(self, row, stop_offset=None):
+    def dispatch(self, row, stop_offset=None, event=0x27D):
         self.u.mem_write(OBJECT + 0x16, struct.pack('<HH', row, 0))
         self.fixed(0x10630814, 0)  # UI dispatch guard.
         self.fixed(0x1063082A, 0)
         self.fixed(0x1073EAA8, 0)  # Special-event handling, absent in this fixture.
         self.fixed(0x1063C7D4, 0)  # Optional UI recording setting.
-        return self.call(0x42E636, OBJECT, 0x27D, stop_offset=stop_offset)
+        return self.call(0x42E636, OBJECT, event, stop_offset=stop_offset)
 
 
 def menu_no(master, package):
@@ -298,6 +298,47 @@ def menu_no_navigation(master, package):
                 intercepted_events=events)
 
 
+def menu_session_event(master, package):
+    probe = NavigationProbe(master, package)
+    probe.prepare()
+    stack, root = probe.SCRATCH + 0x8000, 0xB2BB7238
+    probe.u.mem_write(stack, struct.pack('<IIIIIII', 4, 8, 3, stack + 16,
+                                         root, OBJECT - 44, OBJECT))
+    probe.put_word(0xB181C570, stack)
+    probe.call(0x5FDA98, 2, 0xB2BB720C)
+    properties = probe.word(OBJECT + 0x28)
+    tables = probe.word(properties + 16)
+    rows = []
+    for row in (0, 1):
+        table = probe.word(tables + row * 4)
+        index = probe.call(0x617CC0, table, 0x17E)
+        record = table + index * 16
+        require(index == 30 and probe.word(record) == 0x31A and
+                probe.word(record + 4) == 0 and probe.word(record + 8) == 0,
+                'Session event did not resolve to the original default record')
+        returned = probe.dispatch(row, event=0x17E)
+        require(returned == 0x430 and probe.retained(),
+                'Session event changed confirmation dispatch or checksum context')
+        rows.append(dict(row=row, default_record=hex(record), returned=hex(returned)))
+    dispatched = []
+    probe.u.hook_add(UC_HOOK_CODE,
+                    lambda u, a, size, unused: dispatched.append(hex(u.reg_read(probe.regs[0]))),
+                    begin=0x1044E636, end=0x1044E636)
+    probe.fixed(0x1062E472, 0)  # UI event logging.
+    probe.call(0x42E7A4, 0x17E)  # Original dispatch through the page and its parent.
+    require(dispatched == [hex(OBJECT), hex(root)] and
+            probe.call(0x61C2B2) == OBJECT and probe.word(stack + 8) == 3 and
+            probe.retained(), 'Session event changed the synthetic menu navigation')
+    require('0x1070297c' not in probe.entries and '0x1063aec2' not in probe.entries,
+            'Session event invoked a confirmation choice callback')
+    return dict(event='0x17e', rows=rows, choice_callback_invoked=False,
+                context_preserved=probe.retained(), native_context_writes=probe.context_writes,
+                ancestor_dispatch_executed=True, dispatched_objects=dispatched,
+                current_page_after='0x2d8', stack_depth_after=3,
+                parent_selection_is_synthetic=True,
+                global_event_worker_executed=False)
+
+
 def run(master, package):
     validate_master(master)
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
@@ -310,6 +351,7 @@ def run(master, package):
                                       callback='0x1063aec2', purpose='return to preceding page')],
                 no=menu_no(master, package), yes=menu_yes(master, package),
                 no_navigation=menu_no_navigation(master, package),
+                session_event=menu_session_event(master, package),
                 actual_camera_access=False,
                 limitations=[
                     'Directory, file I/O and installed versions are runtime fixtures.',
