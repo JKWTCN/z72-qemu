@@ -38,6 +38,7 @@
 - [输入处理配置与初始拍摄界面](z7ii/input_configuration.md)
 - [启动后的五秒时限与供电状态](z7ii/startup_idle_timer.md)
 - [菜单固件更新路径与实验更新存储](z7ii/firmware_update.md)
+- [C 1.70 更新确认页与摘要启动时序](z7ii/menu_confirmation.md)
 - [USB/PTP 厂商命令分派、诊断门槛与内存输出](z7ii/ptp_dispatch.md)
 - [GetDeviceInfo 操作码公告表与实机记录对照](z7ii/ptp_device_info.md)
 - [PTP 内层服务、固定 RAM 读取与菜单确认边界](z7ii/ptp_service.md)

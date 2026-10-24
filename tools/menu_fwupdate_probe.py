@@ -6,9 +6,9 @@ interrupt wired, periodic frame synchronization). Every requested tab index
 gets its own fresh machine: the menu application opens once, the tab strip
 moves right to the index, the item list walks downward and the OK key
 confirms the lowest reached item, with the display recorded after each
-step. One fresh boot per tab avoids the documented menu reopen boundary. A breakpoint on the original firmware-management service
-eligibility entry reports whether the key path alone reaches the service
-that the whole update flow starts from. The probe changes no firmware
+step. One fresh boot per tab avoids the documented menu reopen boundary.
+Breakpoints on the original menu-facing eligibility and version APIs report
+whether the key path reaches these update queries. The probe changes no firmware
 bytes and writes no runtime state; menu settings changed by OK presses on
 unrelated items live only inside this ephemeral machine.
 """
@@ -44,11 +44,10 @@ OK_PIN = 3
 DOWN_PIN = 4
 RIGHT_PIN = 7
 SYNC_WAIT = 0x102d949e
-# CFirmwareManagementService entries: the eligibility check (master file
-# offset 0x747048) runs when an update is offered; the version-list method
-# (0x747092) is what a firmware-version page would call first.
-SERVICE_ENTRY = BASE + 0x747048
-VERSION_ENTRY = BASE + 0x747092
+# The original menu calls these APIs. The separately named service wrappers
+# at offsets 0x747048 / 0x747092 are not the menu's direct query route.
+SERVICE_ENTRY = BASE + 0x61CC1C
+VERSION_ENTRY = BASE + 0x61CB3A
 WATCHED = (SERVICE_ENTRY, VERSION_ENTRY)
 DEFAULT_TABS = (4, 5, 3, 2, 1, 0)
 DEFAULT_ITEMS = 24
@@ -110,7 +109,8 @@ def run_tab(args, tab):
         remote = wire = None
         report = dict(format=1, passed=False, tab=tab, menu_pin=MENU_PIN, exit_pin=EXIT_PIN,
                       ok_pin=OK_PIN, down_pin=DOWN_PIN, right_pin=RIGHT_PIN,
-                      service_entry=hex(SERVICE_ENTRY), firmware_sha256=identities,
+                      service_entry=hex(SERVICE_ENTRY), version_entry=hex(VERSION_ENTRY),
+                      firmware_sha256=identities,
                       controller_sha256=CONTROLLER_SHA256, firmware_modified=False,
                       runtime_state_written=False, full_boot_verified=True,
                       periodic_frame_sync=True, key_interrupt_wired=True,
@@ -350,7 +350,8 @@ def run(args):
     require(0 < args.items <= 40, 'Item count must be in (0, 40]')
     tabs = tuple(int(value) for value in args.tabs.split(','))
     report = dict(format=1, passed=False, tabs=list(tabs), items=args.items,
-                  service_entry=hex(SERVICE_ENTRY), service_activated=False,
+                  service_entry=hex(SERVICE_ENTRY), version_entry=hex(VERSION_ENTRY),
+                  service_activated=False,
                   runs=[], errors=[])
     for tab in tabs:
         for attempt in range(3):
