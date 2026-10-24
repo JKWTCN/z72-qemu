@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "scope": "Contiguous eight-byte values in original non-engine members; B8 and K8 interpretations",
+  "members": [
+    {
+      "name": "ex1840_013000.bi",
+      "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+      "windows": 524283,
+      "sha1_comparisons": 1048566
+    },
+    {
+      "name": "_tpj01_v140.bin",
+      "sha256": "e60998537d46a15c430154aeeb589026aca015256d27e2d5990589d23a59c88e",
+      "windows": 57339,
+      "sha1_comparisons": 114678
+    },
+    {
+      "name": "vr1840_010100.bi",
+      "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+      "windows": 838657,
+      "sha1_comparisons": 1677314
+    }
+  ],
+  "matches": [],
+  "initializer_found": false,
+  "firmware_included": false,
+  "k8_recovered": false,
+  "total_windows": 1420279,
+  "total_sha1_comparisons": 2840558,
+  "original_package_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+  "decoded_marked_body_sha256": "f53ab7dd6eb417adaac98d617bbf95f89b09f9176ba93a48853e3d825a24fe17",
+  "limits": "No exclusion of runtime construction, noncontiguous encodings, communication inputs or separately stored configuration"
+}

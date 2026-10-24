@@ -1,0 +1,309 @@
+{
+  "format": 1,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "segments": [
+    {
+      "name": "master_rom",
+      "runtime_base": "0x10020000",
+      "source_offset": "0x0",
+      "length": 38239096
+    },
+    {
+      "name": "startup_copy_0",
+      "runtime_base": "0xb1800000",
+      "source_offset": "0x2379f94",
+      "length": 716216
+    },
+    {
+      "name": "startup_copy_1",
+      "runtime_base": "0xb2bb0000",
+      "source_offset": "0x2428d80",
+      "length": 4188
+    },
+    {
+      "name": "startup_copy_2",
+      "runtime_base": "0xb2bb1080",
+      "source_offset": "0x2429e00",
+      "length": 289748
+    },
+    {
+      "name": "startup_copy_3",
+      "runtime_base": "0xb5f00000",
+      "source_offset": "0x2470a00",
+      "length": 29048
+    }
+  ],
+  "targets": [
+    "0x103bf6cc",
+    "0x103a48cc",
+    "0x1032b44e",
+    "0x103713b8",
+    "0x1039a508"
+  ],
+  "direct_edges": [
+    {
+      "segment": "master_rom",
+      "member_offset": "0xe273c",
+      "pc": "0x1010273c",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0xe275e",
+      "pc": "0x1010275e",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0xe277c",
+      "pc": "0x1010277c",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0xe279a",
+      "pc": "0x1010279a",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0xe27c6",
+      "pc": "0x101027c6",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x37a4e4",
+      "pc": "0x1039a4e4",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x37a540",
+      "pc": "0x1039a540",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3848d4",
+      "pc": "0x103a48d4",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x39fe74",
+      "pc": "0x103bfe74",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x39ff2e",
+      "pc": "0x103bff2e",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a0074",
+      "pc": "0x103c0074",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a00aa",
+      "pc": "0x103c00aa",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a02fe",
+      "pc": "0x103c02fe",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a0a5a",
+      "pc": "0x103c0a5a",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103bf6cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x30b44e",
+      "pc": "0x1032b44e",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x384916",
+      "pc": "0x103a4916",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3849ee",
+      "pc": "0x103a49ee",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x38b7f4",
+      "pc": "0x103ab7f4",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a0286",
+      "pc": "0x103c0286",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a02a2",
+      "pc": "0x103c02a2",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a02be",
+      "pc": "0x103c02be",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x3a02da",
+      "pc": "0x103c02da",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x46d5f0",
+      "pc": "0x1048d5f0",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103a48cc"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x309a2a",
+      "pc": "0x10329a2a",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x1032b44e"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x309a3a",
+      "pc": "0x10329a3a",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x1032b44e"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x309b16",
+      "pc": "0x10329b16",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x1032b44e"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x309b26",
+      "pc": "0x10329b26",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x1032b44e"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x287d40",
+      "pc": "0x102a7d40",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103713b8"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x744d7e",
+      "pc": "0x10764d7e",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103713b8"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x746084",
+      "pc": "0x10766084",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x103713b8"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x492ff8",
+      "pc": "0x104b2ff8",
+      "mode": "thumb",
+      "kind": "wide_branch",
+      "target": "0x1039a508"
+    },
+    {
+      "segment": "master_rom",
+      "member_offset": "0x38496e",
+      "pc": "0x103a496e",
+      "mode": "thumb",
+      "kind": "short_branch",
+      "target": "0x103a48cc"
+    }
+  ],
+  "exact_pointer_words": [],
+  "pc_relative_or_mov_pair_addresses": [],
+  "initializer_found": false,
+  "firmware_included": false,
+  "k8_recovered": false,
+  "scope": "Raw full-master and startup-copy instruction-pattern audit of five known write interfaces; not a complete indirect-call proof",
+  "address_constructor_limit": "ARM/Thumb ADR and matching MOVW/MOVT within at most sixteen instructions; bounded early termination",
+  "additional_short_edge_object_id": 69
+}
