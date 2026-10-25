@@ -71,6 +71,37 @@ python ./ptp_failed_auth_probe.py --execute \
 读取完成后可正常关机;**删除 SD 卡上的坏摘要文件**。如需进一步确认,
 可用同一材料对其他历史官方包逐一复验 SHA-1 头(同一机型固件线共钥)。
 
+## 5. 签名工具链闭环(2026-10-25 阶段 1 完成)
+
+`analyze/update_container.py` 新增 `pack_member`/`pack_container`(目录、
+成员零残差 CRC、容器尾部的完整打包器,产物必须原样通过
+`describe_container`)。`tools/resign_update.py` 在此之上完成整包重建:
+
+```bash
+python ./resign_update.py \
+    --master ../../../Temporary/2610/07/Z_72/eg1840_mas_01700.bin \
+    --original ../../../Temporary/2610/24/z72/Z7_2_0170.bin \
+    --material <本地密钥文件:8 字节原始或含 b8/boot_key 十六进制字段的 JSON> \
+    --output ../.local/resigned_0170.bin
+```
+
+流程:解码原包 → 拆成员 → 重打包(**要求与解码正文逐字节一致**)→
+用镜像内码表重编码 → 以本地密钥重算整包 SHA-1 → 重组文件 →
+`verify_update` 复验。判读字段:`rebuilt_body_identical`(打包器回环)、
+`digest_matches_original_header`(密钥正确性)、`package_identical`
+(与官方文件逐字节一致)。
+
+**阶段 1 实测结果**:以恢复的密钥重签未修改的 C 1.70,三项全真——
+重建文件与官方 `Z7_2_0170.bin` 逐字节一致(SHA-256 相同);同密钥同样
+复现 1.62 历史包摘要;翻转密钥 1 位的负对照两项皆假。签名模型(容器
+结构/码表编解码/摘要方案/密钥)至此完整闭环。密钥文件仅存本地,本仓库
+不含任何密钥字节。
+
+认证"通过"分支的既有证据:QEMU 对照已用合成材料执行过成功/失败两种
+摘要比对(见[服务分析](../research/z7ii/ptp_service.md)),本节的重签
+逐字节一致把同一模型钉在真实文件上;完整菜单路径的模拟器复跑属于
+下一阶段。
+
 ## 边界
 
 - 本工具不发任何更新类操作码,不进行菜单输入;相机侧操作由使用者完成。

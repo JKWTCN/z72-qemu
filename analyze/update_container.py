@@ -60,3 +60,43 @@ def master_member(payload):
     require(len(masters) == 1, 'Expected exactly one master update member')
     member = masters[0]
     return body[member['offset']:member['offset'] + member['length']]
+
+
+def pack_member(payload):
+    """Append the big-endian zero-residue CRC to one member payload."""
+    require(isinstance(payload, (bytes, bytearray)) and len(payload) >= 0,
+            'Invalid member payload')
+    return bytes(payload) + crc(payload).to_bytes(2, 'big')
+
+
+def pack_container(entries):
+    """Pack (name, payload) pairs, payload without its CRC, into a body.
+
+    The result carries the 32-space marker, the big-endian directory, each
+    member with its zero-residue CRC, and the container trailer; it must
+    pass describe_container unchanged.
+    """
+    require(0 < len(entries) <= 64, 'Invalid update member count')
+    names = set()
+    for name, _ in entries:
+        require(isinstance(name, (bytes, bytearray)) and
+                re.fullmatch(rb'[A-Za-z0-9_.-]+', bytes(name)) is not None
+                and bytes(name) not in (b'.', b'..') and bytes(name) not in names
+                and len(bytes(name)) <= 16,
+                'Invalid or duplicate member name: ' + repr(name))
+        names.add(bytes(name))
+    count = len(entries)
+    header = 0x30 + count * 0x20
+    packed = [pack_member(payload) for _, payload in entries]
+    directory = struct.pack('>4I', count, header, 0, 0)
+    offset = header
+    rows = []
+    for (name, _), member in zip(entries, packed):
+        rows.append(struct.pack('>16s4I', bytes(name).ljust(16, b'\0'),
+                                offset, len(member), 0, 0))
+        offset += len(member)
+    body = b' ' * 0x20 + directory + b''.join(rows) + b''.join(packed)
+    trailer = crc(body).to_bytes(2, 'big') + bytes(14)
+    result = body + trailer
+    describe_container(result)
+    return result
