@@ -10,7 +10,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev
           python3 -m venv .venv
-          .venv/bin/python -m pip install unicorn
+          .venv/bin/python -m pip install unicorn capstone
       - name: Source and synthetic checks
         run: |
           . .venv/bin/activate
