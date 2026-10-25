@@ -1,0 +1,127 @@
+{
+  "format": 1,
+  "source": "user-provided camera execution report",
+  "firmware_included": false,
+  "model": "Z 7_2",
+  "version": "V1.70",
+  "target": "0xb1809888",
+  "requested_bytes": 32,
+  "baseline_f032": {
+    "outer": "0x2001",
+    "inner": "0x2001",
+    "received_bytes": 32,
+    "sha256": "dacbbc038c7c43429d95d7c78600b6d12b1e07cf09d97e8eef6b5eb5e6bf4fca"
+  },
+  "f044": {
+    "outer": "0x2001",
+    "inner": [
+      "0xa001",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0"
+    ],
+    "received_bytes": 0
+  },
+  "service_exit_completed": true,
+  "host_transport_timeout_reported": false,
+  "fixed_ram_comparison_passed": false,
+  "boot_memory_read_executed": false,
+  "memory_write_command_sent": false,
+  "actual_failure_cause_identified": false,
+  "diagnostic_observation": {
+    "completed": false,
+    "targets": [
+      {
+        "target": "usb_descriptor",
+        "address": "0xb1809888",
+        "bytes": 16,
+        "reads": [
+          {
+            "phase": "before",
+            "elapsed_ms": 7.248,
+            "outer": "0x2001",
+            "inner": [
+              "0x2001",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "received_bytes": 16,
+            "sha256": "99035f0c9795851cf872f2e5a8508d65da01ced1f4e509dc06e144f2c765a6e0"
+          },
+          {
+            "phase": "async",
+            "elapsed_ms": 7.274,
+            "outer": "0x2001",
+            "inner": [
+              "0xa001",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "received_bytes": 0
+          }
+        ]
+      }
+    ],
+    "async_state_before": {
+      "completion": {
+        "code": "0x0",
+        "result": "0x0"
+      },
+      "worker": {
+        "callback": "0x0",
+        "output": "0x0",
+        "requested_address": "0x0",
+        "requested_bytes": 0
+      },
+      "reply_header": {
+        "status": 0,
+        "bytes": 0,
+        "address": "0x0"
+      }
+    },
+    "async_state_after": {
+      "completion": {
+        "code": "0x3010001",
+        "result": "0x0"
+      },
+      "worker": {
+        "callback": "0x104af52f",
+        "output": "0xb7a4802c",
+        "requested_address": "0xb1809888",
+        "requested_bytes": 16
+      },
+      "reply_header": {
+        "status": 1,
+        "bytes": 16,
+        "address": "0xb1809888"
+      }
+    },
+    "diagnosis": {
+      "request_fields_match": true,
+      "state_changed": true,
+      "completion_changed": true,
+      "reply_header_changed": true,
+      "observations": [
+        "completion_result_zero",
+        "reply_status_nonzero"
+      ],
+      "cause_confirmed": false,
+      "limitation": "Snapshots are not atomic and may contain stale state; elapsed time does not prove a timeout."
+    },
+    "service_exit_completed": true,
+    "cleanup_notes": [],
+    "assessment": {
+      "matching_failed_reply_strongly_supported": true,
+      "original_peer_status_recoverable_from_normalized_header": false,
+      "specific_peer_error_identified": false,
+      "f044_internal_wait_result_directly_observed": false,
+      "boot_memory_read_verified": false,
+      "next_step": "Offline peer protocol or log-path analysis; do not repeat this camera read or expand its address range."
+    }
+  }
+}

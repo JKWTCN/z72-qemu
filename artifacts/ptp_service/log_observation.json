@@ -1,0 +1,54 @@
+{
+  "format": 1,
+  "identity": {
+    "manufacturer": "Nikon Corporation",
+    "model": "Z 7_2",
+    "version": "V1.70"
+  },
+  "completed": false,
+  "stage": "baseline",
+  "original_gates": {
+    "log_retention": {
+      "address": "0xb180048c",
+      "value": 0
+    },
+    "debug_admission": {
+      "address": "0xb1800474",
+      "value": 0
+    }
+  },
+  "gate_writes_attempted": [],
+  "restoration": [],
+  "dumps": [],
+  "gates_restored": true,
+  "service_exit_completed": true,
+  "error": "Nested service response failed: (8193, [8221, 0, 0, 0, 0])",
+  "source": "user-provided camera execution report",
+  "firmware_included": false,
+  "failure_address_inferred_from_fixed_request_order": "0xb20d2d6a",
+  "failure_bytes": 1,
+  "inner_response": "0x201d",
+  "memory_write_command_sent": false,
+  "dump_command_sent": false,
+  "actual_object8_cache_range_observed": true,
+  "guard_inspection_observation": {
+    "completed": true,
+    "stage": "guard:observations_complete",
+    "writes_camera_ram": false,
+    "writes_flash": false,
+    "gate_writes_attempted": [],
+    "dumps": [],
+    "service_exit_completed": true,
+    "guard_inspection": {
+      "descriptor_address": "0xb185ec50",
+      "region_address": "0xb185e724",
+      "cached_base": "0xb20d2894",
+      "cached_bytes": 131068,
+      "region_capacity": 131072,
+      "inclusive_end": "0xb20f288f",
+      "configuration_address": "0xb20d2d6a",
+      "configuration_overlaps_cached_object": true,
+      "limitation": "Two non-atomic metadata reads; no write permission is tested or granted."
+    }
+  }
+}

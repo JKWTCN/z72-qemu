@@ -39,6 +39,266 @@
       "serial_restore_drains_pending_records": true
     }
   ],
+  "fixed_gate_writes": [
+    {
+      "name": "log_retention",
+      "address": "0xb180048c",
+      "bytes": 1,
+      "original_value": 0,
+      "enabled_and_restored": true
+    },
+    {
+      "name": "debug_admission",
+      "address": "0xb1800474",
+      "bytes": 1,
+      "original_value": 0,
+      "enabled_and_restored": true
+    },
+    {
+      "name": "diagnostic_configuration",
+      "address": "0xb20d2d6a",
+      "bytes": 1,
+      "original_value": 0,
+      "enabled_and_restored": true
+    }
+  ],
+  "fixed_gate_writes_fixture": "Object 8 cache base is uninitialized (zero); not live write permission.",
+  "dynamic_object8_guard": {
+    "descriptor_address": "0xb185ec50",
+    "region_address": "0xb185e724",
+    "region_bytes": 131072,
+    "cases": [
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "log_retention",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "log_retention",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "debug_admission",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "debug_admission",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "diagnostic_configuration",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "uninitialized",
+        "supplied_cached_base": "0x0",
+        "supplied_cached_bytes": 0,
+        "gate": "diagnostic_configuration",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "log_retention",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "log_retention",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "debug_admission",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "debug_admission",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "diagnostic_configuration",
+        "command": "0xf032",
+        "accepted": false
+      },
+      {
+        "fixture": "synthetic_initialized",
+        "supplied_cached_base": "0xb20c0000",
+        "supplied_cached_bytes": 131072,
+        "gate": "diagnostic_configuration",
+        "command": "0xf033",
+        "accepted": false
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "log_retention",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "log_retention",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "debug_admission",
+        "command": "0xf032",
+        "accepted": true
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "debug_admission",
+        "command": "0xf033",
+        "accepted": true
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "diagnostic_configuration",
+        "command": "0xf032",
+        "accepted": false
+      },
+      {
+        "fixture": "observed_camera_range",
+        "supplied_cached_base": "0xb20d2894",
+        "supplied_cached_bytes": 131068,
+        "gate": "diagnostic_configuration",
+        "command": "0xf033",
+        "accepted": false
+      }
+    ],
+    "actual_runtime_base_observed": true,
+    "observed_inclusive_end": "0xb20f288f",
+    "metadata_read_ranges_accepted_in_all_fixtures": true
+  },
+  "configuration_setter": {
+    "entry": "0x103c0a12",
+    "direct_callers": [
+      {
+        "caller": "0x10373078",
+        "index": "0x90"
+      },
+      {
+        "caller": "0x10479d94",
+        "index": "0x4d5"
+      },
+      {
+        "caller": "0x104afea8",
+        "index": "0x4d5"
+      },
+      {
+        "caller": "0x104b24aa",
+        "index": "0x41c"
+      },
+      {
+        "caller": "0x104b2528",
+        "index": "0x351"
+      },
+      {
+        "caller": "0x104b254c",
+        "index": "0x351"
+      },
+      {
+        "caller": "0x104b259a",
+        "index": "0x417"
+      },
+      {
+        "caller": "0x104b2600",
+        "index": "0x41b"
+      },
+      {
+        "caller": "0x104b2a58",
+        "index": "0x11e"
+      },
+      {
+        "caller": "0x104b2c0e",
+        "index": "0x11e"
+      },
+      {
+        "caller": "0x104b309c",
+        "index": "0x426"
+      },
+      {
+        "caller": "0x10774882",
+        "index": "0x12"
+      },
+      {
+        "caller": "0x10774a8a",
+        "index": "0x14"
+      }
+    ],
+    "supplied_setter_index": "0x4d6",
+    "notification_object": 8,
+    "notification_boundary_supplied": true,
+    "actual_camera_execution": false,
+    "limitation": "Direct branch scan does not exclude indirect calls or other setters; no usable PTP entry for 0x4d6 is established."
+  },
+  "queued_dumps": [
+    {
+      "address": "0xb1809880",
+      "supplied_data_is_synthetic": true,
+      "command_bytes": 28,
+      "queue_busy_before_consumer": true,
+      "queue_busy_after_consumer": false,
+      "original_record_parsed": true,
+      "consumer_scheduling_supplied": true
+    },
+    {
+      "address": "0x10000080",
+      "supplied_data_is_synthetic": true,
+      "command_bytes": 28,
+      "queue_busy_before_consumer": true,
+      "queue_busy_after_consumer": false,
+      "original_record_parsed": true,
+      "consumer_scheduling_supplied": true
+    }
+  ],
   "actual_camera_access": false,
   "queued_ptp_line_consumer_verified": false,
   "limitations": [

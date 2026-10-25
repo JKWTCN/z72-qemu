@@ -1,0 +1,341 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "diagnostic_ranges": [
+    {
+      "name": "completion",
+      "address": "0xb188bc98",
+      "bytes": 8,
+      "original_f032_read_accepted": true
+    },
+    {
+      "name": "worker",
+      "address": "0xb18a7b7c",
+      "bytes": 112,
+      "original_f032_read_accepted": true
+    },
+    {
+      "name": "reply_header",
+      "address": "0xb2b3a444",
+      "bytes": 12,
+      "original_f032_read_accepted": true
+    }
+  ],
+  "cases": [
+    {
+      "name": "request_rejected",
+      "supplied_output_buffer_is_null": true,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 32,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x50006000"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x0",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [],
+      "returned": 0,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          40961,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": false
+    },
+    {
+      "name": "wait_failed",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 1,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 32,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x50006000"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 0,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          40961,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": false
+    },
+    {
+      "name": "unexpected_completion_code",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 32,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x50006000"
+      ],
+      "wrong_completion_code_supplied": true,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 0,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          40961,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": false
+    },
+    {
+      "name": "reply_status_nonzero",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 1,
+      "supplied_reply_bytes": 32,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x0"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 0,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          40961,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": false
+    },
+    {
+      "name": "reply_length_mismatch",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 31,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x0"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 0,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          40961,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": false
+    },
+    {
+      "name": "successful_read",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 32,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x50006000"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 32,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 1,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          8193,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": true
+    },
+    {
+      "name": "short_successful_read",
+      "supplied_output_buffer_is_null": false,
+      "supplied_wait_result": 0,
+      "supplied_reply_status": 0,
+      "supplied_reply_bytes": 16,
+      "native_reply_completion": [
+        "0x3010001",
+        "0x50006000"
+      ],
+      "wrong_completion_code_supplied": false,
+      "requests": [
+        {
+          "address": "0xb1809888",
+          "bytes": 16,
+          "output": "0x50006000",
+          "callback": "0x104af52f"
+        }
+      ],
+      "wait_arguments": [
+        7000
+      ],
+      "returned": 1,
+      "response": {
+        "outer": 8193,
+        "parameters": [
+          8193,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "data_phase_submitted": true
+    }
+  ],
+  "wire_reply_cases": [
+    {
+      "supplied_wire_command": 2,
+      "supplied_wire_status": 0,
+      "normalized_status": 0,
+      "reply_bytes": 16,
+      "reply_address": "0xb1809888",
+      "decoded_header": "0xb25ea950",
+      "worker_header": "0xb2b3a444",
+      "worker_events": [
+        8
+      ],
+      "completion_code": "0x3010001",
+      "completion_result": "0x50006000",
+      "synthetic_payload_copied": true
+    },
+    {
+      "supplied_wire_command": 2,
+      "supplied_wire_status": 1,
+      "normalized_status": 1,
+      "reply_bytes": 16,
+      "reply_address": "0xb1809888",
+      "decoded_header": "0xb25ea950",
+      "worker_header": "0xb2b3a444",
+      "worker_events": [
+        8
+      ],
+      "completion_code": "0x3010001",
+      "completion_result": "0x0",
+      "synthetic_payload_copied": false
+    },
+    {
+      "supplied_wire_command": 2,
+      "supplied_wire_status": 7,
+      "normalized_status": 1,
+      "reply_bytes": 16,
+      "reply_address": "0xb1809888",
+      "decoded_header": "0xb25ea950",
+      "worker_header": "0xb2b3a444",
+      "worker_events": [
+        8
+      ],
+      "completion_code": "0x3010001",
+      "completion_result": "0x0",
+      "synthetic_payload_copied": false
+    },
+    {
+      "supplied_wire_command": 2,
+      "supplied_wire_status": 255,
+      "normalized_status": 1,
+      "reply_bytes": 16,
+      "reply_address": "0xb1809888",
+      "decoded_header": "0xb25ea950",
+      "worker_header": "0xb2b3a444",
+      "worker_events": [
+        8
+      ],
+      "completion_code": "0x3010001",
+      "completion_result": "0x0",
+      "synthetic_payload_copied": false
+    }
+  ],
+  "actual_camera_access": false,
+  "actual_failure_cause_identified": false,
+  "limitations": [
+    "Completion fixtures are prepared before the F044 handler; task scheduling is not executed.",
+    "The original request guard executes; kernel event submission and waits are supplied.",
+    "The same A001 reply covers all five failure cases; the reply alone cannot select one.",
+    "The successful payload is synthetic and does not verify the peer address space.",
+    "Wire replies are synthetic; nonzero peer status is normalized and loses its original value."
+  ]
+}
