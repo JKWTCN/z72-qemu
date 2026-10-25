@@ -21,7 +21,7 @@ from analyze.ptp_checksum_context import CONTEXT, CONTEXT_SIZE, capture, identit
 class UsbCamera:
     """Small PTP reader; keep the existing driver and never detach it."""
 
-    def __init__(self):
+    def __init__(self, timeout_ms=5000):
         import usb.core
         import usb.util
         self.util = usb.util
@@ -30,6 +30,8 @@ class UsbCamera:
         self.claimed, self.session, self.session_attempted = False, False, False
         self.pending = bytearray()
         self.transaction = 0
+        self.timeout_ms = timeout_ms
+        self.synchronized = True
         try:
             interfaces = [item for item in self.device.get_active_configuration()
                           if (item.bInterfaceClass, item.bInterfaceSubClass, item.bInterfaceProtocol)
@@ -55,22 +57,30 @@ class UsbCamera:
 
     def container(self):
         while len(self.pending) < 12:
-            self.pending.extend(self.device.read(self.input, 4096, timeout=5000))
+            self.pending.extend(self.device.read(self.input, 4096, timeout=self.timeout_ms))
         size, kind, code, transaction = struct.unpack_from('<IHHI', self.pending)
         require(12 <= size <= 2 * 1024 * 1024, 'Invalid PTP container size')
         while len(self.pending) < size:
-            self.pending.extend(self.device.read(self.input, 4096, timeout=5000))
+            self.pending.extend(self.device.read(self.input, 4096, timeout=self.timeout_ms))
         payload = bytes(self.pending[12:size])
         del self.pending[:size]
         return kind, code, transaction, payload
 
     def transact(self, opcode, args, receive_data):
+        require(self.synchronized, 'PTP stream is unsynchronized; no further commands')
+        try:
+            return self._transact(opcode, args, receive_data)
+        except BaseException:
+            self.synchronized = False
+            raise
+
+    def _transact(self, opcode, args, receive_data):
         if self.session:
             self.transaction += 1
         transaction = self.transaction if self.session else 0
         packet = struct.pack('<IHHI', 12 + 4 * len(args), 1, opcode, transaction)
         packet += struct.pack('<' + str(len(args)) + 'I', *args)
-        require(self.device.write(self.output, packet, timeout=5000) == len(packet),
+        require(self.device.write(self.output, packet, timeout=self.timeout_ms) == len(packet),
                 'Incomplete PTP command write')
         kind, code, received, payload = self.container()
         require(received == transaction, 'PTP transaction mismatch')
@@ -110,9 +120,11 @@ class UsbCamera:
 
     def __exit__(self, kind, error, traceback):
         try:
-            if self.session:
+            if self.session and self.synchronized:
                 _, reply = self.transact(0x1003, [], False)
                 require(reply[0] == 0x2001, 'PTP session close failed: ' + repr(reply))
+            elif self.session and error is not None:
+                error.add_note('PTP stream is unsynchronized; session close was not sent.')
         except Exception as exc:
             if error is None:
                 raise

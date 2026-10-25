@@ -28,6 +28,7 @@ def camera(chunks):
     result.pending = bytearray()
     result.input, result.output = 0x81, 2
     result.session, result.session_attempted, result.transaction = False, False, 0
+    result.timeout_ms, result.synchronized = 5000, True
     return result
 
 

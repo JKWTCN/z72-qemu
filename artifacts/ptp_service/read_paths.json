@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "firmware_included": false,
+  "cases": [
+    {
+      "selection": "admission byte only",
+      "admission_byte": 1,
+      "log_gate": 0,
+      "write_sequence": 2,
+      "read_sequence_before": 0,
+      "read_sequence_after": 2,
+      "serial_output_observed": true,
+      "record_bytes": 128,
+      "text_offset": 16,
+      "text_lengths": [
+        79,
+        79
+      ],
+      "synthetic_dump_text": " [50002000] 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f  [                ]",
+      "records_retained": false
+    },
+    {
+      "selection": "original output-selection function",
+      "admission_byte": 1,
+      "log_gate": 1,
+      "write_sequence": 2,
+      "read_sequence_before": 0,
+      "read_sequence_after": 0,
+      "serial_output_observed": false,
+      "record_bytes": 128,
+      "text_offset": 16,
+      "text_lengths": [
+        79,
+        79
+      ],
+      "synthetic_dump_text": " [50002000] 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f  [                ]",
+      "records_retained": true,
+      "serial_restore_drains_pending_records": true
+    }
+  ],
+  "actual_camera_access": false,
+  "queued_ptp_line_consumer_verified": false,
+  "limitations": [
+    "Dump contents are synthetic RAM, not boot material.",
+    "Command-name splitting and invocation of the consumer are supplied.",
+    "Kernel services report success; serial bytes are captured by the host."
+  ]
+}
