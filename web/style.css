@@ -484,3 +484,20 @@ footer {
     animation:none
   }
 }
+/* Shoulder panel observation card */
+.shoulder {
+  border:1px solid #252727;
+  background:#171919
+}
+.shoulder-body {
+  padding:10px 12px 12px;
+  display:grid;
+  gap:8px
+}
+.shoulder #shoulder {
+  display:block;
+  width:100%;
+  height:auto;
+  border:1px solid #252727;
+  image-rendering:pixelated
+}

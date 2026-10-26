@@ -36,6 +36,14 @@ APP_MANAGER = 0xb1811e40
 MENU_PIN = 9
 MENU_APPLICATION = 1
 ENGINE_ENTRY = 0x10020000
+# Original controller shoulder-panel state: the channel-8 snapshot copy, the
+# twelve-byte register structure the page functions compose, the panel
+# shadow registers and the panel power state byte.
+SHOULDER_SNAPSHOT = 0x20018AD4
+SHOULDER_STRUCT = 0x2001FB90
+SHOULDER_SHADOW = 0x2001FDA4
+SHOULDER_POWERED = 0x2001F5A2
+CONTROLLER_CPU = 4
 BOOT_AUXILIARY = (('group17.bin', 0x132c0000), ('group18.bin', 0x132e0000),
                   ('group32.bin', 0x13e80000))
 DEFAULT_STORE = ROOT / '.local' / 'console-update-store'
@@ -161,6 +169,8 @@ class Machine:
         # polling cannot starve key delivery of the monitor lock.
         self.frame_cache = (0.0, b'')
         self.frame_interval = 0.05
+        self.shoulder_cache = (0.0, None)
+        self.shoulder_interval = 0.4
         self.shutdown = threading.Event()
         self.worker = None
         self.watchdog = threading.Thread(target=self._release_expired, daemon=True)
@@ -246,7 +256,8 @@ class Machine:
             'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys,'
             'interrupt-gpio=/machine/controller/keys-gpio,interrupt-pin=8',
             f'nikon-z72-controller-register-bank,bus=controller-i2c0,address=107,initial-state={work / "primary.bin"}',
-            f'nikon-z72-controller-register-bank,bus=controller-i2c0,address=13,initial-state={work / "aux.bin"}')
+            f'nikon-z72-controller-panel,bus=controller-i2c0,address=13,'
+            f'id=shoulder,initial-state={work / "aux.bin"}')
         devices += tuple(f'loader,file={work / name},addr={address:#x},force-raw=on'
                          for name, address in (('group17.bin', 0x132c0000),
                                                ('group18.bin', 0x132e0000),
@@ -514,6 +525,45 @@ class Machine:
                  for value in re.findall(r'0x[0-9a-fA-F]+', line.split(':', 1)[1])]
         require(len(words) == count, 'Could not read machine state')
         return words
+
+    def _bytes(self, address, count, cpu=0):
+        text = self.qmp.command('human-monitor-command',
+            {'command-line': f'x /{count}bx {address:#x}', 'cpu-index': cpu})
+        values = [int(value, 16) for line in text.splitlines() if ':' in line
+                  for value in re.findall(r'0x[0-9a-fA-F]+', line.split(':', 1)[1])]
+        require(len(values) == count, 'Could not read machine state')
+        return bytes(values)
+
+    def shoulder(self):
+        """Read the original shoulder-panel state from controller memory.
+
+        The channel-8 snapshot at 0x20018AD4 is the master engine's own panel
+        copy; the structure and shadow bytes are the controller's register
+        output. The optional panel device reports its I2C register image.
+        """
+        now = time.monotonic()
+        cached_at, cached = self.shoulder_cache
+        if cached and now - cached_at < self.shoulder_interval:
+            return cached
+        with self.io:
+            self._ready()
+            snapshot = self._bytes(SHOULDER_SNAPSHOT, 0x74, CONTROLLER_CPU)
+            structure = self._bytes(SHOULDER_STRUCT, 12, CONTROLLER_CPU)
+            shadow = self._bytes(SHOULDER_SHADOW, 12, CONTROLLER_CPU)
+            powered = self._bytes(SHOULDER_POWERED, 1, CONTROLLER_CPU)[0]
+            device = None
+            try:
+                device = self.qmp.command('qom-get', {
+                    'path': '/machine/peripheral/shoulder', 'property': 'image'})
+            except Exception:
+                device = None
+        state = dict(tag=snapshot[0],
+                     length=int.from_bytes(snapshot[0x70:0x72], 'little'),
+                     snapshot=snapshot[:0x70].hex(),
+                     structure=structure.hex(), shadow=shadow.hex(),
+                     powered=powered, device_registers=device)
+        self.shoulder_cache = (time.monotonic(), state)
+        return state
 
     def _key_clock(self):
         low, high, frequency = self._words(0x04266008, 3)
@@ -794,6 +844,9 @@ def make_handler(machine):
                     self.send(200, (WEB / name).read_bytes(), kind)
                 elif self.path == '/frame':
                     self.send(200, machine.frame_png(), 'image/png')
+                elif self.path == '/shoulder':
+                    self.send(200, json.dumps(machine.shoulder(),
+                                              ensure_ascii=False).encode())
                 elif self.path == '/status':
                     self.send(200, json.dumps(machine.status(), ensure_ascii=False).encode())
                 else:

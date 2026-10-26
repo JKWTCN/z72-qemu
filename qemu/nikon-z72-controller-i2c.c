@@ -25,6 +25,8 @@ struct Z72ControllerI2C {
     uint8_t receive_data[2];
     uint8_t receive_count;
     uint8_t final_byte;
+    uint8_t last_address;
+    uint8_t last_read_address;
     qemu_irq event_irq;
     qemu_irq error_irq;
     qemu_irq requests[2];
@@ -183,6 +185,10 @@ static MemTxResult i2c_write(void *opaque, hwaddr offset, uint64_t value,
         if (s->address_phase) {
             s->address_phase = false;
             s->receiving = value & 1;
+            s->last_address = value;
+            if (s->receiving) {
+                s->last_read_address = value;
+            }
             s->registers[0] &= ~0x100u;
             s->registers[5] &= ~1u;
             s->active = !i2c_start_transfer(s->bus, value >> 1, s->receiving);
@@ -271,6 +277,11 @@ static void i2c_init(Object *obj)
     sysbus_init_irq(SYS_BUS_DEVICE(s), &s->event_irq);
     sysbus_init_irq(SYS_BUS_DEVICE(s), &s->error_irq);
     qdev_init_gpio_out_named(DEVICE(s), s->requests, "dma-request", 2);
+    /* Observation only: the last address bytes driven onto the bus. */
+    object_property_add_uint8_ptr(obj, "last-address", &s->last_address,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint8_ptr(obj, "last-read-address",
+                                  &s->last_read_address, OBJ_PROP_FLAG_READ);
 }
 
 static void i2c_class_init(ObjectClass *klass, const void *data)

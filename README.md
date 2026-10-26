@@ -29,7 +29,16 @@ the third synchronization bank exist as register contracts, and an optional
 sensor-sample source latches the recovered sample-ready line each frame —
 the original readout executes and reports its sampling status, while the
 valid sampled-line pattern that would advance the capture state machine
-remains unrecovered. Menu reopening after it closes, menu text semantics,
+remains unrecovered. The shoulder panel (top LCD) path is now traced end to end: the master
+engine publishes 112-byte tag-4 snapshots on serial channel 8, the
+controller's channel handler and panel service consume them into a live
+state block, page functions compose a twelve-byte register structure and
+shadow registers, and the physical panel is an eight-bit-register I2C
+device (identity read at register 26, page selects at 0xD6). A register
+panel device model with observation properties covers the wire contract,
+and the browser console renders the original panel state live.
+See [shoulder panel research](research/z7ii/shoulder_panel.md).
+Menu reopening after it closes, menu text semantics,
 LCD live view and the natural production of a few notifications remain
 pending.
 See the [menu key research](research/z7ii/controller_keys.md),

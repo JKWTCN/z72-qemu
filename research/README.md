@@ -33,6 +33,7 @@
 安装安全、完整启动、绘制及 slave 协作均未由这些局部实验证明。
 
 - [串行总线与控制器等待](z7ii/serial_bus.md)
+- [肩屏链路、控制器服务与器件模型](z7ii/shoulder_panel.md)
 - [附加控制器的独立启动环境](z7ii/controller_core.md)
 - [控制器 DMA 配置与有界传输](z7ii/controller_dma.md)
 - [输入处理配置与初始拍摄界面](z7ii/input_configuration.md)

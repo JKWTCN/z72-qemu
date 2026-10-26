@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "passed": true,
+  "full_boot_verified": true,
+  "channel8_snapshot_bytes": 112,
+  "tag": 4,
+  "snapshot_flow_changed": true,
+  "snapshot_sha256": "b1c78de5c616db6956ba3240151c513ddbc77dc4f740c34c9cb949041463bc9b",
+  "chain_hits": {},
+  "identity_probe": {
+    "context": "channel-8 service task via laboratory call",
+    "identity_hex": "c9",
+    "bus": "controller-i2c0",
+    "read_address_byte": "0x1b",
+    "write_address_byte": "0x1a",
+    "seven_bit_address": "0x0d",
+    "class_family": "0xc9/0xca"
+  },
+  "power_cycle": {
+    "present_line": "port E pin 9 held low for the observation",
+    "calls": 12,
+    "powered_flag": "0x2001F5A2=1",
+    "detected_flag": "0x2001F650=1",
+    "shadow_change": "0x2001FDA7 0xc0 -> 0x80",
+    "i2c_last_addresses": {
+      "device[35]:read": "27",
+      "device[35]": "26",
+      "device[36]:read": "0",
+      "device[36]": "0"
+    }
+  },
+  "panel_device_contract": "qemu/nikon-z72-controller-panel.c",
+  "panel_device_test": "tests/test_controller_panel.py",
+  "evidence_note": "Full run data stays in the private run directory; this artifact keeps structure and hashes only."
+}

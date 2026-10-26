@@ -197,6 +197,95 @@ $('remove-update').onclick = async () => {
 
 setInterval(() => { if (held.size) send('/heartbeat'); }, 1000);
 
+// Shoulder panel view: the original firmware's own panel state rendered as
+// segment-style bit cells. Snapshot words light their bits; the register
+// structure and panel shadow bytes are drawn as labeled columns.
+const shoulderBusy = {active: false};
+function bytesFromHex(text) {
+  const out = [];
+  for (let i = 0; i + 1 < text.length; i += 2) out.push(parseInt(text.slice(i, i + 2), 16));
+  return out;
+}
+function drawShoulder(state) {
+  const canvas = $('shoulder');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const lit = '#b8e6a3', dim = '#123528', back = '#0b1d16';
+  ctx.fillStyle = back;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = '10px monospace';
+  const snapshot = bytesFromHex(state.snapshot || '');
+  const columns = 28, rows = 16, cell = 5, gap = 1, left = 14, top = 24;
+  for (let word = 0; word < columns; word++) {
+    let value = 0;
+    for (let b = 0; b < 4; b++) value |= (snapshot[word * 4 + b] || 0) << (8 * b);
+    for (let bit = 0; bit < rows; bit++) {
+      const on = (value >>> bit) & 1;
+      ctx.fillStyle = on ? lit : dim;
+      ctx.fillRect(left + word * (cell + gap), top + (rows - 1 - bit) * (cell + gap), cell, cell);
+    }
+    if (word % 4 === 0) {
+      ctx.fillStyle = '#5f8a74';
+      ctx.fillText(('+' + (word * 4).toString(16)).padStart(3, '0'),
+                   left + word * (cell + gap) - 4, top + rows * (cell + gap) + 10);
+    }
+  }
+  ctx.fillStyle = '#8fbfa6';
+  ctx.fillText('快照 0x20018AD4 · 28 字（位 0 在下）', left, top - 10);
+  // Register structure and shadow bytes below the matrix.
+  const structure = bytesFromHex(state.structure || '');
+  const shadow = bytesFromHex(state.shadow || '');
+  const lineTop = top + rows * (cell + gap) + 26;
+  ctx.fillText('输出结构 0x2001FB90:', left, lineTop);
+  for (let i = 0; i < structure.length; i++) {
+    ctx.fillStyle = structure[i] ? lit : dim;
+    ctx.fillRect(left + 130 + i * 14, lineTop - 9, 10, 10);
+    ctx.fillStyle = '#5f8a74';
+    ctx.fillText(structure[i].toString(16).padStart(2, '0'), left + 130 + i * 14, lineTop + 11);
+  }
+  ctx.fillStyle = '#8fbfa6';
+  ctx.fillText('影子 0x2001FDA4:', left, lineTop + 28);
+  for (let i = 0; i < shadow.length; i++) {
+    ctx.fillStyle = shadow[i] ? lit : dim;
+    ctx.fillRect(left + 130 + i * 14, lineTop + 19, 10, 10);
+    ctx.fillStyle = '#5f8a74';
+    ctx.fillText(shadow[i].toString(16).padStart(2, '0'), left + 130 + i * 14, lineTop + 39);
+  }
+  ctx.fillStyle = state.powered ? lit : '#5f8a74';
+  ctx.beginPath();
+  ctx.arc(canvas.width - 16, 14, 5, 0, Math.PI * 2);
+  ctx.fill();
+  const device = state.device_registers;
+  if (device) {
+    const image = device.replace(/"/g, '');
+    const page = parseInt(image.slice(0xd6 * 2, 0xd6 * 2 + 2), 16);
+    ctx.fillStyle = '#8fbfa6';
+    ctx.fillText(`面板器件 页=${page.toString(16).padStart(2, '0')}`, canvas.width - 150, 18);
+  }
+}
+async function shoulder() {
+  if (shoulderBusy.active || !running || document.hidden) return;
+  shoulderBusy.active = true;
+  try {
+    const response = await fetch('/shoulder', {signal: AbortSignal.timeout(10000)});
+    const state = await response.json();
+    if (!response.ok) throw new Error(state.error || '肩屏状态暂不可用');
+    drawShoulder(state);
+    const litBits = bytesFromHex(state.snapshot || '').filter(value => value).length;
+    $('shoulder-state').textContent =
+      `标签 ${state.tag} · 长度 ${state.length} · 非零 ${litBits} 字节${state.powered ? ' · 面板已上电' : ''}`;
+  } catch (error) {
+    $('shoulder-state').textContent = error.message;
+  } finally { shoulderBusy.active = false; }
+}
+async function refreshShoulder() {
+  const started = performance.now();
+  await shoulder();
+  setTimeout(refreshShoulder, Math.max(1, 500 - (performance.now() - started)));
+}
+refreshShoulder();
+
+
 async function frame() {
   if (frameBusy || !running || !$('live').checked || document.hidden) return;
   frameBusy = true;

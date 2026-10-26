@@ -23,6 +23,13 @@
         </div>
         <div class="viewer-footer"><span id="application">前台应用 · —</span><span id="uptime">00:00</span></div>
       </section>
+      <section class="shoulder" aria-label="肩屏状态">
+        <div class="section-bar"><span>肩屏 · 顶部面板状态</span><span id="shoulder-state">等待数据</span></div>
+        <div class="shoulder-body">
+          <canvas id="shoulder" width="672" height="150" aria-label="原厂肩屏状态位图"></canvas>
+          <p class="hint">上排为主引擎通道 8 面板快照的原始字段位（亮=1）；下排为控制器页面函数输出的寄存器结构（12 字节）与面板影子寄存器。数据来自原厂固件运行内存，不经过主机端格式化。</p>
+        </div>
+      </section>
       <aside>
         <div class="eyebrow">CONTROL PANEL</div>
         <h1>从这里操作。</h1>

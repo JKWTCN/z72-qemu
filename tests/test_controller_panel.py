@@ -62,7 +62,7 @@ def check(port):
             stop()
             return values
 
-        identity = get(26, 3)
+        identity = get(11, 3)
         require(identity[0] == 0 and identity[1] == 0xc9,
                 'Panel identity read did not report the configured class byte')
         require(identity[2] == 0, 'Identity read continued into a nonzero register')
@@ -82,11 +82,11 @@ def check(port):
         monitor('system_reset')
         image = property('image')
         require(image[0x20:0x24] == '0000', 'Reset kept a data register')
-        require(image[0x36:0x38] == 'c9', 'Reset dropped the identity byte')
+        require(image[12 * 2:12 * 2 + 2] == 'c9', 'Reset dropped the identity byte')
         require(property('page') == '0', 'Reset kept the page selection')
 
         reference = ['00'] * 256
-        reference[27] = 'c9'
+        reference[12] = 'c9'
         expected = ''.join(reference)
         require(len(image) == 512 and image == expected,
                 'Register image length or identity slot differs')

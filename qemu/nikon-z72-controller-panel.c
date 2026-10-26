@@ -1,15 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Shoulder-panel I2C register model for the Z72 controller lab machine.
  *
- * Firmware analysis shows the original controller drives the top LCD panel
- * through an eight-bit-register I2C device: a two-byte read of register 26
- * reports the panel class identifier in its second byte (expected families
- * 0xA9/0xAA, 0xC9/0xCA and 0xE9/0xEA), single-byte writes to register 0xD6
- * select display pages, and the firmware confirms each selection by reading
- * the register back. The model keeps one byte per register, serves reads
- * from storage so a write-then-read echoes the stored byte, and exposes
- * read-only counters with the register image for host-side observation.
- * Segment decoding of the physical glass is not modeled here.
+ * Original-firmware observation shows the controller drives the top LCD
+ * panel through an eight-bit-register I2C device at seven-bit address 0x0d
+ * on the controller bus: the identity routine reads two bytes whose second
+ * byte reports the panel class (families 0xa9/0xaa, 0xc9/0xca and 0xe9/0xea
+ * are accepted; with the class byte stored at register 12 the original read
+ * pattern returns it), single-byte writes to register 0xd6 select display
+ * pages, and the code verifies each selection by reading the register back.
+ * The model keeps one byte per register, serves reads from storage so a
+ * write-then-read echoes the stored byte, accepts an optional initial-state
+ * image like the generic register bank, and exposes read-only counters with
+ * the register image for host-side observation. Segment decoding of the
+ * physical glass is not modeled here.
  */
 #include "qemu/osdep.h"
 #include "qapi/error.h"
@@ -23,7 +26,7 @@
 OBJECT_DECLARE_SIMPLE_TYPE(Z72ControllerPanel, Z72_CONTROLLER_PANEL)
 
 #define PANEL_REGISTERS 256
-#define PANEL_ID_REGISTER 26
+#define PANEL_ID_BYTE_REGISTER 12
 #define PANEL_PAGE_REGISTER 0xD6
 
 struct Z72ControllerPanel {
@@ -32,6 +35,7 @@ struct Z72ControllerPanel {
     uint8_t pointer;
     bool expect_pointer;
     uint8_t chip_id;
+    char *initial_state;
     uint32_t reads;
     uint32_t writes;
     uint32_t id_reads;
@@ -68,7 +72,7 @@ static uint8_t panel_receive(I2CSlave *dev)
 {
     Z72ControllerPanel *s = Z72_CONTROLLER_PANEL(dev);
     uint8_t value = s->registers[s->pointer];
-    if (s->pointer == PANEL_ID_REGISTER) {
+    if (s->pointer == PANEL_ID_BYTE_REGISTER) {
         s->id_reads++;
     }
     s->reads++;
@@ -80,8 +84,17 @@ static void panel_reset(Object *obj, ResetType type)
 {
     Z72ControllerPanel *s = Z72_CONTROLLER_PANEL(obj);
     memset(s->registers, 0, sizeof(s->registers));
-    /* The identity read fetches registers 26..27; the class byte follows. */
-    s->registers[PANEL_ID_REGISTER + 1] = s->chip_id;
+    if (s->initial_state) {
+        g_autofree char *data = NULL;
+        g_autoptr(GError) error = NULL;
+        gsize size = 0;
+        if (g_file_get_contents(s->initial_state, &data, &size, &error) &&
+            size <= sizeof(s->registers)) {
+            memcpy(s->registers, data, size);
+        }
+    }
+    /* The observed identity read returns the class byte from register 12. */
+    s->registers[PANEL_ID_BYTE_REGISTER] = s->chip_id;
     s->pointer = 0;
     s->expect_pointer = true;
     s->reads = s->writes = s->id_reads = s->page_writes = 0;
@@ -149,6 +162,7 @@ static const VMStateDescription panel_vmstate = {
 
 static const Property panel_properties[] = {
     DEFINE_PROP_UINT8("chip-id", Z72ControllerPanel, chip_id, 0xc9),
+    DEFINE_PROP_STRING("initial-state", Z72ControllerPanel, initial_state),
 };
 
 static void panel_class_init(ObjectClass *klass, const void *data)
