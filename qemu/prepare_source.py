@@ -18,6 +18,7 @@ def prepare(root):
                  'nikon-z72-controller-adc.c',
                  'nikon-z72-controller-rng.c',
                  'nikon-z72-controller-registers.c',
+                 'nikon-z72-controller-panel.c',
                  'nikon-z72-controller-expander.c',
                  'nikon-z72-controller-spi.c',
                  'nikon-z72-controller.h',
@@ -73,6 +74,9 @@ def prepare(root):
             registers = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-controller-registers.c'))\n"
             if registers.strip() not in data:
                 data += registers
+            panel = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-controller-panel.c'))\n"
+            if panel.strip() not in data:
+                data += panel
             expander = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-controller-expander.c'))\n"
             if expander.strip() not in data:
                 data += expander

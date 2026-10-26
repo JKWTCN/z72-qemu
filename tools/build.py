@@ -24,6 +24,7 @@ SOURCES = ['qemu/nikon-z72.c', 'qemu/nikon-z72-counter.c', 'qemu/nikon-z72-uart.
            'qemu/nikon-z72-controller-timer.c',
            'qemu/nikon-z72-controller-adc.c',
            'qemu/nikon-z72-controller-registers.c',
+           'qemu/nikon-z72-controller-panel.c',
            'qemu/nikon-z72-controller-spi.c',
            'qemu/nikon-z72-controller.h',
            'qemu/nikon-z72-profile.h', 'qemu/prepare_source.py']
