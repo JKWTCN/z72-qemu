@@ -44,6 +44,7 @@
 - [PTP 内层服务、固定 RAM 读取与菜单确认边界](z7ii/ptp_service.md)
 - [引导材料的 NOR 存储窗口、权限与编程入口](z7ii/boot_material_storage.md)
 - [十二版本更新包、引导材料设置与有限候选复核](z7ii/update_history.md)
+- [引导链、卡上更新模板与外部启动(BOOTDISK)阴性结论](z7ii/bootloader_external_boot.md)
 - [USB 日志通道、描述符与异步调试消费者](z7ii/usb_debug_channel.md)
 - [Z6 II / Z7 II C 1.70 更新结构与目录检查对照](z7ii/z6ii_update_comparison.md)
 - [机身 VR 成员(Body VR / NikonBVR)结构](z7ii/body_vr_member.md)
