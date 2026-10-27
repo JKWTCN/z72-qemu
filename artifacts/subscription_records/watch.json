@@ -1,0 +1,178 @@
+{
+  "observation": "runtime-subscription-records",
+  "blocks": {
+    "table-1": {
+      "base": "0xb18649f8",
+      "words": [
+        "0x1000100",
+        "0x102942f9",
+        "0x10",
+        "0x1000",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1000051",
+        "0x10299575",
+        "0x11000000",
+        "0x1026a777",
+        "0x1026a77b",
+        "0x1000101",
+        "0x102942f9",
+        "0x16",
+        "0x1000",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1000052",
+        "0x10299575",
+        "0x4000000"
+      ]
+    },
+    "table-2": {
+      "base": "0xb1864a60",
+      "words": [
+        "0x10000fd",
+        "0x102942f9",
+        "0x10",
+        "0x1000",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x100004e",
+        "0x10299575",
+        "0x3000000",
+        "0x1026a76b",
+        "0x1026a76f",
+        "0x10000fc",
+        "0x102942f9",
+        "0x10",
+        "0x1000",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x100004d",
+        "0x10299575",
+        "0x2000000"
+      ]
+    }
+  },
+  "linked": {
+    "link-1": {
+      "base": "0xb2bc87f8",
+      "words": [
+        "0x0",
+        "0x0",
+        "0x1026a0fd",
+        "0x0",
+        "0x0",
+        "0x1026a313",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "link-2": {
+      "base": "0xb2bcf364",
+      "words": [
+        "0x0",
+        "0x0",
+        "0x1026903b",
+        "0x0",
+        "0x0",
+        "0x102664bb",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    }
+  },
+  "send_callback": "0x103cdb15",
+  "matches": [],
+  "boot_notification_stops": [
+    {
+      "pc": "0x105165d4",
+      "entry": "control-timer237",
+      "thread": 1,
+      "code": "0xed",
+      "payload": "0xb2b97ff0",
+      "caller": "0x10107274"
+    },
+    {
+      "pc": "0x102dc5c0",
+      "entry": "control-sync87",
+      "thread": 1,
+      "code": "0x57",
+      "payload": "0xb2b97ff0",
+      "caller": "0x10107274"
+    }
+  ],
+  "boot_watch_ready": true,
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 39,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "scan": {
+    "base": "0xb2000000",
+    "size": 12582912,
+    "skipped": true,
+    "callback_hits": [],
+    "code_hits": []
+  },
+  "notification_stops": [
+    {
+      "pc": "0x102dc5c0",
+      "entry": "control-sync87",
+      "thread": 1,
+      "code": "0x57",
+      "payload": "0xb2b97ff0",
+      "caller": "0x10107274"
+    },
+    {
+      "pc": "0x105165d4",
+      "entry": "control-timer237",
+      "thread": 1,
+      "code": "0xed",
+      "payload": "0xb2b97ff0",
+      "caller": "0x10107274"
+    }
+  ]
+}

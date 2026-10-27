@@ -80,6 +80,12 @@ CAPTURE_STARTUP = {
     0x103cc408: 'open_device',
     0x103cbd98: 'work',
     0x103d01dc: 'request',
+    # Notification chain: the service-event router that forwards the
+    # 0x041b family into the module, and the capture notification
+    # dispatcher whose 0x041b0080 branch posts the device-open event.
+    0x10264284: 'service_router',
+    0x103cd162: 'notification_dispatch',
+    0x10269f0c: 'state_sender',
 }
 
 
