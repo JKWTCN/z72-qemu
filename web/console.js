@@ -94,11 +94,11 @@ document.querySelectorAll('[data-pin]').forEach(button => {
 });
 
 // Firmware-confirmed inputs: 3 OK, 8 playback, 9 menu, 4/5/6/7 pad directions.
-const shortcuts = {KeyM: 9, KeyP: 8, Enter: 3, KeyX: 0, ArrowUp: 5, ArrowDown: 4, ArrowLeft: 6, ArrowRight: 7};
+const shortcuts = {KeyM: 9, KeyP: 8, Enter: 3, KeyX: 0, KeyF: 24, Space: 25, ArrowUp: 5, ArrowDown: 4, ArrowLeft: 6, ArrowRight: 7};
 function shortcut(event, down) {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.code === 'Escape' && down) { if (!event.repeat) releaseAll(); return; }
-  if (event.code === 'Enter' && event.target.closest('button,summary')) return;
+  if ((event.code === 'Enter' || event.code === 'Space') && event.target.closest('button,summary')) return;
   const pin = shortcuts[event.code];
   if (pin !== undefined) {
     event.preventDefault();

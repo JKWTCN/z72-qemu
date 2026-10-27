@@ -34,6 +34,8 @@ from tools.dual_boot_probe import dual_machine
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
 MENU_PIN = 9
+SHUTTER_HALF = 24
+SHUTTER_FULL = 25
 MENU_APPLICATION = 1
 ENGINE_ENTRY = 0x10020000
 # Original controller shoulder-panel state: the channel-8 snapshot copy, the
@@ -580,7 +582,7 @@ class Machine:
             if ticks < self.next_key_ticks.get(pin, 0):
                 continue
             level = events[0]
-            self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
+            self._drive_key(pin, level)
             events.popleft()
             if level == 0:
                 self.held.add(pin)
@@ -595,11 +597,28 @@ class Machine:
             self.next_key_ticks[pin] = ticks + (frequency + 9) // 10
 
     def set_key(self, pin, level):
-        require(type(pin) is int and 0 <= pin < 24 and type(level) is int and level in (0, 1),
+        require(type(pin) is int and 0 <= pin <= SHUTTER_FULL and
+                type(level) is int and level in (0, 1),
                 'Invalid key input')
         with self.io:
             self._ready()
             self._set_key_locked(pin, level)
+
+    def _drive_key(self, pin, level):
+        if pin < SHUTTER_HALF:
+            self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
+            return
+        # The original controller scans external release G14/G15, active low.
+        # A full press holds the half contact too; releasing either browser
+        # control must preserve the other control's contacts.
+        pressed = self.held - {pin}
+        if level == 0:
+            pressed.add(pin)
+        levels = {14: int(not pressed.intersection((SHUTTER_HALF, SHUTTER_FULL))),
+                  15: int(SHUTTER_FULL not in pressed)}
+        for contact in ((14, 15) if level == 0 else (15, 14)):
+            self._qtest(f'set_irq_in /machine/unattached/{self.gpio_names[6]} '
+                        f'unnamed-gpio-in {contact} {levels[contact]}')
 
     def _set_key_locked(self, pin, level):
         if pin == MENU_PIN and level == 0:
@@ -683,7 +702,7 @@ class Machine:
         self.menu_open_pending = False
         self.menu_release_held = False
         for pin in tuple(self.held):
-            self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} 1')
+            self._drive_key(pin, 1)
             self.held.remove(pin)
 
     def heartbeat(self):

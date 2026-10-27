@@ -67,6 +67,75 @@ SUBDRIVER_TASK = 0xb238e654     # +0x40/+0x60 are the two work queues
 DRIVER_BLOCKS = (0xb1864d48, 0xb1864d6c, 0xb1864d80, 0xb1864d90)
 DEFAULT_HANDLER = 0x103a04e9
 
+# File offsets must be translated through the master load base (0x10020000).
+# These are runtime addresses, including the two task-creation phases.
+CAPTURE_STARTUP = {
+    0x1042f650: 'initialize',
+    0x103ccef0: 'create_tasks',
+    0x103ccfd2: 'bind_services',
+    0x103cc9ca: 'dispatch',
+    0x103cbbc8: 'configure_mode',
+    0x103cc408: 'open_device',
+    0x103cbd98: 'work',
+    0x103d01dc: 'request',
+}
+
+
+def trace_capture_startup(remote, seconds):
+    """Observe original startup entries; stop before the sync handshake.
+
+    Each entry is observed once and its breakpoint removed before resuming.
+    This avoids repeated stops at one instruction and preserves normal IRQ
+    and timer delivery. It does not measure call counts. No guest registers
+    or RAM are written by this observer.
+    """
+    addresses = (*CAPTURE_STARTUP, SYNC_WAIT)
+    armed = set()
+    records = []
+    synchronized = False
+    deadline = time.monotonic() + seconds
+    try:
+        for address in addresses:
+            require(remote.command(f'Z1,{address:x},2') == 'OK',
+                    'Capture startup breakpoint rejected')
+            armed.add(address)
+        while time.monotonic() < deadline:
+            remote.sock.settimeout(min(8, max(0.1, deadline - time.monotonic())))
+            try:
+                reply = remote.command('vCont;c')
+            except TimeoutError:
+                remote.interrupt()
+                continue
+            match = re.search(r'thread:([0-9a-f]+);', reply or '')
+            require(match is not None, 'Missing capture startup stop thread')
+            thread = int(match[1], 16)
+            remote.select_thread(thread)
+            registers = remote.regs()
+            pc = remote.get(registers, 'pc')
+            require(pc in armed, 'Unexpected capture startup stop')
+            if pc == SYNC_WAIT:
+                synchronized = True
+                break
+            records.append(dict(
+                entry=CAPTURE_STARTUP[pc], thread=thread, pc=hex(pc),
+                caller=hex(remote.get(registers, 'lr')),
+                r0=hex(remote.get(registers, 'r0')),
+                r1=hex(remote.get(registers, 'r1')),
+                driver=remote.read(SUBDRIVER_BLOCK, 12).hex(),
+                queues=[remote.read(SUBDRIVER_TASK + offset, 12).hex()
+                        for offset in (0x40, 0x60)]))
+            require(remote.command(f'z1,{pc:x},2') == 'OK',
+                    'Capture startup breakpoint removal failed')
+            armed.remove(pc)
+    finally:
+        remote.sock.settimeout(15)
+        for address in armed:
+            require(remote.command(f'z1,{address:x},2') == 'OK',
+                    'Capture startup observation cleanup failed')
+    return dict(sync_reached=synchronized, stops=records,
+                unobserved=[CAPTURE_STARTUP[address] for address in
+                            CAPTURE_STARTUP if address in armed])
+
 
 def scan_for(remote, value, windows):
     """Find a 32-bit value inside bounded RAM windows; reports addresses."""
@@ -195,7 +264,7 @@ def capture_chain_observation(remote):
     handlers = [struct.unpack_from('<I', table, index * 4)[0]
                 for index in range(len(CAPTURE_INTIDS))]
     subdriver = remote.read(SUBDRIVER_BLOCK, 4)
-    queues = remote.read(SUBDRIVER_TASK, 0x68)
+    queues = remote.read(SUBDRIVER_TASK, 0x6c)
     driver = {}
     for index, driver_base in enumerate(DRIVER_BLOCKS):
         words = try_read(remote, driver_base, 8)
@@ -224,6 +293,8 @@ def capture_chain_observation(remote):
                 subdriver=dict(state=subdriver[1], category=subdriver[2],
                                queues=[hex(struct.unpack_from('<I', queues, o)[0])
                                        for o in (0x40, 0x44, 0x60, 0x64)],
+                               queue_counts=[struct.unpack_from('<I', queues, o)[0]
+                                             for o in (0x48, 0x68)],
                                blocks=driver),
                 sampling_mask=word(try_read(remote, SAMPLING_MASK, 4)),
                 sampling_control=word(try_read(remote, 0x200610ec, 4)),
@@ -239,6 +310,8 @@ def capture_chain_observation(remote):
 def run(args):
     require(10 <= args.settle_seconds <= 900, 'Settle seconds out of bounds')
     require(5 <= args.watch_seconds <= 120, 'Watch seconds out of bounds')
+    require(not args.trace_capture_startup or not (args.break_at or args.watch_at),
+            'Capture startup tracing must begin at reset')
     master, slave = args.master.read_bytes(), args.slave.read_bytes()
     identities = {role: analyze_eg(data, role)['sha256']
                   for role, data in (('master', master), ('slave', slave))}
@@ -410,21 +483,28 @@ def run(args):
                 require(remote.command(f'z2,{args.watch_at:x},4') == 'OK',
                         'Watchpoint removal failed')
                 report['early_watch'] = stops
-            require(remote.command(f'Z0,{SYNC_WAIT:x},2') == 'OK',
-                    'Could not observe the original synchronization wait')
-            remote.sock.settimeout(120)
-            response = remote.command('vCont;c')
-            match = re.search(r'thread:([0-9a-f]+);', response or '')
-            require(match is not None, 'The synchronization wait did not run')
-            remote.select_thread(int(match[1], 16))
+            if args.trace_capture_startup:
+                report['capture_startup'] = trace_capture_startup(
+                    remote, args.break_seconds)
+                require(report['capture_startup']['sync_reached'],
+                        'Capture startup did not reach the sync handshake')
+            else:
+                require(remote.command(f'Z0,{SYNC_WAIT:x},2') == 'OK',
+                        'Could not observe the original synchronization wait')
+                remote.sock.settimeout(120)
+                response = remote.command('vCont;c')
+                match = re.search(r'thread:([0-9a-f]+);', response or '')
+                require(match is not None, 'The synchronization wait did not run')
+                remote.select_thread(int(match[1], 16))
             registers = remote.regs()
             require(remote.get(registers, 'pc') == SYNC_WAIT,
                     'Unexpected synchronization stop')
             for level in (1, 0):
                 qtest(f'set_irq_in /machine/unattached/{configs[0]} sync-event 15 {level}')
             qtest(f'set_irq_in /machine/unattached/{configs[0]} frame-sync-enable 0 1')
-            require(remote.command(f'z0,{SYNC_WAIT:x},2') == 'OK',
-                    'Could not remove the synchronization observation')
+            if not args.trace_capture_startup:
+                require(remote.command(f'z0,{SYNC_WAIT:x},2') == 'OK',
+                        'Could not remove the synchronization observation')
 
             def pause(seconds):
                 remote.sock.settimeout(seconds)
@@ -444,7 +524,10 @@ def run(args):
             def settle(seconds):
                 require(frequency() > 0, 'Counter frequency is unavailable')
                 target = ticks() + seconds * frequency()
+                deadline = time.monotonic() + args.settle_seconds
                 while ticks() < target:
+                    require(time.monotonic() < deadline,
+                            'Guest counter did not advance within the host-time bound')
                     pause(8)
 
             def foreground():
@@ -517,7 +600,7 @@ def run(args):
             report['distinct_event_bits'] = [list(item) for item in distinct_events]
             report['distinct_capture_states'] = [list(item) for item in distinct_states]
 
-            if args.sample_source:
+            if args.sample_source and not args.trace_capture_startup:
                 settle(5)
                 if args.trace_status:
                     records, matches = trace_status(
@@ -621,6 +704,9 @@ def main():
                         default=0,
                         help='Insert one software breakpoint at this runtime '
                              'address during early boot and record its caller')
+    parser.add_argument('--trace-capture-startup', action='store_true',
+                        help='Trace capture initialization and task dispatch '
+                             'from reset until the sync handshake')
     parser.add_argument('--watch-at', type=lambda text: int(text, 0),
                         default=0,
                         help='Insert one write watchpoint at this runtime '

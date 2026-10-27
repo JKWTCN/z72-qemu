@@ -50,4 +50,5 @@
 - [Z6 II / Z7 II C 1.70 更新结构与目录检查对照](z7ii/z6ii_update_comparison.md)
 - [机身 VR 成员(Body VR / NikonBVR)结构](z7ii/body_vr_member.md)
 - [传感器采样事件与捕获管线结构](z7ii/sensor_frames.md)
+- [采集任务的地址坐标与启动绑定](z7ii/capture_startup.md)
 - [拍摄界面的错误显示与致命消息](z7ii/error_display.md)

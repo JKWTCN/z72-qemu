@@ -1,0 +1,763 @@
+{
+  "format": 1,
+  "static": {
+    "format": 1,
+    "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "master_load_base": "0x10020000",
+    "evidence_kind": "static",
+    "calls": [
+      {
+        "source": {
+          "file_offset": "0x40f65e",
+          "runtime_address": "0x1042f65e"
+        },
+        "target": {
+          "file_offset": "0x3acef0",
+          "runtime_address": "0x103ccef0"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x40f664",
+          "runtime_address": "0x1042f664"
+        },
+        "target": {
+          "file_offset": "0x3acfd2",
+          "runtime_address": "0x103ccfd2"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x3ac9da",
+          "runtime_address": "0x103cc9da"
+        },
+        "target": {
+          "file_offset": "0x3ac408",
+          "runtime_address": "0x103cc408"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x302a84",
+          "runtime_address": "0x10322a84"
+        },
+        "target": {
+          "file_offset": "0x3b01dc",
+          "runtime_address": "0x103d01dc"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x302b28",
+          "runtime_address": "0x10322b28"
+        },
+        "target": {
+          "file_offset": "0x3b01dc",
+          "runtime_address": "0x103d01dc"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x305772",
+          "runtime_address": "0x10325772"
+        },
+        "target": {
+          "file_offset": "0x3b01dc",
+          "runtime_address": "0x103d01dc"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x3abfe4",
+          "runtime_address": "0x103cbfe4"
+        },
+        "target": {
+          "file_offset": "0x3abccc",
+          "runtime_address": "0x103cbccc"
+        }
+      },
+      {
+        "source": {
+          "file_offset": "0x3b13ae",
+          "runtime_address": "0x103d13ae"
+        },
+        "target": {
+          "file_offset": "0x3abccc",
+          "runtime_address": "0x103cbccc"
+        }
+      }
+    ],
+    "task_callback_literal": {
+      "file_offset": "0x3ad134",
+      "runtime_address": "0x103cd134"
+    },
+    "task_callback": {
+      "file_offset": "0x3ac9ca",
+      "runtime_address": "0x103cc9ca"
+    },
+    "method_table_ram": "0xb186497c",
+    "method_table_source": {
+      "file_offset": "0x23de910",
+      "runtime_address": "0x123fe910"
+    },
+    "methods": [
+      "0x1042f651",
+      "0x1042f66d",
+      "0x1042f689",
+      "0x1042f69d"
+    ],
+    "dispatch_event_bits": {
+      "open_device": 18,
+      "work": 13,
+      "configure_mode": 17
+    },
+    "task": "0xb238e654",
+    "queue_offsets": [
+      "0x40",
+      "0x60"
+    ],
+    "queue_count_offset": "0x8",
+    "limitations": [
+      "Static call edges do not establish execution.",
+      "No sensor pixels or capture completion verified."
+    ]
+  },
+  "runtime": {
+    "format": 1,
+    "firmware_sha256": {
+      "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+    },
+    "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+    "firmware_modified": false,
+    "runtime_state_written": false,
+    "periodic_frame_sync": true,
+    "sample_source": true,
+    "errors": [],
+    "capture_startup": {
+      "sync_reached": true,
+      "stops": [
+        {
+          "entry": "initialize",
+          "thread": 2,
+          "pc": "0x1042f650",
+          "caller": "0x1020196f",
+          "r0": "0x2",
+          "r1": "0x1042f651",
+          "driver": "000000000000000000000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        },
+        {
+          "entry": "create_tasks",
+          "thread": 2,
+          "pc": "0x103ccef0",
+          "caller": "0x1042f663",
+          "r0": "0x2",
+          "r1": "0x1042f651",
+          "driver": "000000000000000000000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        },
+        {
+          "entry": "bind_services",
+          "thread": 2,
+          "pc": "0x103ccfd2",
+          "caller": "0x1042f669",
+          "r0": "0x3",
+          "r1": "0x1042f651",
+          "driver": "000000000000000003000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        },
+        {
+          "entry": "dispatch",
+          "thread": 1,
+          "pc": "0x103cc9ca",
+          "caller": "0x103606b5",
+          "r0": "0x20000",
+          "r1": "0x103cc9cb",
+          "driver": "010000000000000003000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        },
+        {
+          "entry": "configure_mode",
+          "thread": 1,
+          "pc": "0x103cbbc8",
+          "caller": "0x103606b5",
+          "r0": "0x80000000",
+          "r1": "0x103cc9cb",
+          "driver": "010000000000000003000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        },
+        {
+          "entry": "request",
+          "thread": 1,
+          "pc": "0x103d01dc",
+          "caller": "0x10322a89",
+          "r0": "0xb51dfed0",
+          "r1": "0x0",
+          "driver": "010000000000000003000000",
+          "queues": [
+            "000000000000000000000000",
+            "000000000000000000000000"
+          ]
+        }
+      ],
+      "unobserved": [
+        "open_device",
+        "work"
+      ]
+    },
+    "shooting_steady": true,
+    "steady_observation": {
+      "application": {
+        "initialization_complete": 1,
+        "start_notification_sent": 1,
+        "current_index": 3,
+        "next_index": 5,
+        "state": 2,
+        "applications": [
+          {
+            "index": 0,
+            "name": "APPIDLE",
+            "getter": "0x104377b5",
+            "context": "0xb181d8a4",
+            "ready": 1
+          },
+          {
+            "index": 1,
+            "name": "APPMENU",
+            "getter": "0x1044e301",
+            "context": "0xb1824ea0",
+            "ready": 1
+          },
+          {
+            "index": 2,
+            "name": "APPPLAY",
+            "getter": "0x1073ed91",
+            "context": "0xb1828108",
+            "ready": 1
+          },
+          {
+            "index": 3,
+            "name": "APPLV",
+            "getter": "0x1053cf35",
+            "context": "0xb181d9b8",
+            "ready": 1
+          },
+          {
+            "index": 4,
+            "name": "APPMSG",
+            "getter": "0x1043dccd",
+            "context": "0xb1828064",
+            "ready": 1
+          }
+        ]
+      },
+      "system": {
+        "mode_context": "0xb1819604",
+        "current_mode": 4,
+        "previous_mode": 2,
+        "power_input": 1,
+        "configuration_flags": 8,
+        "configuration_secondary_flags": 8,
+        "transition_inhibitors": [
+          0,
+          0,
+          0
+        ],
+        "deferred_transition_flags": 0,
+        "deferred_target_mode": null,
+        "control_ready_bitmap": 15,
+        "pending_settings_bitmap": 15
+      },
+      "graphics": {
+        "successful_uploads": 118,
+        "render_requests": 0,
+        "rendered_commands": 88,
+        "unsupported_commands": 0,
+        "failed_requests": 0,
+        "surface_address": 3200643584,
+        "target_address": 3414339584,
+        "target_dimensions": 45089792,
+        "target_format": 263,
+        "target_second_plane": 3415736320
+      },
+      "capture_health": {
+        "status_parameter": "0x1921",
+        "status_buffer": "0xb25d4714",
+        "status_count": 0,
+        "status_codes": [],
+        "menu_blocking_status_codes": [],
+        "menu_inhibited_by_status": false,
+        "resource_parameter": 80,
+        "resource_buffer": "0xb7d00000",
+        "resource_storage": "0x13e80000",
+        "resource_version_offset": "0xbe014",
+        "resource_version_bytes": "1500",
+        "resource_version": "0x150",
+        "resource_header_check_passed": true
+      },
+      "chain": {
+        "capture_state": 2,
+        "sub_state": 0,
+        "pending_words": [
+          "0x0"
+        ],
+        "event_bits": [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "operation14_trampoline": "0x0",
+        "capture_handlers": [
+          "0x10243691",
+          "0x10243657",
+          "0x10243695",
+          "0x1024365b",
+          "0x1024369b",
+          "0x10243661",
+          "0x102436a1",
+          "0x10243667",
+          "0x102436a5",
+          "0x1024366b",
+          "0x102436ab",
+          "0x10243671",
+          "0x102436b1",
+          "0x10243677",
+          "0x103a04e9",
+          "0x103a04e9",
+          "0x102436bb",
+          "0x10243681"
+        ],
+        "capture_interrupts_registered": 16,
+        "subdriver": {
+          "state": 1,
+          "category": 2,
+          "queues": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "queue_counts": [
+            0,
+            0
+          ],
+          "blocks": {
+            "0xb1864d48": [
+              "0x1",
+              "0x1",
+              "0x2",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "0xb1864d6c": [
+              "0x52",
+              "0x1",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "0xb1864d80": [
+              "0x53",
+              "0x1",
+              "0x0",
+              "0x1",
+              "0x54",
+              "0x1",
+              "0x0",
+              "0x1"
+            ],
+            "0xb1864d90": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ]
+          }
+        },
+        "sampling_mask": "0xffff",
+        "sampling_control": "0x0",
+        "third_status": "0x1",
+        "third_mask": "0x0",
+        "group2_mask": "0x27feb7",
+        "group2_status": "0x0",
+        "third_callback": "0x0",
+        "session": {
+          "+0x0": "0x0",
+          "+0x41": "0x100",
+          "+0x4d4": "0x2020100",
+          "+0x4d6": "0x10202",
+          "+0x4e2": "0x3e70002",
+          "+0x4e4": "0x3e7",
+          "+0x4ec": "0x0",
+          "+0x2e08": "0x0",
+          "object": "0xb3c78040",
+          "module_state": "0x7000700"
+        },
+        "sampling_results": [
+          "0x6",
+          "0x200682e0",
+          "0x200682e0",
+          "0x200682e0",
+          "0x200682e0"
+        ]
+      }
+    },
+    "progress_snapshots": [
+      {
+        "capture_state": 2,
+        "sub_state": 0,
+        "pending_words": [
+          "0x0"
+        ],
+        "event_bits": [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "operation14_trampoline": "0x0",
+        "capture_handlers": [
+          "0x10243691",
+          "0x10243657",
+          "0x10243695",
+          "0x1024365b",
+          "0x1024369b",
+          "0x10243661",
+          "0x102436a1",
+          "0x10243667",
+          "0x102436a5",
+          "0x1024366b",
+          "0x102436ab",
+          "0x10243671",
+          "0x102436b1",
+          "0x10243677",
+          "0x103a04e9",
+          "0x103a04e9",
+          "0x102436bb",
+          "0x10243681"
+        ],
+        "capture_interrupts_registered": 16,
+        "subdriver": {
+          "state": 1,
+          "category": 2,
+          "queues": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "queue_counts": [
+            0,
+            0
+          ],
+          "blocks": {
+            "0xb1864d48": [
+              "0x1",
+              "0x1",
+              "0x2",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "0xb1864d6c": [
+              "0x52",
+              "0x1",
+              "0x0",
+              "0x1",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "0xb1864d80": [
+              "0x53",
+              "0x1",
+              "0x0",
+              "0x1",
+              "0x54",
+              "0x1",
+              "0x0",
+              "0x1"
+            ],
+            "0xb1864d90": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ]
+          }
+        },
+        "sampling_mask": "0xffff",
+        "sampling_control": "0x0",
+        "third_status": "0x1",
+        "third_mask": "0x0",
+        "group2_mask": "0x27feb7",
+        "group2_status": "0x0",
+        "third_callback": "0x0",
+        "session": {
+          "+0x0": "0x0",
+          "+0x41": "0x100",
+          "+0x4d4": "0x2020100",
+          "+0x4d6": "0x10202",
+          "+0x4e2": "0x3e70002",
+          "+0x4e4": "0x3e7",
+          "+0x4ec": "0x0",
+          "+0x2e08": "0x0",
+          "object": "0xb3c78040",
+          "module_state": "0x7000700"
+        },
+        "sampling_results": [
+          "0xb",
+          "0x200682e0",
+          "0x200682e0",
+          "0x200682e0",
+          "0x200682e0"
+        ]
+      }
+    ],
+    "chain_after_windows": {
+      "capture_state": 2,
+      "sub_state": 0,
+      "pending_words": [
+        "0x0"
+      ],
+      "event_bits": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "operation14_trampoline": "0x0",
+      "capture_handlers": [
+        "0x10243691",
+        "0x10243657",
+        "0x10243695",
+        "0x1024365b",
+        "0x1024369b",
+        "0x10243661",
+        "0x102436a1",
+        "0x10243667",
+        "0x102436a5",
+        "0x1024366b",
+        "0x102436ab",
+        "0x10243671",
+        "0x102436b1",
+        "0x10243677",
+        "0x103a04e9",
+        "0x103a04e9",
+        "0x102436bb",
+        "0x10243681"
+      ],
+      "capture_interrupts_registered": 16,
+      "subdriver": {
+        "state": 1,
+        "category": 2,
+        "queues": [
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "queue_counts": [
+          0,
+          0
+        ],
+        "blocks": {
+          "0xb1864d48": [
+            "0x1",
+            "0x1",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "0xb1864d6c": [
+            "0x52",
+            "0x1",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "0xb1864d80": [
+            "0x53",
+            "0x1",
+            "0x0",
+            "0x1",
+            "0x54",
+            "0x1",
+            "0x0",
+            "0x1"
+          ],
+          "0xb1864d90": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      },
+      "sampling_mask": "0xffff",
+      "sampling_control": "0x0",
+      "third_status": "0x1",
+      "third_mask": "0x0",
+      "group2_mask": "0x27feb7",
+      "group2_status": "0x0",
+      "third_callback": "0x0",
+      "session": {
+        "+0x0": "0x0",
+        "+0x41": "0x100",
+        "+0x4d4": "0x2020100",
+        "+0x4d6": "0x10202",
+        "+0x4e2": "0x3e70002",
+        "+0x4e4": "0x3e7",
+        "+0x4ec": "0x0",
+        "+0x2e08": "0x0",
+        "object": "0xb3c78040",
+        "module_state": "0x7000700"
+      },
+      "sampling_results": [
+        "0xb",
+        "0x200682e0",
+        "0x200682e0",
+        "0x200682e0",
+        "0x200682e0"
+      ]
+    },
+    "shutter_inputs": [
+      {
+        "name": "released",
+        "expected": "0x0",
+        "word": "0x200",
+        "passed": true
+      },
+      {
+        "name": "full",
+        "expected": "0xc000000",
+        "word": "0xc000200",
+        "passed": true
+      },
+      {
+        "name": "released_after_full",
+        "expected": "0x0",
+        "word": "0x200",
+        "passed": true
+      },
+      {
+        "name": "half",
+        "expected": "0x8000000",
+        "word": "0x8000200",
+        "passed": true
+      },
+      {
+        "name": "half_and_full",
+        "expected": "0xc000000",
+        "word": "0xc000200",
+        "passed": true
+      },
+      {
+        "name": "half_after_full_release",
+        "expected": "0x8000000",
+        "word": "0x8000200",
+        "passed": true
+      },
+      {
+        "name": "released_after_half",
+        "expected": "0x0",
+        "word": "0x200",
+        "passed": true
+      }
+    ],
+    "distinct_event_bits": [
+      [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    ],
+    "distinct_capture_states": [
+      [
+        2,
+        0
+      ]
+    ],
+    "cores": [
+      {
+        "thread": 1,
+        "pc": 269503056,
+        "mode": 19
+      },
+      {
+        "thread": 2,
+        "pc": 269512828,
+        "mode": 19
+      },
+      {
+        "thread": 3,
+        "pc": 268667464,
+        "mode": 19
+      },
+      {
+        "thread": 4,
+        "pc": 268667472,
+        "mode": 19
+      }
+    ],
+    "sampling_faults": [],
+    "console_lines": 0
+  },
+  "qemu_sha256": "9d32752fd00447433438d833c1fc0e0a95de12ed39b84f4f19310bedeb347008",
+  "runtime_driver": "sensor_frame_probe with a diagnostic hook invoking Machine._drive_key",
+  "validation_scope": "Original startup and external shutter contact transport only",
+  "limitations": [
+    "No LCD sensor pixels or photograph file verified.",
+    "The runtime hook calls the console contact driver directly; it does not exercise browser events or HTTP.",
+    "The diagnostic hook supplied the seven input stages saved under runtime.shutter_inputs."
+  ],
+  "unit_checks": {
+    "command": "tests/test_console_shutter.py",
+    "passed": 4
+  }
+}
