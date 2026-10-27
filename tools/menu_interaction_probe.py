@@ -104,6 +104,7 @@ def run(args):
                       firmware_sha256=identities, controller_sha256=CONTROLLER_SHA256,
                       firmware_modified=False, runtime_state_written=False,
                       full_boot_verified=True, periodic_frame_sync=True,
+                      sampling_source=True,
                       key_interrupt_wired=True, sync_pulse_supplied=False,
                       observations=[], screenshots=[], errors=[])
         try:
