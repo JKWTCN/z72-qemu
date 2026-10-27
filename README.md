@@ -38,10 +38,23 @@ device (identity read at register 26, page selects at 0xD6). A register
 panel device model with observation properties covers the wire contract,
 and the browser console renders the original panel state live.
 See [shoulder panel research](research/z7ii/shoulder_panel.md).
+The native display-output contract is now modeled and verified with
+original firmware: write-one-clear status, mask routing to interrupts
+111/112, and an optional per-frame completion source whose edges the
+original handler acknowledges — the notification counter advances and
+the channel's work buffers rotate through the frame pool. The browser
+console renders the final LCD output plane (1024×682 luminance,
+currently the cleared frame) beside the graphics surface; see
+[display output research](research/z7ii/display_output.md).
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
-LCD live view and the natural production of a few notifications remain
-pending. The steady menu cycle no longer shows the
+live-view pixels from the capture pipeline and the natural production
+of a few notifications remain pending: the whole
+`0x4219`→`0x041b` notification chain is dormant because the sensor
+service provider never answers the boot-time registration (the device
+object stays null); see
+[notification chain research](research/z7ii/notification_chain.md).
+The steady menu cycle no longer shows the
 "Turn camera off and then on again" dialog: with the sampling source
 armed (`sensor-sample` plus `sample-counter`), the post-menu restart
 path stops raising the fatal message even though the capture session

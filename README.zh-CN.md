@@ -27,9 +27,17 @@ master 镜像由启动参数提供（本仓库不含制作或解码工具），�
 菜单稳定周期的退出画面不再出现 "Turn camera off and then on again"
 对话框：采样源合同（`sensor-sample` 加 `sample-counter`）并入交互台
 与探针后，菜单退出的重启路径不再产出致命消息，见
-[错误显示研究](research/z7ii/error_display.md)。菜单关闭后的重开
+[错误显示研究](research/z7ii/error_display.md)。
+原生显示输出合同已建模并经原厂固件验证：状态写一清除、掩码路由到
+中断 111/112，可选的按帧完成源让原厂处理器确认事件、通知计数增长、
+工作缓冲在帧池中轮换；交互台在图形画面之外渲染最终 LCD 输出平面
+（1024×682 亮度，当前为清屏帧），见
+[显示输出研究](research/z7ii/display_output.md)。菜单关闭后的重开
 （采集状态 `0x3f` 门控）、拍摄画面 `Card`/`Err` 计数背后的存储槽
-状态、菜单文字语义、LCD 实时
+状态、菜单文字语义、捕获管线的实时取景像素与部分通知的自然产出
+仍未完成：`0x4219`→`0x041b` 通知链整体休眠，启动期的设备服务注册
+之后提供方从未应答（设备对象保持空），见
+[通知链研究](research/z7ii/notification_chain.md)。其余边界见
 [菜单键研究](research/z7ii/controller_keys.md)、
 [菜单固件更新](research/z7ii/firmware_update.md)、
 [传感器采样事件](research/z7ii/sensor_frames.md)与
