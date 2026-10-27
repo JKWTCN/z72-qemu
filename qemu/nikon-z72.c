@@ -626,6 +626,15 @@ struct NikonZ72BootConfig {
     bool pcie_link;
     bool auto_sample_level;
     uint32_t sample_lines;
+    /* Bounded access trace over the sampling-synchronization and
+     * input-path configuration window, recovered as a diagnostic for
+     * the capture-restart sequence. Entries are (address, value,
+     * direction) triples; the ring keeps the newest 256 accesses. */
+    bool input_trace;
+    uint32_t input_trace_count;
+    uint32_t input_trace_addresses[256];
+    uint32_t input_trace_values[256];
+    uint8_t input_trace_writes[256];
     uint64_t frame_sync_count;
     QEMUTimer *frame_sync_timer;
 };
@@ -967,6 +976,24 @@ static void frame_sync_enable(void *opaque, int line, int level)
     }
 }
 
+/* Append one sampling-synchronization / input-path access to the
+ * bounded diagnostic ring. The ring keeps the newest accesses so a
+ * probe can compare windows across a menu cycle without reading the
+ * trace continuously. */
+static void boot_config_trace(NikonZ72BootConfig *s, hwaddr address,
+                              uint32_t value, bool is_write)
+{
+    if (!s->input_trace ||
+        address < 0x20060000 || address >= 0x20070000) {
+        return;
+    }
+    unsigned slot = s->input_trace_count % 256;
+    s->input_trace_addresses[slot] = address;
+    s->input_trace_values[slot] = value;
+    s->input_trace_writes[slot] = is_write;
+    s->input_trace_count++;
+}
+
 static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72ConfigWord *word = opaque;
@@ -1023,6 +1050,7 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
             s->sample_lines = read_addr;
         }
     }
+    boot_config_trace(s, boot_config_addresses[word->index], value, false);
     return value;
 }
 
@@ -1033,6 +1061,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
     NikonZ72BootConfig *s = word->device;
     hwaddr address = boot_config_addresses[word->index];
     uint32_t *stored = &s->values[word->index];
+    boot_config_trace(s, address, (uint32_t)value, true);
     if (s->sd_host && address == 0x2b200024) {
         /* INTA follows its source. A status acknowledgement cannot clear
          * an asserted source or create an interrupt while it is low. */
@@ -1705,11 +1734,39 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
+        VMSTATE_BOOL_V(input_trace, NikonZ72BootConfig, 27),
+        VMSTATE_UINT32_V(input_trace_count, NikonZ72BootConfig, 27),
+        VMSTATE_UINT32_ARRAY_V(input_trace_addresses, NikonZ72BootConfig, 256, 27),
+        VMSTATE_UINT32_ARRAY_V(input_trace_values, NikonZ72BootConfig, 256, 27),
+        VMSTATE_UINT8_ARRAY_V(input_trace_writes, NikonZ72BootConfig, 256, 27),
         VMSTATE_UINT8_V(controller_levels, NikonZ72BootConfig, 25),
         VMSTATE_BOOL_V(controller_ack_output, NikonZ72BootConfig, 26),
         VMSTATE_END_OF_LIST()
     },
 };
+
+/* Diagnostic view of the access ring: oldest kept entry first, each
+ * entry as "<address>:<value><r|w>". The string is hex-coded pairs so
+ * the gdb console can carry it without separators colliding. */
+static char *boot_config_input_trace_get(Object *obj, Error **errp)
+{
+    NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
+    unsigned total = s->input_trace_count;
+    unsigned kept = total < 256 ? total : 256;
+    unsigned first = total % 256;
+    GString *text = g_string_sized_new(kept * 16 + 1);
+    for (unsigned i = 0; i < kept; i++) {
+        unsigned slot = (first + i) % 256;
+        g_string_append_printf(text, "%08x:%08x%c",
+                               s->input_trace_addresses[slot],
+                               s->input_trace_values[slot],
+                               s->input_trace_writes[slot] ? 'w' : 'r');
+        if (i + 1 < kept) {
+            g_string_append_c(text, ',');
+        }
+    }
+    return g_string_free(text, false);
+}
 
 static void boot_config_init(Object *obj)
 {
@@ -1719,6 +1776,10 @@ static void boot_config_init(Object *obj)
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "input-trace-count", &s->input_trace_count,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_str(obj, "input-trace-log",
+                            boot_config_input_trace_get, NULL);
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
@@ -1954,6 +2015,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
