@@ -172,6 +172,8 @@ class Machine:
         # polling cannot starve key delivery of the monitor lock.
         self.frame_cache = (0.0, b'')
         self.frame_interval = 0.05
+        self.lcd_cache = (0.0, b'')
+        self.lcd_interval = 2.0
         self.shoulder_cache = (0.0, None)
         self.shoulder_interval = 0.4
         self.shutdown = threading.Event()
@@ -181,6 +183,7 @@ class Machine:
 
     def restart(self):
         self.frame_cache = (0.0, b'')
+        self.lcd_cache = (0.0, b'')
         if self.shutdown.is_set() or not self.lifecycle.acquire(blocking=False):
             return False
         self.phase, self.error = 'starting', None
@@ -768,6 +771,43 @@ class Machine:
         self.frame_cache = (time.monotonic(), encoded)
         return encoded
 
+    def lcd_png(self):
+        """Render the native display-output luminance plane of channel 1.
+
+        The recovered output geometry is 1024x682 with two full-size planes;
+        the chroma plane carries no detail for the cleared surface, so the
+        console shows the luminance plane directly. This is the final LCD
+        output path, not the graphics console's probe surface.
+        """
+        now = time.monotonic()
+        if self.lcd_cache and now - self.lcd_cache[0] < self.lcd_interval:
+            return self.lcd_cache[1]
+        with self.io:
+            self._ready()
+            geometry = self._words(0x20144204, 1)[0]
+            width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
+            if not (0 < width <= 4096 and 0 < height <= 4096):
+                raise ValueError('Display output geometry is not configured')
+            planes = [self._words(0x20144210 + index * 4, 1)[0]
+                      for index in range(2)]
+            luminance = None
+            for plane in planes:
+                if 0xb0000000 <= plane < 0xf0000000:
+                    luminance = bytes(self._bytes(plane, width * height))
+                    break
+            if luminance is None:
+                raise ValueError('Display output plane is not configured')
+        rows = bytearray()
+        for row in range(height):
+            base = row * width
+            for column in range(width):
+                value = luminance[base + column]
+                rows += bytes((value, value, value))
+        data = b'P6\n%d %d\n255\n' % (width, height) + bytes(rows)
+        encoded = ppm_to_png(data)
+        self.lcd_cache = (time.monotonic(), encoded)
+        return encoded
+
     def status(self):
         state = dict(phase=self.phase, error=self.error, ready=False,
                      menu_inhibited=None,
@@ -883,6 +923,8 @@ def make_handler(machine):
                     self.send(200, (WEB / name).read_bytes(), kind)
                 elif self.path == '/frame':
                     self.send(200, machine.frame_png(), 'image/png')
+                elif self.path == '/lcd':
+                    self.send(200, machine.lcd_png(), 'image/png')
                 elif self.path == '/shoulder':
                     self.send(200, json.dumps(machine.shoulder(),
                                               ensure_ascii=False).encode())

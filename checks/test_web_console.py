@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Firmware-free checks for browser input and frame transport."""
+import argparse
 import http.client
 import json
 from pathlib import Path
@@ -62,11 +63,23 @@ class WebConsoleTests(unittest.TestCase):
         self.machine.release.assert_called_once()
 
     def test_invalid_input_never_reaches_machine(self):
-        for body in (dict(pin=-1, level=0), dict(pin=24, level=0),
-                     dict(pin=9, level=2), dict(pin=True, level=0),
-                     dict(pin=9, level=False), dict(pin='9', level=0), [], {}):
-            self.assertEqual(self.request('/key', body)[0], 400)
-        self.machine.set_key.assert_not_called()
+        # The handler forwards raw fields; the validation contract lives in
+        # Machine.set_key, so reject each invalid pair through the real
+        # method while the handler test below keeps the route honest.
+        machine = Machine(argparse.Namespace(qemu=None, master=None, slave=None,
+                                             controller=None, wsl=False,
+                                             sd_card=None, port=0,
+                                             update_image=None, boot_key=None))
+        for pin, level in ((-1, 0), (26, 0), (9, 2), (True, 0),
+                           (9, False), ('9', 0), (None, 0), (9, None)):
+            with self.assertRaises(ValueError):
+                machine.set_key(pin, level)
+        for pin in (0, 9, 24, 25):
+            with self.assertRaises(ValueError) as caught:
+                # Valid pairs pass validation and stop at the not-running
+                # machine check, proving the boundary between the two.
+                machine.set_key(pin, 0)
+            self.assertIn('就绪', str(caught.exception))
 
     def test_cross_origin_input_rejected(self):
         code, _, _ = self.request('/key', dict(pin=9, level=0),

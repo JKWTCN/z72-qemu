@@ -188,6 +188,7 @@
     "artifacts/structure_validation/summary.json": "a4a53af482fbf7edf8dd5456de6f9bdb71ebc7369c9c4c1a01e9ffdb14ab12ae",
     "artifacts/structure_validation/virt.json": "c49ecd47f88ece6747dbdded403fe7e80e915d5baa13af231d386f5bf8e9ef1c",
     "artifacts/subscription_records/report.json": "aa87c9c802dd7ddaab8a1e608d926029a8b22fca8f8ccdc8df7ed1bcbf190949",
+    "artifacts/subscription_records/service_registration.json": "023cc41353f71c290357db27042cd9cd97908b17a46b82e50ed18f2496b14fb5",
     "artifacts/subscription_records/watch.json": "92ecec11c01309c7b752c0f8edb03e2a189ab5b83c671a2df0549e5a94ecadf0",
     "artifacts/sync_event_validation/report.json": "e52f4f12a338cb248b46a9396a5bd9b2127fdd2a0b246b9ae40cde71204c336d",
     "artifacts/system_boot_validation/report.json": "6b11d11357d387be47d8ff6405895e2a2101a87390223aebdde48deed5e5ed0d",
@@ -212,9 +213,9 @@
     "checks/test_update_store.py": "6ca71ede2c31611d8e902e277d67364fd7060ab1645bc789e72830d3c751d93e",
     "checks/test_upgrade_signature.py": "48ae2499a725211ee5517445bed641d19ea3ee1a4a606217debcdf6f624a42cb",
     "checks/test_usb_descriptors.py": "8e1ff459e950b96d35815682ebabdee0f237a375a6747d66a35acf9ac98bdece",
-    "checks/test_web_console.py": "a31a50190d99e26003ed356495757ca54e2575f356fbbc04c153d1a453de5f1f",
+    "checks/test_web_console.py": "cc2dd8bea84d38282805211026ce7fcd2f13e19cc5729ea6e69b040470d8ebc3",
     "docs/architecture.md": "1596b7403b9c1ad4966892998160d199c85c0223a12e48d11e8a85f651d1b104",
-    "docs/browser.md": "dd404c3b25b2d6babaa20ce0ec5b4ed88d8cc655f57353a3cf7b4225a6d9e083",
+    "docs/browser.md": "53bba3773ba9ed91a5ff69877898a4312b0ab4f7ba55ed38e5764df9213e20c6",
     "docs/firmware.md": "e03834dd9fe13f2e0348e86e8eb26166fe6af2f44a54f8d276c4a0a992bcb2e4",
     "docs/porting.md": "c396ad9a79416797337917271cbdc01c78527dc0aafed838b0b3afdfcb3f85d6",
     "docs/publication.md": "9c0aaecc2bc2b4c17c17d881acf0c838d345d7c10aaabe2a857de037b2e68327",
@@ -304,7 +305,7 @@
     "research/z7ii/menu_objects.md": "293fa9a25b9e26706b31af0c2f9209aae7b8490bf0a4bc1e968175df3a970f7f",
     "research/z7ii/message_wait.md": "aa583fa322765ca2d7f7580daa548f9a2853e69cff2c001e94388b630bd591a9",
     "research/z7ii/motion_estimation.md": "328869b70d6b24266fd342f2adb38c8054d41289ec5b91babe7a8e987cf46d16",
-    "research/z7ii/notification_chain.md": "fd9c64f9ce10a96a6673848e13cb600086417dccbf94246945b6f12d93676779",
+    "research/z7ii/notification_chain.md": "bd5e4cd3f9a4a62d21984dcced4375baac47c8c9c215ed67edebf2b4d7fab37e",
     "research/z7ii/parameter_boot.md": "5422d0dbd70ee54c524d0f55360a14658711e3bd198f86bd84067275f7082df4",
     "research/z7ii/pcie_configuration.md": "a172017fd2ee34be52c83f58da033c0f056c59be3007799db423d8db90a93a92",
     "research/z7ii/peer_memory.md": "4c64e9098e13a800ae27c61e9e603ff7663e5334ee065ec591b2b1647d51edc8",
@@ -462,9 +463,9 @@
     "tools/usb_debug_probe.py": "cf9b80250db088a609990cf3d290017e7ed053eeac98201fb38f160ad1934ba4",
     "tools/usb_task_probe.py": "9cd9639449226c44ab6694073d7b70290c1f06129d90a9d2317e3a920d1f9cb8",
     "tools/verify_release.py": "06bb98852e7f7f6955457f81412d604d37d065523e19ddd5c94be9c62387a73e",
-    "tools/web_console.py": "dc06c5b8792633ce93a8173c6e813a26cb38a5fbc756e1043d3ab97f34fdaccc",
-    "web/console.js": "8d12536dcfcb8368dda357630ddd6e45605e5cc7add36aaadbbe42c3a3da2ae1",
-    "web/index.html": "9f0fc27bc33af4313742ac403618b702ec8697967af0958f371d8f9927df8669",
-    "web/style.css": "63963a0a55da9f40665b69cd4dac3c5f389c616f9031fa6a87626fd3c6c95b9b"
+    "tools/web_console.py": "7a24b4c5dbd50d0ca2ffeb16f9efca4928bc5873315cedccd0adbbcdb639235b",
+    "web/console.js": "c9b8fa5648b8f058d616fe1f38b5475aa0ef2633ddda5ad99010a3181190c6d2",
+    "web/index.html": "fcdb33b18f7b198612d30f25b02fcb55aeb2df4b9e1e5e24257513e9ade6950c",
+    "web/style.css": "580cf25fc927b52fe356968cd476348c4013ab4ab91b91f6de5dc67cd5809986"
   }
 }

@@ -311,6 +311,29 @@ $('live').onchange = () => {
   else $('frame-state').textContent = '画面刷新已暂停';
 };
 
+let lcdBusy = false, lcdUrl = null, lcdAt = 0;
+async function lcd() {
+  const now = performance.now();
+  if (lcdBusy || !running || !$('live').checked || document.hidden) return;
+  if (now - lcdAt < 2000) return;
+  lcdAt = now;
+  lcdBusy = true;
+  try {
+    const response = await fetch('/lcd', {signal: AbortSignal.timeout(10000)});
+    if (!response.ok) throw new Error('LCD 输出暂不可用');
+    const blob = await response.blob();
+    if (!running) return;
+    const url = URL.createObjectURL(blob);
+    $('lcd').src = url;
+    if (lcdUrl) URL.revokeObjectURL(lcdUrl);
+    lcdUrl = url;
+    $('lcd').hidden = false;
+    $('lcd-state').textContent = '实时 · 1024 × 682';
+  } catch (error) {
+    $('lcd-state').textContent = error.message;
+  } finally { lcdBusy = false; }
+}
+
 let statusBusy = false;
 async function status() {
   if (statusBusy) return;
@@ -355,9 +378,12 @@ async function status() {
   } finally { statusBusy = false; }
 }
 // Schedule from completion so a slow capture cannot accumulate requests.
+// The LCD plane read is heavier than the graphics dump, so it refreshes
+// on a slower cadence beside the console frames.
 async function refreshFrames() {
   const started = performance.now();
   await frame();
+  lcd();
   setTimeout(refreshFrames, Math.max(1, 1000 / 30 - (performance.now() - started)));
 }
 refreshFrames();
