@@ -30,6 +30,7 @@ jobs:
           python tests/test_graphics.py --qemu .build/build/qemu-system-arm
           python tests/test_input_events.py --qemu .build/build/qemu-system-arm
           python tests/test_input_configuration.py --qemu .build/build/qemu-system-arm
+          python tests/test_display_output.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_gpio.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_rtc.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_i2c.py --qemu .build/build/qemu-system-arm

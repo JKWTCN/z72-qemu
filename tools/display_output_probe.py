@@ -69,6 +69,7 @@ def snapshot(machine):
                                      pending=hex(int.from_bytes(capture[0x1c:0x20], 'little'))),
                         operation3=hex(machine._words(0xb23f6ff0, 1)[0]),
                         operation14=hex(machine._words(0xb23f701c, 1)[0]),
+                        output_notification_index=machine._words(0xb180854c + 0x2c, 1)[0],
                         display_state=machine._bytes(0xb202be70 + 0x19e, 1).hex())
         finally:
             machine.qmp.command('cont')
@@ -83,15 +84,19 @@ def main():
     parser.add_argument('--sd-card', type=Path)
     parser.add_argument('--samples', type=int, default=2)
     parser.add_argument('--interval', type=float, default=2)
+    parser.add_argument('--events', type=int, nargs='+', default=[],
+                        help='Pulse physical output-event lines once after the first snapshot')
     args = parser.parse_args()
     if not 1 <= args.samples <= 20 or not 0 <= args.interval <= 30:
         parser.error('samples must be 1..20 and interval 0..30 seconds')
+    if any(not 0 <= event < 64 for event in args.events) or (args.events and args.samples < 2):
+        parser.error('events must be 0..63 and require at least two snapshots')
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local' / 'display-probe-store'
     args.update_image = None
     machine = Machine(args)
     report = dict(observation='native-display-registers-and-256-byte-samples',
-                  samples=[])
+                  events=args.events, samples=[])
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -108,6 +113,12 @@ def main():
         report['boot'] = state
         for index in range(args.samples):
             if index:
+                if index == 1:
+                    with machine.io:
+                        for event in args.events:
+                            for level in (1, 0):
+                                machine._qtest('set_irq_in /machine/master-display '
+                                               f'output-event {event} {level}')
                 time.sleep(args.interval)
             report['samples'].append(snapshot(machine))
             args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
