@@ -53,6 +53,7 @@ EXIT_PIN = 0
 CONTROL_BLOCK = 0xb23f6a7c      # +4 capture state, +5 sub-state, +0x1c pending
 EVENT_BYTE = 0xb23f6848         # capture event bits, gate mask for the sub-state
 OPERATION_SLOT = 0xb23f701c     # operation 14 completion trampoline slot
+INITIALIZATION_SLOT = 0xb23f6ff0  # operation 3 completion trampoline slot
 HANDLE_TABLE = 0xb2b5df20       # second-level device handlers, word per INTID
 CAPTURE_INTIDS = tuple(range(192, 206)) + (208, 209, 210, 211)
 SUBDRIVER_BLOCK = 0xb1864d48    # +1 state, +2 category
@@ -62,7 +63,8 @@ THIRD_STATUS = 0x20060050       # INTID 88 status word (mask at +0x4c)
 THIRD_SLOT = 0xb1806da0         # INTID 88 single callback slot
 SESSION_BLOCK = 0xb1887d70      # capture session module block (+9 state mirror)
 SESSION_OBJECT = SESSION_BLOCK + 0x3c
-SESSION_OFFSETS = (0, 0x41, 0x4d4, 0x4d6, 0x4e2, 0x4e4, 0x4ec, 0x2e08)
+SESSION_FIELDS = ((0, 1), (0x41, 1), (0x4d4, 1), (0x4d6, 1),
+                  (0x4e2, 1), (0x4e4, 4), (0x4ec, 1), (0x2e08, 1))
 SUBDRIVER_TASK = 0xb238e654     # +0x40/+0x60 are the two work queues
 DRIVER_BLOCKS = (0xb1864d48, 0xb1864d6c, 0xb1864d80, 0xb1864d90)
 DEFAULT_HANDLER = 0x103a04e9
@@ -260,6 +262,7 @@ def capture_chain_observation(remote):
     block = remote.read(CONTROL_BLOCK, 0x24)
     event = remote.read(EVENT_BYTE, 4)
     slot = remote.read(OPERATION_SLOT, 4)
+    initialization_slot = remote.read(INITIALIZATION_SLOT, 4)
     table = remote.read(HANDLE_TABLE + CAPTURE_INTIDS[0] * 4, len(CAPTURE_INTIDS) * 4)
     handlers = [struct.unpack_from('<I', table, index * 4)[0]
                 for index in range(len(CAPTURE_INTIDS))]
@@ -276,17 +279,17 @@ def capture_chain_observation(remote):
     if pointer:
         capture_object = struct.unpack('<I', pointer)[0]
         if capture_object:
-            for offset in SESSION_OFFSETS:
-                value = try_read(remote, capture_object + offset, 4)
+            for offset, size in SESSION_FIELDS:
+                value = try_read(remote, capture_object + offset, size)
                 session[f'+{offset:#x}'] = (None if value is None else
-                                             hex(struct.unpack('<I', value)[0]))
+                                             hex(int.from_bytes(value, 'little')))
             session['object'] = hex(capture_object)
-            session['module_state'] = hex(struct.unpack(
-                '<I', remote.read(SESSION_BLOCK + 8, 4))[0])
+            session['module_state'] = hex(remote.read(SESSION_BLOCK + 9, 1)[0])
     return dict(capture_state=block[4], sub_state=block[5],
                 pending_words=[hex(struct.unpack_from('<I', block, 0x1c)[0])],
                 event_bits=[hex(byte) for byte in event],
                 operation14_trampoline=hex(struct.unpack('<I', slot)[0]),
+                operation3_trampoline=hex(struct.unpack('<I', initialization_slot)[0]),
                 capture_handlers=[hex(handler) for handler in handlers],
                 capture_interrupts_registered=sum(
                     handler != DEFAULT_HANDLER for handler in handlers),

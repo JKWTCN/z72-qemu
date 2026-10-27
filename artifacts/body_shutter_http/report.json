@@ -1,0 +1,619 @@
+{
+  "format": 1,
+  "qemu_sha256": "9d32752fd00447433438d833c1fc0e0a95de12ed39b84f4f19310bedeb347008",
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+  },
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "static_inputs": {
+    "half": {
+      "resource": 97,
+      "descriptor": 9,
+      "fast_pair": [
+        9,
+        1
+      ],
+      "gpio": "G1",
+      "switch_mask": "0x80000000"
+    },
+    "full": {
+      "resource": 109,
+      "descriptor": 11,
+      "fast_pair": [
+        11,
+        2
+      ],
+      "gpio": "G13",
+      "switch_mask": "0x40000000"
+    },
+    "controller_resource_table": "0x0804ef8f",
+    "controller_fast_pairs": "0x0804f021",
+    "runtime_descriptors": "0x200184c8",
+    "master_names_file_offsets": [
+      "0x914410",
+      "0x914438"
+    ]
+  },
+  "controller_descriptors": [
+    {
+      "index": 0,
+      "pointer": "0x2000dddc",
+      "port": "0x40020000",
+      "mask": "0x400"
+    },
+    {
+      "index": 1,
+      "pointer": "0x2000de4c",
+      "port": "0x40020400",
+      "mask": "0x2"
+    },
+    {
+      "index": 2,
+      "pointer": "0x2000df2c",
+      "port": "0x40020400",
+      "mask": "0x8000"
+    },
+    {
+      "index": 3,
+      "pointer": "0x2000df8c",
+      "port": "0x40020800",
+      "mask": "0x20"
+    },
+    {
+      "index": 4,
+      "pointer": "0x2000deec",
+      "port": "0x40020400",
+      "mask": "0x800"
+    },
+    {
+      "index": 5,
+      "pointer": "0x2000e1ac",
+      "port": "0x40021000",
+      "mask": "0x80"
+    },
+    {
+      "index": 6,
+      "pointer": "0x2000e20c",
+      "port": "0x40021000",
+      "mask": "0x2000"
+    },
+    {
+      "index": 7,
+      "pointer": "0x2000e2ec",
+      "port": "0x40021400",
+      "mask": "0x800"
+    },
+    {
+      "index": 8,
+      "pointer": "0x2000e31c",
+      "port": "0x40021400",
+      "mask": "0x4000"
+    },
+    {
+      "index": 9,
+      "pointer": "0x2000e34c",
+      "port": "0x40021800",
+      "mask": "0x2"
+    },
+    {
+      "index": 10,
+      "pointer": "0x2000e35c",
+      "port": "0x40021800",
+      "mask": "0x4"
+    },
+    {
+      "index": 11,
+      "pointer": "0x2000e40c",
+      "port": "0x40021800",
+      "mask": "0x2000"
+    },
+    {
+      "index": 12,
+      "pointer": "0x2000e41c",
+      "port": "0x40021800",
+      "mask": "0x4000"
+    },
+    {
+      "index": 13,
+      "pointer": "0x2000e42c",
+      "port": "0x40021800",
+      "mask": "0x8000"
+    },
+    {
+      "index": 14,
+      "pointer": "0x2000df0c",
+      "port": "0x40020400",
+      "mask": "0x2000"
+    },
+    {
+      "index": 15,
+      "pointer": "0x2000e26c",
+      "port": "0x40021400",
+      "mask": "0x8"
+    },
+    {
+      "index": 16,
+      "pointer": "0x2000defc",
+      "port": "0x40020400",
+      "mask": "0x1000"
+    }
+  ],
+  "http": {
+    "format": 1,
+    "errors": [],
+    "stages": [
+      {
+        "name": "released",
+        "expected": "0x0",
+        "passed": true,
+        "word": "0x200",
+        "capture": [
+          2,
+          0
+        ],
+        "operation3": "00000000",
+        "operation14": "00000000",
+        "card_presence": "0000000000000000",
+        "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "name": "half",
+        "expected": "0x80000000",
+        "passed": true,
+        "word": "0x80000200",
+        "capture": [
+          2,
+          0
+        ],
+        "operation3": "00000000",
+        "operation14": "00000000",
+        "card_presence": "0000000000000000",
+        "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+      },
+      {
+        "name": "full",
+        "expected": "0xc0000000",
+        "passed": true,
+        "word": "0xc0000200",
+        "capture": [
+          2,
+          0
+        ],
+        "operation3": "00000000",
+        "operation14": "00000000",
+        "card_presence": "0000000000000000",
+        "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+      },
+      {
+        "name": "half_after_full",
+        "expected": "0x80000000",
+        "passed": true,
+        "word": "0x80000200",
+        "capture": [
+          2,
+          0
+        ],
+        "operation3": "00000000",
+        "operation14": "00000000",
+        "card_presence": "0000000000000000",
+        "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+      },
+      {
+        "name": "released_after_full",
+        "expected": "0x0",
+        "passed": true,
+        "word": "0x200",
+        "capture": [
+          2,
+          0
+        ],
+        "operation3": "00000000",
+        "operation14": "00000000",
+        "card_presence": "0000000000000000",
+        "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+      }
+    ],
+    "card_sha256_before": "bf145a0eb1b0e333cc0dfb038b2e40ab68bc0b1b7dd39163290bfd85166dae67",
+    "ready": {
+      "phase": "running",
+      "error": null,
+      "ready": true,
+      "menu_inhibited": false,
+      "uptime": 42,
+      "firmware": {
+        "source": "stock",
+        "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+        "length": 38239098,
+        "version": "Ver.01.70.02",
+        "installed_at": "",
+        "note": "",
+        "store_error": null
+      },
+      "staged": null,
+      "update_ready": false,
+      "update_installed": false,
+      "execution": "running",
+      "index": 3,
+      "held": [],
+      "booted_version": "Ver.01.70.02",
+      "auto_menu": "off",
+      "input_ready": true
+    },
+    "blocks": [
+      {
+        "device": "console-card",
+        "locked": false,
+        "removable": true,
+        "inserted": {
+          "iops_rd": 0,
+          "detect_zeroes": "off",
+          "active": true,
+          "image": {
+            "backing-image": {
+              "limits": {
+                "request-alignment": 1,
+                "min-mem-alignment": 1,
+                "opt-mem-alignment": 4096,
+                "max-iov": 1024
+              },
+              "virtual-size": 536870912,
+              "filename": "/mnt/d/code/z72-qemu/.local/card-fat.raw",
+              "format": "raw",
+              "actual-size": 536870912,
+              "dirty-flag": false
+            },
+            "limits": {
+              "write-zeroes-alignment": 65536,
+              "request-alignment": 1,
+              "min-mem-alignment": 1,
+              "discard-alignment": 65536,
+              "opt-mem-alignment": 4096,
+              "max-iov": 1024
+            },
+            "virtual-size": 536870912,
+            "filename": "json:{\"backing\": {\"driver\": \"raw\", \"file\": {\"driver\": \"file\", \"filename\": \"/mnt/d/code/z72-qemu/.local/card-fat.raw\"}}, \"driver\": \"qcow2\", \"file\": {\"driver\": \"file\", \"filename\": \"/var/tmp/vl.AK2AY3\"}}",
+            "cluster-size": 65536,
+            "format": "qcow2",
+            "actual-size": 397312,
+            "format-specific": {
+              "type": "qcow2",
+              "data": {
+                "compat": "1.1",
+                "compression-type": "zlib",
+                "lazy-refcounts": false,
+                "refcount-bits": 16,
+                "corrupt": false,
+                "extended-l2": false
+              }
+            },
+            "dirty-flag": false
+          },
+          "iops_wr": 0,
+          "ro": false,
+          "children": [
+            {
+              "node-name": "#block170",
+              "child": "backing"
+            },
+            {
+              "node-name": "#block572",
+              "child": "file"
+            }
+          ],
+          "node-name": "#block644",
+          "backing_file_depth": 1,
+          "drv": "qcow2",
+          "iops": 0,
+          "bps_wr": 0,
+          "write_threshold": 0,
+          "backing_file": "/mnt/d/code/z72-qemu/.local/card-fat.raw",
+          "encrypted": false,
+          "bps": 0,
+          "bps_rd": 0,
+          "cache": {
+            "no-flush": true,
+            "direct": false,
+            "writeback": true
+          },
+          "file": "json:{\"backing\": {\"driver\": \"raw\", \"file\": {\"driver\": \"file\", \"filename\": \"/mnt/d/code/z72-qemu/.local/card-fat.raw\"}}, \"driver\": \"qcow2\", \"file\": {\"driver\": \"file\", \"filename\": \"/var/tmp/vl.AK2AY3\"}}"
+        },
+        "qdev": "/machine/peripheral-anon/device[13]",
+        "type": "unknown"
+      },
+      {
+        "device": "none2",
+        "locked": false,
+        "removable": true,
+        "type": "unknown"
+      },
+      {
+        "device": "floppy0",
+        "locked": false,
+        "removable": true,
+        "type": "unknown"
+      }
+    ],
+    "sd_present_state": "0x1ff0000",
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "full_held_observation": {
+      "word": "0xc0000200",
+      "capture": [
+        2,
+        0
+      ],
+      "operation3": "00000000",
+      "operation14": "00000000",
+      "card_presence": "0000000000000000",
+      "slot_status": "000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+    },
+    "completed": true,
+    "card_sha256_after": "bf145a0eb1b0e333cc0dfb038b2e40ab68bc0b1b7dd39163290bfd85166dae67",
+    "base_card_unchanged": true
+  },
+  "initialization_branches": {
+    "sync_reached": true,
+    "stops": [
+      {
+        "entry": "initialize",
+        "thread": 2,
+        "pc": "0x1042f650",
+        "caller": "0x1020196f",
+        "r0": "0x2",
+        "r1": "0x1042f651",
+        "driver": "000000000000000000000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x2",
+          "r4": "0x20",
+          "r5": "0xb185df48",
+          "r6": "0x2",
+          "r7": "0x118afbb0",
+          "r8": "0x13",
+          "sp": "0xb51bb568"
+        }
+      },
+      {
+        "entry": "create_tasks",
+        "thread": 2,
+        "pc": "0x103ccef0",
+        "caller": "0x1042f663",
+        "r0": "0x2",
+        "r1": "0x1042f651",
+        "driver": "000000000000000000000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x2",
+          "r4": "0x20",
+          "r5": "0xb185df48",
+          "r6": "0x2",
+          "r7": "0x118afbb0",
+          "r8": "0x13",
+          "sp": "0xb51bb560"
+        }
+      },
+      {
+        "entry": "bind_services",
+        "thread": 2,
+        "pc": "0x103ccfd2",
+        "caller": "0x1042f669",
+        "r0": "0x3",
+        "r1": "0x1042f651",
+        "driver": "000000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x3",
+          "r4": "0x20",
+          "r5": "0xb185df48",
+          "r6": "0x3",
+          "r7": "0x118afce8",
+          "r8": "0x13",
+          "sp": "0xb51bb560"
+        }
+      },
+      {
+        "entry": "dispatch",
+        "thread": 1,
+        "pc": "0x103cc9ca",
+        "caller": "0x103606b5",
+        "r0": "0x20000",
+        "r1": "0x103cc9cb",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x20000",
+          "r4": "0xb238e654",
+          "r5": "0xb238e674",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "sp": "0xb5353800"
+        }
+      },
+      {
+        "entry": "configure_mode",
+        "thread": 1,
+        "pc": "0x103cbbc8",
+        "caller": "0x103606b5",
+        "r0": "0x80000000",
+        "r1": "0x103cc9cb",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x80000000",
+          "r4": "0xb238e654",
+          "r5": "0xb238e674",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "sp": "0xb5353800"
+        }
+      },
+      {
+        "entry": "mode_result",
+        "thread": 1,
+        "pc": "0x10322950",
+        "caller": "0x103021b3",
+        "r0": "0x1",
+        "r1": "0x0",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x1",
+          "r4": "0x0",
+          "r5": "0x0",
+          "r6": "0xb1868af0",
+          "r7": "0xb3c78040",
+          "r8": "0x0",
+          "sp": "0xb51dfed0"
+        },
+        "object": "0xb3c78040",
+        "object_prefix": "0000000000000000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001000100000000000000000000000000",
+        "object_mode": "000102020100000000000000000002000000000000010300000000004155544f",
+        "object_flags": "0000000000000000"
+      },
+      {
+        "entry": "mode_branch",
+        "thread": 1,
+        "pc": "0x10322966",
+        "caller": "0x103021b3",
+        "r0": "0x0",
+        "r1": "0x0",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x0",
+          "r4": "0x0",
+          "r5": "0x0",
+          "r6": "0x1",
+          "r7": "0xb3c78040",
+          "r8": "0x1",
+          "sp": "0xb51dfed0"
+        },
+        "object": "0xb3c78040",
+        "object_prefix": "0000000000000000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001000100000000000000000000000000",
+        "object_mode": "000102020100000000000000000002000000000000010300000000004155544f",
+        "object_flags": "0000000000000000"
+      },
+      {
+        "entry": "mode_configured",
+        "thread": 1,
+        "pc": "0x1032297e",
+        "caller": "0x1031932f",
+        "r0": "0x1",
+        "r1": "0x2",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x1",
+          "r4": "0x0",
+          "r5": "0x0",
+          "r6": "0x1",
+          "r7": "0xb3c78040",
+          "r8": "0x1",
+          "sp": "0xb51dfed0"
+        },
+        "object": "0xb3c78040",
+        "object_prefix": "0000000000000000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001000100000000000000000000000000",
+        "object_mode": "000102020100000000000000000002000000000000010300000000004155544f",
+        "object_flags": "0000000000000000"
+      },
+      {
+        "entry": "pipeline_result",
+        "thread": 1,
+        "pc": "0x10322a18",
+        "caller": "0x10233213",
+        "r0": "0x0",
+        "r1": "0x0",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0x0",
+          "r4": "0x2",
+          "r5": "0x0",
+          "r6": "0x1",
+          "r7": "0xb3c78040",
+          "r8": "0x1",
+          "sp": "0xb51dfed0"
+        },
+        "object": "0xb3c78040",
+        "object_prefix": "0000000000000000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000001000100000000000000000000000000",
+        "object_mode": "00010202010000000000000000000200e703000000010300000000004155544f",
+        "object_flags": "0000000000000000"
+      },
+      {
+        "entry": "request",
+        "thread": 1,
+        "pc": "0x103d01dc",
+        "caller": "0x10322a89",
+        "r0": "0xb51dfed0",
+        "r1": "0x0",
+        "driver": "010000000000000003000000",
+        "queues": [
+          "000000000000000000000000",
+          "000000000000000000000000"
+        ],
+        "branch_registers": {
+          "r0": "0xb51dfed0",
+          "r4": "0x2",
+          "r5": "0xb1868af0",
+          "r6": "0x1",
+          "r7": "0xb3c78040",
+          "r8": "0x1",
+          "sp": "0xb51dfed0"
+        }
+      }
+    ],
+    "unobserved": [
+      "construct_call",
+      "construct_wrapper",
+      "allocate_device",
+      "open_device",
+      "work"
+    ]
+  },
+  "unit_checks": {
+    "command": "tests/test_console_shutter.py",
+    "passed": 5
+  },
+  "limitations": [
+    "No sensor image or photograph file verified.",
+    "Empty operation callback slots are observations, not proof of all initialization completing.",
+    "The SD card is physically present to the host model; firmware slot presence remains zero."
+  ]
+}

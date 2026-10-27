@@ -36,6 +36,7 @@ APP_MANAGER = 0xb1811e40
 MENU_PIN = 9
 SHUTTER_HALF = 24
 SHUTTER_FULL = 25
+SHUTTER_CONTACTS = (1, 13)  # Controller port G: body half/full contacts.
 MENU_APPLICATION = 1
 ENGINE_ENTRY = 0x10020000
 # Original controller shoulder-panel state: the channel-8 snapshot copy, the
@@ -266,6 +267,16 @@ class Machine:
                                                ('group32.bin', 0x13e80000)))
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
+        card = getattr(self.args, 'sd_card', None)
+        card_globals, card_arguments = (), ()
+        if card is not None:
+            require(card.is_file(), 'SD card image does not exist')
+            card_path = card.resolve().as_posix().replace(',', ',,')
+            devices += ('sd-card,drive=console-card,bus=/z72-sd-slave/sd-bus',)
+            card_globals = ('nikon-z72-boot-config.sd-host=on',
+                            'nikon-z72-boot-config.pcie-link=on')
+            card_arguments = ('-drive', f'if=none,id=console-card,file={card_path},'
+                              'format=raw,snapshot=on')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',
             icount=None if self.args.realtime else 'shift=0,sleep=off',
@@ -282,8 +293,10 @@ class Machine:
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
+                     card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
+            extra_arguments=card_arguments,
             process_factory=Launcher)
         self.gdb_port = self.remote.sock.getpeername()[1]
         self.started_at = time.monotonic()
@@ -300,7 +313,9 @@ class Machine:
         self.gpio_names, self.config_names = gpios, configs
         require(len(gpios) == 8 and len(configs) == 2, 'Missing controller or engine inputs')
         for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1),
-                                  (1, 11, 1), (6, 14, 1), (6, 15, 1)):
+                                  (1, 11, 1), (6, 14, 1), (6, 15, 1),
+                                  (6, SHUTTER_CONTACTS[0], 1),
+                                  (6, SHUTTER_CONTACTS[1], 1)):
             self._qtest(f'set_irq_in /machine/unattached/{gpios[index]} unnamed-gpio-in {pin} {level}')
         self._boot_dance()
 
@@ -608,15 +623,16 @@ class Machine:
         if pin < SHUTTER_HALF:
             self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
             return
-        # The original controller scans external release G14/G15, active low.
+        # The original controller scans body release G1/G13, active low.
         # A full press holds the half contact too; releasing either browser
         # control must preserve the other control's contacts.
         pressed = self.held - {pin}
         if level == 0:
             pressed.add(pin)
-        levels = {14: int(not pressed.intersection((SHUTTER_HALF, SHUTTER_FULL))),
-                  15: int(SHUTTER_FULL not in pressed)}
-        for contact in ((14, 15) if level == 0 else (15, 14)):
+        half, full = SHUTTER_CONTACTS
+        levels = {half: int(not pressed.intersection((SHUTTER_HALF, SHUTTER_FULL))),
+                  full: int(SHUTTER_FULL not in pressed)}
+        for contact in (SHUTTER_CONTACTS if level == 0 else reversed(SHUTTER_CONTACTS)):
             self._qtest(f'set_irq_in /machine/unattached/{self.gpio_names[6]} '
                         f'unnamed-gpio-in {contact} {levels[contact]}')
 
@@ -887,8 +903,6 @@ def make_handler(machine):
                 require(isinstance(request, dict), 'Expected a JSON object')
                 if self.path == '/key':
                     pin, level = request.get('pin'), request.get('level')
-                    require(type(pin) is int and 0 <= pin < 24 and type(level) is int and level in (0, 1),
-                            'Invalid key input')
                     machine.set_key(pin, level)
                 elif self.path == '/release':
                     machine.release()
@@ -923,6 +937,9 @@ def main():
     parser.add_argument('--qemu', required=True)
     for name in ('master', 'slave', 'controller'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--sd-card', type=Path,
+                        help='Raw SD image attached through the original slave '
+                             'controller; session writes use a temporary overlay')
     parser.add_argument('--port', type=int, default=8666)
     parser.add_argument('--wsl', action='store_true', help='Run the Linux QEMU build through WSL on Windows')
     parser.add_argument('--realtime', action='store_true',
