@@ -618,6 +618,7 @@ struct NikonZ72BootConfig {
     uint32_t sync_levels[2];
     bool frame_sync;
     bool sensor_sample;
+    bool display_complete;
     bool sample_counter;
     bool sample_group1;
     /* Sensor frame generation state */
@@ -637,6 +638,7 @@ struct NikonZ72BootConfig {
     uint8_t input_trace_writes[256];
     uint64_t frame_sync_count;
     QEMUTimer *frame_sync_timer;
+    qemu_irq display_complete_irq[2];
 };
 
 static bool dbi_accepts(void *opaque, hwaddr offset, unsigned size,
@@ -955,6 +957,14 @@ static void frame_sync_tick(void *opaque)
          * rewrite this word after each pause. */
         if (!*boot_config_value(s, 0x20061000) && s->frame_sync_count > 4) {
             *boot_config_value(s, 0x20061000) = 0xffff;
+        }
+    }
+    if (s->display_complete && s->display_complete_irq[0]) {
+        /* The original handler acknowledges and counts both edges; the
+         * level returns to zero so the next frame latches again. */
+        for (unsigned line = 0; line < 2; line++) {
+            qemu_set_irq(s->display_complete_irq[line], 1);
+            qemu_set_irq(s->display_complete_irq[line], 0);
         }
     }
     s->frame_sync_count++;
@@ -1789,6 +1799,10 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), sd_irq_input, "sd-irq", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
+    /* One rising edge per frame on the two recovered display completion
+     * lines; wired to the master display device when it exists. */
+    qdev_init_gpio_out_named(DEVICE(obj), s->display_complete_irq,
+                             "display-complete", 2);
     /* Sparse containers keep unsupported words unassigned and avoid the
      * system bus limit on the number of exported MMIO regions. */
     for (unsigned i = 0; i < G_N_ELEMENTS(s->banks); i++) {
@@ -2015,6 +2029,8 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_BOOL("display-complete", NikonZ72BootConfig,
+                         display_complete, false),
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
@@ -2625,6 +2641,14 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
             sysbus_connect_irq(SYS_BUS_DEVICE(display), line,
                                qdev_get_gpio_in(gic, 112 - line - 32));
         }
+        /* Frame-timed completion edges for the recovered output lines
+         * 48/52 (channel 1 bits 16/20) when display-complete is set. */
+        qdev_connect_gpio_out_named(config, "display-complete", 0,
+                                    qdev_get_gpio_in_named(display,
+                                                           "output-event", 48));
+        qdev_connect_gpio_out_named(config, "display-complete", 1,
+                                    qdev_get_gpio_in_named(display,
+                                                           "output-event", 52));
         DeviceState *graphics = qdev_new("nikon-z72-graphics");
         object_property_add_child(OBJECT(machine), "master-graphics", OBJECT(graphics));
         object_property_set_link(OBJECT(graphics), "root", OBJECT(view), &error_fatal);

@@ -293,6 +293,8 @@ class Machine:
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
+                     (('nikon-z72-boot-config.display-complete=on',)
+                      if getattr(self.args, 'display_complete', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
@@ -942,6 +944,9 @@ def main():
                              'controller; session writes use a temporary overlay')
     parser.add_argument('--port', type=int, default=8666)
     parser.add_argument('--wsl', action='store_true', help='Run the Linux QEMU build through WSL on Windows')
+    parser.add_argument('--display-complete', action='store_true',
+                        help='Pulse the recovered display completion lines '
+                             'on every laboratory frame tick')
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')

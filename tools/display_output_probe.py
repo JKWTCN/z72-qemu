@@ -86,12 +86,16 @@ def main():
     parser.add_argument('--interval', type=float, default=2)
     parser.add_argument('--events', type=int, nargs='+', default=[],
                         help='Pulse physical output-event lines once after the first snapshot')
+    parser.add_argument('--display-complete', action='store_true',
+                        help='Arm the periodic completion source on both '
+                             'recovered lines for the whole run')
     args = parser.parse_args()
     if not 1 <= args.samples <= 20 or not 0 <= args.interval <= 30:
         parser.error('samples must be 1..20 and interval 0..30 seconds')
     if any(not 0 <= event < 64 for event in args.events) or (args.events and args.samples < 2):
         parser.error('events must be 0..63 and require at least two snapshots')
     args.realtime = args.auto_menu = False
+    args.sd_card = None
     args.update_store = ROOT / '.local' / 'display-probe-store'
     args.update_image = None
     machine = Machine(args)
