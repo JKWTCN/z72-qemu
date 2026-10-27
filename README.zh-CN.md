@@ -24,7 +24,12 @@ master 镜像由启动参数提供（本仓库不含制作或解码工具），�
 消费为实时状态块，页面函数组装 12 字节寄存器结构与影子寄存器，物理面板
 为八位寄存器 I2C 器件（寄存器 26 读身份、0xD6 写页选）。寄存器式面板
 器件模型覆盖线协议并提供观察属性，浏览器交互台实时呈现原厂面板状态；
-菜单关闭后的重开、菜单文字语义、LCD 实时
+菜单稳定周期的退出画面不再出现 "Turn camera off and then on again"
+对话框：采样源合同（`sensor-sample` 加 `sample-counter`）并入交互台
+与探针后，菜单退出的重启路径不再产出致命消息，见
+[错误显示研究](research/z7ii/error_display.md)。菜单关闭后的重开
+（采集状态 `0x3f` 门控）、拍摄画面 `Card`/`Err` 计数背后的存储槽
+状态、菜单文字语义、LCD 实时
 [菜单键研究](research/z7ii/controller_keys.md)、
 [菜单固件更新](research/z7ii/firmware_update.md)、
 [传感器采样事件](research/z7ii/sensor_frames.md)与

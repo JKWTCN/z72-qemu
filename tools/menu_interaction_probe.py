@@ -141,7 +141,9 @@ def run(args):
                 icount='shift=0,sleep=off', trace='guest_errors',
                 controller_firmware=args.controller, controller_link=True,
                 controller_flash_data=work / 'resident.bin', devices=devices,
-                globals_=('nikon-z72-boot-config.frame-sync=on',) +
+                globals_=('nikon-z72-boot-config.frame-sync=on',
+                         'nikon-z72-boot-config.sensor-sample=on',
+                         'nikon-z72-boot-config.sample-counter=on') +
                 tuple(f"nikon-z72-controller-adc.channel{channel}={value}"
                      for channel, value in ((0, 1800), (1, 3001), (3, 3001))),
                 extra_arguments=())

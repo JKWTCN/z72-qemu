@@ -38,9 +38,15 @@ device (identity read at register 26, page selects at 0xD6). A register
 panel device model with observation properties covers the wire contract,
 and the browser console renders the original panel state live.
 See [shoulder panel research](research/z7ii/shoulder_panel.md).
-Menu reopening after it closes, menu text semantics,
+Menu reopening after it closes, the storage-slot status behind the
+shooting-screen `Card`/`Err` counters, menu text semantics,
 LCD live view and the natural production of a few notifications remain
-pending.
+pending. The steady menu cycle no longer shows the
+"Turn camera off and then on again" dialog: with the sampling source
+armed (`sensor-sample` plus `sample-counter`), the post-menu restart
+path stops raising the fatal message even though the capture session
+itself stays at its recorded boundary; see
+[error display research](research/z7ii/error_display.md).
 See the [menu key research](research/z7ii/controller_keys.md),
 [menu firmware update](research/z7ii/firmware_update.md),
 [sensor sampling events](research/z7ii/sensor_frames.md) and
@@ -258,7 +264,11 @@ power policy. It uses a documented controller-memory bridge and fixed laboratory
 measurements. The original shooting application and rendering remain active across
 the internal mode 3 → 1 transition for 11.50 sampled virtual seconds; see the
 [persistence observation](artifacts/shooting_persistence_validation/report.json).
-The visible `Err` indication and menu interaction remain unresolved.
+The visible `Err` counter indication traces to the storage-slot state
+(the slot driver never reports ready without a card model); the menu
+round trip itself is now dialog-free, and the remaining reopen boundary
+is the capture-status gate. See
+[error display research](research/z7ii/error_display.md).
 
 The [menu key transport](research/z7ii/controller_keys.md) has been traced from
 expander input 9 to bit 15 of the second decoded switch word and the original

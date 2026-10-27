@@ -277,7 +277,9 @@ class Machine:
                              'master-boot-aux=' + ','.join(
                                  f'{work / name}@{address:#x}'
                                  for name, address in BOOT_AUXILIARY).replace(',', ',,')),
-            globals_=('nikon-z72-boot-config.frame-sync=on',) +
+            globals_=('nikon-z72-boot-config.frame-sync=on',
+                         'nikon-z72-boot-config.sensor-sample=on',
+                         'nikon-z72-boot-config.sample-counter=on') +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
             process_factory=Launcher)
