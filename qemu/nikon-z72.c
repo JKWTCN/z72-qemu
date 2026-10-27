@@ -2616,6 +2616,15 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         sysbus_mmio_get_region(SYS_BUS_DEVICE(input_config), 0));
     DeviceState *counter = qdev_new("nikon-z72-counter");
     if (!slave) {
+        DeviceState *display = qdev_new("nikon-z72-display");
+        object_property_add_child(OBJECT(machine), "master-display", OBJECT(display));
+        sysbus_realize_and_unref(SYS_BUS_DEVICE(display), &error_fatal);
+        memory_region_add_subregion_overlap(view, 0x20140000,
+            sysbus_mmio_get_region(SYS_BUS_DEVICE(display), 0), 1);
+        for (unsigned line = 0; line < 2; line++) {
+            sysbus_connect_irq(SYS_BUS_DEVICE(display), line,
+                               qdev_get_gpio_in(gic, 112 - line - 32));
+        }
         DeviceState *graphics = qdev_new("nikon-z72-graphics");
         object_property_add_child(OBJECT(machine), "master-graphics", OBJECT(graphics));
         object_property_set_link(OBJECT(graphics), "root", OBJECT(view), &error_fatal);
