@@ -93,6 +93,11 @@ RESOURCE_READ_POINTS = {
     0x103c0652: ('resource-reload-alternate-result', 'r8'),
     0x103c0664: ('resource-reload-primary-result', 'r8'),
 }
+GPIO_HANDSHAKE_POINTS = {
+    0x102422c2: 'input-handshake-start-submitted',
+    0x102422ea: 'input-handshake-stop-submitted',
+    0x10394a12: 'processing-event-set',
+}
 
 
 class RegistrationMachine(Machine):
@@ -107,6 +112,9 @@ class RegistrationMachine(Machine):
             armed.update(INPUT_CONFIG_POINTS)
         if self.args.watch_resources:
             armed.update({address: value[0] for address, value in RESOURCE_READ_POINTS.items()})
+        if self.args.gpio_handshake_events:
+            armed.update(GPIO_HANDSHAKE_POINTS)
+        gpio_hits = {}
         resource_hits = {}
         input_hits = {}
         armed[SYNC_WAIT] = 'synchronization-wait'
@@ -228,6 +236,18 @@ class RegistrationMachine(Machine):
                 if resource is not None:
                     record['resource'] = resource
                     record['hit'] = resource_hits[(pc, resource)]
+                if self.args.gpio_handshake_events and pc in GPIO_HANDSHAKE_POINTS:
+                    gpio_hits[pc] = gpio_hits.get(pc, 0) + 1
+                    if pc in (0x102422c2, 0x102422ea):
+                        mask = int.from_bytes(remote.read(0x0426f000, 4), 'little')
+                        polarity = int.from_bytes(remote.read(0x0426f014, 4), 'little')
+                        record['external_gpio_event'] = dict(
+                            input=0, resource=84, intid=65, mask=hex(mask),
+                            polarity=hex(polarity), injected=not bool(mask & 1))
+                        if not mask & 1:
+                            for level in (0, 1, 0):
+                                self._qtest(f'set_irq_in /machine/unattached/{self.config_names[0]} '
+                                            f'gpio-input 0 {level}')
                 if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS:
                     input_hits[pc] = input_hits.get(pc, 0) + 1
                     record['hit'] = input_hits[pc]
@@ -334,6 +354,7 @@ class RegistrationMachine(Machine):
                     synchronized = True
                 remote.breakpoint(pc, False)
                 if ((self.args.watch_input_config and pc in INPUT_CONFIG_POINTS and input_hits[pc] < 8)
+                        or (self.args.gpio_handshake_events and pc in GPIO_HANDSHAKE_POINTS and gpio_hits[pc] < 8)
                         or (self.args.watch_resources and pc in RESOURCE_READ_POINTS)):
                     remote.sock.settimeout(15)
                     remote.command(f'vCont;s:{thread:x}')
@@ -352,6 +373,7 @@ class RegistrationMachine(Machine):
             self.remote = None
         self.registration_unseen = [label for address, label in armed.items()
                                     if address not in input_hits and
+                                    address not in gpio_hits and
                                     address not in {key[0] for key in resource_hits}]
         self.input_configuration_counts = {label: input_hits.get(address, 0)
                                            for address, label in INPUT_CONFIG_POINTS.items()}
@@ -377,6 +399,8 @@ def main():
                         help='Observe up to eight hits per input configuration and geometry entry')
     parser.add_argument('--watch-resources', action='store_true',
                         help='Observe up to eight reads per entry and resource 11, 71 or 80 from reset')
+    parser.add_argument('--gpio-handshake-events', action='store_true',
+                        help='Laboratory input: pulse armed GPIO input 0 after input handshake submissions from reset')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -391,6 +415,7 @@ def main():
     report['watch_release'] = args.watch_release
     report['watch_input_config'] = args.watch_input_config
     report['watch_resources'] = args.watch_resources
+    report['gpio_handshake_events'] = args.gpio_handshake_events
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -433,6 +458,11 @@ def main():
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
                 report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
                 report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
+                if args.gpio_handshake_events:
+                    report['processing_field_24'] = hex(machine._words(0xb1868334, 1)[0])
+                    report['gpio_adapter'] = dict(
+                        mode=machine._bytes(0xb18a7920, 1)[0],
+                        timer_active=machine._words(0xb18a7924, 1)[0])
                 if args.watch_resources:
                     report['resources'] = {}
                     for index in (11, 71, 80):

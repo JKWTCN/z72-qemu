@@ -1,0 +1,70 @@
+{
+  "observation": "original-kernel-event-flag-predicate",
+  "firmware_used": true,
+  "wrapper": "0x10361192",
+  "wrapper_mode": 0,
+  "svc_descriptor": "0x80300500",
+  "syscall_table": "0x10127428",
+  "handler": "0x10111410",
+  "predicate": "0x10111608",
+  "stop_before": "0x10111634",
+  "synthetic_flag_object": true,
+  "scheduler_executed": false,
+  "code_window": {
+    "file_offset": "0xf1608",
+    "length": 100,
+    "sha256": "fd5490aae3b599ed560194d66146c8c0b06c063c4f0cd98fadf04453fd17f4c9"
+  },
+  "result": "passed",
+  "cases": [
+    {
+      "mode": 0,
+      "available": "0x0",
+      "requested": "0x18",
+      "matched": false
+    },
+    {
+      "mode": 0,
+      "available": "0x8",
+      "requested": "0x18",
+      "matched": false
+    },
+    {
+      "mode": 0,
+      "available": "0x10",
+      "requested": "0x18",
+      "matched": false
+    },
+    {
+      "mode": 0,
+      "available": "0x18",
+      "requested": "0x18",
+      "matched": true
+    },
+    {
+      "mode": 1,
+      "available": "0x0",
+      "requested": "0x18",
+      "matched": false
+    },
+    {
+      "mode": 1,
+      "available": "0x8",
+      "requested": "0x18",
+      "matched": true
+    },
+    {
+      "mode": 1,
+      "available": "0x10",
+      "requested": "0x18",
+      "matched": true
+    },
+    {
+      "mode": 1,
+      "available": "0x18",
+      "requested": "0x18",
+      "matched": true
+    }
+  ],
+  "conclusion": "Mode 0 requires all requested bits; mode 1 accepts any requested bit."
+}
