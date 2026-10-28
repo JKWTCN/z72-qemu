@@ -187,6 +187,23 @@ RETURN_POINTS = {
     0x103c0664: 'resource-read-result',
 }
 
+RECONFIGURE_POINTS = {
+    0x10238d16: 'reconfigure-frame-count-check',
+    0x10238d3e: 'reconfigure-frame-count-complete',
+    0x1022e600: 'reconfigure-input-event8-check',
+    0x10230368: 'reconfigure-finite-input-worker',
+    0x102303e8: 'reconfigure-finite-input-notification',
+    0x103204f2: 'reconfigure-driver-state5-producer',
+    0x102301b6: 'reconfigure-input-drain',
+    0x10230212: 'reconfigure-input-drain-return',
+    0x1023c50a: 'reconfigure-input-disable',
+    0x1020c290: 'reconfigure-raw-stop',
+    0x1020c2c0: 'reconfigure-raw-stop-return',
+    0x10233cf6: 'reconfigure-context-queue',
+    0x103259cc: 'reconfigure-context-request',
+    0x10326264: 'reconfigure-context-request-return',
+}
+
 
 def snapshot(remote):
     remote.select_thread(1)
@@ -278,6 +295,17 @@ def snapshot(remote):
         data = remote.read(base, stride * capacity)
         driver_pending = [hex(struct.unpack_from('<I', data, ((head + index) % capacity) * stride)[0])
                           for index in range(count)]
+    completed_heads = []
+    for index in range(4):
+        node = word(0xb26b3924 + index * 32)
+        item = dict(node=hex(node))
+        if 0xb2c00000 <= node < 0xb5effff4:
+            value = word(node + 8)
+            item['value'] = hex(value)
+            if 0xb2c00000 <= value < 0xb5effeb0:
+                item['raw_fields'] = {hex(offset): hex(word(value + offset))
+                                      for offset in (0x144, 0x14c)}
+        completed_heads.append(item)
     return dict(system_mode=mode[0], previous_mode=mode[1],
         driver_work_queue=[hex(value) for value in driver_queue],
         driver_pending_functions=driver_pending,
@@ -287,6 +315,7 @@ def snapshot(remote):
         resources=resources, cores=cores,
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
+        input_completed_heads=completed_heads,
         input_interrupts=dict(
             controls={hex(offset): hex(word(0x20068000 + offset))
                       for offset in (0, 4, 8, 0x10, 0x14, 0x18)},
@@ -296,6 +325,10 @@ def snapshot(remote):
                 struct.unpack('<12I', remote.read(0xb18067e4, 48)))}),
         input_state=dict(state_5=remote.read(0xb1887d75, 1)[0],
                          state_6=remote.read(0xb1887d76, 1)[0],
+                         finite_frames=list(remote.read(0xb1888146, 2)),
+                         processing_flags=hex(word(0xb26b38cc)),
+                         finite_request=hex(word(0xb1887dd8)),
+                         finite_queue_count=word(0xb25eebcc),
                          configured_mask=hex(word(0xb1887dcc)),
                          required_mask=hex(word(0xb1887dd0)),
                          processing_masks=[hex(word(0xb26b38b4 + index * 4)) for index in range(4)]),
@@ -394,7 +427,8 @@ def input_dma_snapshot(machine):
 
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
-            gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False):
+            gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
+            reconfigure=False, tail_frame_events=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -403,6 +437,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         armed.update(AFTER_PLAYBACK)
     if returning:
         armed = dict(RETURN_POINTS)
+    if reconfigure:
+        armed.update(RECONFIGURE_POINTS)
     if frame_notify:
         armed.update({0x10238d4a: 'input-frame-task',
                       0x10238c40: 'input-frame-dequeue',
@@ -449,6 +485,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         before = snapshot(remote)
         for address in armed:
             remote.breakpoint(address)
+        tail_events = []
+        if tail_frame_events:
+            require(before['capture_driver_state'] == 4 and
+                    before['input_interrupts']['controls']['0x8'] == '0x10',
+                    'Tail event experiment requires the observed reconfiguration state')
+            for line in (0, 6):
+                for level in (1, 0):
+                    machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
+                                   f'input-event {line} {level}')
+                tail_events.append(line)
         if watch_address is not None:
             require(remote.command(f'Z{watch_type},{watch_address:x},4') == 'OK',
                     'Memory watchpoint rejected')
@@ -519,7 +565,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if keep and pc == 0x103231b2:
                     record['state_transition'] = dict(previous=remote.get(registers, 'r7'),
                         next=remote.get(registers, 'r0'), request=remote.get(registers, 'r10'))
-                if playback or returning:
+                if playback or returning or reconfigure:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
                     record['driver_pending_state'] = remote.read(0xb1868afa, 1)[0]
@@ -634,6 +680,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['action'] = hex(remote.get(registers, 'r6'))
                 if keep:
                     records.append(record)
+                if reconfigure and pc in RECONFIGURE_POINTS:
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 8
             remote.breakpoint(pc, False)
             if repeat:
                 remote.sock.settimeout(15)
@@ -647,6 +696,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     observed_counter_seconds=round((after['counter_ticks'] - before['counter_ticks']) /
                                                    before['counter_frequency'], 6),
                     driver_notification_hits=callback_hits,
+                    tail_frame_events=tail_events,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
@@ -682,6 +732,10 @@ def main():
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--frame-notify', action='store_true',
                         help='Experimentally latch recovered input timing causes after successful DMA')
+    parser.add_argument('--reconfigure-watch', type=int, default=0,
+                        help='Wait up to this many host seconds for driver state 4 before tracing (0..900)')
+    parser.add_argument('--tail-frame-events', action='store_true',
+                        help='Laboratory input: pulse input causes 0/6 once after RAW stops in state 4')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -701,6 +755,9 @@ def main():
                         help='Capture and single-step the first write in each observed stage, then stop that stage')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
+    require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
+    require(not args.tail_frame_events or args.reconfigure_watch and args.frame_notify,
+            'Tail event experiment requires reconfiguration observation and frame notification')
     require(30 <= args.boot_watch <= 600, 'Boot watch time out of bounds')
     require(args.watch_read is None or 0 <= args.watch_read <= 0xfffffffc and
             args.watch_read % 4 == 0, 'Read watch address out of bounds')
@@ -751,6 +808,20 @@ def main():
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
             raise TimeoutError('Shooting foreground did not become ready')
+        reconfiguration = None
+        if args.reconfigure_watch:
+            started = time.monotonic()
+            driver_state = None
+            while time.monotonic() - started < args.reconfigure_watch:
+                machine.heartbeat()
+                with machine.io:
+                    driver_state = (machine._words(0xb1868af0, 1)[0] >> 8) & 255
+                if driver_state == 4:
+                    break
+                time.sleep(1)
+            reconfiguration = dict(driver_state=driver_state, reached=driver_state == 4,
+                                   host_seconds=round(time.monotonic() - started, 3))
+            print(json.dumps(dict(reconfiguration_wait=reconfiguration)), flush=True)
         initial_lcd = lcd_snapshot(machine)
         initial_dma = input_dma_snapshot(machine) if args.frame_generate else None
         report = dict(observation=('native-playback-capture-stop' if args.playback else
@@ -765,10 +836,13 @@ def main():
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
+                      reconfiguration_wait=reconfiguration,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
                                     watch_read=args.watch_read, watch_write=args.watch_write,
-                                    frame_notify=args.frame_notify))
+                                    frame_notify=args.frame_notify,
+                                    reconfigure=bool(args.reconfigure_watch),
+                                    tail_frame_events=args.tail_frame_events))
         report['native_lcd_before'] = initial_lcd
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
