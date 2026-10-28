@@ -27,24 +27,41 @@ POINTS = {
     0x103ce6ac: 'device-construction',
     0x102323ec: 'session-report-gate',
 }
+CAPTURE_OPERATION_POINTS = {
+    0x103f2540: 'operation14-api',
+    0x103f2550: 'operation14-precheck-result',
+    0x103f255c: 'operation14-admission-result',
+    0x103f258a: 'operation14-api-result',
+    0x103ef318: 'operation14-task-request',
+    0x1020ea1c: 'operation14-callback-result',
+    0x10247dea: 'operation14-ui-completion',
+}
 
 
 class RegistrationMachine(Machine):
     def _boot_dance(self):
         remote = self.remote
         armed = dict(POINTS)
+        if self.args.capture_operations:
+            armed.update(CAPTURE_OPERATION_POINTS)
         armed[SYNC_WAIT] = 'synchronization-wait'
         self.registration_stops = []
         self.session_stops = []
-        watching = self.args.watch_session
-        if watching:
-            require(remote.command('Z2,b3c78081,1') == 'OK', 'Session watchpoint rejected')
+        self.operation14_stops = []
+        watchers = {}
+        if self.args.watch_session:
+            watchers[0xb3c78081] = (1, self.session_stops)
+        if self.args.capture_operations:
+            watchers[0xb23f701c] = (4, self.operation14_stops)
+        for address, (size, _) in watchers.items():
+            require(remote.command(f'Z2,{address:x},{size:x}') == 'OK',
+                    'Write watchpoint rejected')
         for address in armed:
             remote.breakpoint(address)
         deadline = time.monotonic() + self.args.watch
         synchronized = False
         try:
-            while time.monotonic() < deadline and (armed or watching):
+            while time.monotonic() < deadline and (armed or watchers):
                 remote.sock.settimeout(min(5, max(0.2, deadline - time.monotonic())))
                 try:
                     reply = remote.command('vCont;c')
@@ -59,10 +76,13 @@ class RegistrationMachine(Machine):
                 remote.select_thread(thread)
                 registers = remote.regs()
                 pc = remote.get(registers, 'pc')
-                if watching and thread <= 2 and 'watch:' in reply:
+                watch = re.search(r'watch:([0-9a-f]+);', reply)
+                if watch and int(watch[1], 16) in watchers:
+                    address = int(watch[1], 16)
+                    size, records = watchers[address]
                     write = dict(
                         pc=hex(pc), thread=thread,
-                        value_before=remote.read(0xb3c78081, 1)[0],
+                        value_before=int.from_bytes(remote.read(address, size), 'little'),
                         registers={name: hex(remote.get(registers, name))
                                    for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5',
                                                 'r6', 'r7', 'lr')})
@@ -71,19 +91,21 @@ class RegistrationMachine(Machine):
                             source=hex(remote.get(registers, 'r5') + 0x204),
                             destination=hex(remote.get(registers, 'r4') + 1),
                             value=remote.get(registers, 'r0') & 255)
-                    self.session_stops.append(write)
+                    records.append(write)
                     # QEMU stops before the watched store. Advance it with
                     # the watchpoint removed; otherwise every resume reports
                     # the same instruction again without executing the store.
-                    require(remote.command('z2,b3c78081,1') == 'OK',
-                            'Session watchpoint removal failed')
-                    watching = False
+                    require(remote.command(f'z2,{address:x},{size:x}') == 'OK',
+                            'Write watchpoint removal failed')
+                    del watchers[address]
                     remote.sock.settimeout(15)
                     remote.command(f'vCont;s:{thread:x}')
-                    if len(self.session_stops) < 8:
-                        require(remote.command('Z2,b3c78081,1') == 'OK',
-                                'Session watchpoint re-arm failed')
-                        watching = True
+                    remote.select_thread(thread)
+                    write['value_after'] = int.from_bytes(remote.read(address, size), 'little')
+                    if len(records) < 8:
+                        require(remote.command(f'Z2,{address:x},{size:x}') == 'OK',
+                                'Write watchpoint re-arm failed')
+                        watchers[address] = (size, records)
                     continue
                 # Both engine images use the same base. Slave hits are not
                 # evidence about the master's local registration worker.
@@ -92,7 +114,7 @@ class RegistrationMachine(Machine):
                 record = dict(
                     entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name))
-                               for name in ('r0', 'r1', 'r2', 'r5', 'r6', 'lr')},
+                               for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'lr')},
                     pending=int.from_bytes(remote.read(0xb1d52228, 2), 'little'))
                 if pc == 0x10264972:
                     descriptor = remote.get(registers, 'r0')
@@ -106,6 +128,13 @@ class RegistrationMachine(Machine):
                     record['session'] = dict(context=hex(context),
                         state=remote.read(context, 1)[0],
                         gate=remote.read(context + 0x41, 1)[0])
+                if pc in CAPTURE_OPERATION_POINTS:
+                    record['capture_state'] = list(remote.read(0xb23f6a80, 2))
+                    record['operation14_callback'] = hex(int.from_bytes(
+                        remote.read(0xb23f701c, 4), 'little'))
+                if pc in (0x1020ea1c, 0x10247dea):
+                    payload = remote.get(registers, 'r4' if pc == 0x1020ea1c else 'r1')
+                    record['completion_result'] = int.from_bytes(remote.read(payload, 4), 'little')
                 self.registration_stops.append(record)
                 if pc == SYNC_WAIT:
                     require(all(remote.get(registers, name) == value
@@ -127,9 +156,9 @@ class RegistrationMachine(Machine):
             remote.sock.settimeout(15)
             for address in armed:
                 remote.breakpoint(address, False)
-            if watching:
-                require(remote.command('z2,b3c78081,1') == 'OK',
-                        'Session watchpoint cleanup failed')
+            for address, (size, _) in watchers.items():
+                require(remote.command(f'z2,{address:x},{size:x}') == 'OK',
+                        'Write watchpoint cleanup failed')
             require(remote.command('D') == 'OK', 'Could not detach')
             remote.sock.close()
             self.remote = None
@@ -148,6 +177,8 @@ def main():
     parser.add_argument('--watch', type=int, default=120)
     parser.add_argument('--watch-session', action='store_true',
                         help='Record up to eight writes to session root byte +0x41')
+    parser.add_argument('--capture-operations', action='store_true',
+                        help='Observe operation 14 admission and task submission from reset')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -157,7 +188,8 @@ def main():
     report = dict(observation='local-device-registration-from-reset',
                   watch_seconds=args.watch, sd_attached=args.sd_card is not None,
                   display_complete=args.display_complete,
-                  watch_session=args.watch_session)
+                  watch_session=args.watch_session,
+                  capture_operations=args.capture_operations)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -173,7 +205,8 @@ def main():
             raise TimeoutError('Shooting application did not become ready')
         report.update(boot=state, stops=machine.registration_stops,
                       unseen=machine.registration_unseen,
-                      session_stops=machine.session_stops)
+                      session_stops=machine.session_stops,
+                      operation14_stops=machine.operation14_stops)
         with machine.io:
             machine.qmp.command('stop')
             try:
@@ -190,6 +223,8 @@ def main():
                                    if ring is not None})
                 report['module_wait_mask'] = hex(machine._words(0xb1864854, 1)[0])
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
+                report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
+                report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
                 report['device_worker_state'] = dict(
                     state=machine._bytes(0xb1864d49, 1)[0],
                     category=machine._bytes(0xb1864d4a, 1)[0])
