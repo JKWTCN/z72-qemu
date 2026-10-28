@@ -75,6 +75,25 @@ def smoke(qemu, machine, addresses):
                         require(remote.read(cached, 8) ==
                                 struct.pack('<I', 0x12345678) + b'keep',
                                 'CPU buffer alias store or guard differs')
+                    # The original grid consumer reads halfwords from this
+                    # uncached allocation span. Exercise that access width
+                    # and the exact initialization-record end on the CPU.
+                    remote.write(0x40100020, struct.pack('<I', 0xE1D120B0))
+                    for address in (0x54F00000, 0x5D170000, 0x5F8D23FC):
+                        remote.set(r0=0x12345678, r1=address, pc=0x40100008, cpsr=0xD3)
+                        remote.command('s')
+                        require(remote.get(remote.regs(), 'pc') == 0x4010000C,
+                                'Uncached pool store faulted')
+                        remote.set(r1=address, pc=0x40100020)
+                        remote.command('s')
+                        require(remote.get(remote.regs(), 'r2') == 0x5678,
+                                'Uncached pool halfword read differs')
+                    for address in (0x5F8D2400, 0x5F8FFFFC):
+                        remote.set(r1=address, pc=0x4010000C, cpsr=0xD3)
+                        remote.command('s')
+                        require(remote.get(remote.regs(), 'pc') == 0x10,
+                                'Uncached pool extends beyond the recovered boundary')
+                    remote.set(cpsr=0xD3)
                     # Exercise a real RAM copy across internal chunk boundaries,
                     # including high addresses and untouched destination guards.
                     source, target = 0x40101000, 0xBAA01000
@@ -314,6 +333,7 @@ def main():
            0xB2C00000, 0xB4000000, 0xB5EFFFFC,
            0xB5F00000, 0xB7CF0000, 0xB7CFC614,
            0x50300000, 0x50560000, 0x548FFFFC,
+           0x54F00000, 0x5D170000, 0x5F8D23FC,
            0x5F900000, 0x62059800, 0x626FFFFC, 0x34600000, 0x373FFFFC))
     smoke(args.qemu, 'nikon-z72-slave-lab',
           (0x04008000, 0x04008EFC, 0x04008FFC,

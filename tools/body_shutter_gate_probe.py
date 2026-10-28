@@ -46,6 +46,21 @@ AFTER_PLAYBACK = {
     0x10322f30: 'capture-stop-worker-result',
     0x103c5342: 'capture-stop-prepare-request',
     0x1023333e: 'capture-stop-local-stop',
+    0x1023334a: 'capture-stop-local-lock-return',
+    0x10233366: 'capture-stop-local-callback-return',
+    0x10233370: 'capture-stop-local-join-return',
+    0x102301b6: 'capture-stop-input-drain',
+    0x1023c50a: 'capture-stop-input-mask-disable',
+    0x1020c290: 'capture-stop-input-quiesce',
+    0x1020c2c0: 'capture-stop-input-quiesce-return',
+    0x1023c526: 'capture-stop-input-channel9-return',
+    0x1023c52e: 'capture-stop-input-channel7-return',
+    0x1023c53a: 'capture-stop-input-channel6-return',
+    0x1023c54c: 'capture-stop-input-channel45-return',
+    0x1023c558: 'capture-stop-input-channel3-return',
+    0x1023c56c: 'capture-stop-input-channel1-return',
+    0x10230212: 'capture-stop-input-disable-return',
+    0x10233386: 'capture-stop-input-drain-return',
     0x10233394: 'capture-stop-worker-request',
     0x10398726: 'processing-stop-command',
     0x10321a4c: 'capture-driver-notification',
@@ -222,11 +237,26 @@ def snapshot(remote):
             faults={name: hex(remote.read_register(name)) for name in
                     ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}))
     remote.select_thread(1)
+    input_channels = []
+    for base, count in ((0x20069800, 4), (0x2006a400, 10), (0x2006b400, 10)):
+        for channel in range(count):
+            address = base + channel * 0x100
+            fields = (8, 0x50, 0x54, 0x58, 0x5c, 0x60, 0x64, 0x68, 0x6c) if count == 4 else (
+                0x14, 0x18, 0x3c, 0x40, 0x50, 0x60)
+            values = {hex(offset): hex(word(address + offset)) for offset in fields}
+            if any(int(value, 16) for value in values.values()):
+                input_channels.append(dict(base=hex(address), fields=values))
     return dict(system_mode=mode[0], previous_mode=mode[1],
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines,
         resources=resources, cores=cores,
+        input_channel_scan_count=24, input_channels=input_channels,
+        input_state=dict(state_5=remote.read(0xb1887d75, 1)[0],
+                         state_6=remote.read(0xb1887d76, 1)[0],
+                         configured_mask=hex(word(0xb1887dcc)),
+                         required_mask=hex(word(0xb1887dd0)),
+                         processing_masks=[hex(word(0xb26b38b4 + index * 4)) for index in range(4)]),
         delay_enable=hex(word(0x2c011000)), delay_channels=delay_channels,
         action_state=state, handler_object=hex(handler_object),
         action_handler=hex(word(handler_object + 0x14)),
@@ -287,7 +317,7 @@ def lcd_snapshot(machine):
 
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
-            gpio_handshake_events=False):
+            gpio_handshake_events=False, watch_read=None):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -299,14 +329,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     records = []
     hits = {}
     callback_hits = 0
+    read_watch_armed = False
     started = time.monotonic()
     try:
         before = snapshot(remote)
         for address in armed:
             remote.breakpoint(address)
+        if watch_read is not None:
+            require(remote.command(f'Z3,{watch_read:x},4') == 'OK', 'Read watchpoint rejected')
+            read_watch_armed = True
         machine.set_key(24 if returning else 8 if playback else 25, 0)
         deadline = started + seconds
-        while time.monotonic() < deadline and armed:
+        while time.monotonic() < deadline and (armed or read_watch_armed):
             machine.heartbeat()
             remote.sock.settimeout(min(1, max(0.2, deadline - time.monotonic())))
             try:
@@ -321,6 +355,37 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             remote.select_thread(thread)
             registers = remote.regs()
             pc = remote.get(registers, 'pc')
+            watched = re.search(r'rwatch:([0-9a-f]+);', reply)
+            if watched and int(watched[1], 16) == watch_read:
+                record = dict(entry='watched-read', pc=hex(pc), thread=thread,
+                    address=hex(watch_read), registers={name: hex(remote.get(registers, name))
+                        for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
+                                     'r8', 'r9', 'r10', 'r11', 'r12', 'sp', 'lr', 'cpsr')})
+                if pc in (0x1024ffb4, 0x1024ffda):
+                    descriptor = remote.get(registers, 'r5') - 0x14
+                    columns, rows = struct.unpack('<HH', remote.read(descriptor + 0x1e, 4))
+                    record['grid_buffer'] = dict(descriptor=hex(descriptor),
+                        columns=columns, rows=rows, sample_bytes=2,
+                        row_bytes=(columns * 2 + 15) & ~15,
+                        sample_address=hex(int.from_bytes(remote.read(descriptor + 0x2c, 4), 'little')),
+                        field_28=hex(int.from_bytes(remote.read(descriptor + 0x28, 4), 'little')),
+                        field_30=hex(int.from_bytes(remote.read(descriptor + 0x30, 4), 'little')))
+                if 'TTBR0_S' in remote.register_numbers:
+                    ttbr = remote.read_register('TTBR0_S')
+                    section_address = (ttbr & 0xffffc000) + (watch_read >> 20) * 4
+                    section = int.from_bytes(remote.read(section_address, 4), 'little')
+                    record['translation'] = dict(ttbr0=hex(ttbr),
+                        section_address=hex(section_address), section=hex(section))
+                    if section & 3 == 2:
+                        record['translation']['section_physical_address'] = hex(
+                            (section & 0xfff00000) | (watch_read & 0xfffff))
+                records.append(record)
+                require(remote.command(f'z3,{watch_read:x},4') == 'OK',
+                        'Read watchpoint removal failed')
+                read_watch_armed = False
+                remote.sock.settimeout(15)
+                remote.command(f'vCont;s:{thread:x}')
+                break
             require(pc in armed, f'Unexpected stop at {pc:#x}')
             repeat = thread > 2
             if thread <= 2:
@@ -402,6 +467,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
+        if read_watch_armed:
+            remote.command(f'z3,{watch_read:x},4')
         for address in armed:
             remote.breakpoint(address, False)
         remote.command('D')
@@ -437,9 +504,13 @@ def main():
     parser.add_argument('--watch', type=int, default=30)
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
+    parser.add_argument('--watch-read', type=lambda value: int(value, 0),
+                        help='Capture the first read overlapping this four-byte window, single-step it, then stop observing')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(30 <= args.boot_watch <= 600, 'Boot watch time out of bounds')
+    require(args.watch_read is None or 0 <= args.watch_read <= 0xfffffffc and
+            args.watch_read % 4 == 0, 'Read watch address out of bounds')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -491,7 +562,8 @@ def main():
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
                       return_watch_seconds=args.return_watch,
-                      trace=observe(machine, args.watch, args.playback, args.local_stop_events))
+                      trace=observe(machine, args.watch, args.playback, args.local_stop_events,
+                                    watch_read=args.watch_read))
         report['native_lcd_before'] = initial_lcd
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:

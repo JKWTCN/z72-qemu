@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "initialization": {
+    "table_offset": 82048,
+    "kind": "zero",
+    "source": 305766292,
+    "destination": 1418723328,
+    "size": 184361984,
+    "handler": 268566664
+  },
+  "initialized_end": "0x5f8d2400",
+  "model_existing_backing_end": "0x54f00000",
+  "model_added_base": "0x54f00000",
+  "model_added_size": "0xa9d2400",
+  "address_table_constructor": "0x103c585c",
+  "lookup": "0x103c5ad8",
+  "cache_to_bus": "0x103c5a7a",
+  "cases": [
+    {
+      "address": "0x54900000",
+      "row": "0xb2b41504",
+      "start": "0x54900000",
+      "end": "0x5f900000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x54900000"
+    },
+    {
+      "address": "0x54f00000",
+      "row": "0xb2b41504",
+      "start": "0x54900000",
+      "end": "0x5f900000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x54f00000"
+    },
+    {
+      "address": "0x5d170000",
+      "row": "0xb2b41504",
+      "start": "0x54900000",
+      "end": "0x5f900000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x5d170000"
+    },
+    {
+      "address": "0x5f8d23fc",
+      "row": "0xb2b41504",
+      "start": "0x54900000",
+      "end": "0x5f900000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x5f8d23fc"
+    },
+    {
+      "address": "0x50560000",
+      "row": "0xb2b414ec",
+      "start": "0x50300000",
+      "end": "0x50700000",
+      "kind": "0x1",
+      "peer": "0x30000000",
+      "converted": "0x30260000"
+    },
+    {
+      "address": "0x62059800",
+      "row": "0xb2b41510",
+      "start": "0x5f900000",
+      "end": "0x62700000",
+      "kind": "0x1",
+      "peer": "0x34600000",
+      "converted": "0x36d59800"
+    }
+  ],
+  "limitations": [
+    "The address classifier alone does not establish physical RAM.",
+    "Original initialization and live translation provide separate evidence.",
+    "No sensor statistics, pixels or photograph are generated."
+  ]
+}

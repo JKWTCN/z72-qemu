@@ -31,6 +31,10 @@ static const NikonZ72Window nikon_z72_windows[] = {
     /* Extended past the earlier 0x54900000 end so the decoded-window fixture
      * above fits inside one backing region. */
     {0x50300000, 0x04C00000, "z72-cached-buffer-pool-lab"},
+    /* Original zero-initialization record: 0x54900000 + 0x0AFD2400.
+     * Its first 6 MiB already share the fixture backing above. Cover the
+     * remaining uncached storage without changing those existing aliases. */
+    {0x54F00000, 0x0A9D2400, "z72-uncached-buffer-tail-lab"},
     /* Cached capture allocation range paired with the 0x34600000 bus view. */
     {0x5F900000, 0x02E00000, "z72-capture-buffer-pool-lab"},
     {0xB1000000, 0x00300000, "z72-auxiliary-shared-memory-lab"},
