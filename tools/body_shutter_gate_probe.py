@@ -338,6 +338,19 @@ def lcd_snapshot(machine):
             width, height = size & 0xffff, (size >> 16) & 0x3fff
             planes = machine._words(0x20144210, 2)
             result = dict(width=width, height=height, planes=[hex(value) for value in planes])
+            candidates = {}
+            for offset in (0x210, 0x220, 0x2440, 0x24c0, 0x3440, 0x34c0):
+                addresses = machine._words(0x20144000 + offset, 4)
+                for index, address in enumerate(addresses):
+                    if 0xb0000000 <= address <= 0xf0000000 - 4096:
+                        key = hex(address)
+                        if key not in candidates:
+                            data = machine._bytes(address, 4096)
+                            candidates[key] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                                                   unique_bytes=len(set(data)), minimum=min(data), maximum=max(data),
+                                                   slots=[])
+                        candidates[key]['slots'].append(hex(offset + index * 4))
+            result['candidate_buffer_heads'] = candidates
             if not (0 < width <= 4096 and 0 < height <= 4096):
                 return dict(result, configured=False)
             for plane in planes:

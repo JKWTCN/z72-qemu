@@ -782,37 +782,58 @@ class Machine:
         return encoded
 
     def lcd_png(self):
-        """Render the native display-output luminance plane of channel 1.
+        """Preview channel 1 background and native UI in grayscale.
 
-        The recovered output geometry is 1024x682 with two full-size planes;
-        the chroma plane carries no detail for the cleared surface, so the
-        console shows the luminance plane directly. This is the final LCD
-        output path, not the graphics console's probe surface.
+        Only the observed equal-size format-6 overlay is decoded: each
+        four-byte group starts with two luminance samples, with alpha in
+        a separate byte plane. Color conversion and hardware scanout
+        latching are not yet modeled by this read-only register snapshot.
         """
         now = time.monotonic()
         if self.lcd_cache and now - self.lcd_cache[0] < self.lcd_interval:
             return self.lcd_cache[1]
         with self.io:
             self._ready()
-            geometry = self._words(0x20144204, 1)[0]
-            width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
-            if not (0 < width <= 4096 and 0 < height <= 4096):
-                raise ValueError('Display output geometry is not configured')
-            planes = [self._words(0x20144210 + index * 4, 1)[0]
-                      for index in range(2)]
-            luminance = None
-            for plane in planes:
-                if 0xb0000000 <= plane < 0xf0000000:
-                    luminance = bytes(self._bytes(plane, width * height))
-                    break
-            if luminance is None:
-                raise ValueError('Display output plane is not configured')
-        rows = bytearray()
+            running = self.qmp.command('query-status')['status'] == 'running'
+            if running:
+                self.qmp.command('stop')
+            try:
+                geometry = self._words(0x20144204, 1)[0]
+                width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
+                if not (0 < width <= 4096 and 0 < height <= 4096):
+                    raise ValueError('Display output geometry is not configured')
+
+                def plane(address_register, stride_register, minimum_stride):
+                    address = self._words(address_register, 1)[0]
+                    stride = self._words(stride_register, 1)[0]
+                    if not (minimum_stride <= stride <= 16384 and
+                            0xb0000000 <= address <= 0xf0000000 - stride * height):
+                        raise ValueError('Display output plane is not configured')
+                    return bytes(self._bytes(address, stride * height)), stride
+
+                luminance, stride = plane(0x20144210, 0x20144240, width)
+                overlay = alpha = None
+                if self._words(0x20146110, 1)[0] & 1:
+                    if (self._words(0x20146200, 1)[0] & 31 != 6 or
+                            self._words(0x20146400, 1)[0] != geometry or width & 1):
+                        raise ValueError('Unsupported display overlay format or geometry')
+                    overlay, overlay_stride = plane(0x20146440, 0x20146500, width * 2)
+                    alpha, alpha_stride = plane(0x201464c0, 0x20146540, width)
+            finally:
+                if running:
+                    self.qmp.command('cont')
+        rows = bytearray(width * height * 3)
         for row in range(height):
-            base = row * width
             for column in range(width):
-                value = luminance[base + column]
-                rows += bytes((value, value, value))
+                value = luminance[row * stride + column]
+                if overlay is not None:
+                    foreground = overlay[row * overlay_stride + (column // 2) * 4 + column % 2]
+                    opacity = alpha[row * alpha_stride + column]
+                    value = (foreground * opacity + value * (255 - opacity) + 127) // 255
+                # The observed native black/white levels are 16/235.
+                value = max(0, min(255, ((value - 16) * 255 + 109) // 219))
+                pixel = (row * width + column) * 3
+                rows[pixel:pixel + 3] = bytes((value, value, value))
         data = b'P6\n%d %d\n255\n' % (width, height) + bytes(rows)
         encoded = ppm_to_png(data)
         self.lcd_cache = (time.monotonic(), encoded)

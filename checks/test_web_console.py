@@ -10,7 +10,7 @@ import threading
 import time
 import types
 import unittest
-from unittest.mock import Mock, call
+from unittest.mock import Mock, call, patch
 import zlib
 from http.server import ThreadingHTTPServer
 
@@ -19,6 +19,38 @@ from checks.synthetic_master import build as build_master
 
 
 class WebConsoleTests(unittest.TestCase):
+    def test_lcd_snapshot_composes_padded_native_layers(self):
+        machine = Machine.__new__(Machine)
+        machine.lcd_cache = (0, b'')
+        machine.lcd_interval = 2
+        machine.io = threading.Lock()
+        machine._ready = Mock()
+        machine.qmp = Mock()
+        machine.qmp.command.return_value = {'status': 'running'}
+        geometry = (2 << 16) | 2
+        registers = {0x20144204: geometry, 0x20144210: 0xcb000000,
+                     0x20144240: 3, 0x20146110: 1, 0x20146200: 0x30006,
+                     0x20146400: geometry, 0x20146440: 0xcc000000,
+                     0x20146500: 6, 0x201464c0: 0xcd000000, 0x20146540: 3}
+        machine._words = lambda address, count: [registers[address]]
+        memory = {0xcb000000: bytes([16, 235, 99, 235, 16, 99]),
+                  0xcc000000: bytes([235, 16, 103, 202, 99, 99,
+                                     16, 235, 128, 128, 99, 99]),
+                  0xcd000000: bytes([255, 0, 99, 128, 255, 99])}
+        machine._bytes = lambda address, count: memory[address][:count]
+        with patch('tools.web_console.ppm_to_png', side_effect=lambda data: data):
+            result = machine.lcd_png()
+        self.assertEqual(result, b'P6\n2 2\n255\n' +
+                         bytes([255] * 6 + [127] * 3 + [255] * 3))
+        self.assertEqual(machine.qmp.command.call_args_list,
+                         [call('query-status'), call('stop'), call('cont')])
+        # A failed or unsupported snapshot must resume an originally running guest.
+        machine.lcd_cache = (0, b'')
+        registers[0x20146200] = 7
+        with self.assertRaisesRegex(ValueError, 'Unsupported display overlay'):
+            machine.lcd_png()
+        self.assertEqual(machine.qmp.command.call_args_list[-1], call('cont'))
+
     @classmethod
     def setUpClass(cls):
         cls.machine = Mock()
