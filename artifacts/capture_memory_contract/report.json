@@ -73,6 +73,41 @@
       "converted": "0x36d59800"
     }
   ],
+  "processing_pool": {
+    "constructor": "0x103a34c0",
+    "allocator": "0x103a354e",
+    "base": "0xb0100000",
+    "block_bytes": "0x80000",
+    "block_count": 16,
+    "end": "0xb0900000",
+    "cases": [
+      {
+        "requested": "0x268250",
+        "occupied_blocks": 0,
+        "address": "0xb0100000",
+        "allocated_size": "0x280000",
+        "first_block": 0,
+        "blocks": 5
+      },
+      {
+        "requested": "0x7fffff",
+        "occupied_blocks": 0,
+        "address": "0xb0100000",
+        "allocated_size": "0x800000",
+        "first_block": 0,
+        "blocks": 16
+      },
+      {
+        "requested": "0x0",
+        "occupied_blocks": 15,
+        "address": "0xb0880000",
+        "allocated_size": "0x80000",
+        "first_block": 15,
+        "blocks": 1
+      }
+    ],
+    "fixture": "Free descriptor and uncontended locks; no pixel buffers supplied."
+  },
   "limitations": [
     "The address classifier alone does not establish physical RAM.",
     "Original initialization and live translation provide separate evidence.",

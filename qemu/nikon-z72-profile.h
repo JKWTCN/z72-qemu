@@ -37,6 +37,9 @@ static const NikonZ72Window nikon_z72_windows[] = {
     {0x54F00000, 0x0A9D2400, "z72-uncached-buffer-tail-lab"},
     /* Cached capture allocation range paired with the 0x34600000 bus view. */
     {0x5F900000, 0x02E00000, "z72-capture-buffer-pool-lab"},
+    /* Original 0x103a34c0 constructor and 0x103a37aa allocator:
+     * sixteen 512 KiB blocks used for processing work descriptors. */
+    {0xB0100000, 0x00800000, "z72-processing-work-pool-lab"},
     {0xB1000000, 0x00300000, "z72-auxiliary-shared-memory-lab"},
     {0x04008000, 0x00001000, "z72-boot-stack-lab"},
     {0x10000000, 0x04000000, "z72-master-lab"},
