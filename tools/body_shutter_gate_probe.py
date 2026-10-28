@@ -153,6 +153,15 @@ RETURN_POINTS = {
     0x1039508a: 'processing-output-parameters-return',
     0x1039a036: 'processing-output-parameters-continuation',
     0x1039a03c: 'processing-output-request-continuation',
+    0x10394ec8: 'processing-output-timer-request',
+    0x10394ef8: 'processing-output-timer-config-return',
+    0x10394f08: 'processing-output-timer-start-return',
+    0x1037160a: 'delay-timer-open',
+    0x10371614: 'delay-timer-open-lock-return',
+    0x10371704: 'delay-timer-configure',
+    0x10371820: 'delay-timer-configure-return',
+    0x10371a28: 'delay-timer-start',
+    0x10371a38: 'delay-timer-start-return',
     0x10395116: 'processing-start-output-wait',
     0x1039511a: 'processing-start-output-wait-return',
     0x102422c2: 'input-handshake-start-submitted',
@@ -197,9 +206,13 @@ def snapshot(remote):
     for channel in range(12):
         base = 0x2c010100 + channel * 0x100
         divider, terminal, count = struct.unpack('<3I', remote.read(base + 0x1004, 12))
+        limit = None
+        if channel < 5:
+            enable, target, observed = struct.unpack('<3I', remote.read(base + 0x1038, 12))
+            limit = dict(enabled=enable, target=target, observed=observed)
         delay_channels.append(dict(channel=channel, events=hex(word(base)),
             pending=hex(word(base + 16)), divider=divider,
-            terminal=hex(terminal), count=hex(count)))
+            terminal=hex(terminal), count=hex(count), repetition_limit=limit))
     cores = []
     for thread in (1, 2, 3, 4):
         remote.select_thread(thread)

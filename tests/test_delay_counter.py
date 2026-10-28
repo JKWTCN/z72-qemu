@@ -51,8 +51,8 @@ def check(qemu):
                 return bool(access(thread, 0x04001200 + irq // 32 * 4) &
                             (1 << (irq % 32)))
 
-            def acknowledge(thread, channel):
-                access(thread, 0x2c010110 + channel * 0x100, 1)
+            def acknowledge(thread, channel, mask=1):
+                access(thread, 0x2c010110 + channel * 0x100, mask)
                 irq = 172 + channel
                 access(thread, 0x04001280 + irq // 32 * 4, 1 << (irq % 32))
 
@@ -138,6 +138,54 @@ def check(qemu):
                         'Reserved divider bits fabricated a clock')
                 access(thread, 0x2c011000, 0)
 
+                # The first five hardware descriptors expose a repetition
+                # limit. A one-tick period must stop after one expiration,
+                # rather than flooding the original completion callback.
+                for channel in range(5):
+                    a = 0x2c010100 + channel * 0x100
+                    b = a + 0x1000
+                    access(thread, b, 1)
+                    access(thread, b + 4, 49)
+                    access(thread, b + 8, 0)
+                    access(thread, b + 0x38, 1)
+                    access(thread, b + 0x3c, 1)
+                    access(thread, a, 8)  # Only the limit event requests IRQ.
+                    access(thread, b, 0)
+                access(thread, 0x2c011000, 0x1f)
+                run(0.01)
+                for channel in range(5):
+                    a = 0x2c010100 + channel * 0x100
+                    b = a + 0x1000
+                    require(access(thread, b + 0x40) == 1 and
+                            access(thread, a + 0x10) == 9 and pending(thread, channel),
+                            'One-shot count, completion event or IRQ differs')
+                    access(thread, b + 0x40, 99)
+                    require(access(thread, b + 0x40) == 1,
+                            'Software changed the hardware repetition count')
+                    acknowledge(thread, channel)
+                    require(access(thread, a + 0x10) == 8 and pending(thread, channel),
+                            'Terminal acknowledgement cleared the limit event')
+                    acknowledge(thread, channel, 8)
+                    require(not pending(thread, channel), 'Limit acknowledgement retained IRQ')
+                run(0.05)
+                for channel in range(5):
+                    require(access(thread, 0x2c010110 + channel * 0x100) == 0 and
+                            access(thread, 0x2c011140 + channel * 0x100) == 1,
+                            'Limited timer restarted after acknowledgement')
+                access(thread, 0x2c011000, 0)
+                access(thread, 0x2c011500, 1)
+                require(access(thread, 0x2c011540) == 0,
+                        'Channel reset retained its repetition count')
+                access(thread, 0x2c01153c, 2)
+                access(thread, 0x2c011500, 0)
+                access(thread, 0x2c011000, 0x10)
+                run(0.01)
+                require(access(thread, 0x2c011540) == 2 and
+                        access(thread, 0x2c010510) == 9,
+                        'Two-shot timer did not stop at its requested count')
+                acknowledge(thread, 4, 9)
+                access(thread, 0x2c011000, 0)
+
             # Channel reset clears the preset and holds the count at zero.
             access(1, 0x2c011000, 0x200)
             access(1, 0x2c011a00, 1)
@@ -154,7 +202,7 @@ def check(qemu):
                         'Reset retained delay enables')
             run(0.15)
             require(access(1, 0x2c010910) == 0, 'Reset left an armed timer running')
-            print('PASS delay counters: deadlines, 12 IRQs, W1C, stop, reset and isolation')
+            print('PASS delay counters: deadlines, 12 IRQs, finite repetitions, W1C, stop, reset and isolation')
         finally:
             if remote is not None:
                 remote.sock.close()

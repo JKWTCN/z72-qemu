@@ -13,6 +13,7 @@
 OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72Delay, NIKON_Z72_DELAY)
 
 #define CHANNELS 12
+#define LIMITED_CHANNELS 5
 #define WORDS (0x2000 / 4)
 #define A(ch) (((ch) + 1) * 0x100)
 #define B(ch) (0x1000 + A(ch))
@@ -42,7 +43,10 @@ static bool delay_enabled(Z72DelayChannel *ch)
 
     return !(REG(s, 0) & 1) && (REG(s, 4) & 1) &&
         (REG(s, 0x1000) & (1u << i)) &&
-        !(REG(s, B(i)) & 1) && REG(s, B(i) + 4) <= UINT8_MAX;
+        !(REG(s, B(i)) & 1) && REG(s, B(i) + 4) <= UINT8_MAX &&
+        !(i < LIMITED_CHANNELS && (REG(s, B(i) + 0x38) & 1) &&
+          REG(s, B(i) + 0x3c) != 0 &&
+          REG(s, B(i) + 0x40) >= REG(s, B(i) + 0x3c));
 }
 
 static uint64_t delay_tick_ns(Z72DelayChannel *ch)
@@ -56,7 +60,7 @@ static void delay_irq(Z72DelayChannel *ch)
     unsigned i = ch->index;
 
     qemu_set_irq(ch->irq, !(REG(s, 0x100c) & (1u << i)) &&
-                 (REG(s, A(i) + 0x10) & REG(s, A(i)) & 1) != 0);
+                 (REG(s, A(i) + 0x10) & REG(s, A(i)) & 9) != 0);
 }
 
 static uint32_t delay_count(Z72DelayChannel *ch)
@@ -107,6 +111,19 @@ static void delay_expire(void *opaque)
         ch->counter = 0;
         ch->clocked = false;
         REG(ch->owner, A(ch->index) + 0x10) |= 1;
+        /* The first five descriptors expose a repetition limiter. C 1.70
+         * enables it with a count of one for output completion timers.
+         * Retain the terminal event, add the limit event, and stop scheduling
+         * when that count is reached. The software run bit stays latched. */
+        if (ch->index < LIMITED_CHANNELS &&
+            (REG(ch->owner, B(ch->index) + 0x38) & 1) &&
+            REG(ch->owner, B(ch->index) + 0x3c) != 0) {
+            uint32_t *count = &REG(ch->owner, B(ch->index) + 0x40);
+            (*count)++;
+            if (*count >= REG(ch->owner, B(ch->index) + 0x3c)) {
+                REG(ch->owner, A(ch->index) + 0x10) |= 8;
+            }
+        }
         delay_irq(ch);
         delay_schedule(ch);
     }
@@ -134,6 +151,9 @@ static void delay_clear_channel(Z72DelayChannel *ch)
     ch->epoch = 0;
     REG(s, A(ch->index) + 0x10) = 0;
     REG(s, B(ch->index) + 0xc) = 0;
+    if (ch->index < LIMITED_CHANNELS) {
+        REG(s, B(ch->index) + 0x40) = 0;
+    }
     delay_irq(ch);
 }
 
@@ -145,7 +165,7 @@ static void delay_write(void *opaque, hwaddr offset, uint64_t value,
     unsigned reg = offset & 0xff;
 
     if (offset >= 0x1100 && slot >= 1 && slot <= CHANNELS) {
-        if (reg == 0xc) {
+        if (reg == 0xc || (reg == 0x40 && slot <= LIMITED_CHANNELS)) {
             return;
         }
         if (reg == 4 || reg == 8) {

@@ -1,0 +1,181 @@
+{
+  "observation": "original-delay-limit-register-contract",
+  "result": "passed",
+  "constructor": "0x10371a96",
+  "configure": "0x1036e996",
+  "descriptors": [
+    {
+      "channel": 0,
+      "descriptor": "0xb18063ac",
+      "registers": [
+        "0x2c011138",
+        "0x2c01113c",
+        "0x2c011140"
+      ]
+    },
+    {
+      "channel": 1,
+      "descriptor": "0xb18063c0",
+      "registers": [
+        "0x2c011238",
+        "0x2c01123c",
+        "0x2c011240"
+      ]
+    },
+    {
+      "channel": 2,
+      "descriptor": "0xb18063d4",
+      "registers": [
+        "0x2c011338",
+        "0x2c01133c",
+        "0x2c011340"
+      ]
+    },
+    {
+      "channel": 3,
+      "descriptor": "0xb18063e8",
+      "registers": [
+        "0x2c011438",
+        "0x2c01143c",
+        "0x2c011440"
+      ]
+    },
+    {
+      "channel": 4,
+      "descriptor": "0xb18063fc",
+      "registers": [
+        "0x2c011538",
+        "0x2c01153c",
+        "0x2c011540"
+      ]
+    },
+    {
+      "channel": 5,
+      "descriptor": "0xb1806410",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 6,
+      "descriptor": "0xb1806424",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 7,
+      "descriptor": "0xb1806438",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 8,
+      "descriptor": "0xb180644c",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 9,
+      "descriptor": "0xb1806460",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 10,
+      "descriptor": "0xb1806474",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 11,
+      "descriptor": "0xb1806488",
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "channel": 4,
+      "requested": 0,
+      "configuration": [
+        0,
+        1
+      ],
+      "result": 0,
+      "limit_registers": [
+        0,
+        0,
+        0
+      ],
+      "events": "0x1"
+    },
+    {
+      "channel": 4,
+      "requested": 1,
+      "configuration": [
+        1,
+        1
+      ],
+      "result": 0,
+      "limit_registers": [
+        1,
+        1,
+        0
+      ],
+      "events": "0x9"
+    },
+    {
+      "channel": 4,
+      "requested": 2,
+      "configuration": [
+        1,
+        2
+      ],
+      "result": 0,
+      "limit_registers": [
+        1,
+        2,
+        0
+      ],
+      "events": "0x9"
+    },
+    {
+      "channel": 7,
+      "requested": 1,
+      "configuration": [
+        1,
+        1
+      ],
+      "result": 2,
+      "limit_registers": [
+        0,
+        0,
+        0
+      ],
+      "events": "0x1"
+    }
+  ],
+  "code_window_sha256": "58d0c21a9d590d06b68fd3230b6828f04aafd952ceed536a79dcbf6d0e377a26",
+  "synthetic_mmio": true,
+  "physical_expiration_executed": false
+}
