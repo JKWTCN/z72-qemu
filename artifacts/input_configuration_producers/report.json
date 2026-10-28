@@ -1,0 +1,790 @@
+{
+  "observation": "local-device-registration-from-reset",
+  "watch_seconds": 120,
+  "sd_attached": true,
+  "display_complete": true,
+  "watch_session": false,
+  "capture_operations": false,
+  "watch_release": false,
+  "watch_input_config": true,
+  "watch_resources": false,
+  "gpio_handshake_events": false,
+  "input_handshake": true,
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 120,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "stops": [
+    {
+      "entry": "registration-gate-result",
+      "pc": "0x103b21aa",
+      "thread": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x0",
+        "lr": "0x10389b2d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-gate-passed",
+      "pc": "0x103b21b6",
+      "thread": 2,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x1",
+        "lr": "0x103b21b3"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-callback-bit8",
+      "pc": "0x102638a2",
+      "thread": 2,
+      "registers": {
+        "r0": "0x3",
+        "r1": "0xffffff88",
+        "r2": "0x200000",
+        "r3": "0xc83",
+        "r4": "0xb1864834",
+        "r5": "0xb238d410",
+        "r6": "0xb2363634",
+        "lr": "0x103b220d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "input-configuration-request",
+      "pc": "0x1023abaa",
+      "thread": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0xb51ddfb0",
+        "r3": "0xb26b38b4",
+        "r4": "0xb1887d70",
+        "r5": "0x1",
+        "r6": "0x1",
+        "lr": "0x1022fcf1"
+      },
+      "pending": 0,
+      "hit": 1,
+      "input_configuration_state": {
+        "configured_mask": "0x1",
+        "requested_mask": "0x2eb"
+      },
+      "configuration": {
+        "mask": "0x1",
+        "table": "0xb51ddfb0",
+        "geometry_selected": false,
+        "geometry_descriptor": "0x0"
+      }
+    },
+    {
+      "entry": "processing-event-set",
+      "pc": "0x10394a12",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb186832c",
+        "r1": "0x4",
+        "r2": "0x3030004",
+        "r3": "0x20000",
+        "r4": "0xb18a790c",
+        "r5": "0x2",
+        "r6": "0x3030001",
+        "lr": "0x10241efd"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "input-handshake-start-submitted",
+      "pc": "0x102422c2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb18a7920",
+        "r5": "0x1",
+        "r6": "0x0",
+        "lr": "0x103bf221"
+      },
+      "pending": 0,
+      "external_gpio_event": {
+        "input": 0,
+        "resource": 84,
+        "intid": 65,
+        "mask": "0x82",
+        "polarity": "0x17d",
+        "injected": false
+      }
+    },
+    {
+      "entry": "processing-event-set",
+      "pc": "0x10394a12",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb186832c",
+        "r1": "0x8",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb18a790c",
+        "r5": "0x10",
+        "r6": "0x3030002",
+        "lr": "0x10241f2d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "synchronization-wait",
+      "pc": "0x102d949e",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb18a764c",
+        "r1": "0x8",
+        "r2": "0xb53a7f68",
+        "r3": "0x32",
+        "r4": "0x0",
+        "r5": "0xb18a75f8",
+        "r6": "0xb18a7670",
+        "lr": "0x102feab1"
+      },
+      "pending": 0
+    }
+  ],
+  "unseen": [
+    "device-request",
+    "device-reservation-result",
+    "device-service-creation",
+    "device-construction",
+    "session-report-gate",
+    "input-configuration-build",
+    "input-configuration-prepare",
+    "input-configuration-mask-decision",
+    "input-configuration-queued-work",
+    "input-configuration-update",
+    "input-geometry-request-selected",
+    "input-geometry-update-selected",
+    "input-geometry-full-configuration",
+    "input-geometry-frame-configuration",
+    "input-geometry-conditional-configuration",
+    "input-geometry-setter",
+    "input-handshake-stop-submitted"
+  ],
+  "session_stops": [],
+  "operation14_stops": [],
+  "input_configuration_counts": {
+    "input-configuration-build": 0,
+    "input-configuration-prepare": 0,
+    "input-configuration-mask-decision": 0,
+    "input-configuration-queued-work": 0,
+    "input-configuration-request": 1,
+    "input-configuration-update": 0,
+    "input-geometry-request-selected": 0,
+    "input-geometry-update-selected": 0,
+    "input-geometry-full-configuration": 0,
+    "input-geometry-frame-configuration": 0,
+    "input-geometry-conditional-configuration": 0,
+    "input-geometry-setter": 0
+  },
+  "communication": {
+    "areas": {
+      "master": {
+        "index": 34,
+        "depth": 34,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x43",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 56
+          },
+          {
+            "index": 1,
+            "code": "0x41",
+            "service": 3,
+            "sequence": 1,
+            "payload_bytes": 24
+          },
+          {
+            "index": 2,
+            "code": "0x7",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 0
+          },
+          {
+            "index": 3,
+            "code": "0x1",
+            "service": 1,
+            "sequence": 3,
+            "payload_bytes": 0
+          },
+          {
+            "index": 4,
+            "code": "0x2",
+            "service": 5,
+            "sequence": 4,
+            "payload_bytes": 48
+          },
+          {
+            "index": 5,
+            "code": "0x1",
+            "service": 8,
+            "sequence": 5,
+            "payload_bytes": 8
+          },
+          {
+            "index": 6,
+            "code": "0x32",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 16
+          },
+          {
+            "index": 7,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 12
+          },
+          {
+            "index": 9,
+            "code": "0xd",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 28
+          },
+          {
+            "index": 10,
+            "code": "0x9",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 16
+          },
+          {
+            "index": 11,
+            "code": "0xb",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x26",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 16
+          },
+          {
+            "index": 16,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 16
+          },
+          {
+            "index": 17,
+            "code": "0x15",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 20
+          },
+          {
+            "index": 18,
+            "code": "0x18",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 16
+          },
+          {
+            "index": 19,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 12
+          },
+          {
+            "index": 20,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x28",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 16
+          },
+          {
+            "index": 29,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 12
+          },
+          {
+            "index": 30,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 24
+          },
+          {
+            "index": 31,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 16
+          },
+          {
+            "index": 32,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 32,
+            "payload_bytes": 12
+          },
+          {
+            "index": 33,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 33,
+            "payload_bytes": 12
+          }
+        ]
+      },
+      "slave": {
+        "index": 32,
+        "depth": 32,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x42",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 0
+          },
+          {
+            "index": 1,
+            "code": "0x1",
+            "service": 5,
+            "sequence": 1,
+            "payload_bytes": 0
+          },
+          {
+            "index": 2,
+            "code": "0x2",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 10
+          },
+          {
+            "index": 3,
+            "code": "0x2",
+            "service": 8,
+            "sequence": 3,
+            "payload_bytes": 48,
+            "card_query": {
+              "slot": 1,
+              "state_byte": 2,
+              "result": 0
+            }
+          },
+          {
+            "index": 4,
+            "code": "0x33",
+            "service": 9,
+            "sequence": 4,
+            "payload_bytes": 24
+          },
+          {
+            "index": 5,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 5,
+            "payload_bytes": 12
+          },
+          {
+            "index": 6,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 12
+          },
+          {
+            "index": 7,
+            "code": "0xe",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0xa",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 16
+          },
+          {
+            "index": 9,
+            "code": "0xc",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 12
+          },
+          {
+            "index": 10,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 12
+          },
+          {
+            "index": 11,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x27",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x17",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 20
+          },
+          {
+            "index": 16,
+            "code": "0x16",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 12
+          },
+          {
+            "index": 17,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 12
+          },
+          {
+            "index": 18,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 12
+          },
+          {
+            "index": 19,
+            "code": "0x29",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 16
+          },
+          {
+            "index": 20,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 12
+          },
+          {
+            "index": 29,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 24
+          },
+          {
+            "index": 30,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 12
+          },
+          {
+            "index": 31,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 12
+          }
+        ]
+      }
+    },
+    "service_rings": {
+      "3": {
+        "pointer": "0xc16a5990",
+        "callback": "0x10129fab",
+        "write": 2,
+        "read": 2
+      },
+      "4": {
+        "pointer": "0xc16b1fd0",
+        "callback": "0x10129025",
+        "write": 0,
+        "read": 0
+      },
+      "5": {
+        "pointer": "0xc187bba0",
+        "callback": "0x1013568d",
+        "write": 1,
+        "read": 1
+      },
+      "6": {
+        "pointer": "0xc18881e0",
+        "callback": "0x10135661",
+        "write": 0,
+        "read": 0
+      },
+      "7": {
+        "pointer": "0xc16cd3a0",
+        "callback": "0x100ca48b",
+        "write": 0,
+        "read": 0
+      },
+      "8": {
+        "pointer": "0xc14873d8",
+        "callback": "0x100b5d23",
+        "write": 1,
+        "read": 1
+      },
+      "9": {
+        "pointer": "0xc144fc40",
+        "callback": "0x1006323d",
+        "write": 28,
+        "read": 28
+      },
+      "10": {
+        "pointer": "0xc1655958",
+        "callback": "0x1010873b",
+        "write": 0,
+        "read": 0
+      }
+    }
+  },
+  "module_wait_mask": "0x0",
+  "input_format": "0x0",
+  "capture_state": [
+    2,
+    0
+  ],
+  "operation14_callback": "0x0",
+  "processing_field_24": "0x0",
+  "gpio_adapter": {
+    "mode": 0,
+    "timer_active": 0
+  },
+  "counter_ticks": 151372432,
+  "counter_frequency": 48000000,
+  "system_modes": [
+    4,
+    2
+  ],
+  "input_geometry": [
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "input_configuration_state": {
+    "configured_mask": "0x1",
+    "requested_mask": "0x2eb"
+  },
+  "device_worker_state": {
+    "state": 1,
+    "category": 2
+  },
+  "session_root": "0xb3c78040",
+  "session_root_field_41": 0
+}

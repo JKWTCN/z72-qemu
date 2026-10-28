@@ -76,6 +76,10 @@ INITIALIZATION_FOLLOWUP_POINTS = {
 MODE_REQUEST_POINTS = {address: label for address, label in RELEASE_EVENT_POINTS.items()
                        if label.startswith(('operation16-', 'operation17-'))}
 INPUT_CONFIG_POINTS = {
+    0x10231c70: 'input-configuration-build',
+    0x10232040: 'input-configuration-prepare',
+    0x102320ee: 'input-configuration-mask-decision',
+    0x10233cf6: 'input-configuration-queued-work',
     0x1023abaa: 'input-configuration-request',
     0x1023aed8: 'input-configuration-update',
     0x1023ad12: 'input-geometry-request-selected',
@@ -252,6 +256,11 @@ class RegistrationMachine(Machine):
                 if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS:
                     input_hits[pc] = input_hits.get(pc, 0) + 1
                     record['hit'] = input_hits[pc]
+                    record['input_configuration_state'] = dict(
+                        configured_mask=hex(int.from_bytes(remote.read(0xb1887dcc, 4), 'little')),
+                        requested_mask=hex(int.from_bytes(remote.read(0xb1887dd0, 4), 'little')))
+                    if pc == 0x102320ee:
+                        record['remaining_mask'] = hex(remote.get(registers, 'r5'))
                     if pc in (0x1023abaa, 0x1023aed8, 0x1023ad12, 0x1023afd4):
                         if pc == 0x1023abaa:
                             mask, table = remote.get(registers, 'r0'), remote.get(registers, 'r2')
@@ -483,6 +492,10 @@ def main():
                     report['system_modes'] = list(machine._bytes(0xb1818d28, 2))
                     report['input_geometry'] = [hex(value) for value in
                                                 machine._words(0x20069500, 3)]
+                if args.watch_input_config:
+                    configured, requested = machine._words(0xb1887dcc, 2)
+                    report['input_configuration_state'] = dict(
+                        configured_mask=hex(configured), requested_mask=hex(requested))
                 if args.watch_release:
                     image = args.master.read_bytes()
                     entries = {}

@@ -1,0 +1,253 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "evidence_kind": "static",
+  "direct_branch_window_bytes": 7864320,
+  "versions": [
+    {
+      "package": "Z7_2_0101.bin",
+      "package_sha256": "6e06b6ef9f0b86f9c20a6cb1a2a86b719674ae4cc9416e4d65430b9413f43099",
+      "member": "eg1840_mas_01010",
+      "master_sha256": "d84d5399b7fc9a3c198410e4989a8bd784fda746dc991c018bde3cb93075a701",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3c9d70",
+      "api_runtime_address": "0x103e9d70",
+      "direct_edges": [
+        {
+          "file_offset": "0x3c9dd8",
+          "runtime_address": "0x103e9dd8",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103e9d70": 0,
+        "0x103e9d71": 0
+      }
+    },
+    {
+      "package": "Z7_2_0110_01.bin",
+      "package_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "member": "eg1840_mas_0110e",
+      "master_sha256": "7b7ff96dbe2d0ef79941dd21726a56893b722b5d3636e51ae1839d34c18e7b64",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3ca7f8",
+      "api_runtime_address": "0x103ea7f8",
+      "direct_edges": [
+        {
+          "file_offset": "0x3ca860",
+          "runtime_address": "0x103ea860",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103ea7f8": 0,
+        "0x103ea7f9": 0
+      }
+    },
+    {
+      "package": "Z7_2_0120.bin",
+      "package_sha256": "78d2b91abbb9cca6c438538bc2d4a59cb604187296dfe8d7ed75f6853a53beb9",
+      "member": "eg1840_mas_0120c",
+      "master_sha256": "1b9295d9185b92d3a1a0f0e2ab753a1d70ab7c89f979a821585387a7379be528",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3cad0c",
+      "api_runtime_address": "0x103ead0c",
+      "direct_edges": [
+        {
+          "file_offset": "0x3cad74",
+          "runtime_address": "0x103ead74",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103ead0c": 0,
+        "0x103ead0d": 0
+      }
+    },
+    {
+      "package": "Z7_2_0121.bin",
+      "package_sha256": "cd70fe4acf53bc56c9b8380b6368d3ed40b25fd4f17dbd3c21f9e0a2ea6789c7",
+      "member": "eg1840_mas_01210",
+      "master_sha256": "775f596a3b9655121ac83f088dcadc6473f903b00872303a694216004e44d991",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3caf14",
+      "api_runtime_address": "0x103eaf14",
+      "direct_edges": [
+        {
+          "file_offset": "0x3caf7c",
+          "runtime_address": "0x103eaf7c",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103eaf14": 0,
+        "0x103eaf15": 0
+      }
+    },
+    {
+      "package": "Z7_2_0130.bin",
+      "package_sha256": "ed096994c005fff0692255d93fba2917f823f1e982ea541655f8631aedff910a",
+      "member": "eg1840_mas_0130f",
+      "master_sha256": "05bd4aca38a0d3abdc1247163b1d8a56effe0f18ea2c9f2d26476c21f7a8b65d",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3cd59a",
+      "api_runtime_address": "0x103ed59a",
+      "direct_edges": [
+        {
+          "file_offset": "0x3cd602",
+          "runtime_address": "0x103ed602",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103ed59a": 0,
+        "0x103ed59b": 0
+      }
+    },
+    {
+      "package": "Z7_2_0131.bin",
+      "package_sha256": "17b424a2d3f0de715be013ff88699623ed14786adac381144f0656c2fc7d1cb3",
+      "member": "eg1840_mas_0131a",
+      "master_sha256": "82021770cca00be44d84b3faa19a23019ddaa8b2e91fbaa4e7f8bda17b591615",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3cd75a",
+      "api_runtime_address": "0x103ed75a",
+      "direct_edges": [
+        {
+          "file_offset": "0x3cd7c2",
+          "runtime_address": "0x103ed7c2",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103ed75a": 0,
+        "0x103ed75b": 0
+      }
+    },
+    {
+      "package": "Z7_2_0140.bin",
+      "package_sha256": "fe52d3135c01a91bd88ccb923390de05e73e8231a818d560a3aa9022a057e58e",
+      "member": "eg1840_mas_0140d",
+      "master_sha256": "61da9ba974d98ae0a52e1cdb5c9bf14a9eea3858f51a649ba6e5a06e43158394",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3cfab6",
+      "api_runtime_address": "0x103efab6",
+      "direct_edges": [
+        {
+          "file_offset": "0x3cfb1e",
+          "runtime_address": "0x103efb1e",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103efab6": 0,
+        "0x103efab7": 0
+      }
+    },
+    {
+      "package": "Z7_2_0150.bin",
+      "package_sha256": "5ed3dd815e95061d2daabef4ffb69a2a401e00e1624180ba5ea420d0547ff2b1",
+      "member": "eg1840_mas_0150c",
+      "master_sha256": "0448fc1b768fdc41fd18529c72cda60a90d03347b748787caa8fb5b8600adcbc",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3d000c",
+      "api_runtime_address": "0x103f000c",
+      "direct_edges": [
+        {
+          "file_offset": "0x3d0074",
+          "runtime_address": "0x103f0074",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103f000c": 0,
+        "0x103f000d": 0
+      }
+    },
+    {
+      "package": "Z7_2_0160.bin",
+      "package_sha256": "921a9f92cfc394300fc9c26a92d9e3fa15c2be37ca3eb01862711c4609799904",
+      "member": "eg1840_mas_0160b",
+      "master_sha256": "eb8dc5838605a0feda7e3c9e6e433713ff88143d6f1a068383eb564faa46a6b6",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3d13ec",
+      "api_runtime_address": "0x103f13ec",
+      "direct_edges": [
+        {
+          "file_offset": "0x3d1454",
+          "runtime_address": "0x103f1454",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103f13ec": 0,
+        "0x103f13ed": 0
+      }
+    },
+    {
+      "package": "Z7_2_0161.bin",
+      "package_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "member": "eg1840_mas_01610",
+      "master_sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3d13ec",
+      "api_runtime_address": "0x103f13ec",
+      "direct_edges": [
+        {
+          "file_offset": "0x3d1454",
+          "runtime_address": "0x103f1454",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103f13ec": 0,
+        "0x103f13ed": 0
+      }
+    },
+    {
+      "package": "Z7_2_0162.bin",
+      "package_sha256": "4e1b865bda9a3fda1cbce09be4cae3b67d5a05551f44720306c6f426aad7941c",
+      "member": "eg1840_mas_0162a",
+      "master_sha256": "d063cfecc196f1d4b4b3e5581348801f5e0d1041db0627f41f997d207d380c9d",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3d15fc",
+      "api_runtime_address": "0x103f15fc",
+      "direct_edges": [
+        {
+          "file_offset": "0x3d1664",
+          "runtime_address": "0x103f1664",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103f15fc": 0,
+        "0x103f15fd": 0
+      }
+    },
+    {
+      "package": "Z7_2_0170.bin",
+      "package_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "member": "eg1840_mas_01700",
+      "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "master_crc_valid": true,
+      "api_file_offset": "0x3d24e4",
+      "api_runtime_address": "0x103f24e4",
+      "direct_edges": [
+        {
+          "file_offset": "0x3d254c",
+          "runtime_address": "0x103f254c",
+          "preceding_movs_r0_zero": true
+        }
+      ],
+      "absolute_pointer_counts": {
+        "0x103f24e4": 0,
+        "0x103f24e5": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Computed calls and other branch encodings are not covered.",
+    "Reference absence does not prove unreachable code.",
+    "No native request or pixel production is established."
+  ]
+}
