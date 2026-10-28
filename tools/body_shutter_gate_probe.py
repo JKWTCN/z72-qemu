@@ -271,7 +271,16 @@ def snapshot(remote):
                     capture_words(0x64, 3)
             if any(int(value, 16) for value in values.values()):
                 input_channels.append(dict(base=hex(address), fields=values))
+    driver_queue = struct.unpack('<5I', remote.read(0xb23ede14, 20))
+    driver_pending = None
+    base, stride, capacity, count, head = driver_queue
+    if base == 0xb23ede2c and stride == 0x5c and capacity == 60 and count <= capacity and head < capacity:
+        data = remote.read(base, stride * capacity)
+        driver_pending = [hex(struct.unpack_from('<I', data, ((head + index) % capacity) * stride)[0])
+                          for index in range(count)]
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        driver_work_queue=[hex(value) for value in driver_queue],
+        driver_pending_functions=driver_pending,
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines,
@@ -414,6 +423,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x10398206: 'processing-frame-parameters',
                       0x10233b9c: 'processing-frame-parameters-return',
                       0x10232154: 'input-context-frame-configure',
+                      0x102313ea: 'input-ready-worker',
+                      0x10231472: 'input-ready-context-selected',
+                      0x10231486: 'input-ready-normal-branch',
+                      0x102314e6: 'input-ready-state-check',
+                      0x102315c2: 'input-ready-notification',
+                      0x102315c4: 'input-ready-notification-call',
+                      0x103279c0: 'input-ready-notification-decision',
+                      0x10327c88: 'input-ready-queue-submit',
+                      0x10319d88: 'input-driver-queue-result',
+                      0x103191c4: 'input-ready-queue-dispatch',
+                      0x10326676: 'input-ready-driver-producer',
+                      0x103231b2: 'input-driver-state-transition',
                       0x1032a792: 'input-context-consumer-release',
                       0x10321e22: 'input-context-consumer-return',
                       0x10321e24: 'input-context-driver-output-return'})
@@ -492,6 +513,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
+                keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
+                            pc == 0x103191c4 and remote.get(registers, 'r1') != 0x10326677 or
+                            pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
+                if keep and pc == 0x103231b2:
+                    record['state_transition'] = dict(previous=remote.get(registers, 'r7'),
+                        next=remote.get(registers, 'r0'), request=remote.get(registers, 'r10'))
                 if playback or returning:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
@@ -538,9 +565,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                            0x10321d80, 0x10321d94, 0x10321dbe, 0x10321e22, 0x10321e24,
                                            0x1032206e, 0x10322126, 0x10322250, 0x10325304,
                                            0x10233570, 0x10398206, 0x10233b9c, 0x10232154,
+                                           0x102313ea, 0x10231472, 0x10231486, 0x102314e6,
+                                           0x102315c2, 0x10326676,
+                                           0x102315c4, 0x103279c0, 0x10327c88, 0x10319d88,
+                                           0x103191c4, 0x103231b2,
                                            0x1032a792):
-                    hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < 8
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = not keep or hits[pc] < 8
                     pointer = None
                     if pc == 0x1022e2e0:
                         code = remote.get(registers, 'r0')
@@ -554,6 +585,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pointer = remote.get(registers, 'r1')
                     elif pc in (0x1022e154, 0x1022e1aa, 0x1032206e, 0x10322126,
                                 0x10322250, 0x10325304, 0x10398206, 0x10233b9c):
+                        pointer = remote.get(registers, 'r4')
+                    elif pc in (0x10231472, 0x10231486, 0x102314e6, 0x102315c2, 0x102315c4):
                         pointer = remote.get(registers, 'r4')
                     elif pc == 0x10233570:
                         pointer = int.from_bytes(remote.read(remote.get(registers, 'r0'), 4), 'little')
@@ -574,6 +607,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if pc == 0x10398206:
                         record['frame_parameters'] = [hex(value) for value in struct.unpack(
                             '<29I', remote.read(remote.get(registers, 'r0'), 0x74))]
+                    if keep and pc in (0x102313ea, 0x10231472, 0x10231486, 0x102314e6,
+                              0x102315c2, 0x102315c4, 0x103279c0, 0x10327c88, 0x10319d88,
+                              0x10326676):
+                        record['input_ready_fields'] = {hex(offset): hex(int.from_bytes(
+                            remote.read(0xb1887d70 + offset, 4), 'little'))
+                            for offset in (0, 0x40, 0x50, 0x54, 0x58)}
+                        record['driver_header'] = list(remote.read(0xb1868af0, 0x30))
+                    if keep and pc == 0x10319d88:
+                        record['queue_words'] = [hex(value) for value in struct.unpack(
+                            '<5I', remote.read(0xb23ede14, 20))]
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
@@ -589,7 +632,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
-                records.append(record)
+                if keep:
+                    records.append(record)
             remote.breakpoint(pc, False)
             if repeat:
                 remote.sock.settimeout(15)
@@ -604,7 +648,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                    before['counter_frequency'], 6),
                     driver_notification_hits=callback_hits,
                     unseen=[label for address, label in armed.items()
-                            if address not in hits and
+                            if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
