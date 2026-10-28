@@ -406,6 +406,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x10321d80: 'input-context-driver-complete',
                       0x10321d94: 'input-context-output-check',
                       0x10321dbe: 'input-context-output-enqueue',
+                      0x1032206e: 'input-context-special-job-check',
+                      0x10322126: 'input-context-special-job-found',
+                      0x10322250: 'input-context-special-job-submit',
+                      0x10325304: 'input-context-header-construction',
+                      0x10233570: 'input-context-frame-prepare',
+                      0x10398206: 'processing-frame-parameters',
+                      0x10233b9c: 'processing-frame-parameters-return',
+                      0x10232154: 'input-context-frame-configure',
                       0x1032a792: 'input-context-consumer-release',
                       0x10321e22: 'input-context-consumer-return',
                       0x10321e24: 'input-context-driver-output-return'})
@@ -528,6 +536,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if frame_notify and pc in (0x10238d4a, 0x10238c40, 0x1023c960, 0x1023beec,
                                            0x1022e2e0, 0x1022e0ae, 0x1022e154, 0x1022e1aa,
                                            0x10321d80, 0x10321d94, 0x10321dbe, 0x10321e22, 0x10321e24,
+                                           0x1032206e, 0x10322126, 0x10322250, 0x10325304,
+                                           0x10233570, 0x10398206, 0x10233b9c, 0x10232154,
                                            0x1032a792):
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
@@ -538,12 +548,15 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if code == 0x041a0002:
                             pointer = remote.get(registers, 'r1')
                             record['completed_object'] = hex(pointer)
-                    elif pc in (0x1022e0ae, 0x1032a792):
+                    elif pc in (0x1022e0ae, 0x1032a792, 0x10232154):
                         pointer = remote.get(registers, 'r0')
                     elif pc == 0x1023beec:
                         pointer = remote.get(registers, 'r1')
-                    elif pc in (0x1022e154, 0x1022e1aa):
+                    elif pc in (0x1022e154, 0x1022e1aa, 0x1032206e, 0x10322126,
+                                0x10322250, 0x10325304, 0x10398206, 0x10233b9c):
                         pointer = remote.get(registers, 'r4')
+                    elif pc == 0x10233570:
+                        pointer = int.from_bytes(remote.read(remote.get(registers, 'r0'), 4), 'little')
                     elif pc == 0x10321d80:
                         packet = remote.get(registers, 'r4')
                         pointer = int.from_bytes(remote.read(packet + 8, 4), 'little')
@@ -555,7 +568,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             pending=hex(int.from_bytes(remote.read(pointer + 0x14c, 4), 'little')),
                             consumers=hex(remote.read(pointer + 0xc, 1)[0]),
                             output_fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
-                                           for offset in (0x20, 0x40, 0x68, 0x6c, 0x70)})
+                                           for offset in (0x20, 0x30, 0x34, 0x38, 0x40, 0x68, 0x6c, 0x70)})
+                        if pc in (0x1032206e, 0x10322126, 0x10322250, 0x10325304):
+                            record['driver_header'] = list(remote.read(0xb1868af0, 0x30))
+                    if pc == 0x10398206:
+                        record['frame_parameters'] = [hex(value) for value in struct.unpack(
+                            '<29I', remote.read(remote.get(registers, 'r0'), 0x74))]
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
