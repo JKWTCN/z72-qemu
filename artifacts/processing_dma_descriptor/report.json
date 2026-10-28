@@ -1,0 +1,78 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x103bda1e",
+  "register_table": "0x10789cc0",
+  "host_boundaries": [
+    "two counter reads, advanced by nine ticks"
+  ],
+  "synthetic_parameters": {
+    "first_words": [
+      2080,
+      2080,
+      0,
+      0
+    ],
+    "address_fields": [
+      "0x10",
+      "0x14",
+      "0x18",
+      "0x1c"
+    ],
+    "rectangle_fields": [
+      "0x2a",
+      "0x2c",
+      "0x2e",
+      "0x30"
+    ],
+    "size_fields": [
+      "0x32",
+      "0x34"
+    ],
+    "other_flags": 0
+  },
+  "cases": [
+    {
+      "channel": 0,
+      "base": "0x20100400",
+      "registers": {
+        "0x0": "0x1",
+        "0x4": "0x0",
+        "0x8": "0x3960564",
+        "0xc": "0x0",
+        "0x10": "0x820",
+        "0x14": "0x820",
+        "0x18": "0x0",
+        "0x1c": "0x0",
+        "0x20": "0x3960564",
+        "0x24": "0x54900000",
+        "0x28": "0x56b0d000",
+        "0x2c": "0x58d1a000",
+        "0x30": "0x5af27000"
+      },
+      "submitted_channel": 0
+    },
+    {
+      "channel": 15,
+      "base": "0x201007c0",
+      "registers": {
+        "0x0": "0x1",
+        "0x4": "0x0",
+        "0x8": "0x3960564",
+        "0xc": "0x0",
+        "0x10": "0x820",
+        "0x14": "0x820",
+        "0x18": "0x0",
+        "0x1c": "0x0",
+        "0x20": "0x3960564",
+        "0x24": "0x54900000",
+        "0x28": "0x56b0d000",
+        "0x2c": "0x58d1a000",
+        "0x30": "0x5af27000"
+      },
+      "submitted_channel": 15
+    }
+  ],
+  "pixel_transfer_verified": false,
+  "limitation": "Packing and submission are verified; channel direction, pixel formats and completion remain unverified."
+}

@@ -188,6 +188,12 @@ RETURN_POINTS = {
 }
 
 RECONFIGURE_POINTS = {
+    0x103bded0: 'reconfigure-processing-module-configure',
+    0x103bd07c: 'reconfigure-processing-module-start',
+    0x102692ca: 'reconfigure-capture-display-surface',
+    0x103e1d30: 'reconfigure-display-frame-selected',
+    0x103e1dea: 'reconfigure-display-frame-submit',
+    0x1046c3c2: 'reconfigure-display-format',
     0x1023c57a: 'reconfigure-mode1-output-complete',
     0x1023c5dc: 'reconfigure-mode1-output-return',
     0x10238d16: 'reconfigure-frame-count-check',
@@ -393,8 +399,12 @@ def lcd_snapshot(machine):
         try:
             size = machine._words(0x20144204, 1)[0]
             width, height = size & 0xffff, (size >> 16) & 0x3fff
-            planes = machine._words(0x20144210, 2)
-            result = dict(width=width, height=height, planes=[hex(value) for value in planes])
+            planes = [machine._words(address, 1)[0] for address in (0x20144210, 0x20144220)]
+            result = dict(width=width, height=height, planes=[hex(value) for value in planes],
+                          registers={hex(offset): hex(machine._words(0x20144000 + offset, 1)[0])
+                                     for offset in (0x200, 0x204, 0x240, 0x250,
+                                                    0x410, 0x414, 0x418, 0x41c, 0x420, 0x424,
+                                                    0x600, 0x604)})
             candidates = {}
             for offset in (0x210, 0x220, 0x2440, 0x24c0, 0x3440, 0x34c0):
                 addresses = machine._words(0x20144000 + offset, 4)
@@ -555,6 +565,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc == 0x10361044:
                     record['saved_return'] = hex(int.from_bytes(remote.read(
                         remote.get(registers, 'sp'), 4), 'little'))
+                if 0x20140000 <= watch_address < 0x2014f000:
+                    record['stack_words'] = [hex(value) for value in struct.unpack(
+                        '<32I', remote.read(remote.get(registers, 'sp'), 128))]
                 if watch_type == 2 and 0xb2c00000 <= watch_address <= 0xb5effffc:
                     record['previous_word'] = hex(int.from_bytes(remote.read(watch_address, 4), 'little'))
                 if pc in (0x1024ffb4, 0x1024ffda):
@@ -594,6 +607,52 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if keep and pc == 0x103231b2:
                     record['state_transition'] = dict(previous=remote.get(registers, 'r7'),
                         next=remote.get(registers, 'r0'), request=remote.get(registers, 'r10'))
+                if pc == 0x1046c3c2:
+                    record['display_configuration'] = remote.read(remote.get(registers, 'r1'), 24).hex()
+                if pc == 0x103e1d30:
+                    pointer = remote.get(registers, 'r5')
+                    record['display_frame'] = dict(address=hex(pointer),
+                        words={hex(index * 4): hex(value) for index, value in enumerate(
+                            struct.unpack('<34I', remote.read(pointer, 0x88)))})
+                if pc == 0x102692ca:
+                    surface = remote.get(registers, 'r3')
+                    record['capture_surface'] = dict(address=hex(surface),
+                        words={hex(index * 4): hex(value) for index, value in enumerate(
+                            struct.unpack('<7I', remote.read(surface, 0x1c)))})
+                    context = remote.get(registers, 'r4')
+                    if 0xb2c00000 <= context < 0xb5effeb0:
+                        record['capture_context'] = dict(address=hex(context),
+                            words={hex(offset): hex(int.from_bytes(remote.read(context + offset, 4), 'little'))
+                                   for offset in (0, 4, 8, 0xc, 0x10, 0x30, 0x68, 0x6c, 0x70,
+                                                  0x74, 0x90, 0x94, 0x98, 0x9c, 0xa0, 0xa4, 0x144, 0x148)})
+                        objects = {}
+                        for offset in (0x68, 0x6c, 0x70, 0x74, 0x9c, 0xa0, 0xa4):
+                            pointer = int.from_bytes(remote.read(context + offset, 4), 'little')
+                            if 0xb2c00000 <= pointer < 0xb5efffbc:
+                                objects[hex(offset)] = dict(address=hex(pointer),
+                                    words={hex(index * 4): hex(value) for index, value in enumerate(
+                                        struct.unpack('<17I', remote.read(pointer, 0x44)))})
+                        record['capture_buffer_objects'] = objects
+                if pc in (0x103bded0, 0x103bd07c):
+                    module = remote.get(registers, 'r0' if pc == 0x103bded0 else 'r1')
+                    if module < 128:
+                        base, callback = struct.unpack('<2I', remote.read(0x1078a2a0 + module * 8, 8))
+                        record['processing_module'] = dict(index=module, base=hex(base), callback=hex(callback))
+                        if 0x20100100 <= base < 0x20110000:
+                            values = struct.unpack('<8I', remote.read(base, 32))
+                            record['processing_module']['registers'] = [hex(value) for value in values]
+                            pointer = remote.get(registers, 'r1') if pc == 0x103bded0 else values[4]
+                            record['processing_module']['parameters'] = hex(pointer)
+                            if 0xb1800000 <= pointer < 0xb5efff00 or 0xb0100000 <= pointer < 0xb08fff00:
+                                data = remote.read(pointer, 256)
+                                record['processing_module']['parameter_summary'] = dict(
+                                    bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+                if pc == 0x103e1dea:
+                    packet = remote.get(registers, 'r1')
+                    record['display_packet'] = dict(address=hex(packet),
+                        words={hex(offset): hex(int.from_bytes(remote.read(packet + offset, 4), 'little'))
+                               for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x1c, 0x20,
+                                              0xdc, 0xe0, 0xe4, 0xe8, 0xec, 0xf0, 0xf4, 0xf8)})
                 if playback or returning or reconfigure:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
