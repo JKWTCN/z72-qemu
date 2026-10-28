@@ -22,6 +22,12 @@ MASTER_AREA = 0xb7cf0000
 # view through the translated 0x46000000 message window.
 SLAVE_AREA = 0x460f0000
 ENTRY_STRIDE = 0x108
+# Transport control blocks: the magic pair at +0x28/+0x2c gates both the
+# submit and the consumer paths. Both engines address one base through
+# two literals ten bytes apart (master 0xB1808928/0xB1808938 minus 0x10,
+# slave 0xC1006F68/0xC1006F78 minus 0x10); the slave's base is read
+# through the master's bus window.
+CONTROL_BLOCKS = ((0xb1808928, 'master'), (0x41006f68, 'slave'))
 
 
 def sample(machine):
@@ -38,7 +44,14 @@ def sample(machine):
             entries=[[hex(word) for word in
                       machine._words(base + 0x18 + entry * ENTRY_STRIDE, 2)]
                      for entry in range(2)])
-    return areas
+    controls = {}
+    for base, name in CONTROL_BLOCKS:
+        words = machine._words(base, 0x34 // 4)
+        controls[name] = dict(
+            base=hex(base), words=[hex(word) for word in words],
+            magic_pair=[hex(words[0xa]), hex(words[0xb])],
+            magic_ok=bool(words[0xa] == 0xc00108 and words[0xb] == 0xaa550001))
+    return dict(areas=areas, controls=controls)
 
 
 def main():
@@ -82,10 +95,15 @@ def main():
         args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         first, second = report['samples']
         for name in ('master', 'slave'):
+            a, b = first['areas'][name], second['areas'][name]
             print(name,
-                  'index', first[name]['index'], '->', second[name]['index'],
-                  'depth', first[name]['depth'], '->', second[name]['depth'],
-                  'magic_valid', first[name]['magic_valid'], second[name]['magic_valid'])
+                  'index', a['index'], '->', b['index'],
+                  'depth', a['depth'], '->', b['depth'],
+                  'magic_valid', a['magic_valid'], b['magic_valid'])
+        for name in ('master', 'slave'):
+            control = first['controls'][name]
+            print('control', name, 'pair', control['magic_pair'],
+                  'ok', control['magic_ok'])
     finally:
         machine.close()
 

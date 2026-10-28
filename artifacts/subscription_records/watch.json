@@ -61,6 +61,122 @@
     }
   },
   "linked": {
+    "module": {
+      "base": "0xb1864834",
+      "words": [
+        "0x0",
+        "0x1000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1000184",
+        "0x0",
+        "0x1000185",
+        "0x1000186",
+        "0x1000187",
+        "0x1000188",
+        "0x1000189",
+        "0x100018a",
+        "0x100018b",
+        "0x100018c",
+        "0x100018d",
+        "0x100018e",
+        "0x100018f",
+        "0x103cdb27",
+        "0x103cd163",
+        "0x103cdb15",
+        "0x10001fb",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x10001fc",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "service-manager": {
+      "base": "0xb238af30",
+      "words": [
+        "0x0",
+        "0x0",
+        "0x1000085",
+        "0xffffffff",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "service-3-a": {
+      "base": "0xb238b30c",
+      "words": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "service-3-b": {
+      "base": "0xb238b368",
+      "words": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
     "link-1": {
       "base": "0xb2bc87f8",
       "words": [
@@ -173,6 +289,182 @@
       "code": "0xed",
       "payload": "0xb2b97ff0",
       "caller": "0x10107274"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
+    },
+    {
+      "pc": "0x10387f84",
+      "entry": "ring-consumer",
+      "thread": 1,
+      "code": "0x0",
+      "payload": "0x0",
+      "caller": "0x103880c7"
     }
   ]
 }
