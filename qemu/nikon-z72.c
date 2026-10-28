@@ -624,6 +624,7 @@ struct NikonZ72BootConfig {
     bool frame_sync;
     bool sensor_sample;
     bool frame_phase;
+    bool input_stop_complete;
     bool display_complete;
     bool sample_counter;
     bool sample_group1;
@@ -1245,6 +1246,31 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
+    if (address == 0x20068060 && s->input_stop_complete && s->master_role &&
+        s->sensor_sample && s->auto_complete) {
+        /* Recovered stop requests enable these status causes before writing
+         * the command. The laboratory input source has no in-flight DMA;
+         * quiesce it synchronously and use the normal mask/acknowledge path.
+         * These causes release stop waiters, not pixel-ready consumers. */
+        switch (value) {
+        case 3:
+            *boot_config_value(s, 0x20068230) |= 0x110;
+            break;
+        case 4:
+            *boot_config_value(s, 0x20068230) |= 1;
+            break;
+        case 8:
+            *boot_config_value(s, 0x20068210) |= 0x10000000;
+            break;
+        case 0x10:
+            *boot_config_value(s, 0x20068230) |= 0x1000;
+            break;
+        case 0x60:
+            *boot_config_value(s, 0x200682f0) |= 0x30;
+            break;
+        }
+        input_update_irqs(s);
+    }
     if (address == 0x200632e4 && (value & 1) && s->master_role &&
         s->sensor_sample && s->auto_complete) {
         /* The laboratory sampling source applies the recovered control
@@ -2127,6 +2153,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
         DEFINE_PROP_BOOL("frame-phase", NikonZ72BootConfig, frame_phase, false),
+        DEFINE_PROP_BOOL("input-stop-complete", NikonZ72BootConfig, input_stop_complete, false),
         DEFINE_PROP_BOOL("display-complete", NikonZ72BootConfig,
                          display_complete, false),
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),

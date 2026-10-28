@@ -1,0 +1,104 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "decoder": "0x1020a71a",
+  "callback": "0x1020c0a8",
+  "cases": [
+    {
+      "entry": "0x10209020",
+      "command": "0x3",
+      "logical": "0x600",
+      "status": [
+        "0x0",
+        "0x110",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x4",
+        "0x4"
+      ]
+    },
+    {
+      "entry": "0x1020ae7c",
+      "command": "0x4",
+      "logical": "0x10",
+      "status": [
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x2"
+      ]
+    },
+    {
+      "entry": "0x10208c84",
+      "command": "0x8",
+      "logical": "0x20",
+      "status": [
+        "0x10000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x1"
+      ]
+    },
+    {
+      "entry": "0x1020a05c",
+      "command": "0x10",
+      "logical": "0x800",
+      "status": [
+        "0x0",
+        "0x1000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x8"
+      ]
+    },
+    {
+      "entry": "0x1020a17e",
+      "command": "0x60",
+      "logical": "0x2",
+      "status": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x30"
+      ],
+      "waiter_events": [
+        "0x10"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic memory and event API boundaries only.",
+    "No physical response latency or pixel transfer is established."
+  ]
+}

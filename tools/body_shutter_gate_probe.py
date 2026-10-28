@@ -317,7 +317,7 @@ def lcd_snapshot(machine):
 
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
-            gpio_handshake_events=False, watch_read=None):
+            gpio_handshake_events=False, watch_read=None, watch_write=None):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -329,18 +329,21 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     records = []
     hits = {}
     callback_hits = 0
-    read_watch_armed = False
+    watch_address = watch_read if watch_read is not None else watch_write
+    watch_type = 3 if watch_read is not None else 2
+    memory_watch_armed = False
     started = time.monotonic()
     try:
         before = snapshot(remote)
         for address in armed:
             remote.breakpoint(address)
-        if watch_read is not None:
-            require(remote.command(f'Z3,{watch_read:x},4') == 'OK', 'Read watchpoint rejected')
-            read_watch_armed = True
+        if watch_address is not None:
+            require(remote.command(f'Z{watch_type},{watch_address:x},4') == 'OK',
+                    'Memory watchpoint rejected')
+            memory_watch_armed = True
         machine.set_key(24 if returning else 8 if playback else 25, 0)
         deadline = started + seconds
-        while time.monotonic() < deadline and (armed or read_watch_armed):
+        while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
             remote.sock.settimeout(min(1, max(0.2, deadline - time.monotonic())))
             try:
@@ -355,10 +358,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             remote.select_thread(thread)
             registers = remote.regs()
             pc = remote.get(registers, 'pc')
-            watched = re.search(r'rwatch:([0-9a-f]+);', reply)
-            if watched and int(watched[1], 16) == watch_read:
-                record = dict(entry='watched-read', pc=hex(pc), thread=thread,
-                    address=hex(watch_read), registers={name: hex(remote.get(registers, name))
+            watched = re.search(r'(?:rwatch|watch):([0-9a-f]+);', reply)
+            if watched and int(watched[1], 16) == watch_address:
+                record = dict(entry='watched-read' if watch_type == 3 else 'watched-write',
+                    pc=hex(pc), thread=thread,
+                    address=hex(watch_address), registers={name: hex(remote.get(registers, name))
                         for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                                      'r8', 'r9', 'r10', 'r11', 'r12', 'sp', 'lr', 'cpsr')})
                 if pc in (0x1024ffb4, 0x1024ffda):
@@ -372,17 +376,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         field_30=hex(int.from_bytes(remote.read(descriptor + 0x30, 4), 'little')))
                 if 'TTBR0_S' in remote.register_numbers:
                     ttbr = remote.read_register('TTBR0_S')
-                    section_address = (ttbr & 0xffffc000) + (watch_read >> 20) * 4
+                    section_address = (ttbr & 0xffffc000) + (watch_address >> 20) * 4
                     section = int.from_bytes(remote.read(section_address, 4), 'little')
                     record['translation'] = dict(ttbr0=hex(ttbr),
                         section_address=hex(section_address), section=hex(section))
                     if section & 3 == 2:
                         record['translation']['section_physical_address'] = hex(
-                            (section & 0xfff00000) | (watch_read & 0xfffff))
+                            (section & 0xfff00000) | (watch_address & 0xfffff))
                 records.append(record)
-                require(remote.command(f'z3,{watch_read:x},4') == 'OK',
-                        'Read watchpoint removal failed')
-                read_watch_armed = False
+                require(remote.command(f'z{watch_type},{watch_address:x},4') == 'OK',
+                        'Memory watchpoint removal failed')
+                memory_watch_armed = False
                 remote.sock.settimeout(15)
                 remote.command(f'vCont;s:{thread:x}')
                 break
@@ -467,8 +471,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
-        if read_watch_armed:
-            remote.command(f'z3,{watch_read:x},4')
+        if memory_watch_armed:
+            remote.command(f'z{watch_type},{watch_address:x},4')
         for address in armed:
             remote.breakpoint(address, False)
         remote.command('D')
@@ -491,6 +495,8 @@ def main():
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--frame-phase', action='store_true',
                         help='Enable the optional masked periodic sampling phase source')
+    parser.add_argument('--input-stop-complete', action='store_true',
+                        help='Enable the optional command-triggered input stop response')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -506,11 +512,16 @@ def main():
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
                         help='Capture the first read overlapping this four-byte window, single-step it, then stop observing')
+    parser.add_argument('--watch-write', type=lambda value: int(value, 0),
+                        help='Capture and single-step the first write in each observed stage, then stop that stage')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(30 <= args.boot_watch <= 600, 'Boot watch time out of bounds')
     require(args.watch_read is None or 0 <= args.watch_read <= 0xfffffffc and
             args.watch_read % 4 == 0, 'Read watch address out of bounds')
+    require(args.watch_write is None or 0 <= args.watch_write <= 0xfffffffc and
+            args.watch_write % 4 == 0, 'Write watch address out of bounds')
+    require(args.watch_read is None or args.watch_write is None, 'Choose one memory watch type')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -535,6 +546,7 @@ def main():
                           boot_watch_seconds=args.boot_watch,
                           display_complete=args.display_complete,
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,
+                          input_stop_complete=args.input_stop_complete,
                           shooting_foreground_ready=False)
             # A running console has detached its startup observer. Preserve
             # the failed foreground's actual state before closing the VM.
@@ -558,21 +570,23 @@ def main():
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
+                      input_stop_complete=args.input_stop_complete,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
-                                    watch_read=args.watch_read))
+                                    watch_read=args.watch_read, watch_write=args.watch_write))
         report['native_lcd_before'] = initial_lcd
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
-                            gpio_handshake_events=args.gpio_handshake_events)
+                            gpio_handshake_events=args.gpio_handshake_events,
+                            watch_write=args.watch_write)
             state = machine.status()
             report['return_liveview'] = dict(application=state, trace=trace)
             if state['index'] == 3 and state['input_ready']:
-                report['shutter_after_return'] = observe(machine, 30)
+                report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write)
                 report['post_shutter_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
         args.out.parent.mkdir(parents=True, exist_ok=True)
