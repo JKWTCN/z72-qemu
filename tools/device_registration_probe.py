@@ -42,6 +42,20 @@ RELEASE_EVENT_POINTS = {
     0x1020e9c0: 'operation13-callback-result',
     0x104be91e: 'release-notification-map',
     0x1053e62c: 'release-gate-clear-path',
+    0x1036096a: 'public-request-entry-96a',
+    0x1036096e: 'public-request-entry-96e',
+    0x10360972: 'public-request-entry-972',
+    0x10247960: 'public-request-96a-result',
+    0x103edd08: 'operation13-state-update',
+    0x103f22ca: 'capture-status-callback-registration',
+    0x10247e38: 'initialization-success-dispatch',
+}
+INITIALIZATION_FOLLOWUP_POINTS = {
+    0x10204c02: 'initialization-parent-state-check',
+    0x10204c14: 'initialization-parent-continuation',
+    0x10204c38: 'initialization-interface-predicate-result',
+    0x10204c4a: 'initialization-parent-predicate-result',
+    0x10204c6a: 'initialization-followup-call',
 }
 
 
@@ -136,6 +150,22 @@ class RegistrationMachine(Machine):
                     registers={name: hex(remote.get(registers, name))
                                for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'lr')},
                     pending=int.from_bytes(remote.read(0xb1d52228, 2), 'little'))
+                if record['entry'].startswith('initialization-'):
+                    parent = 0xb1818bd0
+                    mode = remote.read(parent + 0x158, 2)
+                    interface = int.from_bytes(remote.read(parent + 0x154, 4), 'little')
+                    record['parent_state'] = dict(current=mode[0], previous=mode[1],
+                        interface=hex(interface))
+                    if record['entry'] == 'initialization-parent-handler':
+                        for address, label in INITIALIZATION_FOLLOWUP_POINTS.items():
+                            remote.breakpoint(address)
+                            armed[address] = label
+                    if pc == 0x10204c6a:
+                        target = remote.get(registers, 'r2')
+                        record['followup_target'] = hex(target)
+                        address = target & ~1
+                        remote.breakpoint(address)
+                        armed[address] = 'initialization-followup-handler'
                 if pc == 0x10264972:
                     descriptor = remote.get(registers, 'r0')
                     context = int.from_bytes(remote.read(descriptor + 0xc, 4), 'little')
@@ -166,6 +196,17 @@ class RegistrationMachine(Machine):
                             remote.get(registers, 'r4'), 4), 'little')
                     if pc == 0x104be91e:
                         record['notification'] = hex(remote.get(registers, 'r9'))
+                    if pc == 0x10247e38:
+                        parent = remote.get(registers, 'r0')
+                        target = int.from_bytes(remote.read(parent + 0x88, 4), 'little')
+                        record['dispatch'] = dict(parent=hex(parent), target=hex(target),
+                            event=remote.get(registers, 'r1'),
+                            mode=remote.get(registers, 'r2'),
+                            argument=hex(remote.get(registers, 'r3')))
+                        if target:
+                            address = target & ~1
+                            remote.breakpoint(address)
+                            armed[address] = 'initialization-parent-handler'
                 self.registration_stops.append(record)
                 if pc == SYNC_WAIT:
                     require(all(remote.get(registers, name) == value
@@ -262,6 +303,23 @@ def main():
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
                 report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
                 report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
+                if args.watch_release:
+                    image = args.master.read_bytes()
+                    entries = {}
+                    for address, value in ((0x1036096a, 0), (0x1036096e, 0),
+                                           (0x10360972, 0), (0x10360976, 1)):
+                        code = machine._bytes(address, 4)
+                        offset = address - 0x10020000
+                        entries[hex(address)] = dict(
+                            matches_supplied_image=code == image[offset:offset + 4],
+                            returns_constant=code == (0x47702000 | value).to_bytes(4, 'little'),
+                            constant=value)
+                    report['public_request_entries'] = entries
+                    report['operation13_pending'] = machine._words(0xb23f6a7c, 1)[0]
+                    report['operation13_callback'] = hex(machine._words(0xb23f7018, 1)[0])
+                    report['capture_status_callback'] = hex(machine._words(0xb18695ac, 1)[0])
+                    report['release_gate'] = machine._words(0xb1821e84, 1)[0]
+                    report['event1_pending'] = machine._words(0xb201bdd4, 1)[0]
                 report['device_worker_state'] = dict(
                     state=machine._bytes(0xb1864d49, 1)[0],
                     category=machine._bytes(0xb1864d4a, 1)[0])
