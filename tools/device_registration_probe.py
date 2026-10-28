@@ -25,6 +25,7 @@ POINTS = {
     0x10264a72: 'device-reservation-result',
     0x10264de0: 'device-service-creation',
     0x103ce6ac: 'device-construction',
+    0x102323ec: 'session-report-gate',
 }
 
 
@@ -34,12 +35,16 @@ class RegistrationMachine(Machine):
         armed = dict(POINTS)
         armed[SYNC_WAIT] = 'synchronization-wait'
         self.registration_stops = []
+        self.session_stops = []
+        watching = self.args.watch_session
+        if watching:
+            require(remote.command('Z2,b3c78081,1') == 'OK', 'Session watchpoint rejected')
         for address in armed:
             remote.breakpoint(address)
         deadline = time.monotonic() + self.args.watch
         synchronized = False
         try:
-            while time.monotonic() < deadline and armed:
+            while time.monotonic() < deadline and (armed or watching):
                 remote.sock.settimeout(min(5, max(0.2, deadline - time.monotonic())))
                 try:
                     reply = remote.command('vCont;c')
@@ -54,6 +59,32 @@ class RegistrationMachine(Machine):
                 remote.select_thread(thread)
                 registers = remote.regs()
                 pc = remote.get(registers, 'pc')
+                if watching and thread <= 2 and 'watch:' in reply:
+                    write = dict(
+                        pc=hex(pc), thread=thread,
+                        value_before=remote.read(0xb3c78081, 1)[0],
+                        registers={name: hex(remote.get(registers, name))
+                                   for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5',
+                                                'r6', 'r7', 'lr')})
+                    if pc == 0x10357fba:
+                        write['parameter_copy'] = dict(
+                            source=hex(remote.get(registers, 'r5') + 0x204),
+                            destination=hex(remote.get(registers, 'r4') + 1),
+                            value=remote.get(registers, 'r0') & 255)
+                    self.session_stops.append(write)
+                    # QEMU stops before the watched store. Advance it with
+                    # the watchpoint removed; otherwise every resume reports
+                    # the same instruction again without executing the store.
+                    require(remote.command('z2,b3c78081,1') == 'OK',
+                            'Session watchpoint removal failed')
+                    watching = False
+                    remote.sock.settimeout(15)
+                    remote.command(f'vCont;s:{thread:x}')
+                    if len(self.session_stops) < 8:
+                        require(remote.command('Z2,b3c78081,1') == 'OK',
+                                'Session watchpoint re-arm failed')
+                        watching = True
+                    continue
                 # Both engine images use the same base. Slave hits are not
                 # evidence about the master's local registration worker.
                 if thread > 2 or pc not in armed:
@@ -70,6 +101,11 @@ class RegistrationMachine(Machine):
                         category=remote.read(context + 0xd, 1)[0],
                         service_flag=int.from_bytes(remote.read(context + 0xac, 4), 'little'),
                         resource=int.from_bytes(remote.read(context + 0x12c, 4), 'little'))
+                if pc == 0x102323ec:
+                    context = remote.get(registers, 'r0')
+                    record['session'] = dict(context=hex(context),
+                        state=remote.read(context, 1)[0],
+                        gate=remote.read(context + 0x41, 1)[0])
                 self.registration_stops.append(record)
                 if pc == SYNC_WAIT:
                     require(all(remote.get(registers, name) == value
@@ -91,6 +127,9 @@ class RegistrationMachine(Machine):
             remote.sock.settimeout(15)
             for address in armed:
                 remote.breakpoint(address, False)
+            if watching:
+                require(remote.command('z2,b3c78081,1') == 'OK',
+                        'Session watchpoint cleanup failed')
             require(remote.command('D') == 'OK', 'Could not detach')
             remote.sock.close()
             self.remote = None
@@ -107,6 +146,8 @@ def main():
     parser.add_argument('--sd-card', type=Path)
     parser.add_argument('--display-complete', action='store_true')
     parser.add_argument('--watch', type=int, default=120)
+    parser.add_argument('--watch-session', action='store_true',
+                        help='Record up to eight writes to session root byte +0x41')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -115,7 +156,8 @@ def main():
     machine = RegistrationMachine(args)
     report = dict(observation='local-device-registration-from-reset',
                   watch_seconds=args.watch, sd_attached=args.sd_card is not None,
-                  display_complete=args.display_complete)
+                  display_complete=args.display_complete,
+                  watch_session=args.watch_session)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -130,7 +172,8 @@ def main():
         else:
             raise TimeoutError('Shooting application did not become ready')
         report.update(boot=state, stops=machine.registration_stops,
-                      unseen=machine.registration_unseen)
+                      unseen=machine.registration_unseen,
+                      session_stops=machine.session_stops)
         with machine.io:
             machine.qmp.command('stop')
             try:
@@ -150,6 +193,9 @@ def main():
                 report['device_worker_state'] = dict(
                     state=machine._bytes(0xb1864d49, 1)[0],
                     category=machine._bytes(0xb1864d4a, 1)[0])
+                root = machine._words(0xb1887dac, 1)[0]
+                report['session_root'] = hex(root)
+                report['session_root_field_41'] = machine._bytes(root + 0x41, 1)[0]
             finally:
                 machine.qmp.command('cont')
         args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
