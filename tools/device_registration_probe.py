@@ -396,6 +396,13 @@ def main():
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
                 report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
                 report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
+                if args.watch_input_config or args.watch_release:
+                    ticks_low, ticks_high, frequency = machine._words(0x04266008, 3)
+                    report['counter_ticks'] = ticks_low | ticks_high << 32
+                    report['counter_frequency'] = frequency
+                    report['system_modes'] = list(machine._bytes(0xb1818d28, 2))
+                    report['input_geometry'] = [hex(value) for value in
+                                                machine._words(0x20069500, 3)]
                 if args.watch_release:
                     image = args.master.read_bytes()
                     entries = {}

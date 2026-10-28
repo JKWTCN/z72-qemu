@@ -53,4 +53,5 @@
 - [采集任务的地址坐标与启动绑定](z7ii/capture_startup.md)
 - [初始化后的状态、模式请求与保留回调](z7ii/capture_mode_requests.md)
 - [机身快门、HTTP 输入与 SD 接入](z7ii/body_shutter.md)
+- [播放停止委托链、事件等待与相机时间](z7ii/playback_stop.md)
 - [拍摄界面的错误显示与致命消息](z7ii/error_display.md)

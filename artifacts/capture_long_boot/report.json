@@ -1,0 +1,1564 @@
+{
+  "observation": "local-device-registration-from-reset",
+  "watch_seconds": 180,
+  "sd_attached": true,
+  "display_complete": true,
+  "watch_session": false,
+  "capture_operations": true,
+  "watch_release": true,
+  "watch_input_config": true,
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 180,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "stops": [
+    {
+      "entry": "capture-status-callback-registration",
+      "pc": "0x103f22ca",
+      "thread": 2,
+      "registers": {
+        "r0": "0x10204e3d",
+        "r1": "0xb1818bd0",
+        "r2": "0xb1811ba0",
+        "r3": "0x0",
+        "r4": "0xb1818cb8",
+        "r5": "0x1",
+        "r6": "0x2",
+        "lr": "0x1020d4b9"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0
+    },
+    {
+      "entry": "registration-gate-result",
+      "pc": "0x103b21aa",
+      "thread": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x0",
+        "lr": "0x10389b2d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-gate-passed",
+      "pc": "0x103b21b6",
+      "thread": 2,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x1",
+        "lr": "0x103b21b3"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-callback-bit8",
+      "pc": "0x102638a2",
+      "thread": 2,
+      "registers": {
+        "r0": "0x3",
+        "r1": "0xffffff88",
+        "r2": "0x200000",
+        "r3": "0xc83",
+        "r4": "0xb1864834",
+        "r5": "0xb238d410",
+        "r6": "0xb2363634",
+        "lr": "0x103b220d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "operation14-api",
+      "pc": "0x103f2540",
+      "thread": 1,
+      "registers": {
+        "r0": "0x10204d47",
+        "r1": "0x1",
+        "r2": "0x1",
+        "r3": "0x7fffffff",
+        "r4": "0xb1819988",
+        "r5": "0xb51e5f48",
+        "r6": "0x1",
+        "lr": "0x10247e53"
+      },
+      "pending": 0,
+      "capture_state": [
+        0,
+        0
+      ],
+      "operation14_callback": "0x0"
+    },
+    {
+      "entry": "operation13-api",
+      "pc": "0x103f24e4",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb1819988",
+        "r5": "0x10204d47",
+        "r6": "0x1",
+        "lr": "0x103f2551"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "asynchronous": false
+    },
+    {
+      "entry": "operation14-precheck-result",
+      "pc": "0x103f2550",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb1819988",
+        "r5": "0x10204d47",
+        "r6": "0x1",
+        "lr": "0x103f251b"
+      },
+      "pending": 0,
+      "capture_state": [
+        0,
+        0
+      ],
+      "operation14_callback": "0x0"
+    },
+    {
+      "entry": "operation14-admission-result",
+      "pc": "0x103f255c",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x10204d47",
+        "r2": "0xe",
+        "r3": "0xb23f6fe4",
+        "r4": "0x0",
+        "r5": "0x10204d47",
+        "r6": "0x1",
+        "lr": "0x103f255d"
+      },
+      "pending": 0,
+      "capture_state": [
+        0,
+        0
+      ],
+      "operation14_callback": "0x10204d47"
+    },
+    {
+      "entry": "operation14-api-result",
+      "pc": "0x103f258a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0x10204d47",
+        "r6": "0x1",
+        "lr": "0x103f258b"
+      },
+      "pending": 0,
+      "capture_state": [
+        0,
+        0
+      ],
+      "operation14_callback": "0x10204d47"
+    },
+    {
+      "entry": "operation14-task-request",
+      "pc": "0x103ef318",
+      "thread": 2,
+      "registers": {
+        "r0": "0xb23f7cd4",
+        "r1": "0x103ef319",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb18697d8",
+        "r5": "0xf",
+        "r6": "0x1",
+        "lr": "0x10228cd9"
+      },
+      "pending": 0,
+      "capture_state": [
+        0,
+        0
+      ],
+      "operation14_callback": "0x10204d47"
+    },
+    {
+      "entry": "input-configuration-request",
+      "pc": "0x1023abaa",
+      "thread": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0xb51ddfb0",
+        "r3": "0xb26b38b4",
+        "r4": "0xb1887d70",
+        "r5": "0x1",
+        "r6": "0x1",
+        "lr": "0x1022fcf1"
+      },
+      "pending": 0,
+      "hit": 1,
+      "configuration": {
+        "mask": "0x1",
+        "table": "0xb51ddfb0",
+        "geometry_selected": false,
+        "geometry_descriptor": "0x0"
+      }
+    },
+    {
+      "entry": "input-format-setter",
+      "pc": "0x102097fa",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb18067a8",
+        "r1": "0xb2b36b88",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb53a7ef0",
+        "r5": "0x1",
+        "r6": "0xb18a7670",
+        "lr": "0x10238fcb"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "format_flag_inputs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "entry": "input-format-write",
+      "pc": "0x10209848",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x20068500",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0x0",
+        "r6": "0x0",
+        "lr": "0x0"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "packed_format": "0x0"
+    },
+    {
+      "entry": "synchronization-wait",
+      "pc": "0x102d949e",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb18a764c",
+        "r1": "0x8",
+        "r2": "0xb53a7f68",
+        "r3": "0x32",
+        "r4": "0x0",
+        "r5": "0xb18a75f8",
+        "r6": "0xb18a7670",
+        "lr": "0x102feab1"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "operation14-callback-result",
+      "pc": "0x1020ea1c",
+      "thread": 2,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x410000e",
+        "r2": "0xb51e4144",
+        "r3": "0x0",
+        "r4": "0xb51e41a4",
+        "r5": "0xb1818bd0",
+        "r6": "0x410000e",
+        "lr": "0x1020e99d"
+      },
+      "pending": 0,
+      "capture_state": [
+        2,
+        0
+      ],
+      "operation14_callback": "0x0",
+      "completion_result": 0
+    },
+    {
+      "entry": "operation14-ui-completion",
+      "pc": "0x10247dea",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1819988",
+        "r1": "0xb1f7fb24",
+        "r2": "0x10247deb",
+        "r3": "0xb1f7fb08",
+        "r4": "0xb1f7fb24",
+        "r5": "0xb1818bd0",
+        "r6": "0xb1819988",
+        "lr": "0x1020d26d"
+      },
+      "pending": 0,
+      "capture_state": [
+        2,
+        0
+      ],
+      "operation14_callback": "0x0",
+      "completion_result": 0
+    },
+    {
+      "entry": "initialization-success-dispatch",
+      "pc": "0x10247e38",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1819988",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "lr": "0x10247e01"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 2,
+        "previous": 1,
+        "interface": "0xb1819988"
+      },
+      "release_gate": 0,
+      "event1_pending": 0,
+      "dispatch": {
+        "parent": "0xb1818bd0",
+        "target": "0x10204bdb",
+        "event": 1,
+        "mode": 0,
+        "argument": "0x1"
+      }
+    },
+    {
+      "entry": "initialization-parent-handler",
+      "pc": "0x10204bda",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1819988",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "lr": "0x10247e17"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 2,
+        "previous": 1,
+        "interface": "0xb1819988"
+      }
+    },
+    {
+      "entry": "initialization-parent-state-check",
+      "pc": "0x10204c02",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x2",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1818bd0",
+        "r5": "0x1",
+        "r6": "0x0",
+        "lr": "0x10247e17"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 2,
+        "previous": 1,
+        "interface": "0xb1819988"
+      }
+    },
+    {
+      "entry": "initialization-main-state-forward",
+      "pc": "0x1020dad2",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1819988",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "lr": "0x10247e17"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 2,
+        "previous": 1,
+        "interface": "0xb1819988"
+      }
+    },
+    {
+      "entry": "initialization-select-state4",
+      "pc": "0x1020dc5c",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818ed4",
+        "r1": "0x2",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1818bd0",
+        "r5": "0x0",
+        "r6": "0x0",
+        "lr": "0x10247e17"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 2,
+        "previous": 1,
+        "interface": "0xb1819988"
+      }
+    },
+    {
+      "entry": "initialization-state4-entry",
+      "pc": "0x102470ae",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1819604",
+        "r1": "0x0",
+        "r2": "0x1",
+        "r3": "0x1",
+        "r4": "0xb1819988",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "lr": "0x10247e17"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 4,
+        "previous": 2,
+        "interface": "0xb1819604"
+      },
+      "state4_object": "0xb1819604"
+    },
+    {
+      "entry": "initialization-state4-parent-report",
+      "pc": "0x102470d6",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb18196f4",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "lr": "0x102470cd"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 4,
+        "previous": 2,
+        "interface": "0xb1819604"
+      }
+    },
+    {
+      "entry": "initialization-state4-ready-path",
+      "pc": "0x1020dc72",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb1818ed4",
+        "r1": "0x4",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1818bd0",
+        "r5": "0x0",
+        "r6": "0x0",
+        "lr": "0x102470db"
+      },
+      "pending": 0,
+      "parent_state": {
+        "current": 4,
+        "previous": 2,
+        "interface": "0xb1819604"
+      }
+    },
+    {
+      "entry": "operation16-api",
+      "pc": "0x103f25bc",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb540f698",
+        "r1": "0x10632f57",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0x0",
+        "r5": "0xb181b5bc",
+        "r6": "0x0",
+        "lr": "0x10633059"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "request_flags": "0x1",
+      "callback": "0x10632f57"
+    },
+    {
+      "entry": "operation16-task-request",
+      "pc": "0x103ef366",
+      "thread": 2,
+      "registers": {
+        "r0": "0xb23f7614",
+        "r1": "0x103ef367",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb18697d8",
+        "r5": "0xf",
+        "r6": "0x1",
+        "lr": "0x10228cd9"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0
+    },
+    {
+      "entry": "operation16-mode-request",
+      "pc": "0x10323676",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb23edf9c",
+        "r1": "0x10323677",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0x1",
+        "r5": "0xb23ede08",
+        "r6": "0x0",
+        "lr": "0x103191c7"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0
+    },
+    {
+      "entry": "operation16-completion",
+      "pc": "0x10632f56",
+      "thread": 2,
+      "registers": {
+        "r0": "0x4100010",
+        "r1": "0xb51e41d0",
+        "r2": "0x10632f57",
+        "r3": "0x0",
+        "r4": "0x10",
+        "r5": "0xf",
+        "r6": "0x1",
+        "lr": "0x103e9127"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "notification": "0x4100010",
+      "completed_flags": "0x1"
+    },
+    {
+      "entry": "operation17-api",
+      "pc": "0x103f25d4",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb540f690",
+        "r1": "0x10632faf",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0x1",
+        "r6": "0x0",
+        "lr": "0x106330a9"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "request_flags": "0x2",
+      "callback": "0x10632faf"
+    },
+    {
+      "entry": "operation17-task-request",
+      "pc": "0x103ef376",
+      "thread": 2,
+      "registers": {
+        "r0": "0xb23f7680",
+        "r1": "0x103ef377",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb18697d8",
+        "r5": "0xf",
+        "r6": "0x1",
+        "lr": "0x10228cd9"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0
+    },
+    {
+      "entry": "operation17-mode-request",
+      "pc": "0x1032375a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb23edff8",
+        "r1": "0x1032375b",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0x1",
+        "r5": "0xb23ede08",
+        "r6": "0x0",
+        "lr": "0x103191c7"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0
+    },
+    {
+      "entry": "operation17-completion",
+      "pc": "0x10632fae",
+      "thread": 2,
+      "registers": {
+        "r0": "0x4100011",
+        "r1": "0xb51e41d0",
+        "r2": "0x10632faf",
+        "r3": "0x0",
+        "r4": "0x11",
+        "r5": "0xf",
+        "r6": "0x1",
+        "lr": "0x103e910b"
+      },
+      "pending": 0,
+      "release_gate": 0,
+      "event1_pending": 0,
+      "notification": "0x4100011",
+      "completed_flags": "0x2"
+    }
+  ],
+  "unseen": [
+    "device-request",
+    "device-reservation-result",
+    "device-service-creation",
+    "device-construction",
+    "session-report-gate",
+    "operation13-task-request",
+    "operation13-callback-result",
+    "release-notification-map",
+    "release-gate-clear-path",
+    "public-request-entry-96a",
+    "public-request-entry-96e",
+    "public-request-entry-972",
+    "public-request-96a-result",
+    "operation13-state-update",
+    "input-geometry-setter",
+    "input-configuration-update",
+    "input-geometry-request-selected",
+    "input-geometry-update-selected",
+    "input-geometry-full-configuration",
+    "input-geometry-frame-configuration",
+    "input-geometry-conditional-configuration",
+    "initialization-parent-continuation",
+    "initialization-interface-predicate-result",
+    "initialization-parent-predicate-result",
+    "initialization-followup-call",
+    "post-gate-operation16-api",
+    "post-gate-operation17-api",
+    "post-gate-operation16-task-request",
+    "post-gate-operation17-task-request",
+    "post-gate-operation16-mode-request",
+    "post-gate-operation17-mode-request",
+    "post-gate-operation16-completion",
+    "post-gate-operation17-completion"
+  ],
+  "session_stops": [],
+  "operation14_stops": [
+    {
+      "pc": "0x10228296",
+      "thread": 1,
+      "value_before": 0,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x10204d47",
+        "r2": "0xe",
+        "r3": "0xb23f6fe4",
+        "r4": "0x0",
+        "r5": "0x10204d47",
+        "r6": "0x1",
+        "r7": "0x1",
+        "lr": "0x103f255d"
+      },
+      "value_after": 270552391
+    },
+    {
+      "pc": "0x102282a4",
+      "thread": 2,
+      "value_before": 270552391,
+      "registers": {
+        "r0": "0xe",
+        "r1": "0xb23f6fe4",
+        "r2": "0x10204d47",
+        "r3": "0x0",
+        "r4": "0xe",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0x1",
+        "lr": "0x103e6c27"
+      },
+      "value_after": 0
+    }
+  ],
+  "input_configuration_counts": {
+    "input-configuration-request": 1,
+    "input-configuration-update": 0,
+    "input-geometry-request-selected": 0,
+    "input-geometry-update-selected": 0,
+    "input-geometry-full-configuration": 0,
+    "input-geometry-frame-configuration": 0,
+    "input-geometry-conditional-configuration": 0,
+    "input-geometry-setter": 0
+  },
+  "release_event_stops": [
+    {
+      "pc": "0x104bddb4",
+      "thread": 2,
+      "value_before": 0,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0xb201bdd0",
+        "r2": "0x0",
+        "r3": "0xa",
+        "r4": "0xb51e4188",
+        "r5": "0xb181c57b",
+        "r6": "0x200000",
+        "r7": "0xb181c99c",
+        "lr": "0x104befb7"
+      },
+      "value_after": 0
+    }
+  ],
+  "release_gate_stops": [
+    {
+      "pc": "0x1002be98",
+      "thread": 1,
+      "value_before": 0,
+      "registers": {
+        "r0": "0x123bbe1c",
+        "r1": "0xb1821e70",
+        "r2": "0x8cf48",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0x0",
+        "lr": "0x1002be74"
+      },
+      "value_after": 0
+    },
+    {
+      "pc": "0x105b05f2",
+      "thread": 1,
+      "value_before": 0,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0xb1821e80",
+        "r2": "0x2a",
+        "r3": "0x30c",
+        "r4": "0x0",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0x0",
+        "lr": "0x105403e9"
+      },
+      "value_after": 1,
+      "registered_mode_callbacks": {
+        "16": "0x10632f57",
+        "17": "0x10632faf"
+      }
+    }
+  ],
+  "system_mode_stops": [
+    {
+      "pc": "0x1002be98",
+      "thread": 1,
+      "value_before": 0,
+      "registers": {
+        "r0": "0x123b2ccc",
+        "r1": "0xb1818d20",
+        "r2": "0x96098",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0xffff",
+        "r6": "0x0",
+        "r7": "0x0",
+        "lr": "0x1002be74"
+      },
+      "value_after": 65535
+    },
+    {
+      "pc": "0x1020d390",
+      "thread": 2,
+      "value_before": 65535,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x0",
+        "r2": "0xffffffff",
+        "r3": "0x0",
+        "r4": "0xb1818bd0",
+        "r5": "0x0",
+        "r6": "0x5020000",
+        "r7": "0x118afb14",
+        "lr": "0x1020d4f1"
+      },
+      "value_after": 65535
+    },
+    {
+      "pc": "0x1020d396",
+      "thread": 2,
+      "value_before": 65535,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x0",
+        "r2": "0xb1818fb4",
+        "r3": "0x0",
+        "r4": "0xb1818bd0",
+        "r5": "0x0",
+        "r6": "0x5020000",
+        "r7": "0x118afb14",
+        "lr": "0x1020d4f1"
+      },
+      "value_after": 65280
+    },
+    {
+      "pc": "0x1020d390",
+      "thread": 1,
+      "value_before": 65280,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb1819848",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0xb1f7f9b4",
+        "lr": "0x10247bff"
+      },
+      "value_after": 0
+    },
+    {
+      "pc": "0x1020d396",
+      "thread": 1,
+      "value_before": 0,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x1",
+        "r2": "0xb1818fb4",
+        "r3": "0x1",
+        "r4": "0xb1819848",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0xb1f7f9b4",
+        "lr": "0x10247bff"
+      },
+      "value_after": 1
+    },
+    {
+      "pc": "0x1020d390",
+      "thread": 1,
+      "value_before": 1,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x2",
+        "r2": "0x1",
+        "r3": "0x1",
+        "r4": "0xb18194ec",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0x1",
+        "lr": "0x10246fa1"
+      },
+      "value_after": 257
+    },
+    {
+      "pc": "0x1020d396",
+      "thread": 1,
+      "value_before": 257,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x2",
+        "r2": "0xb1818fb4",
+        "r3": "0x1",
+        "r4": "0xb18194ec",
+        "r5": "0x0",
+        "r6": "0x0",
+        "r7": "0x1",
+        "lr": "0x10246fa1"
+      },
+      "value_after": 258
+    },
+    {
+      "pc": "0x1020d390",
+      "thread": 1,
+      "value_before": 258,
+      "registers": {
+        "r0": "0xb1818bd0",
+        "r1": "0x4",
+        "r2": "0x2",
+        "r3": "0x1",
+        "r4": "0xb1819988",
+        "r5": "0x0",
+        "r6": "0xb1819988",
+        "r7": "0xb1f7fb08",
+        "lr": "0x10247e17"
+      },
+      "value_after": 514
+    }
+  ],
+  "mode_callback_stops": {
+    "16": [],
+    "17": []
+  },
+  "communication": {
+    "areas": {
+      "master": {
+        "index": 34,
+        "depth": 34,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x43",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 56
+          },
+          {
+            "index": 1,
+            "code": "0x41",
+            "service": 3,
+            "sequence": 1,
+            "payload_bytes": 24
+          },
+          {
+            "index": 2,
+            "code": "0x7",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 0
+          },
+          {
+            "index": 3,
+            "code": "0x1",
+            "service": 1,
+            "sequence": 3,
+            "payload_bytes": 0
+          },
+          {
+            "index": 4,
+            "code": "0x2",
+            "service": 5,
+            "sequence": 4,
+            "payload_bytes": 48
+          },
+          {
+            "index": 5,
+            "code": "0x1",
+            "service": 8,
+            "sequence": 5,
+            "payload_bytes": 8
+          },
+          {
+            "index": 6,
+            "code": "0x32",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 16
+          },
+          {
+            "index": 7,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 12
+          },
+          {
+            "index": 9,
+            "code": "0xd",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 28
+          },
+          {
+            "index": 10,
+            "code": "0x9",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 16
+          },
+          {
+            "index": 11,
+            "code": "0xb",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x26",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 16
+          },
+          {
+            "index": 16,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 16
+          },
+          {
+            "index": 17,
+            "code": "0x15",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 20
+          },
+          {
+            "index": 18,
+            "code": "0x18",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 16
+          },
+          {
+            "index": 19,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 12
+          },
+          {
+            "index": 20,
+            "code": "0x28",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 16
+          },
+          {
+            "index": 29,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 12
+          },
+          {
+            "index": 30,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 24
+          },
+          {
+            "index": 31,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 16
+          },
+          {
+            "index": 32,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 32,
+            "payload_bytes": 12
+          },
+          {
+            "index": 33,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 33,
+            "payload_bytes": 12
+          }
+        ]
+      },
+      "slave": {
+        "index": 32,
+        "depth": 32,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x42",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 0
+          },
+          {
+            "index": 1,
+            "code": "0x1",
+            "service": 5,
+            "sequence": 1,
+            "payload_bytes": 0
+          },
+          {
+            "index": 2,
+            "code": "0x2",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 10
+          },
+          {
+            "index": 3,
+            "code": "0x2",
+            "service": 8,
+            "sequence": 3,
+            "payload_bytes": 48,
+            "card_query": {
+              "slot": 1,
+              "state_byte": 2,
+              "result": 0
+            }
+          },
+          {
+            "index": 4,
+            "code": "0x33",
+            "service": 9,
+            "sequence": 4,
+            "payload_bytes": 24
+          },
+          {
+            "index": 5,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 5,
+            "payload_bytes": 12
+          },
+          {
+            "index": 6,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 12
+          },
+          {
+            "index": 7,
+            "code": "0xe",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0xa",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 16
+          },
+          {
+            "index": 9,
+            "code": "0xc",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 12
+          },
+          {
+            "index": 10,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 12
+          },
+          {
+            "index": 11,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x27",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x17",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 20
+          },
+          {
+            "index": 16,
+            "code": "0x16",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 12
+          },
+          {
+            "index": 17,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 12
+          },
+          {
+            "index": 18,
+            "code": "0x29",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 16
+          },
+          {
+            "index": 19,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 12
+          },
+          {
+            "index": 20,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 12
+          },
+          {
+            "index": 29,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 24
+          },
+          {
+            "index": 30,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 12
+          },
+          {
+            "index": 31,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 12
+          }
+        ]
+      }
+    },
+    "service_rings": {
+      "3": {
+        "pointer": "0xc16a5990",
+        "callback": "0x10129fab",
+        "write": 2,
+        "read": 2
+      },
+      "4": {
+        "pointer": "0xc16b1fd0",
+        "callback": "0x10129025",
+        "write": 0,
+        "read": 0
+      },
+      "5": {
+        "pointer": "0xc187bba0",
+        "callback": "0x1013568d",
+        "write": 1,
+        "read": 1
+      },
+      "6": {
+        "pointer": "0xc18881e0",
+        "callback": "0x10135661",
+        "write": 0,
+        "read": 0
+      },
+      "7": {
+        "pointer": "0xc16cd3a0",
+        "callback": "0x100ca48b",
+        "write": 0,
+        "read": 0
+      },
+      "8": {
+        "pointer": "0xc14873d8",
+        "callback": "0x100b5d23",
+        "write": 1,
+        "read": 1
+      },
+      "9": {
+        "pointer": "0xc144fc40",
+        "callback": "0x1006323d",
+        "write": 28,
+        "read": 28
+      },
+      "10": {
+        "pointer": "0xc1655958",
+        "callback": "0x1010873b",
+        "write": 0,
+        "read": 0
+      }
+    }
+  },
+  "module_wait_mask": "0x0",
+  "input_format": "0x0",
+  "capture_state": [
+    2,
+    0
+  ],
+  "operation14_callback": "0x0",
+  "counter_ticks": 191883788,
+  "counter_frequency": 48000000,
+  "system_modes": [
+    4,
+    2
+  ],
+  "input_geometry": [
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "public_request_entries": {
+    "0x1036096a": {
+      "matches_supplied_image": true,
+      "returns_constant": true,
+      "constant": 0
+    },
+    "0x1036096e": {
+      "matches_supplied_image": true,
+      "returns_constant": true,
+      "constant": 0
+    },
+    "0x10360972": {
+      "matches_supplied_image": true,
+      "returns_constant": true,
+      "constant": 0
+    },
+    "0x10360976": {
+      "matches_supplied_image": true,
+      "returns_constant": true,
+      "constant": 1
+    }
+  },
+  "operation13_pending": 0,
+  "operation13_callback": "0x0",
+  "capture_status_callback": "0x10204e3d",
+  "release_gate": 1,
+  "event1_pending": 0,
+  "operation16_callback": "0x10632f57",
+  "operation17_callback": "0x10632faf",
+  "device_worker_state": {
+    "state": 1,
+    "category": 2
+  },
+  "session_root": "0xb3c78040",
+  "session_root_field_41": 0
+}
