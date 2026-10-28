@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Observe original full-release gating or playback capture-stop requests (C 1.70)."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -263,6 +264,28 @@ def snapshot(remote):
         switch_words=[hex(word(0xb25eaeac + i * 4)) for i in range(3)])
 
 
+def lcd_snapshot(machine):
+    """Summarize the native LCD plane without exporting its pixel payload."""
+    with machine.io:
+        machine.qmp.command('stop')
+        try:
+            size = machine._words(0x20144204, 1)[0]
+            width, height = size & 0xffff, (size >> 16) & 0x3fff
+            planes = machine._words(0x20144210, 2)
+            result = dict(width=width, height=height, planes=[hex(value) for value in planes])
+            if not (0 < width <= 4096 and 0 < height <= 4096):
+                return dict(result, configured=False)
+            for plane in planes:
+                if 0xb0000000 <= plane <= 0xf0000000 - width * height:
+                    data = machine._bytes(plane, width * height)
+                    return dict(result, configured=True, sampled_plane=hex(plane),
+                        byte_count=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                        unique_bytes=len(set(data)), minimum=min(data), maximum=max(data))
+            return dict(result, configured=False)
+        finally:
+            machine.qmp.command('cont')
+
+
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False):
     with machine.io:
@@ -433,6 +456,7 @@ def main():
             time.sleep(1)
         else:
             raise TimeoutError('Shooting foreground did not become ready')
+        initial_lcd = lcd_snapshot(machine)
         report = dict(observation=('native-playback-capture-stop' if args.playback else
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
@@ -443,6 +467,7 @@ def main():
                       round_trip=args.round_trip,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events))
+        report['native_lcd_before'] = initial_lcd
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
@@ -452,6 +477,7 @@ def main():
             if state['index'] == 3 and state['input_ready']:
                 report['shutter_after_return'] = observe(machine, 30)
                 report['post_shutter_application'] = machine.status()
+        report['native_lcd_after'] = lcd_snapshot(machine)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(report, indent=2))
