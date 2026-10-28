@@ -28,6 +28,10 @@ ENTRY_STRIDE = 0x108
 # slave 0xC1006F68/0xC1006F78 minus 0x10); the slave's base is read
 # through the master's bus window.
 CONTROL_BLOCKS = ((0xb1808928, 'master'), (0x41006f68, 'slave'))
+# Slave-side transport counters and the five event-handler slots the
+# consumer callback dispatches through (slave RAM via the bus window).
+SLAVE_COUNTERS = 0x4144f3ac
+SLAVE_HANDLERS = 0x4144f570
 
 
 def sample(machine):
@@ -51,7 +55,11 @@ def sample(machine):
             base=hex(base), words=[hex(word) for word in words],
             magic_pair=[hex(words[0xa]), hex(words[0xb])],
             magic_ok=bool(words[0xa] == 0xc00108 and words[0xb] == 0xaa550001))
-    return dict(areas=areas, controls=controls)
+    counters = machine._words(SLAVE_COUNTERS, 2)
+    handlers = machine._words(SLAVE_HANDLERS, 5)
+    return dict(areas=areas, controls=controls,
+                slave_counters=[hex(word) for word in counters],
+                slave_handlers=[hex(word) for word in handlers])
 
 
 def main():
@@ -104,6 +112,9 @@ def main():
             control = first['controls'][name]
             print('control', name, 'pair', control['magic_pair'],
                   'ok', control['magic_ok'])
+        print('slave counters', first['slave_counters'], '->',
+              second['slave_counters'])
+        print('slave handlers', first['slave_handlers'])
     finally:
         machine.close()
 
