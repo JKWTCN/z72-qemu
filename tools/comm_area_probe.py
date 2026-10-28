@@ -49,8 +49,13 @@ def service_rings(machine):
             rings[index] = None
             continue
         window = 0x40000000 + (pointer & 0x0fffffff)
+        words = machine._words(window + 0x30, 2)
+        # +0x30 is the producer's write index; +0x34 is the consumer's
+        # read position. The first entry begins at +0x38.
+        head = machine._words(window + 0x38, 4) if words[0] else []
         rings[index] = dict(pointer=hex(pointer),
-                            cursor=machine._words(window + 0x30, 1)[0])
+                            write=words[0], read=words[1],
+                            head=[hex(word) for word in head])
     return dict(pointers=[hex(p) for p in pointers], rings=rings)
 
 
@@ -66,8 +71,8 @@ def sample(machine):
             index=words[2], depth=words[4],
             magic_valid=bool(words[1] == 0xaa550001),
             entries=[[hex(word) for word in
-                      machine._words(base + 0x18 + entry * ENTRY_STRIDE, 2)]
-                     for entry in range(2)])
+                      machine._words(base + 0x18 + entry * ENTRY_STRIDE, 4)]
+                     for entry in range(4)])
     controls = {}
     for base, name in CONTROL_BLOCKS:
         words = machine._words(base, 0x34 // 4)
@@ -144,9 +149,11 @@ def main():
         print('slave service rings', first['slave_service_rings']['pointers'])
         for index, ring in first['slave_service_rings']['rings'].items():
             if ring:
+                second_ring = second['slave_service_rings']['rings'][index]
                 print(' service', index, 'ring', ring['pointer'],
-                      'cursor', ring['cursor'], '->',
-                      second['slave_service_rings']['rings'][index]['cursor'])
+                      'write', ring['write'], '->', second_ring['write'],
+                      'read', ring['read'], '->', second_ring['read'],
+                      'head', ring['head'])
     finally:
         machine.close()
 
