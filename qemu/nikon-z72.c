@@ -630,6 +630,9 @@ struct NikonZ72BootConfig {
     bool sample_group1;
     /* Sensor frame generation state */
     bool frame_generate;
+    uint32_t input_running;
+    uint64_t input_dma_count;
+    uint32_t input_dma_address;
     uint64_t frame_count;
     uint32_t input_last_read;
     bool pcie_link;
@@ -978,10 +981,73 @@ static void auto_sample_event(void *opaque, int line, int level)
  * event in the third bank. The optional phase source sets bank 2 bit 7
  * only while software enables it; neither source supplies pixel data.
  * The 30 Hz period is a functional choice, not a measured rate. */
+static void input_generate_frame(NikonZ72BootConfig *s)
+{
+    uint8_t geometry[12], planes[16], word[4];
+    uint32_t width, height, stride, target;
+    hwaddr offset, span, length;
+    AddressSpace *view;
+    MemoryRegion *region;
+    g_autofree uint8_t *pixels = NULL;
+
+    if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
+        !(s->input_running & 0x200)) {
+        return;
+    }
+    view = CPU(s->cpu)->as;
+    if (address_space_read(view, 0x20069514, MEMTXATTRS_UNSPECIFIED,
+                           geometry, sizeof(geometry)) != MEMTX_OK ||
+        address_space_read(view, 0x20069a08, MEMTXATTRS_UNSPECIFIED,
+                           word, sizeof(word)) != MEMTX_OK ||
+        address_space_read(view, 0x20069a50, MEMTXATTRS_UNSPECIFIED,
+                           planes, sizeof(planes)) != MEMTX_OK) {
+        return;
+    }
+    width = ldl_le_p(geometry + 4) >> 16;
+    height = ldl_le_p(geometry + 8) >> 16;
+    stride = ldl_le_p(word);
+    /* C 1.70's observed RAW12 profile: zero crop origin, even width and
+     * a 16-byte-aligned row. Full-scale paired samples avoid relying on
+     * unverified nibble order. Other formats remain unsupported. */
+    if (ldl_le_p(geometry) != 6 || (ldl_le_p(geometry + 4) & 0xffff) ||
+        (ldl_le_p(geometry + 8) & 0xffff) || !width || (width & 1) ||
+        width > 8192 || !height || height > 8192 ||
+        stride != ((width * 3 / 2 + 15) & ~15u)) {
+        return;
+    }
+    length = (hwaddr)stride * height;
+    target = ldl_le_p(planes + (s->input_dma_count & 3) * 4);
+    if (!target || length > 0x1000000 || (uint64_t)target + length > UINT32_MAX) {
+        return;
+    }
+    /* Validate the complete destination before writing any pixels. A frame
+     * must fit within one writable RAM backing, never a peripheral window. */
+    span = length;
+    region = address_space_translate(view, target, &offset, &span, true,
+                                    MEMTXATTRS_UNSPECIFIED);
+    if (!memory_region_is_ram(region) || memory_region_is_rom(region) || span < length) {
+        return;
+    }
+    pixels = g_malloc0(length);
+    for (unsigned y = 0; y < height; y++) {
+        for (unsigned x = 0; x < width; x += 2) {
+            uint8_t level = ((x / 64 + y / 64 + s->input_dma_count) & 1) ? 0xff : 0;
+            memset(pixels + y * stride + x * 3 / 2, level, 3);
+        }
+    }
+    if (address_space_write(view, target, MEMTXATTRS_UNSPECIFIED,
+                            pixels, length) == MEMTX_OK) {
+        s->input_dma_address = target;
+        s->input_dma_count++;
+    }
+    /* No input completion or processing-result cause is raised here. */
+}
+
 static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
 
+    input_generate_frame(s);
     *boot_config_value(s, 0x20060044) |= 0x10;
     if (s->sensor_sample) {
         if (s->frame_phase && (*boot_config_value(s, 0x20060040) & 0x80)) {
@@ -1152,6 +1218,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
      * first event group so the firmware's polling sees activity. */
     if (address == 0x20068008 && value) {
         *stored = (uint32_t)value;
+        s->input_running |= value;
         *boot_config_value(s, 0x20068200) |= 0x79;
         input_update_irqs(s);
         return;
@@ -1246,6 +1313,15 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
+    if (address == 0x20068060) {
+        switch (value) {
+        case 3: s->input_running &= ~0x600u; break;
+        case 4: s->input_running &= ~0x10u; break;
+        case 8: s->input_running &= ~0x20u; break;
+        case 0x10: s->input_running &= ~0x800u; break;
+        case 0x60: s->input_running &= ~2u; break;
+        }
+    }
     if (address == 0x20068060 && s->input_stop_complete && s->master_role &&
         s->sensor_sample && s->auto_complete) {
         /* Recovered stop requests enable these status causes before writing
@@ -1767,6 +1843,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->auto_sample_level = false;
     timer_del(s->frame_sync_timer);
     s->frame_sync_count = 0;
+    s->input_running = 0;
+    s->input_dma_count = 0;
+    s->input_dma_address = 0;
     input_update_irqs(s);
     sync_update_irqs(s);
     if (s->intc) {
@@ -1824,8 +1903,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 37,
-    .minimum_version_id = 37,
+    .version_id = 38,
+    .minimum_version_id = 38,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1848,6 +1927,9 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(sample_lines, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
+        VMSTATE_UINT32(input_running, NikonZ72BootConfig),
+        VMSTATE_UINT64(input_dma_count, NikonZ72BootConfig),
+        VMSTATE_UINT32(input_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -1901,6 +1983,10 @@ static void boot_config_init(Object *obj)
     s->input_handshake_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, input_handshake_complete, s);
     object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
                                    OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "input-dma-count", &s->input_dma_count,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
+                                  OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-last-read", &s->input_last_read,

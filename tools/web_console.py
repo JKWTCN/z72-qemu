@@ -304,6 +304,8 @@ class Machine:
                       if getattr(self.args, 'frame_phase', False) else ()) +
                      (('nikon-z72-boot-config.input-stop-complete=on',)
                       if getattr(self.args, 'input_stop_complete', False) else ()) +
+                     (('nikon-z72-boot-config.frame-generate=on',)
+                      if getattr(self.args, 'frame_generate', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),

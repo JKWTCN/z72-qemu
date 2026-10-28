@@ -237,13 +237,38 @@ def snapshot(remote):
             faults={name: hex(remote.read_register(name)) for name in
                     ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}))
     remote.select_thread(1)
+    geometry = list(struct.unpack('<13I', remote.read(0x20069500, 13 * 4)))
     input_channels = []
     for base, count in ((0x20069800, 4), (0x2006a400, 10), (0x2006b400, 10)):
         for channel in range(count):
             address = base + channel * 0x100
-            fields = (8, 0x50, 0x54, 0x58, 0x5c, 0x60, 0x64, 0x68, 0x6c) if count == 4 else (
-                0x14, 0x18, 0x3c, 0x40, 0x50, 0x60)
-            values = {hex(offset): hex(word(address + offset)) for offset in fields}
+            values = {}
+
+            def capture_words(offset, words=1):
+                data = remote.read(address + offset, words * 4)
+                for index, (value,) in enumerate(struct.iter_unpack('<I', data)):
+                    values[hex(offset + index * 4)] = hex(value)
+
+            if count == 4:
+                capture_words(8)
+                capture_words(0x50, 8)
+                if not channel & 1:
+                    capture_words(0x14, 2)
+                    capture_words(0x3c, 5)
+                if channel == 2:
+                    capture_words(0x24)
+                if channel >= 2:
+                    capture_words(0x80)
+            else:
+                capture_words(0x14, 2)
+                capture_words(0x24)
+                capture_words(0x3c, 6)
+                capture_words(0x60)
+                capture_words(0x74)
+                capture_words(0x80)
+                if channel in (2, 3, 4, 9):
+                    capture_words(0x54, 3)
+                    capture_words(0x64, 3)
             if any(int(value, 16) for value in values.values()):
                 input_channels.append(dict(base=hex(address), fields=values))
     return dict(system_mode=mode[0], previous_mode=mode[1],
@@ -290,7 +315,9 @@ def snapshot(remote):
         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'),
         counter_frequency=word(0x04266010),
         input_format=hex(word(0x20068500)),
-        input_geometry=[hex(word(0x20069500 + i * 4)) for i in range(3)],
+        input_geometry=[hex(value) for value in geometry[:3]],
+        input_geometry_registers={hex(0x20069500 + index * 4): hex(value)
+                                  for index, value in enumerate(geometry)},
         switch_words=[hex(word(0xb25eaeac + i * 4)) for i in range(3)])
 
 
@@ -312,6 +339,26 @@ def lcd_snapshot(machine):
                         byte_count=len(data), sha256=hashlib.sha256(data).hexdigest(),
                         unique_bytes=len(set(data)), minimum=min(data), maximum=max(data))
             return dict(result, configured=False)
+        finally:
+            machine.qmp.command('cont')
+
+
+def input_dma_snapshot(machine):
+    with machine.io:
+        machine.qmp.command('stop')
+        try:
+            paths = ['/machine/unattached/' + name for name in machine.config_names]
+            path = next(path for path in paths if machine.qmp.command(
+                'qom-get', dict(path=path, property='master-role')))
+            count = machine.qmp.command('qom-get', dict(path=path, property='input-dma-count'))
+            address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
+            stride = machine._words(0x20069a08, 1)[0]
+            result = dict(frames=count, address=hex(address), stride=stride)
+            if count and address and 0 < stride <= 16384:
+                data = machine._bytes(address, stride)
+                result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                                           unique_bytes=len(set(data)), minimum=min(data), maximum=max(data))
+            return result
         finally:
             machine.qmp.command('cont')
 
@@ -497,6 +544,8 @@ def main():
                         help='Enable the optional masked periodic sampling phase source')
     parser.add_argument('--input-stop-complete', action='store_true',
                         help='Enable the optional command-triggered input stop response')
+    parser.add_argument('--frame-generate', action='store_true',
+                        help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -547,6 +596,7 @@ def main():
                           display_complete=args.display_complete,
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,
                           input_stop_complete=args.input_stop_complete,
+                          frame_generate=args.frame_generate,
                           shooting_foreground_ready=False)
             # A running console has detached its startup observer. Preserve
             # the failed foreground's actual state before closing the VM.
@@ -564,6 +614,7 @@ def main():
             args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
             raise TimeoutError('Shooting foreground did not become ready')
         initial_lcd = lcd_snapshot(machine)
+        initial_dma = input_dma_snapshot(machine) if args.frame_generate else None
         report = dict(observation=('native-playback-capture-stop' if args.playback else
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
@@ -571,6 +622,7 @@ def main():
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
                       input_stop_complete=args.input_stop_complete,
+                      frame_generate=args.frame_generate,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
@@ -578,6 +630,8 @@ def main():
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
                                     watch_read=args.watch_read, watch_write=args.watch_write))
         report['native_lcd_before'] = initial_lcd
+        if initial_dma is not None:
+            report['input_dma_before'] = initial_dma
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
@@ -589,6 +643,8 @@ def main():
                 report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write)
                 report['post_shutter_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
+        if args.frame_generate:
+            report['input_dma_after'] = input_dma_snapshot(machine)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(report, indent=2))
