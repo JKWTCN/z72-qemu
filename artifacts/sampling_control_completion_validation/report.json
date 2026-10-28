@@ -1,0 +1,21 @@
+{
+  "observation": "firmware-free-sampling-control-completion",
+  "build": "qemu-system-arm incremental build passed",
+  "test": "tests/test_frame_sync.py",
+  "passed": true,
+  "cases": 5,
+  "checks": [
+    "frame source activation and period",
+    "periodic source leaves frame-phase bit 7 clear",
+    "no pixel-ready pending bit",
+    "0x107 completion and acknowledge",
+    "0x101 completion and acknowledge",
+    "zero strobe does not submit",
+    "unsupported bits remain pending",
+    "repeated empty submission does not complete",
+    "auto-complete off negative control",
+    "sensor-sample off negative control",
+    "slave role isolation",
+    "reset clears pending events and stops source"
+  ]
+}

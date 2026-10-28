@@ -1,0 +1,12 @@
+{
+  "observation": "rejected-unconditional-frame-phase-prototype",
+  "extra_periodic_sync_group2_bits": "0x80",
+  "sampling_control_completion": true,
+  "firmware_free_checks_passed": true,
+  "native_startup_deadline_host_seconds": 240,
+  "native_result": "Shooting foreground did not become ready",
+  "final_application_snapshot_available": false,
+  "retained": false,
+  "correction": "Remove unconditional bit 7; retain control-submit completion for independent validation",
+  "shooting_foreground_ready": false
+}

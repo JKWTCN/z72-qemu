@@ -929,10 +929,9 @@ static void auto_sample_event(void *opaque, int line, int level)
 
 /* Optional laboratory timing source; no sensor pixels are produced.
  * Bank 2 bit 4 follows the pending/mask/acknowledge path of input 15.
- * With sensor-sample armed, each tick also latches bank 2 bit 0 - the
- * recovered sample-ready line whose callback runs the sampling readout -
- * and one automatic-sample event in the third bank. The 30 Hz period is
- * a functional choice, not a measured sensor rate. */
+ * With sensor-sample armed, each tick also latches one automatic-sample
+ * event in the third bank. No frame-phase or pixel-ready bit is set in
+ * bank 2. The 30 Hz period is a functional choice, not a measured rate. */
 static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
@@ -1184,6 +1183,28 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
+    if (address == 0x200632e4 && (value & 1) && s->master_role &&
+        s->sensor_sample && s->auto_complete) {
+        /* The laboratory sampling source applies the recovered control
+         * batches synchronously. C 1.70 submits 0x107 before waiting for
+         * group 2 bit 10, or 0x101 before waiting for bit 18. Consume only
+         * the supported batch bits; unrelated request bits stay pending.
+         * These are configuration completions, not pixel DMA events. */
+        uint32_t *request = boot_config_value(s, 0x200632e0);
+        uint32_t accepted = 0;
+        uint32_t completion = 0;
+
+        if ((*request & 0x107) == 0x107) {
+            accepted = 0x107;
+            completion = 1u << 10;
+        } else if ((*request & 0x101) == 0x101) {
+            accepted = 0x101;
+            completion = 1u << 18;
+        }
+        *request &= ~accepted;
+        *boot_config_value(s, 0x20060044) |= completion;
+        sync_update_irqs(s);
+    }
     if (address == 0x20060034 || address == 0x20060040 ||
         address == 0x2006004c) {
         sync_update_irqs(s);

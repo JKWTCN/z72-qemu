@@ -75,6 +75,7 @@ AFTER_PLAYBACK = {
     0x102d9902: 'local-stop-control10-wait',
     0x102d9906: 'local-stop-control10-wait-return',
     0x10296352: 'sampling-control-command',
+    0x10296360: 'sampling-control-submit',
 }
 
 
@@ -119,6 +120,7 @@ def snapshot(remote):
         processing_command=remote.read(0xb1868310, 1)[0],
         processing_state=remote.read(0xb1868311, 1)[0],
         delegate_state=remote.read(0xb1868510, 1)[0],
+        sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'),
         counter_frequency=word(0x04266010),
         input_format=hex(word(0x20068500)),
@@ -244,10 +246,13 @@ def main():
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
+    parser.add_argument('--round-trip', action='store_true',
+                        help='After playback, half-press to return to shooting and observe full release')
     parser.add_argument('--watch', type=int, default=30)
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
+    require(not args.round_trip or args.playback, 'Round trip requires playback')
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local/body-shutter-gate-store'
     args.update_image = None
@@ -269,7 +274,30 @@ def main():
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       local_stop_events=args.local_stop_events,
+                      round_trip=args.round_trip,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events))
+        report['final_application'] = machine.status()
+        if args.round_trip and report['final_application']['index'] == 2:
+            transitions = []
+            started = time.monotonic()
+            machine.set_key(24, 0)
+            try:
+                while time.monotonic() - started < 120:
+                    machine.heartbeat()
+                    state = machine.status()
+                    if not transitions or state['index'] != transitions[-1]['index']:
+                        transitions.append(dict(seconds=round(time.monotonic() - started, 3),
+                                                index=state['index']))
+                    if state['index'] == 3 and state['input_ready']:
+                        break
+                    time.sleep(1)
+            finally:
+                machine.set_key(24, 1)
+            report['return_liveview'] = dict(application=state, transitions=transitions,
+                                             observed_seconds=round(time.monotonic() - started, 3))
+            if state['index'] == 3 and state['input_ready']:
+                report['shutter_after_return'] = observe(machine, 30)
+                report['post_shutter_application'] = machine.status()
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         print(json.dumps(report, indent=2))

@@ -8,7 +8,10 @@ import time
 
 
 def check(qemu):
-    for role, enabled in (('master', False), ('master', True), ('slave', True)):
+    for role, enabled, sampling, automatic in (
+            ('master', False, False, True), ('master', True, False, True),
+            ('master', True, True, True), ('master', True, True, False),
+            ('slave', True, True, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -17,6 +20,8 @@ def check(qemu):
             '-display', 'none', '-serial', 'none',
             '-qmp', 'stdio',
             '-global', f'nikon-z72-boot-config.frame-sync={"on" if enabled else "off"}',
+            '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
+            '-global', f'nikon-z72-boot-config.auto-complete={"on" if automatic else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
@@ -96,6 +101,20 @@ def check(qemu):
                 assert monitor('qom-get', dict(path=clock_path, property='frame-sync-count')) == 0
                 command('clock_step 100000000')
                 assert read(0x20060044) == 0
+            for request, completion in ((0x107, 1 << 10), (0x101, 1 << 18)):
+                write(0x200632e0, request | 8)
+                write(0x200632e4, 0)
+                assert read(0x20060044) == 0
+                write(0x200632e4, 1)
+                completes = sampling and automatic and role == 'master'
+                assert read(0x20060044) == (completion if completes else 0)
+                assert read(0x200632e0) == (8 if completes else request | 8)
+                write(0x20060044, completion)
+                assert read(0x20060044) == 0
+                write(0x200632e0, 8)
+                write(0x200632e4, 1)
+                assert read(0x20060044) == 0
+                assert read(0x200632e0) == 8
         finally:
             if stream is not None:
                 stream.close()
@@ -107,7 +126,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS frame synchronization: optional source, period, pending, acknowledgement and role isolation')
+    print('PASS frame synchronization: control batches, acknowledgement, source gating and role isolation')
 
 
 if __name__ == '__main__':
