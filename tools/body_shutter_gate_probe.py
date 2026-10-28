@@ -77,6 +77,57 @@ AFTER_PLAYBACK = {
     0x10296352: 'sampling-control-command',
     0x10296360: 'sampling-control-submit',
 }
+RETURN_POINTS = {
+    0x1043898e: 'idle-shooting-request',
+    0x1062e474: 'application-request-dispatch',
+    0x106ddc1e: 'application-start-notification',
+    0x10540770: 'shooting-render-entry',
+    0x1053cfb8: 'shooting-application-entry',
+    0x103f2540: 'operation14-api',
+    0x103f258e: 'operation15-api',
+    0x103f24e4: 'operation13-api',
+    0x103f25bc: 'operation16-api',
+    0x103f25d4: 'operation17-api',
+    0x103f261a: 'operation19-api',
+    0x103ef390: 'operation19-task-request',
+    0x10247dea: 'operation14-ui-completion',
+    0x10247e38: 'initialization-success-dispatch',
+    0x1020dad2: 'initialization-main-state-forward',
+    0x102470ae: 'initialization-state4-entry',
+    0x102470d6: 'initialization-state4-parent-report',
+    0x1020dc72: 'initialization-state4-ready-path',
+    0x103e7312: 'capture-mode-request',
+    0x10323198: 'capture-driver-state-request',
+    0x10322886: 'capture-device-initialization',
+    0x1023abaa: 'input-configuration-request',
+    0x1023aed8: 'input-configuration-update',
+    0x1020905a: 'input-geometry-setter',
+    0x1036096a: 'public-request-entry-96a',
+    0x1036096e: 'public-request-entry-96e',
+    0x10360972: 'public-request-entry-972',
+    0x1026c25e: 'delegate-diagnostic-current-error',
+    0x103234b2: 'capture-device-initialization-return',
+    0x10397c16: 'processing-start-command',
+    0x10397526: 'processing-start-report',
+    0x1026c6cc: 'delegate-start-command',
+    0x1026c26a: 'sampling-start-request',
+    0x102d7238: 'sampling-start-configuration',
+    0x1026c704: 'delegate-start-wait4',
+    0x1026c708: 'delegate-start-wait4-return',
+    0x1026c71a: 'delegate-start-control-wait',
+    0x1026c71e: 'delegate-start-control-wait-return',
+    0x1026c37c: 'delegate-wait-failure-notification',
+    0x10321a4c: 'capture-driver-notification',
+    0x102d9780: 'sampling-run-request',
+    0x102d93a2: 'sampling-run-sequence',
+    0x102d949e: 'sampling-run-sync-wait',
+    0x102d94a6: 'sampling-run-sync-wait-return',
+    0x102d950c: 'sampling-run-delay1-wait',
+    0x102d9510: 'sampling-run-delay1-wait-return',
+    0x102d954c: 'sampling-run-delay2-wait',
+    0x102d9550: 'sampling-run-delay2-wait-return',
+    0x1026d534: 'resource-completion-notification',
+}
 
 
 def snapshot(remote):
@@ -94,6 +145,7 @@ def snapshot(remote):
             codes = [hex(x) for x in struct.unpack('<' + 'I' * count,
                                                  remote.read(pointer, count * 4))]
     notifications = remote.read(0x1094559c, 44 * 8)
+    manager = remote.read(0xb1811e40, 28)
     engines = {}
     for name, thread in (('master', 1), ('slave', 3)):
         remote.select_thread(thread)
@@ -101,8 +153,34 @@ def snapshot(remote):
             input_format=hex(word(0x20068500)),
             input_geometry=[hex(word(0x20069500 + i * 4)) for i in range(3)])
     remote.select_thread(1)
+    resources = {}
+    for index in (11, 71, 80):
+        row = 0xb185eb70 + index * 28
+        callbacks = 0xb20a3288 + index * 48
+        resources[str(index)] = dict(buffer=hex(word(row + 8)), length=word(row + 12),
+            region=word(row + 20), notification_mask=hex(word(callbacks + 40)),
+            subscriber_count=int.from_bytes(remote.read(callbacks + 44, 2), 'little'))
+    delay_channels = []
+    for channel in range(12):
+        base = 0x2c010100 + channel * 0x100
+        divider, terminal, count = struct.unpack('<3I', remote.read(base + 0x1004, 12))
+        delay_channels.append(dict(channel=channel, events=hex(word(base)),
+            pending=hex(word(base + 16)), divider=divider,
+            terminal=hex(terminal), count=hex(count)))
+    cores = []
+    for thread in (1, 2, 3, 4):
+        remote.select_thread(thread)
+        registers = remote.regs()
+        cores.append(dict(thread=thread, pc=hex(remote.get(registers, 'pc')),
+            faults={name: hex(remote.read_register(name)) for name in
+                    ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}))
+    remote.select_thread(1)
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        application=dict(initialized=int.from_bytes(manager[:4], 'little'),
+                         current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines,
+        resources=resources, cores=cores,
+        delay_enable=hex(word(0x2c011000)), delay_channels=delay_channels,
         action_state=state, handler_object=hex(handler_object),
         action_handler=hex(word(handler_object + 0x14)),
         release_gate=word(0xb1821e84), event1_pending=word(0xb201bdd4),
@@ -112,6 +190,7 @@ def snapshot(remote):
         operation14_callback=hex(word(0xb23f701c)), status_codes=codes,
         operation15_callback=hex(word(0xb23f7020)),
         operation18_callback=hex(word(0xb23f702c)),
+        operation19_callback=hex(word(0xb23f7030)),
         capture_field_14=hex(word(0xb23f6a90)),
         capture_driver_state=remote.read(0xb1868af1, 1)[0],
         capture_driver_pending_state=remote.read(0xb1868afa, 1)[0],
@@ -128,21 +207,24 @@ def snapshot(remote):
         switch_words=[hex(word(0xb25eaeac + i * 4)) for i in range(3)])
 
 
-def observe(machine, seconds, playback=False, local_stop_events=False):
+def observe(machine, seconds, playback=False, local_stop_events=False, returning=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
     armed = {ACTION: 'application-action'}
     if playback:
         armed.update(AFTER_PLAYBACK)
+    if returning:
+        armed = dict(RETURN_POINTS)
     records = []
+    hits = {}
     callback_hits = 0
     started = time.monotonic()
     try:
         before = snapshot(remote)
         for address in armed:
             remote.breakpoint(address)
-        machine.set_key(8 if playback else 25, 0)
+        machine.set_key(24 if returning else 8 if playback else 25, 0)
         deadline = started + seconds
         while time.monotonic() < deadline and armed:
             machine.heartbeat()
@@ -165,12 +247,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False):
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
-                if playback:
+                if playback or returning:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
                     record['driver_pending_state'] = remote.read(0xb1868afa, 1)[0]
                     record['driver_mode'] = remote.read(0xb1868af7, 1)[0]
                     record['counter_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                    if returning:
+                        hits[pc] = hits.get(pc, 0) + 1
+                        repeat = hits[pc] < 8
+                        record['application_index'] = remote.read(0xb1811e50, 1)[0]
                     if pc == 0x10321a4c:
                         callback_hits += 1
                         record['notification'] = hex(remote.get(registers, 'r0'))
@@ -221,7 +307,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False):
                                                    before['counter_frequency'], 6),
                     driver_notification_hits=callback_hits,
                     unseen=[label for address, label in armed.items()
-                            if address != 0x10321a4c or callback_hits == 0])
+                            if address not in hits and
+                            (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
         for address in armed:
@@ -248,9 +335,12 @@ def main():
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
     parser.add_argument('--round-trip', action='store_true',
                         help='After playback, half-press to return to shooting and observe full release')
+    parser.add_argument('--return-watch', type=int, default=120,
+                        help='Host seconds to trace the return from playback (30..300)')
     parser.add_argument('--watch', type=int, default=30)
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
+    require(30 <= args.return_watch <= 300, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
     args.realtime = args.auto_menu = False
@@ -275,26 +365,13 @@ def main():
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       local_stop_events=args.local_stop_events,
                       round_trip=args.round_trip,
+                      return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events))
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:
-            transitions = []
-            started = time.monotonic()
-            machine.set_key(24, 0)
-            try:
-                while time.monotonic() - started < 120:
-                    machine.heartbeat()
-                    state = machine.status()
-                    if not transitions or state['index'] != transitions[-1]['index']:
-                        transitions.append(dict(seconds=round(time.monotonic() - started, 3),
-                                                index=state['index']))
-                    if state['index'] == 3 and state['input_ready']:
-                        break
-                    time.sleep(1)
-            finally:
-                machine.set_key(24, 1)
-            report['return_liveview'] = dict(application=state, transitions=transitions,
-                                             observed_seconds=round(time.monotonic() - started, 3))
+            trace = observe(machine, args.return_watch, returning=True)
+            state = machine.status()
+            report['return_liveview'] = dict(application=state, trace=trace)
             if state['index'] == 3 and state['input_ready']:
                 report['shutter_after_return'] = observe(machine, 30)
                 report['post_shutter_application'] = machine.status()
