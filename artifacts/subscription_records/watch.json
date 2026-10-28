@@ -275,14 +275,6 @@
   },
   "notification_stops": [
     {
-      "pc": "0x102dc5c0",
-      "entry": "control-sync87",
-      "thread": 1,
-      "code": "0x57",
-      "payload": "0xb2b97ff0",
-      "caller": "0x10107274"
-    },
-    {
       "pc": "0x105165d4",
       "entry": "control-timer237",
       "thread": 1,
@@ -291,180 +283,188 @@
       "caller": "0x10107274"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
+      "pc": "0x102dc5c0",
+      "entry": "control-sync87",
       "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "code": "0x57",
+      "payload": "0xb2b97ff0",
+      "caller": "0x10107274"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     },
     {
-      "pc": "0x10387f84",
-      "entry": "ring-consumer",
-      "thread": 1,
-      "code": "0x0",
-      "payload": "0x0",
-      "caller": "0x103880c7"
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
+    },
+    {
+      "pc": "0x100611de",
+      "entry": "submit",
+      "thread": 3,
+      "code": "0x8",
+      "payload": "0x2",
+      "caller": "0x100b61f3"
     }
   ]
 }

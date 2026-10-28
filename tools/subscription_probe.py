@@ -36,6 +36,12 @@ SENDER = 0x10269f0c
 DISPATCHER = 0x103cd162
 # The communication-ring consumer (both engines share the image base).
 RING_CONSUMER = 0x10387f84
+# The slave's transport submit entry (slave file 0x411de); the master
+# executes unrelated code at the same address, so stops are separated
+# by thread. Slave replies to master service requests pass through it.
+SLAVE_SUBMIT = 0x100611de
+# The service-event router whose 0x42193009 branch sets wait bit 0x400.
+ROUTER = 0x10264284
 # Positive controls: the whole-word sync handler (IRQ 87, fed by the
 # sample source) and the 10 ms timer handler (IRQ 237).
 CONTROLS = (0x102dc5c0, 0x105165d4)
@@ -59,7 +65,8 @@ def observe_notifications(machine, seconds, limit=24, poll_ready=False):
     remote.sock.settimeout(15)
     armed = {address: name for address, name in
              ((SENDER, 'sender'), (DISPATCHER, 'dispatcher'),
-              (RING_CONSUMER, 'ring-consumer'),
+              (RING_CONSUMER, 'ring-consumer'), (SLAVE_SUBMIT, 'submit'),
+              (ROUTER, 'router'),
               *zip(CONTROLS, ('control-sync87', 'control-timer237')))}
     for address in armed:
         require(remote.command(f'Z1,{address:x},2') == 'OK',
