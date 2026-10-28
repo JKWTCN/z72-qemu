@@ -188,6 +188,8 @@ RETURN_POINTS = {
 }
 
 RECONFIGURE_POINTS = {
+    0x1023c57a: 'reconfigure-mode1-output-complete',
+    0x1023c5dc: 'reconfigure-mode1-output-return',
     0x10238d16: 'reconfigure-frame-count-check',
     0x10238d3e: 'reconfigure-frame-count-complete',
     0x1022e600: 'reconfigure-input-event8-check',
@@ -329,6 +331,7 @@ def snapshot(remote):
                          processing_flags=hex(word(0xb26b38cc)),
                          finite_request=hex(word(0xb1887dd8)),
                          finite_queue_count=word(0xb25eebcc),
+                         mode1_output_latches=[word(0xb26b38d8 + index * 4) for index in range(2)],
                          configured_mask=hex(word(0xb1887dcc)),
                          required_mask=hex(word(0xb1887dd0)),
                          processing_masks=[hex(word(0xb26b38b4 + index * 4)) for index in range(4)]),
@@ -428,7 +431,7 @@ def input_dma_snapshot(machine):
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
-            reconfigure=False, tail_frame_events=False):
+            reconfigure=False, tail_frame_events=False, mode1_frame_events=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -486,6 +489,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         for address in armed:
             remote.breakpoint(address)
         tail_events = []
+        mode1_events = []
+        def pulse_mode1():
+            for level in (1, 0):
+                machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
+                               f'input-event 103 {level}')
+            mode1_events.append(103)
+        if mode1_frame_events:
+            require(before['capture_driver_state'] == 4 and
+                    before['input_state']['finite_frames'][1] == 1 and
+                    int(before['input_state']['processing_flags'], 16) & 4,
+                    'Mode 1 event experiment requires the observed finite input request')
+            pulse_mode1()
         if tail_frame_events:
             require(before['capture_driver_state'] == 4 and
                     before['input_interrupts']['controls']['0x8'] == '0x10',
@@ -680,6 +695,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['action'] = hex(remote.get(registers, 'r6'))
                 if keep:
                     records.append(record)
+                if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
+                    latch = int.from_bytes(remote.read(0xb26b38dc, 4), 'little')
+                    record['mode1_output_latch'] = latch
+                    if latch == 1:
+                        pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
@@ -697,6 +717,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                    before['counter_frequency'], 6),
                     driver_notification_hits=callback_hits,
                     tail_frame_events=tail_events,
+                    mode1_frame_events=mode1_events,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
@@ -736,6 +757,8 @@ def main():
                         help='Wait up to this many host seconds for driver state 4 before tracing (0..900)')
     parser.add_argument('--tail-frame-events', action='store_true',
                         help='Laboratory input: pulse input causes 0/6 once after RAW stops in state 4')
+    parser.add_argument('--mode1-frame-events', action='store_true',
+                        help='Laboratory input: pulse bank 3 bit 7, then repeat after the first native output latch')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -758,6 +781,10 @@ def main():
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
     require(not args.tail_frame_events or args.reconfigure_watch and args.frame_notify,
             'Tail event experiment requires reconfiguration observation and frame notification')
+    require(not args.mode1_frame_events or args.reconfigure_watch and args.frame_notify,
+            'Mode 1 event experiment requires reconfiguration observation and frame notification')
+    require(not (args.tail_frame_events and args.mode1_frame_events),
+            'Select one reconfiguration event experiment')
     require(30 <= args.boot_watch <= 600, 'Boot watch time out of bounds')
     require(args.watch_read is None or 0 <= args.watch_read <= 0xfffffffc and
             args.watch_read % 4 == 0, 'Read watch address out of bounds')
@@ -842,7 +869,8 @@ def main():
                                     watch_read=args.watch_read, watch_write=args.watch_write,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
-                                    tail_frame_events=args.tail_frame_events))
+                                    tail_frame_events=args.tail_frame_events,
+                                    mode1_frame_events=args.mode1_frame_events))
         report['native_lcd_before'] = initial_lcd
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
