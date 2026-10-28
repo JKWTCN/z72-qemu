@@ -1,0 +1,191 @@
+{
+  "observation": "engine-gpio-descriptors-and-external-input-contract",
+  "static": {
+    "initialization": "0x10385c94",
+    "descriptor_base": "0xb180249c",
+    "stride": 56,
+    "count": 232,
+    "interrupt_inputs": [
+      {
+        "resource": 84,
+        "descriptor": "0xb18036fc",
+        "register": "0x4282014",
+        "pin": 7,
+        "interrupt_input": 0,
+        "intid": 65,
+        "handler": "0x1038602d"
+      },
+      {
+        "resource": 85,
+        "descriptor": "0xb1803734",
+        "register": "0x4282014",
+        "pin": 8,
+        "interrupt_input": 1,
+        "intid": 66,
+        "handler": "0x10386033"
+      },
+      {
+        "resource": 86,
+        "descriptor": "0xb180376c",
+        "register": "0x4282014",
+        "pin": 9,
+        "interrupt_input": 2,
+        "intid": 67,
+        "handler": "0x10386039"
+      },
+      {
+        "resource": 87,
+        "descriptor": "0xb18037a4",
+        "register": "0x4282014",
+        "pin": 10,
+        "interrupt_input": 3,
+        "intid": 68,
+        "handler": "0x1038603f"
+      },
+      {
+        "resource": 88,
+        "descriptor": "0xb18037dc",
+        "register": "0x4282014",
+        "pin": 11,
+        "interrupt_input": 4,
+        "intid": 69,
+        "handler": "0x10386045"
+      },
+      {
+        "resource": 89,
+        "descriptor": "0xb1803814",
+        "register": "0x4282014",
+        "pin": 12,
+        "interrupt_input": 5,
+        "intid": 70,
+        "handler": "0x1038604b"
+      },
+      {
+        "resource": 90,
+        "descriptor": "0xb180384c",
+        "register": "0x4282014",
+        "pin": 13,
+        "interrupt_input": 6,
+        "intid": 71,
+        "handler": "0x10386051"
+      },
+      {
+        "resource": 91,
+        "descriptor": "0xb1803884",
+        "register": "0x4282014",
+        "pin": 14,
+        "interrupt_input": 7,
+        "intid": 72,
+        "handler": "0x10386057"
+      },
+      {
+        "resource": 92,
+        "descriptor": "0xb18038bc",
+        "register": "0x4282014",
+        "pin": 15,
+        "interrupt_input": 8,
+        "intid": 73,
+        "handler": "0x1038605d"
+      },
+      {
+        "resource": 93,
+        "descriptor": "0xb18038f4",
+        "register": "0x4282018",
+        "pin": 0,
+        "interrupt_input": 9,
+        "intid": 74,
+        "handler": "0x10386063"
+      },
+      {
+        "resource": 94,
+        "descriptor": "0xb180392c",
+        "register": "0x4282018",
+        "pin": 1,
+        "interrupt_input": 10,
+        "intid": 75,
+        "handler": "0x10386069"
+      },
+      {
+        "resource": 95,
+        "descriptor": "0xb1803964",
+        "register": "0x4282018",
+        "pin": 2,
+        "interrupt_input": 11,
+        "intid": 76,
+        "handler": "0x1038606f"
+      },
+      {
+        "resource": 96,
+        "descriptor": "0xb180399c",
+        "register": "0x4282018",
+        "pin": 3,
+        "interrupt_input": 12,
+        "intid": 77,
+        "handler": "0x10386075"
+      },
+      {
+        "resource": 97,
+        "descriptor": "0xb18039d4",
+        "register": "0x4282018",
+        "pin": 4,
+        "interrupt_input": 13,
+        "intid": 78,
+        "handler": "0x1038607b"
+      },
+      {
+        "resource": 98,
+        "descriptor": "0xb1803a0c",
+        "register": "0x4282018",
+        "pin": 5,
+        "interrupt_input": 14,
+        "intid": 79,
+        "handler": "0x10386081"
+      },
+      {
+        "resource": 99,
+        "descriptor": "0xb1803a44",
+        "register": "0x4282018",
+        "pin": 6,
+        "interrupt_input": 15,
+        "intid": 80,
+        "handler": "0x10386087"
+      }
+    ],
+    "handshake_output": {
+      "resource": 101,
+      "register": "0x4282018",
+      "pin": 8
+    },
+    "handshake_input_resource": 84,
+    "module_configuration": "0xb18a7920"
+  },
+  "compiled": true,
+  "firmware_free_checks": {
+    "result": "passed",
+    "roles": [
+      "master",
+      "slave"
+    ],
+    "inputs_per_role": 16,
+    "checks": [
+      "pin readback",
+      "rising and falling edges",
+      "masked event retention",
+      "GIC input 65..80 routing",
+      "write-one acknowledgement",
+      "software cannot manufacture pending events",
+      "repeated levels do not relatch",
+      "reset clears pending and preserves external pin level"
+    ]
+  },
+  "existing_controller_checks": {
+    "result": "passed",
+    "board_link_profiles": [
+      false,
+      true
+    ]
+  },
+  "physical_counterpart_identified": false,
+  "automatic_loopback": false,
+  "native_handshake_completion_verified": false
+}

@@ -148,6 +148,8 @@ RETURN_POINTS = {
     0x1039a01e: 'processing-start-output-continuation',
     0x10395116: 'processing-start-output-wait',
     0x1039511a: 'processing-start-output-wait-return',
+    0x102422c2: 'input-handshake-start-submitted',
+    0x102422ea: 'input-handshake-stop-submitted',
     0x1039a060: 'processing-start-handler-return',
     0x103c048a: 'resource-read-request',
     0x103c0664: 'resource-read-result',
@@ -232,7 +234,8 @@ def snapshot(remote):
         switch_words=[hex(word(0xb25eaeac + i * 4)) for i in range(3)])
 
 
-def observe(machine, seconds, playback=False, local_stop_events=False, returning=False):
+def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
+            gpio_handshake_events=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -302,6 +305,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         for level in (0, 1, 0):
                             machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
                                            f'sync-event {11 + bit} {level}')
+                    if returning and gpio_handshake_events and pc in (
+                            0x10395a88, 0x102422c2, 0x102422ea):
+                        mask = int.from_bytes(remote.read(0x0426f000, 4), 'little')
+                        polarity = int.from_bytes(remote.read(0x0426f014, 4), 'little')
+                        record['external_gpio_event'] = dict(
+                            input=0, resource=84, intid=65, mask=hex(mask),
+                            polarity=hex(polarity), injected=not bool(mask & 1))
+                        if not mask & 1:
+                            for level in (0, 1, 0):
+                                machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
+                                               f'gpio-input 0 {level}')
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
@@ -360,6 +374,8 @@ def main():
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
     parser.add_argument('--round-trip', action='store_true',
                         help='After playback, half-press to return to shooting and observe full release')
+    parser.add_argument('--gpio-handshake-events', action='store_true',
+                        help='Laboratory input: pulse GPIO input 0 at armed return-path handshake waits/submissions')
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30)
@@ -368,6 +384,8 @@ def main():
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
+    require(not args.gpio_handshake_events or args.round_trip,
+            'GPIO handshake events require a round trip')
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local/body-shutter-gate-store'
     args.update_image = None
@@ -389,12 +407,14 @@ def main():
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       local_stop_events=args.local_stop_events,
+                      gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events))
         report['final_application'] = machine.status()
         if args.round_trip and report['final_application']['index'] == 2:
-            trace = observe(machine, args.return_watch, returning=True)
+            trace = observe(machine, args.return_watch, returning=True,
+                            gpio_handshake_events=args.gpio_handshake_events)
             state = machine.status()
             report['return_liveview'] = dict(application=state, trace=trace)
             if state['index'] == 3 and state['input_ready']:
