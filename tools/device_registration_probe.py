@@ -75,6 +75,16 @@ INITIALIZATION_FOLLOWUP_POINTS = {
 }
 MODE_REQUEST_POINTS = {address: label for address, label in RELEASE_EVENT_POINTS.items()
                        if label.startswith(('operation16-', 'operation17-'))}
+INPUT_CONFIG_POINTS = {
+    0x1023abaa: 'input-configuration-request',
+    0x1023aed8: 'input-configuration-update',
+    0x1023ad12: 'input-geometry-request-selected',
+    0x1023afd4: 'input-geometry-update-selected',
+    0x1023c8ae: 'input-geometry-full-configuration',
+    0x10239c34: 'input-geometry-frame-configuration',
+    0x10239bcc: 'input-geometry-conditional-configuration',
+    0x1020905a: 'input-geometry-setter',
+}
 
 
 class RegistrationMachine(Machine):
@@ -85,6 +95,9 @@ class RegistrationMachine(Machine):
             armed.update(CAPTURE_OPERATION_POINTS)
         if self.args.watch_release:
             armed.update(RELEASE_EVENT_POINTS)
+        if self.args.watch_input_config:
+            armed.update(INPUT_CONFIG_POINTS)
+        input_hits = {}
         armed[SYNC_WAIT] = 'synchronization-wait'
         self.registration_stops = []
         self.session_stops = []
@@ -183,6 +196,21 @@ class RegistrationMachine(Machine):
                     registers={name: hex(remote.get(registers, name))
                                for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'lr')},
                     pending=int.from_bytes(remote.read(0xb1d52228, 2), 'little'))
+                if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS:
+                    input_hits[pc] = input_hits.get(pc, 0) + 1
+                    record['hit'] = input_hits[pc]
+                    if pc in (0x1023abaa, 0x1023aed8, 0x1023ad12, 0x1023afd4):
+                        if pc == 0x1023abaa:
+                            mask, table = remote.get(registers, 'r0'), remote.get(registers, 'r2')
+                        elif pc == 0x1023aed8:
+                            mask, table = remote.get(registers, 'r0'), remote.get(registers, 'r1')
+                        elif pc == 0x1023ad12:
+                            mask, table = remote.get(registers, 'r5'), remote.get(registers, 'r6')
+                        else:
+                            mask, table = remote.get(registers, 'r6'), remote.get(registers, 'r7')
+                        geometry = int.from_bytes(remote.read(table + 0x18, 4), 'little')
+                        record['configuration'] = dict(mask=hex(mask), table=hex(table),
+                            geometry_selected=bool(mask & 0x100), geometry_descriptor=hex(geometry))
                 if record['entry'].startswith('initialization-'):
                     parent = 0xb1818bd0
                     mode = remote.read(parent + 0x158, 2)
@@ -273,7 +301,12 @@ class RegistrationMachine(Machine):
                                     f'frame-sync-enable 0 {level}')
                     synchronized = True
                 remote.breakpoint(pc, False)
-                del armed[pc]
+                if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS and input_hits[pc] < 8:
+                    remote.sock.settimeout(15)
+                    remote.command(f'vCont;s:{thread:x}')
+                    remote.breakpoint(pc)
+                else:
+                    del armed[pc]
         finally:
             remote.sock.settimeout(15)
             for address in armed:
@@ -284,7 +317,10 @@ class RegistrationMachine(Machine):
             require(remote.command('D') == 'OK', 'Could not detach')
             remote.sock.close()
             self.remote = None
-        self.registration_unseen = list(armed.values())
+        self.registration_unseen = [label for address, label in armed.items()
+                                    if address not in input_hits]
+        self.input_configuration_counts = {label: input_hits.get(address, 0)
+                                           for address, label in INPUT_CONFIG_POINTS.items()}
         require(synchronized, 'Synchronization wait was not observed')
 
 
@@ -303,6 +339,8 @@ def main():
                         help='Observe operation 14 admission and task submission from reset')
     parser.add_argument('--watch-release', action='store_true',
                         help='Observe operation 13, application event 1 and release-gate writes')
+    parser.add_argument('--watch-input-config', action='store_true',
+                        help='Observe up to eight hits per input configuration and geometry entry')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -315,6 +353,7 @@ def main():
                   watch_session=args.watch_session,
                   capture_operations=args.capture_operations)
     report['watch_release'] = args.watch_release
+    report['watch_input_config'] = args.watch_input_config
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -332,6 +371,8 @@ def main():
                       unseen=machine.registration_unseen,
                       session_stops=machine.session_stops,
                       operation14_stops=machine.operation14_stops)
+        if args.watch_input_config:
+            report['input_configuration_counts'] = machine.input_configuration_counts
         if args.watch_release:
             report.update(release_event_stops=machine.release_event_stops,
                           release_gate_stops=machine.release_gate_stops,
