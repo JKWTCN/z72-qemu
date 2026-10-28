@@ -127,6 +127,30 @@ RETURN_POINTS = {
     0x102d954c: 'sampling-run-delay2-wait',
     0x102d9550: 'sampling-run-delay2-wait-return',
     0x1026d534: 'resource-completion-notification',
+    0x102d97fc: 'sampling-run-return',
+    0x1026c732: 'delegate-sampling-run-return',
+    0x1026c758: 'delegate-start-final-wait',
+    0x1026c75c: 'delegate-start-final-join',
+    0x1026c766: 'delegate-start-completion',
+    0x1026d30e: 'delegate-start-final-confirmation',
+    0x10394762: 'processing-notification',
+    0x103949fc: 'processing-start-completion-event',
+    0x10397562: 'processing-start-report-return',
+    0x1039a006: 'processing-start-handler-continuation',
+    0x1039a010: 'processing-start-parameters-return',
+    0x10397064: 'processing-input-start-request',
+    0x1039706a: 'processing-input-start-return',
+    0x1039707a: 'processing-input-start-wait',
+    0x1039707e: 'processing-input-start-wait-return',
+    0x1039a018: 'processing-start-input-continuation',
+    0x10395a88: 'processing-start-previous-input-wait',
+    0x10395a8c: 'processing-start-previous-input-continuation',
+    0x1039a01e: 'processing-start-output-continuation',
+    0x10395116: 'processing-start-output-wait',
+    0x1039511a: 'processing-start-output-wait-return',
+    0x1039a060: 'processing-start-handler-return',
+    0x103c048a: 'resource-read-request',
+    0x103c0664: 'resource-read-result',
 }
 
 
@@ -199,6 +223,7 @@ def snapshot(remote):
         processing_command=remote.read(0xb1868310, 1)[0],
         processing_state=remote.read(0xb1868311, 1)[0],
         delegate_state=remote.read(0xb1868510, 1)[0],
+        delegate_kind=remote.read(0xb1868511, 1)[0],
         sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'),
         counter_frequency=word(0x04266010),
@@ -336,11 +361,11 @@ def main():
     parser.add_argument('--round-trip', action='store_true',
                         help='After playback, half-press to return to shooting and observe full release')
     parser.add_argument('--return-watch', type=int, default=120,
-                        help='Host seconds to trace the return from playback (30..300)')
+                        help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30)
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
-    require(30 <= args.return_watch <= 300, 'Return watch time out of bounds')
+    require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
     args.realtime = args.auto_menu = False

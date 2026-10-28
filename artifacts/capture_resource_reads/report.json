@@ -1,0 +1,1225 @@
+{
+  "observation": "local-device-registration-from-reset",
+  "watch_seconds": 120,
+  "sd_attached": true,
+  "display_complete": true,
+  "watch_session": false,
+  "capture_operations": false,
+  "watch_release": false,
+  "watch_input_config": false,
+  "watch_resources": true,
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 120,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "stops": [
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x50",
+        "r1": "0x118d0850",
+        "r2": "0x8",
+        "r3": "0x3",
+        "r4": "0x8",
+        "r5": "0x3",
+        "r6": "0x0",
+        "lr": "0x103a4b29"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 1
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185eb44",
+        "r5": "0xb185f430",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 1
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x47",
+        "r1": "0x118d08d0",
+        "r2": "0x5",
+        "r3": "0x3",
+        "r4": "0x5",
+        "r5": "0x3",
+        "r6": "0x0",
+        "lr": "0x103a4b3f"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 1
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e9b8",
+        "r5": "0xb185f334",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 1
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb",
+        "r1": "0x118d0930",
+        "r2": "0xa",
+        "r3": "0x3",
+        "r4": "0xa",
+        "r5": "0x3",
+        "r6": "0x0",
+        "lr": "0x103a4b77"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 1
+    },
+    {
+      "entry": "resource-alternate-result",
+      "pc": "0x103c04e0",
+      "thread": 1,
+      "registers": {
+        "r0": "0xffffffff",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e7a8",
+        "r5": "0xb185eca4",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 1
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x50",
+        "r1": "0x118d0850",
+        "r2": "0x8",
+        "r3": "0x8",
+        "r4": "0x8",
+        "r5": "0x8",
+        "r6": "0x0",
+        "lr": "0x103a4b29"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 2
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185eb44",
+        "r5": "0xb185f430",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 2
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x47",
+        "r1": "0x118d08d0",
+        "r2": "0x5",
+        "r3": "0x8",
+        "r4": "0x5",
+        "r5": "0x8",
+        "r6": "0x0",
+        "lr": "0x103a4b3f"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 2
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e9b8",
+        "r5": "0xb185f334",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 2
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb",
+        "r1": "0x118d0930",
+        "r2": "0xa",
+        "r3": "0x8",
+        "r4": "0xa",
+        "r5": "0x8",
+        "r6": "0x0",
+        "lr": "0x103a4b77"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 2
+    },
+    {
+      "entry": "resource-alternate-result",
+      "pc": "0x103c04e0",
+      "thread": 1,
+      "registers": {
+        "r0": "0xffffffff",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e7a8",
+        "r5": "0xb185eca4",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 2
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x50",
+        "r1": "0x118d0850",
+        "r2": "0x8",
+        "r3": "0x4",
+        "r4": "0x8",
+        "r5": "0x4",
+        "r6": "0x0",
+        "lr": "0x103a4b29"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 3
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185eb44",
+        "r5": "0xb185f430",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 3
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x47",
+        "r1": "0x118d08d0",
+        "r2": "0x5",
+        "r3": "0x4",
+        "r4": "0x5",
+        "r5": "0x4",
+        "r6": "0x0",
+        "lr": "0x103a4b3f"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 3
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e9b8",
+        "r5": "0xb185f334",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 3
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb",
+        "r1": "0x118d0930",
+        "r2": "0xa",
+        "r3": "0x4",
+        "r4": "0xa",
+        "r5": "0x4",
+        "r6": "0x0",
+        "lr": "0x103a4b77"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 3
+    },
+    {
+      "entry": "resource-alternate-result",
+      "pc": "0x103c04e0",
+      "thread": 1,
+      "registers": {
+        "r0": "0xffffffff",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e7a8",
+        "r5": "0xb185eca4",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 3
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x50",
+        "r1": "0x118d0850",
+        "r2": "0x8",
+        "r3": "0x5",
+        "r4": "0x8",
+        "r5": "0x5",
+        "r6": "0x0",
+        "lr": "0x103a4b29"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 4
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185eb44",
+        "r5": "0xb185f430",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 4
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x47",
+        "r1": "0x118d08d0",
+        "r2": "0x5",
+        "r3": "0x5",
+        "r4": "0x5",
+        "r5": "0x5",
+        "r6": "0x0",
+        "lr": "0x103a4b3f"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 4
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e9b8",
+        "r5": "0xb185f334",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 4
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb",
+        "r1": "0x118d0930",
+        "r2": "0xa",
+        "r3": "0x5",
+        "r4": "0xa",
+        "r5": "0x5",
+        "r6": "0x0",
+        "lr": "0x103a4b77"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 4
+    },
+    {
+      "entry": "resource-alternate-result",
+      "pc": "0x103c04e0",
+      "thread": 1,
+      "registers": {
+        "r0": "0xffffffff",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e7a8",
+        "r5": "0xb185eca4",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 4
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x50",
+        "r1": "0x118d0850",
+        "r2": "0x8",
+        "r3": "0x6",
+        "r4": "0x8",
+        "r5": "0x6",
+        "r6": "0x0",
+        "lr": "0x103a4b29"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 5
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185eb44",
+        "r5": "0xb185f430",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 80,
+      "hit": 5
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0x47",
+        "r1": "0x118d08d0",
+        "r2": "0x5",
+        "r3": "0x6",
+        "r4": "0x5",
+        "r5": "0x6",
+        "r6": "0x0",
+        "lr": "0x103a4b3f"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 5
+    },
+    {
+      "entry": "resource-primary-result",
+      "pc": "0x103c04f2",
+      "thread": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e9b8",
+        "r5": "0xb185f334",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 71,
+      "hit": 5
+    },
+    {
+      "entry": "resource-read-entry",
+      "pc": "0x103c048a",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb",
+        "r1": "0x118d0930",
+        "r2": "0xa",
+        "r3": "0x6",
+        "r4": "0xa",
+        "r5": "0x6",
+        "r6": "0x0",
+        "lr": "0x103a4b77"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 5
+    },
+    {
+      "entry": "resource-alternate-result",
+      "pc": "0x103c04e0",
+      "thread": 1,
+      "registers": {
+        "r0": "0xffffffff",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb185e7a8",
+        "r5": "0xb185eca4",
+        "r6": "0x0",
+        "lr": "0x102a8773"
+      },
+      "pending": 0,
+      "resource": 11,
+      "hit": 5
+    },
+    {
+      "entry": "registration-gate-result",
+      "pc": "0x103b21aa",
+      "thread": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x0",
+        "lr": "0x10389b2d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-gate-passed",
+      "pc": "0x103b21b6",
+      "thread": 2,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0xb238d43c",
+        "r5": "0xb238d410",
+        "r6": "0x1",
+        "lr": "0x103b21b3"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "registration-callback-bit8",
+      "pc": "0x102638a2",
+      "thread": 2,
+      "registers": {
+        "r0": "0x3",
+        "r1": "0xffffff88",
+        "r2": "0x200000",
+        "r3": "0xc83",
+        "r4": "0xb1864834",
+        "r5": "0xb238d410",
+        "r6": "0xb2363634",
+        "lr": "0x103b220d"
+      },
+      "pending": 0
+    },
+    {
+      "entry": "synchronization-wait",
+      "pc": "0x102d949e",
+      "thread": 1,
+      "registers": {
+        "r0": "0xb18a764c",
+        "r1": "0x8",
+        "r2": "0xb53a7f68",
+        "r3": "0x32",
+        "r4": "0x0",
+        "r5": "0xb18a75f8",
+        "r6": "0xb18a7670",
+        "lr": "0x102feab1"
+      },
+      "pending": 0
+    }
+  ],
+  "unseen": [
+    "device-request",
+    "device-reservation-result",
+    "device-service-creation",
+    "device-construction",
+    "session-report-gate",
+    "resource-reload-entry",
+    "resource-reload-alternate-result",
+    "resource-reload-primary-result"
+  ],
+  "session_stops": [],
+  "operation14_stops": [],
+  "communication": {
+    "areas": {
+      "master": {
+        "index": 34,
+        "depth": 34,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x43",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 56
+          },
+          {
+            "index": 1,
+            "code": "0x41",
+            "service": 3,
+            "sequence": 1,
+            "payload_bytes": 24
+          },
+          {
+            "index": 2,
+            "code": "0x7",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 0
+          },
+          {
+            "index": 3,
+            "code": "0x1",
+            "service": 1,
+            "sequence": 3,
+            "payload_bytes": 0
+          },
+          {
+            "index": 4,
+            "code": "0x2",
+            "service": 5,
+            "sequence": 4,
+            "payload_bytes": 48
+          },
+          {
+            "index": 5,
+            "code": "0x1",
+            "service": 8,
+            "sequence": 5,
+            "payload_bytes": 8
+          },
+          {
+            "index": 6,
+            "code": "0x32",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 16
+          },
+          {
+            "index": 7,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 12
+          },
+          {
+            "index": 9,
+            "code": "0xd",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 28
+          },
+          {
+            "index": 10,
+            "code": "0x9",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 16
+          },
+          {
+            "index": 11,
+            "code": "0xb",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x26",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 16
+          },
+          {
+            "index": 16,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 16
+          },
+          {
+            "index": 17,
+            "code": "0x15",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 20
+          },
+          {
+            "index": 18,
+            "code": "0x18",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 16
+          },
+          {
+            "index": 19,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 12
+          },
+          {
+            "index": 20,
+            "code": "0x28",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 16
+          },
+          {
+            "index": 29,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 12
+          },
+          {
+            "index": 30,
+            "code": "0x2c",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 24
+          },
+          {
+            "index": 31,
+            "code": "0x30",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 16
+          },
+          {
+            "index": 32,
+            "code": "0x36",
+            "service": 9,
+            "sequence": 32,
+            "payload_bytes": 12
+          },
+          {
+            "index": 33,
+            "code": "0x38",
+            "service": 9,
+            "sequence": 33,
+            "payload_bytes": 12
+          }
+        ]
+      },
+      "slave": {
+        "index": 32,
+        "depth": 32,
+        "magic_valid": true,
+        "messages": [
+          {
+            "index": 0,
+            "code": "0x42",
+            "service": 3,
+            "sequence": 0,
+            "payload_bytes": 0
+          },
+          {
+            "index": 1,
+            "code": "0x1",
+            "service": 5,
+            "sequence": 1,
+            "payload_bytes": 0
+          },
+          {
+            "index": 2,
+            "code": "0x2",
+            "service": 1,
+            "sequence": 2,
+            "payload_bytes": 10
+          },
+          {
+            "index": 3,
+            "code": "0x2",
+            "service": 8,
+            "sequence": 3,
+            "payload_bytes": 48,
+            "card_query": {
+              "slot": 1,
+              "state_byte": 2,
+              "result": 0
+            }
+          },
+          {
+            "index": 4,
+            "code": "0x33",
+            "service": 9,
+            "sequence": 4,
+            "payload_bytes": 24
+          },
+          {
+            "index": 5,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 5,
+            "payload_bytes": 12
+          },
+          {
+            "index": 6,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 6,
+            "payload_bytes": 12
+          },
+          {
+            "index": 7,
+            "code": "0xe",
+            "service": 9,
+            "sequence": 7,
+            "payload_bytes": 12
+          },
+          {
+            "index": 8,
+            "code": "0xa",
+            "service": 9,
+            "sequence": 8,
+            "payload_bytes": 16
+          },
+          {
+            "index": 9,
+            "code": "0xc",
+            "service": 9,
+            "sequence": 9,
+            "payload_bytes": 12
+          },
+          {
+            "index": 10,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 10,
+            "payload_bytes": 12
+          },
+          {
+            "index": 11,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 11,
+            "payload_bytes": 12
+          },
+          {
+            "index": 12,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 12,
+            "payload_bytes": 12
+          },
+          {
+            "index": 13,
+            "code": "0x27",
+            "service": 9,
+            "sequence": 13,
+            "payload_bytes": 12
+          },
+          {
+            "index": 14,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 14,
+            "payload_bytes": 24
+          },
+          {
+            "index": 15,
+            "code": "0x17",
+            "service": 9,
+            "sequence": 15,
+            "payload_bytes": 20
+          },
+          {
+            "index": 16,
+            "code": "0x16",
+            "service": 9,
+            "sequence": 16,
+            "payload_bytes": 12
+          },
+          {
+            "index": 17,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 17,
+            "payload_bytes": 12
+          },
+          {
+            "index": 18,
+            "code": "0x29",
+            "service": 9,
+            "sequence": 18,
+            "payload_bytes": 16
+          },
+          {
+            "index": 19,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 19,
+            "payload_bytes": 12
+          },
+          {
+            "index": 20,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 20,
+            "payload_bytes": 12
+          },
+          {
+            "index": 21,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 21,
+            "payload_bytes": 12
+          },
+          {
+            "index": 22,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 22,
+            "payload_bytes": 12
+          },
+          {
+            "index": 23,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 23,
+            "payload_bytes": 12
+          },
+          {
+            "index": 24,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 24,
+            "payload_bytes": 12
+          },
+          {
+            "index": 25,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 25,
+            "payload_bytes": 12
+          },
+          {
+            "index": 26,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 26,
+            "payload_bytes": 24
+          },
+          {
+            "index": 27,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 27,
+            "payload_bytes": 12
+          },
+          {
+            "index": 28,
+            "code": "0x2d",
+            "service": 9,
+            "sequence": 28,
+            "payload_bytes": 12
+          },
+          {
+            "index": 29,
+            "code": "0x31",
+            "service": 9,
+            "sequence": 29,
+            "payload_bytes": 24
+          },
+          {
+            "index": 30,
+            "code": "0x37",
+            "service": 9,
+            "sequence": 30,
+            "payload_bytes": 12
+          },
+          {
+            "index": 31,
+            "code": "0x39",
+            "service": 9,
+            "sequence": 31,
+            "payload_bytes": 12
+          }
+        ]
+      }
+    },
+    "service_rings": {
+      "3": {
+        "pointer": "0xc16a5990",
+        "callback": "0x10129fab",
+        "write": 2,
+        "read": 2
+      },
+      "4": {
+        "pointer": "0xc16b1fd0",
+        "callback": "0x10129025",
+        "write": 0,
+        "read": 0
+      },
+      "5": {
+        "pointer": "0xc187bba0",
+        "callback": "0x1013568d",
+        "write": 1,
+        "read": 1
+      },
+      "6": {
+        "pointer": "0xc18881e0",
+        "callback": "0x10135661",
+        "write": 0,
+        "read": 0
+      },
+      "7": {
+        "pointer": "0xc16cd3a0",
+        "callback": "0x100ca48b",
+        "write": 0,
+        "read": 0
+      },
+      "8": {
+        "pointer": "0xc14873d8",
+        "callback": "0x100b5d23",
+        "write": 1,
+        "read": 1
+      },
+      "9": {
+        "pointer": "0xc144fc40",
+        "callback": "0x1006323d",
+        "write": 28,
+        "read": 28
+      },
+      "10": {
+        "pointer": "0xc1655958",
+        "callback": "0x1010873b",
+        "write": 0,
+        "read": 0
+      }
+    }
+  },
+  "module_wait_mask": "0x0",
+  "input_format": "0x0",
+  "capture_state": [
+    2,
+    0
+  ],
+  "operation14_callback": "0x0",
+  "resources": {
+    "11": {
+      "buffer": "0x50300000",
+      "length": 2424824,
+      "region": 11,
+      "notification_mask": "0x0",
+      "subscriber_count": 1
+    },
+    "71": {
+      "buffer": "0xb7e6e000",
+      "length": 860160,
+      "region": 23,
+      "notification_mask": "0x0",
+      "subscriber_count": 2
+    },
+    "80": {
+      "buffer": "0xb7d00000",
+      "length": 1499136,
+      "region": 32,
+      "notification_mask": "0x1ac",
+      "subscriber_count": 0
+    }
+  },
+  "device_worker_state": {
+    "state": 1,
+    "category": 2
+  },
+  "session_root": "0xb3c78040",
+  "session_root_field_41": 0
+}

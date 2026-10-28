@@ -85,6 +85,14 @@ INPUT_CONFIG_POINTS = {
     0x10239bcc: 'input-geometry-conditional-configuration',
     0x1020905a: 'input-geometry-setter',
 }
+RESOURCE_READ_POINTS = {
+    0x103c048a: ('resource-read-entry', None),
+    0x103c05f4: ('resource-reload-entry', None),
+    0x103c04e0: ('resource-alternate-result', 'r5'),
+    0x103c04f2: ('resource-primary-result', 'r5'),
+    0x103c0652: ('resource-reload-alternate-result', 'r8'),
+    0x103c0664: ('resource-reload-primary-result', 'r8'),
+}
 
 
 class RegistrationMachine(Machine):
@@ -97,6 +105,9 @@ class RegistrationMachine(Machine):
             armed.update(RELEASE_EVENT_POINTS)
         if self.args.watch_input_config:
             armed.update(INPUT_CONFIG_POINTS)
+        if self.args.watch_resources:
+            armed.update({address: value[0] for address, value in RESOURCE_READ_POINTS.items()})
+        resource_hits = {}
         input_hits = {}
         armed[SYNC_WAIT] = 'synchronization-wait'
         self.registration_stops = []
@@ -184,7 +195,25 @@ class RegistrationMachine(Machine):
                 # Both engine images use the same base. Slave hits are not
                 # evidence about the master's local registration worker.
                 if thread > 2 or pc not in armed:
+                    if pc in armed:
+                        remote.breakpoint(pc, False)
+                        remote.sock.settimeout(15)
+                        remote.command(f'vCont;s:{thread:x}')
+                        remote.breakpoint(pc)
                     continue
+                resource = None
+                if self.args.watch_resources and pc in RESOURCE_READ_POINTS:
+                    pointer_register = RESOURCE_READ_POINTS[pc][1]
+                    resource = (remote.read(remote.get(registers, pointer_register), 1)[0]
+                                if pointer_register else remote.get(registers, 'r0'))
+                    key = (pc, resource)
+                    if resource not in (11, 71, 80) or resource_hits.get(key, 0) >= 8:
+                        remote.breakpoint(pc, False)
+                        remote.sock.settimeout(15)
+                        remote.command(f'vCont;s:{thread:x}')
+                        remote.breakpoint(pc)
+                        continue
+                    resource_hits[key] = resource_hits.get(key, 0) + 1
                 if pc == 0x104be91e and remote.get(registers, 'r0') != 1:
                     remote.breakpoint(pc, False)
                     remote.sock.settimeout(15)
@@ -196,6 +225,9 @@ class RegistrationMachine(Machine):
                     registers={name: hex(remote.get(registers, name))
                                for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'lr')},
                     pending=int.from_bytes(remote.read(0xb1d52228, 2), 'little'))
+                if resource is not None:
+                    record['resource'] = resource
+                    record['hit'] = resource_hits[(pc, resource)]
                 if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS:
                     input_hits[pc] = input_hits.get(pc, 0) + 1
                     record['hit'] = input_hits[pc]
@@ -301,7 +333,8 @@ class RegistrationMachine(Machine):
                                     f'frame-sync-enable 0 {level}')
                     synchronized = True
                 remote.breakpoint(pc, False)
-                if self.args.watch_input_config and pc in INPUT_CONFIG_POINTS and input_hits[pc] < 8:
+                if ((self.args.watch_input_config and pc in INPUT_CONFIG_POINTS and input_hits[pc] < 8)
+                        or (self.args.watch_resources and pc in RESOURCE_READ_POINTS)):
                     remote.sock.settimeout(15)
                     remote.command(f'vCont;s:{thread:x}')
                     remote.breakpoint(pc)
@@ -318,7 +351,8 @@ class RegistrationMachine(Machine):
             remote.sock.close()
             self.remote = None
         self.registration_unseen = [label for address, label in armed.items()
-                                    if address not in input_hits]
+                                    if address not in input_hits and
+                                    address not in {key[0] for key in resource_hits}]
         self.input_configuration_counts = {label: input_hits.get(address, 0)
                                            for address, label in INPUT_CONFIG_POINTS.items()}
         require(synchronized, 'Synchronization wait was not observed')
@@ -341,6 +375,8 @@ def main():
                         help='Observe operation 13, application event 1 and release-gate writes')
     parser.add_argument('--watch-input-config', action='store_true',
                         help='Observe up to eight hits per input configuration and geometry entry')
+    parser.add_argument('--watch-resources', action='store_true',
+                        help='Observe up to eight reads per entry and resource 11, 71 or 80 from reset')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -354,6 +390,7 @@ def main():
                   capture_operations=args.capture_operations)
     report['watch_release'] = args.watch_release
     report['watch_input_config'] = args.watch_input_config
+    report['watch_resources'] = args.watch_resources
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -396,6 +433,14 @@ def main():
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
                 report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
                 report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
+                if args.watch_resources:
+                    report['resources'] = {}
+                    for index in (11, 71, 80):
+                        row = machine._words(0xb185eb70 + index * 28, 6)
+                        mask, count = machine._words(0xb20a3288 + index * 48 + 40, 2)
+                        report['resources'][str(index)] = dict(
+                            buffer=hex(row[2]), length=row[3], region=row[5],
+                            notification_mask=hex(mask), subscriber_count=count & 0xffff)
                 if args.watch_input_config or args.watch_release:
                     ticks_low, ticks_high, frequency = machine._words(0x04266008, 3)
                     report['counter_ticks'] = ticks_low | ticks_high << 32
