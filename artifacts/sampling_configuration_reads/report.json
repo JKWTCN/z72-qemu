@@ -1,0 +1,21 @@
+{
+  "observation": "sampling-configuration-survives-input-status-reads",
+  "firmware_used": false,
+  "before_fix": {
+    "result": "failed",
+    "assertion": "sample-lines remains 0x1234 after reading 0x20068060"
+  },
+  "after_fix": {
+    "result": "passed",
+    "combinations": 5,
+    "configured_lines": "0x1234",
+    "input_read_address": "0x20068060",
+    "input_read_count": 1,
+    "checks": [
+      "sampling configuration preserved",
+      "last input address reported separately",
+      "periodic result words preserve configured value",
+      "existing control completion and gating checks"
+    ]
+  }
+}

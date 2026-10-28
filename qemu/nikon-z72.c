@@ -623,7 +623,8 @@ struct NikonZ72BootConfig {
     bool sample_group1;
     /* Sensor frame generation state */
     bool frame_generate;
-    uint32_t frame_count;
+    uint64_t frame_count;
+    uint32_t input_last_read;
     bool pcie_link;
     bool auto_sample_level;
     uint32_t sample_lines;
@@ -1053,11 +1054,7 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     if (boot_config_addresses[word->index] >= 0x20068000 &&
         boot_config_addresses[word->index] <= 0x20068300) {
         s->frame_count++;
-        /* Store the most-read input-path address for diagnostics. */
-        hwaddr read_addr = boot_config_addresses[word->index];
-        if (read_addr != s->sample_lines) {
-            s->sample_lines = read_addr;
-        }
+        s->input_last_read = boot_config_addresses[word->index];
     }
     boot_config_trace(s, boot_config_addresses[word->index], value, false);
     return value;
@@ -1807,6 +1804,8 @@ static void boot_config_init(Object *obj)
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "input-last-read", &s->input_last_read,
+                                  OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-trace-count", &s->input_trace_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_str(obj, "input-trace-log",

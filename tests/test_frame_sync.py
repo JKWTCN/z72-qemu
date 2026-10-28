@@ -22,6 +22,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.frame-sync={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', f'nikon-z72-boot-config.auto-complete={"on" if automatic else "off"}',
+            '-global', 'nikon-z72-boot-config.sample-lines=0x1234',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
@@ -72,6 +73,10 @@ def check(qemu):
                 command(f'writel {address:#x} {value:#x}')
 
             active = enabled and role == 'master'
+            read(0x20068060)
+            assert monitor('qom-get', dict(path=clock_path, property='sample-lines')) == 0x1234
+            assert monitor('qom-get', dict(path=clock_path, property='input-last-read')) == 0x20068060
+            assert monitor('qom-get', dict(path=clock_path, property='frame-count')) == 1
             command('clock_step 100000000')
             assert read(0x20060044) == 0
             command(f'set_irq_in {clock_path} frame-sync-enable 0 1')
@@ -80,6 +85,8 @@ def check(qemu):
             command('clock_step 1')
             assert read(0x20060044) == (0x10 if active else 0)
             assert read(0x20060038) == 0
+            for index in range(5):
+                assert read(0x20061300 + index * 4) == (0x1234 if active and sampling else 0)
             if active:
                 write(0x20060040, 0x10)
                 write(0x20060044, 1)
