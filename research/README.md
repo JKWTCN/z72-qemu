@@ -51,5 +51,6 @@
 - [机身 VR 成员(Body VR / NikonBVR)结构](z7ii/body_vr_member.md)
 - [传感器采样事件与捕获管线结构](z7ii/sensor_frames.md)
 - [采集任务的地址坐标与启动绑定](z7ii/capture_startup.md)
+- [初始化后的状态、模式请求与保留回调](z7ii/capture_mode_requests.md)
 - [机身快门、HTTP 输入与 SD 接入](z7ii/body_shutter.md)
 - [拍摄界面的错误显示与致命消息](z7ii/error_display.md)

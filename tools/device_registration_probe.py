@@ -49,6 +49,17 @@ RELEASE_EVENT_POINTS = {
     0x103edd08: 'operation13-state-update',
     0x103f22ca: 'capture-status-callback-registration',
     0x10247e38: 'initialization-success-dispatch',
+    0x103f25bc: 'operation16-api',
+    0x103f25d4: 'operation17-api',
+    0x103ef366: 'operation16-task-request',
+    0x103ef376: 'operation17-task-request',
+    0x10323676: 'operation16-mode-request',
+    0x1032375a: 'operation17-mode-request',
+    0x10632f56: 'operation16-completion',
+    0x10632fae: 'operation17-completion',
+    0x102097fa: 'input-format-setter',
+    0x10209848: 'input-format-write',
+    0x1020905a: 'input-geometry-setter',
 }
 INITIALIZATION_FOLLOWUP_POINTS = {
     0x10204c02: 'initialization-parent-state-check',
@@ -56,7 +67,14 @@ INITIALIZATION_FOLLOWUP_POINTS = {
     0x10204c38: 'initialization-interface-predicate-result',
     0x10204c4a: 'initialization-parent-predicate-result',
     0x10204c6a: 'initialization-followup-call',
+    0x1020dad2: 'initialization-main-state-forward',
+    0x1020dc5c: 'initialization-select-state4',
+    0x102470ae: 'initialization-state4-entry',
+    0x102470d6: 'initialization-state4-parent-report',
+    0x1020dc72: 'initialization-state4-ready-path',
 }
+MODE_REQUEST_POINTS = {address: label for address, label in RELEASE_EVENT_POINTS.items()
+                       if label.startswith(('operation16-', 'operation17-'))}
 
 
 class RegistrationMachine(Machine):
@@ -73,6 +91,8 @@ class RegistrationMachine(Machine):
         self.operation14_stops = []
         self.release_event_stops = []
         self.release_gate_stops = []
+        self.system_mode_stops = []
+        self.mode_callback_stops = {16: [], 17: []}
         watchers = {}
         if self.args.watch_session:
             watchers[0xb3c78081] = (1, self.session_stops)
@@ -81,6 +101,7 @@ class RegistrationMachine(Machine):
         if self.args.watch_release:
             watchers[0xb201bdd4] = (4, self.release_event_stops)
             watchers[0xb1821e84] = (4, self.release_gate_stops)
+            watchers[0xb1818d28] = (2, self.system_mode_stops)
         for address, (size, _) in watchers.items():
             require(remote.command(f'Z2,{address:x},{size:x}') == 'OK',
                     'Write watchpoint rejected')
@@ -130,6 +151,18 @@ class RegistrationMachine(Machine):
                     remote.command(f'vCont;s:{thread:x}')
                     remote.select_thread(thread)
                     write['value_after'] = int.from_bytes(remote.read(address, size), 'little')
+                    if self.args.watch_release and address == 0xb1821e84 and write['value_after'] == 1:
+                        write['registered_mode_callbacks'] = {}
+                        for operation, slot in ((16, 0xb23f7024), (17, 0xb23f7028)):
+                            write['registered_mode_callbacks'][str(operation)] = hex(int.from_bytes(
+                                remote.read(slot, 4), 'little'))
+                            require(remote.command(f'Z2,{slot:x},4') == 'OK',
+                                    'Mode callback watchpoint rejected')
+                            watchers[slot] = (4, self.mode_callback_stops[operation])
+                        for point, label in MODE_REQUEST_POINTS.items():
+                            if point not in armed:
+                                remote.breakpoint(point)
+                            armed[point] = 'post-gate-' + label
                     if len(records) < 8:
                         require(remote.command(f'Z2,{address:x},{size:x}') == 'OK',
                                 'Write watchpoint re-arm failed')
@@ -156,6 +189,8 @@ class RegistrationMachine(Machine):
                     interface = int.from_bytes(remote.read(parent + 0x154, 4), 'little')
                     record['parent_state'] = dict(current=mode[0], previous=mode[1],
                         interface=hex(interface))
+                    if pc == 0x102470ae:
+                        record['state4_object'] = hex(remote.get(registers, 'r0'))
                     if record['entry'] == 'initialization-parent-handler':
                         for address, label in INITIALIZATION_FOLLOWUP_POINTS.items():
                             remote.breakpoint(address)
@@ -190,6 +225,21 @@ class RegistrationMachine(Machine):
                     record['event1_pending'] = int.from_bytes(remote.read(0xb201bdd4, 4), 'little')
                     if pc == 0x103f24e4:
                         record['asynchronous'] = remote.get(registers, 'r0') != 0
+                    if pc in (0x103f25bc, 0x103f25d4):
+                        record['request_flags'] = hex(int.from_bytes(remote.read(
+                            remote.get(registers, 'r0'), 4), 'little'))
+                        record['callback'] = hex(remote.get(registers, 'r1'))
+                    if pc in (0x10632f56, 0x10632fae):
+                        record['notification'] = hex(remote.get(registers, 'r0'))
+                        payload = remote.get(registers, 'r1')
+                        record['completed_flags'] = hex(int.from_bytes(
+                            remote.read(payload, 4), 'little')) if payload else None
+                    if pc == 0x102097fa:
+                        pointer = remote.get(registers, 'r1')
+                        record['format_flag_inputs'] = [int.from_bytes(
+                            remote.read(pointer + i * 4, 4), 'little') for i in range(14)]
+                    if pc == 0x10209848:
+                        record['packed_format'] = hex(remote.get(registers, 'r0'))
                     if pc == 0x1020e9c0:
                         record['notification'] = hex(remote.get(registers, 'r6'))
                         record['completion_result'] = int.from_bytes(remote.read(
@@ -284,7 +334,9 @@ def main():
                       operation14_stops=machine.operation14_stops)
         if args.watch_release:
             report.update(release_event_stops=machine.release_event_stops,
-                          release_gate_stops=machine.release_gate_stops)
+                          release_gate_stops=machine.release_gate_stops,
+                          system_mode_stops=machine.system_mode_stops,
+                          mode_callback_stops=machine.mode_callback_stops)
         with machine.io:
             machine.qmp.command('stop')
             try:
@@ -320,6 +372,8 @@ def main():
                     report['capture_status_callback'] = hex(machine._words(0xb18695ac, 1)[0])
                     report['release_gate'] = machine._words(0xb1821e84, 1)[0]
                     report['event1_pending'] = machine._words(0xb201bdd4, 1)[0]
+                    report['operation16_callback'] = hex(machine._words(0xb23f7024, 1)[0])
+                    report['operation17_callback'] = hex(machine._words(0xb23f7028, 1)[0])
                 report['device_worker_state'] = dict(
                     state=machine._bytes(0xb1864d49, 1)[0],
                     category=machine._bytes(0xb1864d4a, 1)[0])
