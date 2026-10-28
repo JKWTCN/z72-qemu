@@ -11,14 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import require
 from tools.boot_region_probe import RegionProbe
-from unicorn.arm_const import UC_ARM_REG_PC, UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2
+from unicorn.arm_const import UC_ARM_REG_PC, UC_ARM_REG_LR, UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2
 
 
 class DescriptorProbe(RegionProbe):
+    def __init__(self, image):
+        super().__init__(image)
+        self.notifications = []
+
     def boundary(self, cpu, address, size, unused):
         # The setter waits eight counter ticks after submitting its channel.
         # Only the two counter reads are supplied by the test environment.
-        if address == 0x103bdba4:
+        if address == self.DATA + 0x2000:
+            self.notifications.append([cpu.reg_read(UC_ARM_REG_R0), cpu.reg_read(UC_ARM_REG_R1)])
+            cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+        elif address == 0x103bdba4:
             cpu.reg_write(UC_ARM_REG_R0, 100)
             cpu.reg_write(UC_ARM_REG_R1, 0)
             cpu.reg_write(UC_ARM_REG_PC, (address + 4) | 1)
@@ -44,25 +51,40 @@ def probe(image):
     cases = []
     for channel in (0, 15):
         base = 0x20100400 + channel * 0x40
+        addresses = targets if channel == 0 else [0, 0x12000, 0x24000, 0]
+        native.u.mem_write(parameters + 0x10, struct.pack('<4I', *addresses))
         native.u.mem_write(node, bytes([0, channel]) + bytes(10) + struct.pack('<I', parameters))
         native.call(0x39da1e, node)
         words = list(struct.unpack('<13I', native.u.mem_read(base, 52)))
         expected = [1, 0, 918 << 16 | 1380, 0, 2080, 2080, 0, 0,
-                    918 << 16 | 1380, *targets]
+                    918 << 16 | 1380, *addresses]
         require(words == expected, 'Original processing DMA descriptor packing differs: ' + repr(words))
         require(native.word(0x2010002c) == channel, 'Original channel submission differs')
         cases.append(dict(channel=channel, base=hex(base),
+                          supplied_address_operands=[hex(value) for value in addresses],
                           registers={hex(index * 4): hex(value) for index, value in enumerate(words)},
                           submitted_channel=native.word(0x2010002c)))
+    native.u.mem_write(0xb1801d74, struct.pack('<I', (native.DATA + 0x2000) | 1))
+    completion_cases = []
+    for status, event in ((0, 0), (1, 1), (4, 2), (5, 3)):
+        native.notifications.clear()
+        native.u.mem_write(0x20100018, struct.pack('<3I', status, 0, 0))
+        native.call(0x39ce38)
+        expected = [[0x41051001, event]] if event else []
+        require(native.notifications == expected, 'Original processing completion event mapping differs')
+        completion_cases.append(dict(status_18=hex(status), notifications=[
+            dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
                 entry='0x103bda1e', register_table='0x10789cc0',
-                host_boundaries=['two counter reads, advanced by nine ticks'],
+                host_boundaries=['two counter reads, advanced by nine ticks',
+                                 'completion subscriber records original handler arguments'],
                 synthetic_parameters=dict(first_words=[2080, 2080, 0, 0],
                     address_fields=['0x10', '0x14', '0x18', '0x1c'],
                     rectangle_fields=['0x2a', '0x2c', '0x2e', '0x30'],
                     size_fields=['0x32', '0x34'], other_flags=0),
-                cases=cases, pixel_transfer_verified=False,
-                limitation='Packing and submission are verified; channel direction, pixel formats and completion remain unverified.')
+                cases=cases, completion_handler='0x103bce38', completion_cases=completion_cases,
+                pixel_transfer_verified=False,
+                limitation='Packing, submission and handler event mapping are verified; channel direction, pixel formats, data movement and hardware completion timing remain unverified.')
 
 
 if __name__ == '__main__':
@@ -73,4 +95,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS original processing DMA register packing and channel submission')
+    print('PASS original processing DMA packing, submission and completion event mapping')

@@ -188,6 +188,8 @@ RETURN_POINTS = {
 }
 
 RECONFIGURE_POINTS = {
+    0x103bdb9e: 'reconfigure-processing-dma-configure',
+    0x103bd03a: 'reconfigure-processing-controller-control4',
     0x103bded0: 'reconfigure-processing-module-configure',
     0x103bd07c: 'reconfigure-processing-module-start',
     0x102692ca: 'reconfigure-capture-display-surface',
@@ -326,6 +328,10 @@ def snapshot(remote):
                     item['value'] = hex(word(address))
                 output_registers[hex(offset)] = item
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        processing_controller={hex(index * 4): hex(value) for index, value in enumerate(
+            struct.unpack('<17I', remote.read(0x20100000, 68)))},
+        processing_dma=[dict(channel=channel, words=[hex(value) for value in struct.unpack(
+            '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)],
         mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
         driver_work_queue=[hex(value) for value in driver_queue],
         driver_pending_functions=driver_pending,
@@ -647,6 +653,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 data = remote.read(pointer, 256)
                                 record['processing_module']['parameter_summary'] = dict(
                                     bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+                if pc == 0x103bdb9e:
+                    node = remote.get(registers, 'r4')
+                    channel = remote.read(node + 1, 1)[0]
+                    record['processing_dma_channel'] = channel
+                    if channel < 16:
+                        record['processing_dma_words'] = [hex(value) for value in struct.unpack(
+                            '<13I', remote.read(0x20100400 + channel * 0x40, 52))]
+                if pc == 0x103bd03a:
+                    record['processing_controller'] = [hex(value) for value in struct.unpack(
+                        '<17I', remote.read(0x20100000, 68))]
+                    record['processing_dma'] = [dict(channel=channel, words=[hex(value) for value in struct.unpack(
+                        '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)]
                 if pc == 0x103e1dea:
                     packet = remote.get(registers, 'r1')
                     record['display_packet'] = dict(address=hex(packet),

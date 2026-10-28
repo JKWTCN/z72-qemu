@@ -4,7 +4,8 @@
   "entry": "0x103bda1e",
   "register_table": "0x10789cc0",
   "host_boundaries": [
-    "two counter reads, advanced by nine ticks"
+    "two counter reads, advanced by nine ticks",
+    "completion subscriber records original handler arguments"
   ],
   "synthetic_parameters": {
     "first_words": [
@@ -35,6 +36,12 @@
     {
       "channel": 0,
       "base": "0x20100400",
+      "supplied_address_operands": [
+        "0x54900000",
+        "0x56b0d000",
+        "0x58d1a000",
+        "0x5af27000"
+      ],
       "registers": {
         "0x0": "0x1",
         "0x4": "0x0",
@@ -55,6 +62,12 @@
     {
       "channel": 15,
       "base": "0x201007c0",
+      "supplied_address_operands": [
+        "0x0",
+        "0x12000",
+        "0x24000",
+        "0x0"
+      ],
       "registers": {
         "0x0": "0x1",
         "0x4": "0x0",
@@ -65,14 +78,48 @@
         "0x18": "0x0",
         "0x1c": "0x0",
         "0x20": "0x3960564",
-        "0x24": "0x54900000",
-        "0x28": "0x56b0d000",
-        "0x2c": "0x58d1a000",
-        "0x30": "0x5af27000"
+        "0x24": "0x0",
+        "0x28": "0x12000",
+        "0x2c": "0x24000",
+        "0x30": "0x0"
       },
       "submitted_channel": 15
     }
   ],
+  "completion_handler": "0x103bce38",
+  "completion_cases": [
+    {
+      "status_18": "0x0",
+      "notifications": []
+    },
+    {
+      "status_18": "0x1",
+      "notifications": [
+        {
+          "code": "0x41051001",
+          "event": "0x1"
+        }
+      ]
+    },
+    {
+      "status_18": "0x4",
+      "notifications": [
+        {
+          "code": "0x41051001",
+          "event": "0x2"
+        }
+      ]
+    },
+    {
+      "status_18": "0x5",
+      "notifications": [
+        {
+          "code": "0x41051001",
+          "event": "0x3"
+        }
+      ]
+    }
+  ],
   "pixel_transfer_verified": false,
-  "limitation": "Packing and submission are verified; channel direction, pixel formats and completion remain unverified."
+  "limitation": "Packing, submission and handler event mapping are verified; channel direction, pixel formats, data movement and hardware completion timing remain unverified."
 }
