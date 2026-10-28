@@ -277,6 +277,14 @@ def snapshot(remote):
         engine_inputs=engines,
         resources=resources, cores=cores,
         input_channel_scan_count=24, input_channels=input_channels,
+        input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
+        input_interrupts=dict(
+            controls={hex(offset): hex(word(0x20068000 + offset))
+                      for offset in (0, 4, 8, 0x10, 0x14, 0x18)},
+            banks=[dict(mask=hex(word(0x20068200 + index * 32)),
+                        status=hex(word(0x20068210 + index * 32))) for index in range(8)],
+            callbacks={hex(index * 4): hex(value) for index, value in enumerate(
+                struct.unpack('<12I', remote.read(0xb18067e4, 48)))}),
         input_state=dict(state_5=remote.read(0xb1887d75, 1)[0],
                          state_6=remote.read(0xb1887d76, 1)[0],
                          configured_mask=hex(word(0xb1887dcc)),
@@ -364,7 +372,7 @@ def input_dma_snapshot(machine):
 
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
-            gpio_handshake_events=False, watch_read=None, watch_write=None):
+            gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -373,6 +381,15 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         armed.update(AFTER_PLAYBACK)
     if returning:
         armed = dict(RETURN_POINTS)
+    if frame_notify:
+        armed.update({0x10238d4a: 'input-frame-task',
+                      0x10238c40: 'input-frame-dequeue',
+                      0x1023c960: 'input-completed-enqueue',
+                      0x1023beec: 'input-frame-context-enqueue',
+                      0x1022e2e0: 'input-frame-notification',
+                      0x1022e0ae: 'input-context-wait-update',
+                      0x1022e154: 'input-context-wait-stored',
+                      0x1022e1aa: 'input-context-all-waits-complete'})
     records = []
     hits = {}
     callback_hits = 0
@@ -484,6 +501,27 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             for level in (0, 1, 0):
                                 machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
                                                f'gpio-input 0 {level}')
+                if frame_notify and pc in (0x10238d4a, 0x10238c40, 0x1023c960, 0x1023beec,
+                                           0x1022e2e0, 0x1022e0ae, 0x1022e154, 0x1022e1aa):
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 8
+                    pointer = None
+                    if pc == 0x1022e2e0:
+                        code = remote.get(registers, 'r0')
+                        record['notification'] = hex(code)
+                        if code == 0x041a0002:
+                            pointer = remote.get(registers, 'r1')
+                            record['completed_object'] = hex(pointer)
+                    elif pc == 0x1022e0ae:
+                        pointer = remote.get(registers, 'r0')
+                    elif pc == 0x1023beec:
+                        pointer = remote.get(registers, 'r1')
+                    elif pc in (0x1022e154, 0x1022e1aa):
+                        pointer = remote.get(registers, 'r4')
+                    if pointer is not None and 0xb2c00000 <= pointer < 0xb5effe00:
+                        record['context'] = dict(address=hex(pointer),
+                            parameters=hex(int.from_bytes(remote.read(pointer + 0x144, 4), 'little')),
+                            pending=hex(int.from_bytes(remote.read(pointer + 0x14c, 4), 'little')))
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
@@ -546,6 +584,8 @@ def main():
                         help='Enable the optional command-triggered input stop response')
     parser.add_argument('--frame-generate', action='store_true',
                         help='Enable the experimental RAW12 checkerboard input DMA source')
+    parser.add_argument('--frame-notify', action='store_true',
+                        help='Experimentally latch recovered input timing causes after successful DMA')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -571,6 +611,7 @@ def main():
     require(args.watch_write is None or 0 <= args.watch_write <= 0xfffffffc and
             args.watch_write % 4 == 0, 'Write watch address out of bounds')
     require(args.watch_read is None or args.watch_write is None, 'Choose one memory watch type')
+    require(not args.frame_notify or args.frame_generate, 'Frame notification requires generated input pixels')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -597,6 +638,7 @@ def main():
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,
                           input_stop_complete=args.input_stop_complete,
                           frame_generate=args.frame_generate,
+                          frame_notify=args.frame_notify,
                           shooting_foreground_ready=False)
             # A running console has detached its startup observer. Preserve
             # the failed foreground's actual state before closing the VM.
@@ -623,12 +665,14 @@ def main():
                       frame_phase=args.frame_phase,
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
+                      frame_notify=args.frame_notify,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
-                                    watch_read=args.watch_read, watch_write=args.watch_write))
+                                    watch_read=args.watch_read, watch_write=args.watch_write,
+                                    frame_notify=args.frame_notify))
         report['native_lcd_before'] = initial_lcd
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
@@ -636,11 +680,12 @@ def main():
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
                             gpio_handshake_events=args.gpio_handshake_events,
-                            watch_write=args.watch_write)
+                            watch_write=args.watch_write, frame_notify=args.frame_notify)
             state = machine.status()
             report['return_liveview'] = dict(application=state, trace=trace)
             if state['index'] == 3 and state['input_ready']:
-                report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write)
+                report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write,
+                                                        frame_notify=args.frame_notify)
                 report['post_shutter_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
         if args.frame_generate:

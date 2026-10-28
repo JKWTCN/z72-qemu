@@ -8,9 +8,10 @@ import time
 
 
 def check(qemu):
-    for role, enabled, sampling in (
-            ('master', True, True), ('master', False, True),
-            ('master', True, False), ('slave', True, True)):
+    for role, enabled, sampling, notifying in (
+            ('master', True, True, False), ('master', True, True, True),
+            ('master', False, True, True), ('master', True, False, True),
+            ('slave', True, True, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -18,6 +19,7 @@ def check(qemu):
         process = subprocess.Popen([qemu, '-M', machine, '-accel', 'qtest',
             '-display', 'none', '-serial', 'none', '-qmp', 'stdio',
             '-global', f'nikon-z72-boot-config.frame-generate={"on" if enabled else "off"}',
+            '-global', f'nikon-z72-boot-config.frame-notify={"on" if notifying else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
@@ -98,6 +100,7 @@ def check(qemu):
             start()
             tick()
             assert count() == int(active)
+            assert read(0x20068210) == (0x41 if active and notifying else 0)
             if active:
                 assert read(targets[0]) == 0
                 assert read(targets[0] + 96) == 0xffffffff
@@ -114,13 +117,17 @@ def check(qemu):
                 for target in targets:
                     assert read(target - 4) == 0x12345678
                     assert read(target + 416) == 0x87654321
-                assert all(read(0x20068210 + bank * 32) == 0 for bank in range(8)), 'DMA manufactured a completion'
+                assert read(0x20068210) == (0x41 if notifying else 0)
+                assert all(read(0x20068210 + bank * 32) == 0 for bank in range(1, 8))
+                write(0x20068210, 0x41)
                 write(0x20068060, 3)
                 tick()
                 assert count() == 5, 'Stop request left input DMA active'
+                assert read(0x20068210) == 0, 'Stopped DMA produced an input cause'
                 start()
                 tick()
                 assert count() == 6
+                write(0x20068210, 0x41)
                 for address, invalid, valid in ((0x20069514, 7, 6),
                         (0x20069518, 131 << 16, 130 << 16),
                         (0x20069518, (130 << 16) | 1, 130 << 16),
@@ -128,6 +135,7 @@ def check(qemu):
                     write(address, invalid)
                     tick()
                     assert count() == 6, 'Unsupported input configuration wrote a frame'
+                    assert read(0x20068210) == 0, 'Rejected frame produced an input cause'
                     write(address, valid)
                 for target in (0, 0x20068500, 0xb08fff00, 0xb0900000):
                     if target == 0xb08fff00:
@@ -135,6 +143,7 @@ def check(qemu):
                     planes([target] * 4)
                     tick()
                     assert count() == 6, 'Invalid destination accepted'
+                    assert read(0x20068210) == 0, 'Invalid destination produced an input cause'
                     assert read(0x20068500) == 0
                     if target == 0xb08fff00:
                         assert read(target) == 0x11223344, 'Rejected frame partially wrote RAM'

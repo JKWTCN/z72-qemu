@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "cause_decoder": "0x1020ad46",
+  "cases": [
+    {
+      "bank": 0,
+      "bits": "0x1",
+      "logical": "0x10000000",
+      "callback": "0x102391b2",
+      "group": 0,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x1"
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "bits": "0x40",
+      "logical": "0x10000000",
+      "callback": "0x102391b2",
+      "group": 0,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x4"
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "bits": "0x41",
+      "logical": "0x10000000",
+      "callback": "0x102391b2",
+      "group": 0,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x1"
+        },
+        {
+          "object": "0xb26b3888",
+          "bits": "0x4"
+        }
+      ]
+    },
+    {
+      "bank": 4,
+      "bits": "0x80",
+      "logical": "0x200",
+      "callback": "0x1023931c",
+      "group": 2,
+      "events": [
+        {
+          "object": "0xb188814c",
+          "bits": "0x4000000"
+        }
+      ]
+    },
+    {
+      "bank": 4,
+      "bits": "0x100",
+      "logical": "0x200",
+      "callback": "0x1023931c",
+      "group": 2,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x4000"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic event storage and host task/event API boundaries.",
+    "Task delivery does not prove frame-buffer ownership or pixel processing."
+  ]
+}
