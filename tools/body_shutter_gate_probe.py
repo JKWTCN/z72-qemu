@@ -134,6 +134,7 @@ RETURN_POINTS = {
     0x1026c766: 'delegate-start-completion',
     0x1026d30e: 'delegate-start-final-confirmation',
     0x10394762: 'processing-notification',
+    0x10394a12: 'processing-event-set',
     0x103949fc: 'processing-start-completion-event',
     0x10397562: 'processing-start-report-return',
     0x1039a006: 'processing-start-handler-continuation',
@@ -383,6 +384,8 @@ def main():
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--sd-card', type=Path)
     parser.add_argument('--display-complete', action='store_true')
+    parser.add_argument('--input-handshake', action='store_true',
+                        help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -421,6 +424,7 @@ def main():
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
+                      input_handshake=args.input_handshake,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,

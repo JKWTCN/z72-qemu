@@ -8,12 +8,17 @@ import time
 
 
 def check(qemu):
-    for machine in ('nikon-z72-lab', 'nikon-z72-slave-lab'):
+    for machine, handshake, automatic in (
+            ('nikon-z72-lab', False, True), ('nikon-z72-slave-lab', False, True),
+            ('nikon-z72-lab', True, True), ('nikon-z72-lab', True, False),
+            ('nikon-z72-slave-lab', True, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
         process = subprocess.Popen([qemu, '-M', machine, '-accel', 'qtest',
             '-display', 'none', '-serial', 'none', '-qmp', 'stdio',
+            '-global', f'nikon-z72-boot-config.input-handshake={"on" if handshake else "off"}',
+            '-global', f'nikon-z72-boot-config.auto-complete={"on" if automatic else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
@@ -74,7 +79,7 @@ def check(qemu):
             command('irq_intercept_in /machine/unattached/' + gic)
             write(0x0426f008, 0xffff)
             assert read(0x0426f008) == 0
-            for line in range(16):
+            for line in (range(16) if not handshake else ()):
                 bit = 1 << line
                 irq = 65 + line - 32
                 address = 0x04282014 if line < 9 else 0x04282018
@@ -112,6 +117,47 @@ def check(qemu):
             assert read(0x04282014) & 0x80
             pin(0, 1)
             assert read(0x0426f008) == 0
+            pin(0, 0)
+            write(0x0426f010, 0xffff)
+            write(0x0426f000, 0xffff)
+            write(0x0426f014, 1)
+            completes = handshake and automatic and machine == 'nikon-z72-lab'
+            write(0x04282018, 0x100)  # Unselected output data is not a request.
+            command('clock_step 2000000')
+            assert read(0x0426f008) == 0
+            write(0x04282018, 0x01000000)
+            write(0x04282018, 0x01000100)
+            command('clock_step 999999')
+            assert read(0x0426f008) == 0
+            # Neither unrelated writes nor repeated high levels postpone the response.
+            write(0x04282018, 0x02000200)
+            write(0x04282018, 0x01000100)
+            command('clock_step 1')
+            assert read(0x0426f008) == int(completes)
+            assert not read(0x04282014) & 0x80
+            write(0x0426f000, 0xfffe)
+            assert irq_levels.get(65 - 32, False) == completes
+            write(0x0426f010, 1)
+            assert not irq_levels.get(65 - 32, False)
+            write(0x04282018, 0x02000000)
+            write(0x04282018, 0x01000100)
+            command('clock_step 2000000')
+            assert read(0x0426f008) == 0
+            write(0x04282018, 0x01000000)
+            write(0x04282018, 0x01000100)
+            command('clock_step 1000000')
+            assert read(0x0426f008) == int(completes)
+            write(0x0426f010, 1)
+            write(0x04282018, 0x01000000)
+            write(0x04282018, 0x01000100)
+            command('clock_step 500000')
+            monitor('system_reset')
+            command('clock_step 1000000')
+            assert read(0x0426f008) == 0
+            write(0x0426f014, 1)
+            write(0x04282018, 0x01000100)
+            command('clock_step 1000000')
+            assert read(0x0426f008) == int(completes)
         finally:
             if stream is not None:
                 stream.close()
@@ -123,7 +169,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS engine GPIO: 16 pins, both edges, mask retention, IRQ mapping, acknowledgement and reset, both roles')
+    print('PASS engine GPIO: 16 inputs, interrupt routing and reset; delayed output handshake, source/role gating and request edges')
 
 
 if __name__ == '__main__':

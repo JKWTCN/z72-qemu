@@ -112,7 +112,7 @@ class RegistrationMachine(Machine):
             armed.update(INPUT_CONFIG_POINTS)
         if self.args.watch_resources:
             armed.update({address: value[0] for address, value in RESOURCE_READ_POINTS.items()})
-        if self.args.gpio_handshake_events:
+        if self.args.gpio_handshake_events or self.args.input_handshake:
             armed.update(GPIO_HANDSHAKE_POINTS)
         gpio_hits = {}
         resource_hits = {}
@@ -236,15 +236,16 @@ class RegistrationMachine(Machine):
                 if resource is not None:
                     record['resource'] = resource
                     record['hit'] = resource_hits[(pc, resource)]
-                if self.args.gpio_handshake_events and pc in GPIO_HANDSHAKE_POINTS:
+                if (self.args.gpio_handshake_events or self.args.input_handshake) and pc in GPIO_HANDSHAKE_POINTS:
                     gpio_hits[pc] = gpio_hits.get(pc, 0) + 1
                     if pc in (0x102422c2, 0x102422ea):
                         mask = int.from_bytes(remote.read(0x0426f000, 4), 'little')
                         polarity = int.from_bytes(remote.read(0x0426f014, 4), 'little')
                         record['external_gpio_event'] = dict(
                             input=0, resource=84, intid=65, mask=hex(mask),
-                            polarity=hex(polarity), injected=not bool(mask & 1))
-                        if not mask & 1:
+                            polarity=hex(polarity),
+                            injected=self.args.gpio_handshake_events and not bool(mask & 1))
+                        if self.args.gpio_handshake_events and not mask & 1:
                             for level in (0, 1, 0):
                                 self._qtest(f'set_irq_in /machine/unattached/{self.config_names[0]} '
                                             f'gpio-input 0 {level}')
@@ -354,7 +355,8 @@ class RegistrationMachine(Machine):
                     synchronized = True
                 remote.breakpoint(pc, False)
                 if ((self.args.watch_input_config and pc in INPUT_CONFIG_POINTS and input_hits[pc] < 8)
-                        or (self.args.gpio_handshake_events and pc in GPIO_HANDSHAKE_POINTS and gpio_hits[pc] < 8)
+                        or ((self.args.gpio_handshake_events or self.args.input_handshake) and
+                            pc in GPIO_HANDSHAKE_POINTS and gpio_hits[pc] < 8)
                         or (self.args.watch_resources and pc in RESOURCE_READ_POINTS)):
                     remote.sock.settimeout(15)
                     remote.command(f'vCont;s:{thread:x}')
@@ -388,6 +390,8 @@ def main():
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--sd-card', type=Path)
     parser.add_argument('--display-complete', action='store_true')
+    parser.add_argument('--input-handshake', action='store_true',
+                        help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--watch', type=int, default=120)
     parser.add_argument('--watch-session', action='store_true',
                         help='Record up to eight writes to session root byte +0x41')
@@ -416,6 +420,7 @@ def main():
     report['watch_input_config'] = args.watch_input_config
     report['watch_resources'] = args.watch_resources
     report['gpio_handshake_events'] = args.gpio_handshake_events
+    report['input_handshake'] = args.input_handshake
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -458,7 +463,7 @@ def main():
                 report['input_format'] = hex(machine._words(0x20068500, 1)[0])
                 report['capture_state'] = list(machine._bytes(0xb23f6a80, 2))
                 report['operation14_callback'] = hex(machine._words(0xb23f701c, 1)[0])
-                if args.gpio_handshake_events:
+                if args.gpio_handshake_events or args.input_handshake:
                     report['processing_field_24'] = hex(machine._words(0xb1868334, 1)[0])
                     report['gpio_adapter'] = dict(
                         mode=machine._bytes(0xb18a7920, 1)[0],

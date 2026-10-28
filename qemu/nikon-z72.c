@@ -582,6 +582,9 @@ struct NikonZ72BootConfig {
     uint8_t controller_levels;
     uint32_t gpio_input_levels;
     uint32_t gpio_input_driven;
+    bool input_handshake;
+    bool input_handshake_output;
+    QEMUTimer *input_handshake_timer;
     bool controller_ack_output;
     qemu_irq controller_ack_irq;
     uint32_t timer_line, timer_tick_us;
@@ -838,6 +841,19 @@ static void engine_gpio_input(void *opaque, int line, int level)
         }
         controller_update_irqs(s);
     }
+}
+
+/* Optional laboratory peer for the recovered output-101 / input-84
+ * handshake. Respond to a selected output rising edge through the GPIO
+ * interrupt path. One millisecond is a functional timing choice; this
+ * does not identify the physical peer or produce sensor pixels. */
+static void input_handshake_complete(void *opaque)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    engine_gpio_input(s, 0, 0);
+    engine_gpio_input(s, 0, 1);
+    engine_gpio_input(s, 0, 0);
 }
 
 static void controller_pin_input(void *opaque, int line, int level)
@@ -1154,6 +1170,17 @@ static void boot_config_write(void *opaque, hwaddr offset,
             s->controller_ack_output = !!(value & 0x1000);
             qemu_set_irq(s->controller_ack_irq, s->controller_ack_output);
         }
+    }
+    if (address == 0x04282018 && (value & (1u << 24))) {
+        bool level = !!(value & (1u << 8));
+
+        if (level && !s->input_handshake_output && s->input_handshake &&
+            s->auto_complete && s->master_role &&
+            !timer_pending(s->input_handshake_timer)) {
+            timer_mod(s->input_handshake_timer,
+                      qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 1000000);
+        }
+        s->input_handshake_output = level;
     }
     if (address == 0x0426f008) {
         *stored = (value & ~0xffffu) | (*stored & 0xffff);
@@ -1725,6 +1752,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->peer_ready_input = false;
     s->peer_ready_output = false;
     s->controller_ack_output = false;
+    timer_del(s->input_handshake_timer);
+    s->input_handshake_output = false;
     qemu_set_irq(s->controller_ack_irq, 0);
     controller_update_irqs(s);
     qemu_set_irq(s->peer_ready_irq, 0);
@@ -1764,13 +1793,16 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 36,
-    .minimum_version_id = 36,
+    .version_id = 37,
+    .minimum_version_id = 37,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
         VMSTATE_UINT32(gpio_input_levels, NikonZ72BootConfig),
         VMSTATE_UINT32(gpio_input_driven, NikonZ72BootConfig),
+        VMSTATE_BOOL(input_handshake, NikonZ72BootConfig),
+        VMSTATE_BOOL(input_handshake_output, NikonZ72BootConfig),
+        VMSTATE_TIMER_PTR(input_handshake_timer, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(dbi_table, NikonZ72BootConfig, 0x8c0 / 4),
         VMSTATE_UINT32(dbi_viewport, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(dbi_regions, NikonZ72BootConfig, 2 * 16 * 7),
@@ -1835,6 +1867,7 @@ static void boot_config_init(Object *obj)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
     s->frame_sync_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, frame_sync_tick, s);
+    s->input_handshake_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, input_handshake_complete, s);
     object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
@@ -1878,6 +1911,8 @@ static void boot_config_finalize(Object *obj)
 
     timer_del(s->frame_sync_timer);
     timer_free(s->frame_sync_timer);
+    timer_del(s->input_handshake_timer);
+    timer_free(s->input_handshake_timer);
 }
 
 static void boot_config_realize(DeviceState *dev, Error **errp)
@@ -2069,6 +2104,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
 {
     static const Property properties[] = {
         DEFINE_PROP_BOOL("auto-complete", NikonZ72BootConfig, auto_complete, true),
+        DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
         DEFINE_PROP_UINT32("blocked-control", NikonZ72BootConfig, blocked_control, 0),
         DEFINE_PROP_UINT32("clear-base", NikonZ72BootConfig, clear_base, 0),
         DEFINE_PROP_UINT32("clear-size", NikonZ72BootConfig, clear_size, 0),

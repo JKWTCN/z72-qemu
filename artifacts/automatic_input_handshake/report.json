@@ -1,0 +1,72 @@
+{
+  "observation": "output-triggered-laboratory-input-handshake",
+  "compiled": true,
+  "firmware_used": false,
+  "property": "input-handshake",
+  "default_enabled": false,
+  "delay_ns": 1000000,
+  "trigger": {
+    "register": "0x4282018",
+    "selection_bit": 24,
+    "output_bit": 8,
+    "transition": "rising"
+  },
+  "response": {
+    "input": 0,
+    "intid": 65,
+    "levels": [
+      0,
+      1,
+      0
+    ],
+    "path": "normal GPIO pending, mask and acknowledge"
+  },
+  "result": "passed",
+  "profiles": [
+    {
+      "role": "master",
+      "enabled": false,
+      "auto_complete": true,
+      "response": false
+    },
+    {
+      "role": "slave",
+      "enabled": false,
+      "auto_complete": true,
+      "response": false
+    },
+    {
+      "role": "master",
+      "enabled": true,
+      "auto_complete": true,
+      "response": true
+    },
+    {
+      "role": "master",
+      "enabled": true,
+      "auto_complete": false,
+      "response": false
+    },
+    {
+      "role": "slave",
+      "enabled": true,
+      "auto_complete": true,
+      "response": false
+    }
+  ],
+  "checks": [
+    "16 manual input routes on both roles",
+    "response absent before deadline",
+    "response at deadline",
+    "unselected output data ignored",
+    "repeated high does not rearm or postpone",
+    "unrelated output writes preserve request state",
+    "deassert and assert rearms",
+    "masked pending retained and delivered when unmasked",
+    "write-one acknowledge",
+    "reset cancels pending response and permits a fresh request"
+  ],
+  "physical_peer_identified": false,
+  "sensor_pixels_produced": false,
+  "native_capture_completion_verified": false
+}

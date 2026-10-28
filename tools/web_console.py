@@ -298,6 +298,8 @@ class Machine:
                          'nikon-z72-boot-config.sample-counter=on') +
                      (('nikon-z72-boot-config.display-complete=on',)
                       if getattr(self.args, 'display_complete', False) else ()) +
+                     (('nikon-z72-boot-config.input-handshake=on',)
+                      if getattr(self.args, 'input_handshake', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
@@ -989,6 +991,8 @@ def main():
     parser.add_argument('--display-complete', action='store_true',
                         help='Pulse the recovered display completion lines '
                              'on every laboratory frame tick')
+    parser.add_argument('--input-handshake', action='store_true',
+                        help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')
