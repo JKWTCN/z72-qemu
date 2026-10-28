@@ -308,7 +308,19 @@ def snapshot(remote):
                 item['raw_fields'] = {hex(offset): hex(word(value + offset))
                                       for offset in (0x144, 0x14c)}
         completed_heads.append(item)
+    output_config = remote.read(0xb26b44cc, 0x44)
+    output_registers = {}
+    if output_config[0] < 10:
+        for offset in range(0, 0x348, 0x28):
+            address = word(0xb18069d4 + output_config[0] * 4 + offset)
+            if 0x20068000 <= address < 0x20070000:
+                item = dict(address=hex(address))
+                if (address & 0xff) in (0x14, 0x18, 0x24, 0x3c, 0x40, 0x44,
+                                       0x48, 0x4c, 0x50, 0x60, 0x74, 0x80):
+                    item['value'] = hex(word(address))
+                output_registers[hex(offset)] = item
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
         driver_work_queue=[hex(value) for value in driver_queue],
         driver_pending_functions=driver_pending,
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
@@ -484,10 +496,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     watch_type = 3 if watch_read is not None else 2
     memory_watch_armed = False
     started = time.monotonic()
+    breakpoints_installed = False
     try:
         before = snapshot(remote)
         for address in armed:
             remote.breakpoint(address)
+        breakpoints_installed = True
         tail_events = []
         mode1_events = []
         def pulse_mode1():
@@ -725,8 +739,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         remote.sock.settimeout(15)
         if memory_watch_armed:
             remote.command(f'z{watch_type},{watch_address:x},4')
-        for address in armed:
-            remote.breakpoint(address, False)
+        if breakpoints_installed:
+            for address in armed:
+                remote.breakpoint(address, False)
         remote.command('D')
         remote.sock.close()
         if playback:

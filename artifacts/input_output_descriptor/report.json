@@ -1,0 +1,74 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "execution": "original Thumb setters with synthetic descriptors and MMIO storage",
+  "builder": {
+    "entry": "0x1023a63c",
+    "supplied_count": 2,
+    "stored_count_minus_one": 1,
+    "count_register": "0x2006a548",
+    "buffer_extent": 73728,
+    "extent_register": "0x2006a580",
+    "addresses_per_bank": 4,
+    "banks": 2
+  },
+  "setters": [
+    "0x1020b142",
+    "0x1020b16a",
+    "0x1020b232",
+    "0x1020b1da"
+  ],
+  "cases": [
+    {
+      "channel": 0,
+      "base": "0x2006a400",
+      "field_registers": {
+        "0x3c": "0xa5a50005",
+        "0x40": "0x1357",
+        "0x44": "0x3",
+        "0x80": "0x2468"
+      },
+      "address_banks": [
+        "0x50",
+        "0x60"
+      ],
+      "addresses_per_bank": 1,
+      "bank_selection_preserves_other_bits": true
+    },
+    {
+      "channel": 1,
+      "base": "0x2006a500",
+      "field_registers": {
+        "0x3c": "0xa5a50005",
+        "0x40": "0x1357",
+        "0x44": "0x3",
+        "0x80": "0x2468"
+      },
+      "address_banks": [
+        "0x50",
+        "0x60"
+      ],
+      "addresses_per_bank": 1,
+      "bank_selection_preserves_other_bits": true
+    },
+    {
+      "channel": 9,
+      "base": "0x2006ad00",
+      "field_registers": {
+        "0x3c": "0xa5a50005",
+        "0x40": "0x1357",
+        "0x44": "0x3",
+        "0x80": "0x2468"
+      },
+      "address_banks": [
+        "0x50",
+        "0x60"
+      ],
+      "addresses_per_bank": 4,
+      "bank_selection_preserves_other_bits": true
+    }
+  ],
+  "host_function_boundaries_used": false,
+  "pixel_transfer_verified": false,
+  "limitation": "Field forwarding and bank selection do not establish pixel format, transfer size or completion timing."
+}
