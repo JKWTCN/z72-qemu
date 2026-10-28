@@ -36,6 +36,13 @@ CAPTURE_OPERATION_POINTS = {
     0x1020ea1c: 'operation14-callback-result',
     0x10247dea: 'operation14-ui-completion',
 }
+RELEASE_EVENT_POINTS = {
+    0x103f24e4: 'operation13-api',
+    0x103ef2bc: 'operation13-task-request',
+    0x1020e9c0: 'operation13-callback-result',
+    0x104be91e: 'release-notification-map',
+    0x1053e62c: 'release-gate-clear-path',
+}
 
 
 class RegistrationMachine(Machine):
@@ -44,15 +51,22 @@ class RegistrationMachine(Machine):
         armed = dict(POINTS)
         if self.args.capture_operations:
             armed.update(CAPTURE_OPERATION_POINTS)
+        if self.args.watch_release:
+            armed.update(RELEASE_EVENT_POINTS)
         armed[SYNC_WAIT] = 'synchronization-wait'
         self.registration_stops = []
         self.session_stops = []
         self.operation14_stops = []
+        self.release_event_stops = []
+        self.release_gate_stops = []
         watchers = {}
         if self.args.watch_session:
             watchers[0xb3c78081] = (1, self.session_stops)
         if self.args.capture_operations:
             watchers[0xb23f701c] = (4, self.operation14_stops)
+        if self.args.watch_release:
+            watchers[0xb201bdd4] = (4, self.release_event_stops)
+            watchers[0xb1821e84] = (4, self.release_gate_stops)
         for address, (size, _) in watchers.items():
             require(remote.command(f'Z2,{address:x},{size:x}') == 'OK',
                     'Write watchpoint rejected')
@@ -111,6 +125,12 @@ class RegistrationMachine(Machine):
                 # evidence about the master's local registration worker.
                 if thread > 2 or pc not in armed:
                     continue
+                if pc == 0x104be91e and remote.get(registers, 'r0') != 1:
+                    remote.breakpoint(pc, False)
+                    remote.sock.settimeout(15)
+                    remote.command(f'vCont;s:{thread:x}')
+                    remote.breakpoint(pc)
+                    continue
                 record = dict(
                     entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name))
@@ -135,6 +155,17 @@ class RegistrationMachine(Machine):
                 if pc in (0x1020ea1c, 0x10247dea):
                     payload = remote.get(registers, 'r4' if pc == 0x1020ea1c else 'r1')
                     record['completion_result'] = int.from_bytes(remote.read(payload, 4), 'little')
+                if pc in RELEASE_EVENT_POINTS:
+                    record['release_gate'] = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
+                    record['event1_pending'] = int.from_bytes(remote.read(0xb201bdd4, 4), 'little')
+                    if pc == 0x103f24e4:
+                        record['asynchronous'] = remote.get(registers, 'r0') != 0
+                    if pc == 0x1020e9c0:
+                        record['notification'] = hex(remote.get(registers, 'r6'))
+                        record['completion_result'] = int.from_bytes(remote.read(
+                            remote.get(registers, 'r4'), 4), 'little')
+                    if pc == 0x104be91e:
+                        record['notification'] = hex(remote.get(registers, 'r9'))
                 self.registration_stops.append(record)
                 if pc == SYNC_WAIT:
                     require(all(remote.get(registers, name) == value
@@ -179,6 +210,8 @@ def main():
                         help='Record up to eight writes to session root byte +0x41')
     parser.add_argument('--capture-operations', action='store_true',
                         help='Observe operation 14 admission and task submission from reset')
+    parser.add_argument('--watch-release', action='store_true',
+                        help='Observe operation 13, application event 1 and release-gate writes')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
     args.realtime = args.auto_menu = False
@@ -190,6 +223,7 @@ def main():
                   display_complete=args.display_complete,
                   watch_session=args.watch_session,
                   capture_operations=args.capture_operations)
+    report['watch_release'] = args.watch_release
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -207,6 +241,9 @@ def main():
                       unseen=machine.registration_unseen,
                       session_stops=machine.session_stops,
                       operation14_stops=machine.operation14_stops)
+        if args.watch_release:
+            report.update(release_event_stops=machine.release_event_stops,
+                          release_gate_stops=machine.release_gate_stops)
         with machine.io:
             machine.qmp.command('stop')
             try:

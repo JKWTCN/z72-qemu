@@ -37,9 +37,6 @@
       "action_handler": "0x104e6c1d",
       "release_gate": 1,
       "event1_pending": 0,
-      "event1_parameters": [
-        "0x1812"
-      ],
       "capture_state": [
         2,
         0
@@ -137,9 +134,6 @@
       "action_handler": "0x104e6c1d",
       "release_gate": 1,
       "event1_pending": 0,
-      "event1_parameters": [
-        "0x1812"
-      ],
       "capture_state": [
         2,
         0
@@ -163,5 +157,12 @@
       "past-release-gate",
       "release-gate-clear-path"
     ]
+  },
+  "interpretation_correction": {
+    "removed_field": "event1_parameters",
+    "reason": "Parameter dirty-byte index 1 is distinct from application word event 1.",
+    "application_event1_notification": "0x410000d",
+    "notification_map": "0x1094559c",
+    "evidence": "research/z7ii/body_shutter.md"
   }
 }

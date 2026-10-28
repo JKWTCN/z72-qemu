@@ -53,7 +53,7 @@ of a few notifications remain pending. Boot-time device registration
 completes through its local callback, and the peer returns the video-buffer
 completion and a successful card query. Capture initialization also completes
 successfully. Full release reaches the application action, where a retained
-gate stops capture; its upstream parameter event and live-view pixel transfer
+gate stops capture; its upstream completion notification and live-view pixel transfer
 remain under investigation. See
 [notification chain research](research/z7ii/notification_chain.md).
 The steady menu cycle no longer shows the

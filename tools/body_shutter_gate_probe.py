@@ -38,13 +38,13 @@ def snapshot(remote):
         if count <= 68:
             codes = [hex(x) for x in struct.unpack('<' + 'I' * count,
                                                  remote.read(pointer, count * 4))]
-    mapping = remote.read(0xb2bb1080, 449 * 8)
+    notifications = remote.read(0x1094559c, 44 * 8)
     return dict(system_mode=mode[0], previous_mode=mode[1],
         action_state=state, handler_object=hex(handler_object),
         action_handler=hex(word(handler_object + 0x14)),
         release_gate=word(0xb1821e84), event1_pending=word(0xb201bdd4),
-        event1_parameters=[hex(parameter) for parameter, event in
-                           struct.iter_unpack('<II', mapping) if event & 65535 == 1],
+        event1_notifications=[hex(notification) for notification, event in
+                              struct.iter_unpack('<II', notifications) if event == 1],
         capture_state=list(remote.read(0xb23f6a80, 2)),
         operation14_callback=hex(word(0xb23f701c)), status_codes=codes,
         input_format=hex(word(0x20068500)),
