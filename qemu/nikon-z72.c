@@ -623,6 +623,7 @@ struct NikonZ72BootConfig {
     uint32_t sync_levels[2];
     bool frame_sync;
     bool sensor_sample;
+    bool frame_phase;
     bool display_complete;
     bool sample_counter;
     bool sample_group1;
@@ -973,14 +974,18 @@ static void auto_sample_event(void *opaque, int line, int level)
 /* Optional laboratory timing source; no sensor pixels are produced.
  * Bank 2 bit 4 follows the pending/mask/acknowledge path of input 15.
  * With sensor-sample armed, each tick also latches one automatic-sample
- * event in the third bank. No frame-phase or pixel-ready bit is set in
- * bank 2. The 30 Hz period is a functional choice, not a measured rate. */
+ * event in the third bank. The optional phase source sets bank 2 bit 7
+ * only while software enables it; neither source supplies pixel data.
+ * The 30 Hz period is a functional choice, not a measured rate. */
 static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
 
     *boot_config_value(s, 0x20060044) |= 0x10;
     if (s->sensor_sample) {
+        if (s->frame_phase && (*boot_config_value(s, 0x20060040) & 0x80)) {
+            *boot_config_value(s, 0x20060044) |= 0x80;
+        }
         /* The third bank's sample-ready bit drives the auto-sample event
          * without claiming pixel data is available in bank 1; a separate
          * "sample-group1" property latches the vertical-sync line only. */
@@ -2121,6 +2126,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("timer-tick", NikonZ72BootConfig, timer_tick, true),
         DEFINE_PROP_BOOL("frame-sync", NikonZ72BootConfig, frame_sync, false),
         DEFINE_PROP_BOOL("sensor-sample", NikonZ72BootConfig, sensor_sample, false),
+        DEFINE_PROP_BOOL("frame-phase", NikonZ72BootConfig, frame_phase, false),
         DEFINE_PROP_BOOL("display-complete", NikonZ72BootConfig,
                          display_complete, false),
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),

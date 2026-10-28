@@ -139,7 +139,10 @@ class RegistrationMachine(Machine):
         self.release_gate_stops = []
         self.system_mode_stops = []
         self.mode_callback_stops = {16: [], 17: []}
+        self.input_write_stops = []
         watchers = {}
+        if self.args.watch_input_write is not None:
+            watchers[self.args.watch_input_write] = (4, self.input_write_stops)
         if self.args.watch_session:
             watchers[0xb3c78081] = (1, self.session_stops)
         if self.args.capture_operations:
@@ -153,7 +156,8 @@ class RegistrationMachine(Machine):
                     'Write watchpoint rejected')
         for address in armed:
             remote.breakpoint(address)
-        deadline = time.monotonic() + self.args.watch
+        observation_started = time.monotonic()
+        deadline = observation_started + self.args.watch
         synchronized = False
         try:
             while time.monotonic() < deadline and (armed or watchers):
@@ -177,10 +181,11 @@ class RegistrationMachine(Machine):
                     size, records = watchers[address]
                     write = dict(
                         pc=hex(pc), thread=thread,
-                        value_before=int.from_bytes(remote.read(address, size), 'little'),
                         registers={name: hex(remote.get(registers, name))
                                    for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5',
                                                 'r6', 'r7', 'lr')})
+                    if address != self.args.watch_input_write:
+                        write['value_before'] = int.from_bytes(remote.read(address, size), 'little')
                     if pc == 0x10357fba:
                         write['parameter_copy'] = dict(
                             source=hex(remote.get(registers, 'r5') + 0x204),
@@ -196,6 +201,11 @@ class RegistrationMachine(Machine):
                     remote.sock.settimeout(15)
                     remote.command(f'vCont;s:{thread:x}')
                     remote.select_thread(thread)
+                    if address == self.args.watch_input_write:
+                        write['access_address'] = hex(address)
+                        # The target may be deliberately rejected MMIO. Do
+                        # not read it or retry the access after its first hit.
+                        break
                     write['value_after'] = int.from_bytes(remote.read(address, size), 'little')
                     if self.args.watch_release and address == 0xb1821e84 and write['value_after'] == 1:
                         write['registered_mode_callbacks'] = {}
@@ -404,7 +414,8 @@ class RegistrationMachine(Machine):
                                     address not in {key[0] for key in resource_hits}]
         self.input_configuration_counts = {label: input_hits.get(address, 0)
                                            for address, label in INPUT_CONFIG_POINTS.items()}
-        require(synchronized, 'Synchronization wait was not observed')
+        self.observation_elapsed = time.monotonic() - observation_started
+        require(synchronized or self.input_write_stops, 'Synchronization wait was not observed')
 
 
 def main():
@@ -417,6 +428,12 @@ def main():
     parser.add_argument('--display-complete', action='store_true')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
+    parser.add_argument('--frame-phase', action='store_true',
+                        help='Enable the optional masked periodic sampling phase source')
+    parser.add_argument('--watch-input-write', type=lambda value: int(value, 0),
+                        help='Stop after the first word write to an input configuration address')
+    parser.add_argument('--report-unready', action='store_true',
+                        help='Save observations even when the shooting interface is not ready')
     parser.add_argument('--watch', type=int, default=120)
     parser.add_argument('--watch-session', action='store_true',
                         help='Record up to eight writes to session root byte +0x41')
@@ -432,6 +449,9 @@ def main():
                         help='Laboratory input: pulse armed GPIO input 0 after input handshake submissions from reset')
     args = parser.parse_args()
     require(30 <= args.watch <= 180, 'Watch time out of bounds')
+    require(args.watch_input_write is None or
+            0x20068400 <= args.watch_input_write < 0x2006c000 and
+            args.watch_input_write % 4 == 0, 'Input write watch address out of bounds')
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local' / 'registration-probe-store'
     args.update_image = None
@@ -446,6 +466,9 @@ def main():
     report['watch_resources'] = args.watch_resources
     report['gpio_handshake_events'] = args.gpio_handshake_events
     report['input_handshake'] = args.input_handshake
+    report['frame_phase'] = args.frame_phase
+    if args.watch_input_write is not None:
+        report['watched_input_write'] = hex(args.watch_input_write)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -454,7 +477,8 @@ def main():
             state = machine.status()
             if state['phase'] == 'failed':
                 raise RuntimeError(state['error'])
-            if state.get('ready') and state.get('index') == 3 and state.get('input_ready'):
+            if (state.get('ready') and state.get('index') == 3 and state.get('input_ready') or
+                    args.report_unready and state['phase'] == 'running'):
                 break
             time.sleep(1)
         else:
@@ -463,6 +487,10 @@ def main():
                       unseen=machine.registration_unseen,
                       session_stops=machine.session_stops,
                       operation14_stops=machine.operation14_stops)
+        if args.watch_input_write is not None:
+            report['input_write_stops'] = machine.input_write_stops
+            report['observation_elapsed_host_seconds'] = machine.observation_elapsed
+            report['watch_ended_on_input_write'] = bool(machine.input_write_stops)
         if args.watch_input_config:
             report['input_configuration_counts'] = machine.input_configuration_counts
         if args.watch_release:

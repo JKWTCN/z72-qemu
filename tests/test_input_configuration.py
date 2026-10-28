@@ -43,10 +43,15 @@ def check(qemu):
                       0x20068e3c, 0x2006900c, 0x2006917c, 0x2006952c,
                       0x200697fc, 0x20069814, 0x20069850, 0x20069950,
                       0x20069a24, 0x20069a80, 0x20069b80, 0x20069efc,
-                      0x20069f00, 0x2006b310, 0x2006b334,
+                      0x20069f00, 0x2006b000, 0x2006b200, 0x2006b310, 0x2006b334,
+                      0x2006a000, 0x2006a024, 0x2006a040,
+                      0x2006a200, 0x2006a27c, 0x2006a370,
+                      0x2006be00, 0x2006be24, 0x2006be40,
                       0x2006a414, 0x2006a450, 0x2006a654, 0x2006ad6c,
                       0x2006b318, 0x2006b3bc, 0x2006b3fc,
-                      0x2006b880, 0x2006ba14, 0x2006bd80)
+                      0x2006b800, 0x2006b820, 0x2006b87c, 0x2006b880, 0x2006b980,
+                      0x2006b984,
+                      0x2006ba00, 0x2006ba14, 0x2006ba34, 0x2006bab8, 0x2006bd80)
             values = {1: {}, 3: {}}
             for thread, peer in ((1, 3), (3, 1)):
                 for address in fields:
@@ -75,9 +80,20 @@ def check(qemu):
                 require(remote.read(target, 9) == b'keep-data',
                         'Configuration fabricated a pixel transfer')
                 for address in (0x20068504, 0x20068900, 0x20069914,
-                                0x2006a454, 0x2006a3e0, 0x2006b204):
+                                0x2006a454, 0x2006a028, 0x2006a374, 0x2006b204,
+                                0x2006b98c, 0x2006babc, 0x2006be28, 0x2006bf30):
                     access(thread, address, 1, valid=False)
                     access(thread, address, valid=False)
+                for address in (0x2006a044, 0x2006a100, 0x2006a12c,
+                                0x2006a3e0, 0x2006a3ec, 0x2006b988,
+                                0x2006bb70, 0x2006bb78, 0x2006bb7c,
+                                0x2006bc78, 0x2006bd7c, 0x2006be44,
+                                0x2006bf00, 0x2006bf2c):
+                    require(access(thread, address) == 0,
+                            'Passive result register manufactured output')
+                    access(thread, address, 1, valid=False)
+                    require(access(thread, address) == 0,
+                            'Rejected result write changed the register')
                 access(thread, 0x20068500, 0x4000, valid=False)
                 access(thread, 0x20068500, 1, byte=True, valid=False)
                 access(thread, 0x20068501, 1, valid=False)

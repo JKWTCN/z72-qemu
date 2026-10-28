@@ -300,6 +300,8 @@ class Machine:
                       if getattr(self.args, 'display_complete', False) else ()) +
                      (('nikon-z72-boot-config.input-handshake=on',)
                       if getattr(self.args, 'input_handshake', False) else ()) +
+                     (('nikon-z72-boot-config.frame-phase=on',)
+                      if getattr(self.args, 'frame_phase', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),

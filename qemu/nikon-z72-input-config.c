@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Input processing configuration storage recovered from the firmware.
- * This device does not execute pixel processing or complete transfers. */
+ * Result registers remain at their laboratory reset value of zero until
+ * a pixel-processing producer is modeled; no transfers are completed. */
 #include "qemu/osdep.h"
 #include "hw/sysbus.h"
 #include "hw/resettable.h"
@@ -20,6 +21,17 @@ struct Z72InputConfig {
     uint32_t registers[CONFIG_LIMIT / 4];
 };
 
+static bool input_result_register(hwaddr offset)
+{
+    return (offset >= 0x2100 && offset <= 0x212c) ||
+           (offset >= 0x3f00 && offset <= 0x3f2c) ||
+           (offset >= 0x23e0 && offset <= 0x23ec) ||
+           offset == 0x2044 || offset == 0x3e44 || offset == 0x3988 ||
+           offset == 0x3b70 || offset == 0x3b78 || offset == 0x3b7c ||
+           offset == 0x3c78 || offset == 0x3c7c ||
+           offset == 0x3d78 || offset == 0x3d7c;
+}
+
 static bool input_config_accepts(void *opaque, hwaddr offset, unsigned size,
                                  bool is_write, MemTxAttrs attrs)
 {
@@ -29,14 +41,22 @@ static bool input_config_accepts(void *opaque, hwaddr offset, unsigned size,
         { 0xf00, 0x100c }, { 0x1100, 0x117c },
         { 0x1500, 0x1530 }, { 0x1600, 0x17fc },
         { 0x1d00, 0x1efc }, { 0x1f00, 0x1f00 },
+        { 0x2000, 0x2024 }, { 0x2040, 0x2040 },
+        { 0x2200, 0x2370 },
+        { 0x3000, 0x3200 },
         { 0x3310, 0x33bc }, { 0x33c0, 0x33c0 },
         { 0x33c4, 0x33c8 }, { 0x33cc, 0x33fc },
         { 0x3400, 0x3400 },
+        { 0x3800, 0x3984 }, { 0x3a00, 0x3ab8 },
+        { 0x3e00, 0x3e24 }, { 0x3e40, 0x3e40 },
     };
 
     offset += CONFIG_FIRST;
     if (size != 4 || (offset & 3)) {
         return false;
+    }
+    if (input_result_register(offset)) {
+        return !is_write;
     }
     for (unsigned i = 0; i < G_N_ELEMENTS(ranges); i++) {
         if (offset >= ranges[i].first && offset <= ranges[i].last) {

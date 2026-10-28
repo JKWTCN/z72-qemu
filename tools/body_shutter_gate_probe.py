@@ -422,6 +422,8 @@ def main():
     parser.add_argument('--display-complete', action='store_true')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
+    parser.add_argument('--frame-phase', action='store_true',
+                        help='Enable the optional masked periodic sampling phase source')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
     parser.add_argument('--local-stop-events', action='store_true',
@@ -433,8 +435,11 @@ def main():
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30)
+    parser.add_argument('--boot-watch', type=int, default=240,
+                        help='Host seconds to wait for the shooting foreground (30..600)')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
+    require(30 <= args.boot_watch <= 600, 'Boot watch time out of bounds')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -446,7 +451,7 @@ def main():
     machine = Machine(args)
     try:
         machine.restart()
-        deadline = time.monotonic() + 240
+        deadline = time.monotonic() + args.boot_watch
         while time.monotonic() < deadline:
             state = machine.status()
             if state['phase'] == 'failed':
@@ -455,6 +460,25 @@ def main():
                 break
             time.sleep(1)
         else:
+            report = dict(observation='shooting-startup-deadline', boot=state,
+                          boot_watch_seconds=args.boot_watch,
+                          display_complete=args.display_complete,
+                          input_handshake=args.input_handshake, frame_phase=args.frame_phase,
+                          shooting_foreground_ready=False)
+            # A running console has detached its startup observer. Preserve
+            # the failed foreground's actual state before closing the VM.
+            if state['phase'] == 'running':
+                with machine.io:
+                    machine.qmp.command('stop')
+                    remote = Remote(machine.gdb_port)
+                    try:
+                        report['snapshot'] = snapshot(remote)
+                    finally:
+                        remote.command('D')
+                        remote.sock.close()
+                report['native_lcd'] = lcd_snapshot(machine)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
             raise TimeoutError('Shooting foreground did not become ready')
         initial_lcd = lcd_snapshot(machine)
         report = dict(observation=('native-playback-capture-stop' if args.playback else
@@ -462,6 +486,7 @@ def main():
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       input_handshake=args.input_handshake,
+                      frame_phase=args.frame_phase,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,

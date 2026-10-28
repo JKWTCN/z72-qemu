@@ -8,10 +8,10 @@ import time
 
 
 def check(qemu):
-    for role, enabled, sampling, automatic in (
-            ('master', False, False, True), ('master', True, False, True),
-            ('master', True, True, True), ('master', True, True, False),
-            ('slave', True, True, True)):
+    for role, enabled, sampling, automatic, phase in (
+            ('master', False, True, True, True), ('master', True, False, True, True),
+            ('master', True, True, True, True), ('master', True, True, False, True),
+            ('slave', True, True, True, True), ('master', True, True, True, False)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -22,6 +22,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.frame-sync={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', f'nikon-z72-boot-config.auto-complete={"on" if automatic else "off"}',
+            '-global', f'nikon-z72-boot-config.frame-phase={"on" if phase else "off"}',
             '-global', 'nikon-z72-boot-config.sample-lines=0x1234',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -122,6 +123,16 @@ def check(qemu):
                 write(0x200632e4, 1)
                 assert read(0x20060044) == 0
                 assert read(0x200632e0) == 8
+            write(0x20060040, 0x80)
+            command(f'set_irq_in {clock_path} frame-sync-enable 0 1')
+            command('clock_step 33333333')
+            expected = (0x10 if active else 0) | (0x80 if active and sampling and phase else 0)
+            assert read(0x20060044) == expected
+            write(0x20060040, 0)
+            write(0x20060044, 0x90)
+            command('clock_step 33333333')
+            assert read(0x20060044) == (0x10 if active else 0)
+            assert not read(0x20060044) & 1  # Phase timing never claims pixel readiness.
         finally:
             if stream is not None:
                 stream.close()
@@ -133,7 +144,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS frame synchronization: control batches, acknowledgement, source gating and role isolation')
+    print('PASS frame synchronization: masked phase, control batches, acknowledgement, source gating and role isolation')
 
 
 if __name__ == '__main__':
