@@ -76,6 +76,16 @@ INITIALIZATION_FOLLOWUP_POINTS = {
 MODE_REQUEST_POINTS = {address: label for address, label in RELEASE_EVENT_POINTS.items()
                        if label.startswith(('operation16-', 'operation17-'))}
 INPUT_CONFIG_POINTS = {
+    0x103976b0: 'input-context-timing-report',
+    0x103976fc: 'input-context-timing-notification',
+    0x1022f38a: 'input-context-notification',
+    0x1022f3b6: 'input-context-notification-decision',
+    0x1022f46c: 'input-context-forward',
+    0x103279ee: 'input-context-driver-notification',
+    0x10327a24: 'input-context-work-submit',
+    0x10325ff6: 'input-context-work',
+    0x10326028: 'input-context-state-decision',
+    0x103260fc: 'input-context-configuration-call',
     0x10231c70: 'input-configuration-build',
     0x10232040: 'input-configuration-prepare',
     0x102320ee: 'input-configuration-mask-decision',
@@ -261,6 +271,12 @@ class RegistrationMachine(Machine):
                         requested_mask=hex(int.from_bytes(remote.read(0xb1887dd0, 4), 'little')))
                     if pc == 0x102320ee:
                         record['remaining_mask'] = hex(remote.get(registers, 'r5'))
+                    if pc in (0x10325ff6, 0x10326028, 0x103279ee, 0x10327a24):
+                        record['driver_context_state'] = dict(
+                            fields={hex(offset): remote.read(0xb1868af0 + offset, 1)[0]
+                                    for offset in (1, 6, 7, 0x12, 0x1e, 0x25, 0x29)},
+                            active_context=hex(int.from_bytes(
+                                remote.read(0xb1868b7c, 4), 'little')))
                     if pc in (0x1023abaa, 0x1023aed8, 0x1023ad12, 0x1023afd4):
                         if pc == 0x1023abaa:
                             mask, table = remote.get(registers, 'r0'), remote.get(registers, 'r2')
