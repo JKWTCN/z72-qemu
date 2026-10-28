@@ -1,0 +1,167 @@
+{
+  "observation": "native-full-release-application-gate",
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 37,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "sd_attached": true,
+  "display_complete": true,
+  "watch_seconds": 30,
+  "trace": {
+    "before": {
+      "system_mode": 4,
+      "previous_mode": 2,
+      "action_state": 0,
+      "handler_object": "0xb1821b1c",
+      "action_handler": "0x104e6c1d",
+      "release_gate": 1,
+      "event1_pending": 0,
+      "event1_parameters": [
+        "0x1812"
+      ],
+      "capture_state": [
+        2,
+        0
+      ],
+      "operation14_callback": "0x0",
+      "status_codes": [],
+      "input_format": "0x0",
+      "input_geometry": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "switch_words": [
+        "0x200",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "records": [
+      {
+        "entry": "application-action",
+        "pc": "0x1053ba0e",
+        "thread": 1,
+        "registers": {
+          "r0": "0x2",
+          "r1": "0x10945940",
+          "r2": "0x2",
+          "r4": "0x1",
+          "r5": "0x40000000",
+          "r6": "0x0",
+          "r7": "0xb540f57c",
+          "lr": "0x1053b99b"
+        },
+        "action": "0x14",
+        "full_press": true,
+        "switch_words": [
+          "0xc0000200",
+          "0x0",
+          "0x0"
+        ]
+      },
+      {
+        "entry": "action-check-result",
+        "pc": "0x10542038",
+        "thread": 1,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x14",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10620025"
+        }
+      },
+      {
+        "entry": "release-gate-result",
+        "pc": "0x104e6c28",
+        "thread": 1,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x14",
+          "r2": "0x104e6c1d",
+          "r4": "0x14",
+          "r5": "0x0",
+          "r6": "0x14",
+          "r7": "0x0",
+          "lr": "0x104e6c29"
+        },
+        "release_gate": 1,
+        "action": "0x14"
+      },
+      {
+        "entry": "event1-check-result",
+        "pc": "0x1053e598",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0xb540f6bc",
+          "r2": "0x0",
+          "r4": "0xb181d970",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0x0",
+          "lr": "0x1053e597"
+        }
+      }
+    ],
+    "after": {
+      "system_mode": 4,
+      "previous_mode": 2,
+      "action_state": 0,
+      "handler_object": "0xb1821b1c",
+      "action_handler": "0x104e6c1d",
+      "release_gate": 1,
+      "event1_pending": 0,
+      "event1_parameters": [
+        "0x1812"
+      ],
+      "capture_state": [
+        2,
+        0
+      ],
+      "operation14_callback": "0x0",
+      "status_codes": [],
+      "input_format": "0x0",
+      "input_geometry": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "switch_words": [
+        "0xc0000200",
+        "0x0",
+        "0x0"
+      ]
+    },
+    "observed_seconds": 30.047,
+    "unseen": [
+      "past-release-gate",
+      "release-gate-clear-path"
+    ]
+  }
+}
