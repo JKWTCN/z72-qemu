@@ -49,10 +49,10 @@ currently the cleared frame) beside the graphics surface; see
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 live-view pixels from the capture pipeline and the natural production
-of a few notifications remain pending: the whole
-`0x4219`→`0x041b` notification chain is dormant because the sensor
-service provider never answers the boot-time registration (the device
-object stays null); see
+of a few notifications remain pending. Boot-time device registration
+completes through its local callback, and the peer returns the video-buffer
+completion and a successful card query. Subsequent device requests and
+capture readiness remain under investigation. See
 [notification chain research](research/z7ii/notification_chain.md).
 The steady menu cycle no longer shows the
 "Turn camera off and then on again" dialog: with the sampling source

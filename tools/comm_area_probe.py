@@ -54,9 +54,31 @@ def service_rings(machine):
         # read position. The first entry begins at +0x38.
         head = machine._words(window + 0x38, 4) if words[0] else []
         rings[index] = dict(pointer=hex(pointer),
+                            callback=hex(machine._words(window + 0xc638, 1)[0]),
                             write=words[0], read=words[1],
                             head=[hex(word) for word in head])
     return dict(pointers=[hex(p) for p in pointers], rings=rings)
+
+
+def messages(machine, base, end):
+    """Decode the occupied prefix, not a lifetime history after ring wrap."""
+    result = []
+    for index in range(min(end, 0xc0)):
+        address = base + 0x18 + index * ENTRY_STRIDE
+        code, meta = machine._words(address, 2)
+        service, sequence, size = meta & 255, (meta >> 8) & 255, meta >> 16
+        record = dict(index=index, code=hex(code), service=service,
+                      sequence=sequence, payload_bytes=size)
+        # Slave 100b618e sends the card query reply: slot at +0,
+        # state byte at +8, signed result at +44 in its 48-byte payload.
+        if service == 8 and code == 2 and size == 0x30:
+            payload = machine._words(address + 8, 12)
+            record['card_query'] = dict(slot=payload[0] & 255,
+                state_byte=payload[2] & 255,
+                result=payload[11] - (1 << 32) if payload[11] & (1 << 31)
+                       else payload[11])
+        result.append(record)
+    return result
 
 
 def sample(machine):
@@ -70,6 +92,7 @@ def sample(machine):
             header=[hex(word) for word in words],
             index=words[2], depth=words[4],
             magic_valid=bool(words[1] == 0xaa550001),
+            messages=messages(machine, base, words[2]),
             entries=[[hex(word) for word in
                       machine._words(base + 0x18 + entry * ENTRY_STRIDE, 4)]
                      for entry in range(4)])
@@ -97,14 +120,17 @@ def main():
     for name in ('master', 'slave', 'controller', 'out'):
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--wsl', action='store_true')
+    parser.add_argument('--sd-card', type=Path)
+    parser.add_argument('--display-complete', action='store_true')
+    parser.add_argument('--settle', type=float, default=0,
+                        help='Additional host seconds after foreground readiness')
     parser.add_argument('--interval', type=float, default=3.0)
     args = parser.parse_args()
     require(1 <= args.interval <= 30, 'Interval out of bounds')
+    require(0 <= args.settle <= 180, 'Settle time out of bounds')
     args.realtime = args.auto_menu = False
-    args.sd_card = None
     args.update_store = ROOT / '.local' / 'comm-area-store'
     args.update_image = None
-    args.display_complete = False
     machine = Machine(args)
     report = dict(observation='communication-areas', samples=[])
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -120,6 +146,12 @@ def main():
             time.sleep(1)
         else:
             raise TimeoutError('Shooting application did not become ready')
+        report['boot'] = state
+        report['sd_attached'] = args.sd_card is not None
+        report['display_complete'] = args.display_complete
+        report['settle_seconds'] = args.settle
+        if args.settle:
+            time.sleep(args.settle)
         for index in range(2):
             with machine.io:
                 machine.qmp.command('stop')

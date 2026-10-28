@@ -22,7 +22,7 @@ from tools.web_console import Machine
 BLOCKS = ((0xb18649f8, 0x60, 'table-1'), (0xb1864a60, 0x60, 'table-2'))
 LINKED = ((0xb2bc87f8, 0x40, 'link-1'), (0xb2bcf364, 0x40, 'link-2'))
 # The capture module block (slots +0x14/+0x18/+0x20/+0x50/+0x54/+0x58 hold
-# the router callbacks and device object) and the service-manager block's
+# the router callbacks and wait mask) and the service-manager block's
 # service-3 descriptors (+0x3dc/+0x438).
 BLOCKS += ((0xb1864834, 0x80, 'module'), (0xb238af30, 0x40, 'service-manager'),
            (0xb238b30c, 0x60, 'service-3-a'), (0xb238b368, 0x60, 'service-3-b'))
