@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "release_entry": "0x1032a792",
+  "consumer_offset": "0xc",
+  "releases": [
+    {
+      "mask": "0x1",
+      "remaining": "0x2"
+    },
+    {
+      "mask": "0x2",
+      "remaining": "0x0"
+    },
+    {
+      "mask": "0x2",
+      "remaining": "0x0"
+    }
+  ],
+  "header_entry": "0x10324f04",
+  "caller_argument": "context + 8",
+  "flags": [
+    {
+      "field_40": 1,
+      "counter": 1,
+      "state_6": 1
+    },
+    {
+      "field_40": 1,
+      "counter": 2,
+      "state_6": 1
+    },
+    {
+      "field_40": 0,
+      "counter": 2,
+      "state_6": 2
+    }
+  ],
+  "limitations": [
+    "Synthetic context, driver counters, query results and uncontended locks.",
+    "These fields alone do not identify a display request or pixel-processing job."
+  ]
+}

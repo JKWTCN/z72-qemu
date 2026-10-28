@@ -389,7 +389,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x1022e2e0: 'input-frame-notification',
                       0x1022e0ae: 'input-context-wait-update',
                       0x1022e154: 'input-context-wait-stored',
-                      0x1022e1aa: 'input-context-all-waits-complete'})
+                      0x1022e1aa: 'input-context-all-waits-complete',
+                      0x10321d80: 'input-context-driver-complete',
+                      0x10321d94: 'input-context-output-check',
+                      0x10321dbe: 'input-context-output-enqueue',
+                      0x1032a792: 'input-context-consumer-release',
+                      0x10321e22: 'input-context-consumer-return',
+                      0x10321e24: 'input-context-driver-output-return'})
     records = []
     hits = {}
     callback_hits = 0
@@ -429,6 +435,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     address=hex(watch_address), registers={name: hex(remote.get(registers, name))
                         for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                                      'r8', 'r9', 'r10', 'r11', 'r12', 'sp', 'lr', 'cpsr')})
+                if pc == 0x10361044:
+                    record['saved_return'] = hex(int.from_bytes(remote.read(
+                        remote.get(registers, 'sp'), 4), 'little'))
+                if watch_type == 2 and 0xb2c00000 <= watch_address <= 0xb5effffc:
+                    record['previous_word'] = hex(int.from_bytes(remote.read(watch_address, 4), 'little'))
                 if pc in (0x1024ffb4, 0x1024ffda):
                     descriptor = remote.get(registers, 'r5') - 0x14
                     columns, rows = struct.unpack('<HH', remote.read(descriptor + 0x1e, 4))
@@ -502,7 +513,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
                                                f'gpio-input 0 {level}')
                 if frame_notify and pc in (0x10238d4a, 0x10238c40, 0x1023c960, 0x1023beec,
-                                           0x1022e2e0, 0x1022e0ae, 0x1022e154, 0x1022e1aa):
+                                           0x1022e2e0, 0x1022e0ae, 0x1022e154, 0x1022e1aa,
+                                           0x10321d80, 0x10321d94, 0x10321dbe, 0x10321e22, 0x10321e24,
+                                           0x1032a792):
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
                     pointer = None
@@ -512,16 +525,24 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if code == 0x041a0002:
                             pointer = remote.get(registers, 'r1')
                             record['completed_object'] = hex(pointer)
-                    elif pc == 0x1022e0ae:
+                    elif pc in (0x1022e0ae, 0x1032a792):
                         pointer = remote.get(registers, 'r0')
                     elif pc == 0x1023beec:
                         pointer = remote.get(registers, 'r1')
                     elif pc in (0x1022e154, 0x1022e1aa):
                         pointer = remote.get(registers, 'r4')
+                    elif pc == 0x10321d80:
+                        packet = remote.get(registers, 'r4')
+                        pointer = int.from_bytes(remote.read(packet + 8, 4), 'little')
+                    elif pc in (0x10321d94, 0x10321dbe, 0x10321e22, 0x10321e24):
+                        pointer = remote.get(registers, 'r5')
                     if pointer is not None and 0xb2c00000 <= pointer < 0xb5effe00:
                         record['context'] = dict(address=hex(pointer),
                             parameters=hex(int.from_bytes(remote.read(pointer + 0x144, 4), 'little')),
-                            pending=hex(int.from_bytes(remote.read(pointer + 0x14c, 4), 'little')))
+                            pending=hex(int.from_bytes(remote.read(pointer + 0x14c, 4), 'little')),
+                            consumers=hex(remote.read(pointer + 0xc, 1)[0]),
+                            output_fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
+                                           for offset in (0x20, 0x40, 0x68, 0x6c, 0x70)})
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
