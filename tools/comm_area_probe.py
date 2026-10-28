@@ -32,6 +32,26 @@ CONTROL_BLOCKS = ((0xb1808928, 'master'), (0x41006f68, 'slave'))
 # consumer callback dispatches through (slave RAM via the bus window).
 SLAVE_COUNTERS = 0x4144f3ac
 SLAVE_HANDLERS = 0x4144f570
+# The slave's 11-slot service table (service ids 0..0xa) and the
+# master's counterpart, read through each owner's own view.
+SLAVE_SERVICES = 0x4144f380
+MASTER_SERVICES = 0xb1d19e48
+# The slave's per-service local ring pointers (cursor at +0x30) that
+# the generic handler enqueues consumed requests into.
+SLAVE_SERVICE_RINGS = 0x4144f584
+
+
+def service_rings(machine):
+    pointers = machine._words(SLAVE_SERVICE_RINGS, 11)
+    rings = {}
+    for index, pointer in enumerate(pointers):
+        if not 0xc0000000 <= pointer < 0xc2000000:
+            rings[index] = None
+            continue
+        window = 0x40000000 + (pointer & 0x0fffffff)
+        rings[index] = dict(pointer=hex(pointer),
+                            cursor=machine._words(window + 0x30, 1)[0])
+    return dict(pointers=[hex(p) for p in pointers], rings=rings)
 
 
 def sample(machine):
@@ -57,9 +77,13 @@ def sample(machine):
             magic_ok=bool(words[0xa] == 0xc00108 and words[0xb] == 0xaa550001))
     counters = machine._words(SLAVE_COUNTERS, 2)
     handlers = machine._words(SLAVE_HANDLERS, 5)
+    services = {'slave': [hex(word) for word in machine._words(SLAVE_SERVICES, 11)],
+                'master': [hex(word) for word in machine._words(MASTER_SERVICES, 11)]}
     return dict(areas=areas, controls=controls,
                 slave_counters=[hex(word) for word in counters],
-                slave_handlers=[hex(word) for word in handlers])
+                slave_handlers=[hex(word) for word in handlers],
+                services=services,
+                slave_service_rings=service_rings(machine))
 
 
 def main():
@@ -115,6 +139,14 @@ def main():
         print('slave counters', first['slave_counters'], '->',
               second['slave_counters'])
         print('slave handlers', first['slave_handlers'])
+        for engine in ('master', 'slave'):
+            print(engine, 'service table', first['services'][engine])
+        print('slave service rings', first['slave_service_rings']['pointers'])
+        for index, ring in first['slave_service_rings']['rings'].items():
+            if ring:
+                print(' service', index, 'ring', ring['pointer'],
+                      'cursor', ring['cursor'], '->',
+                      second['slave_service_rings']['rings'][index]['cursor'])
     finally:
         machine.close()
 
