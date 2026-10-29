@@ -132,6 +132,7 @@ def check(qemu):
             assert count() == 0, 'Primary DMA ran before its channel start'
             write(0x20068008, 0x400)
             assert property_value('input-running') == 0x400
+            assert read(0x20068200) == 0x98, 'Input enable changed the interrupt mask'
             tick()
             assert count() == int(active)
             assert read(0x20068210) == (0x59 if active and notifying else 0)

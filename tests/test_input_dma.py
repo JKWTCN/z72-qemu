@@ -106,7 +106,9 @@ def check(qemu):
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'DMA ran before the input enable request'
+            write(0x20068200, 0x79)
             start()
+            assert read(0x20068200) == 0x79
             tick()
             assert count() == int(active)
             assert read(0x20068210) == (0x59 if active and notifying else 0)
@@ -467,6 +469,7 @@ def check(qemu):
                     write(0x20068210 + bank * 32, 0xffffffff)
                     write(0x20068200 + bank * 32, 0)
                 write(0x20068008, operand)
+                assert read(0x20068200) == 0, 'Channel enable changed the interrupt mask'
                 write(0x20068200, 0)
                 write(0x2006800c, operand)
                 expected = role == 'master' and sampling and stopping

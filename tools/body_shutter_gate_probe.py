@@ -1581,6 +1581,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
                     if pc in (0x1020aafc, 0x1020ab00, 0x1020a830, 0x1020a834):
                         keep = keep and bool(remote.get(registers, 'r1') & 0x600)
+                        if keep:
+                            record['input_irq_masks'] = [hex(int.from_bytes(
+                                remote.read(0x20068200 + bank * 32, 4), 'little')) for bank in range(8)]
                     record['input_source'] = {name: machine.qmp.command('qom-get',
                         dict(path=capture_input_path, property=property_name)) for name, property_name in
                         (('running_mask', 'input-running'), ('frame_ticks', 'frame-sync-count'),
