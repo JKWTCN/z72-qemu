@@ -207,6 +207,10 @@ CORE_WORKER_POINTS = {
 
 RECONFIGURE_POINTS = {
     **CORE_WORKER_POINTS,
+    0x1022827c: 'reconfigure-capture-callback-registration',
+    0x103e7312: 'reconfigure-capture-mode-request',
+    0x10528afe: 'reconfigure-release-settings-build',
+    0x1052273e: 'reconfigure-release-settings-dispatch',
     0x1031dd62: 'reconfigure-driver-ready-bit1',
     0x10326700: 'reconfigure-driver-ready-bit2',
     0x10322666: 'reconfigure-backend-ready-notification',
@@ -467,7 +471,8 @@ def snapshot(remote):
         action_handler=hex(word(handler_object + 0x14)),
         release_gate=word(0xb1821e84), event1_pending=word(0xb201bdd4),
         release_action_context=dict(byte_b202c017=remote.read(0xb202c017, 1)[0],
-                                    byte_b202c97a=remote.read(0xb202c97a, 1)[0]),
+                                    byte_b202c97a=remote.read(0xb202c97a, 1)[0],
+                                    option41=word(0xb202bcd0), option42=word(0xb202bcd4)),
         event1_notifications=[hex(notification) for notification, event in
                               struct.iter_unpack('<II', notifications) if event == 1],
         capture_state=list(remote.read(0xb23f6a80, 2)),
@@ -1022,7 +1027,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < (64 if shutter_on_ready and not preview_press_sent and
+                    repeat = hits[pc] < (64 if pc == 0x1022827c or
+                                        shutter_on_ready and not preview_press_sent and
                                         pc == 0x103e1dea else 32 if pc == 0x103bded0 or
                                         half_before_full and pc == 0x103e1dea else 8)
             remote.breakpoint(pc, False)
@@ -1145,8 +1151,8 @@ def main():
     require(not args.frame_process or args.frame_generate, 'Frame processing requires generated input pixels')
     require(not args.shutter_on_preview or args.frame_process and args.reconfigure_watch and
             not args.playback, 'Preview shutter requires processing and a shooting reconfiguration observation')
-    require(not args.half_before_full or args.shutter_on_preview,
-            'Staged shutter requires preview-triggered input')
+    require(not args.half_before_full or args.shutter_on_preview or args.shutter_on_ready,
+            'Staged shutter requires preview- or readiness-triggered input')
     require(not args.input_boundary_events or args.frame_generate and args.frame_notify and
             args.reconfigure_watch and not args.playback,
             'Input boundary experiment requires RAW DMA and shooting reconfiguration observation')
