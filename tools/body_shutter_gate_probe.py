@@ -49,6 +49,12 @@ IMAGE_WORK_POINTS = {
     0x102456fc: 'image-work-later-stage',
     0x103d0c3a: 'image-work-completion',
 }
+IMAGE_WORK_WAIT_POINTS = {
+    0x10268c2a: 'image-work-service-wait',
+    0x10268c2e: 'image-work-service-wait-return',
+    0x10263a14: 'image-work-service-event-producer',
+    0x10266476: 'image-work-dependent-wait',
+}
 AFTER_PLAYBACK = {
     0x103f25ec: 'operation18-api',
     0x103ef386: 'operation18-task-request',
@@ -645,7 +651,8 @@ def snapshot(remote):
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
                         ('image', 0xb238e654), ('processing', 0xb23ecc80),
-                        ('input', 0xb25eeb78))},
+                        ('input', 0xb25eeb78), ('image-stage0', 0xb1864a94),
+                        ('image-stage2', 0xb1864bb0))},
         input_context_queues=input_context_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
@@ -1204,7 +1211,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         gate = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
                         if completed and (not (shutter_on_ready or capture_submit_on_ready) or gate == 0):
                             if image_work_events and not image_work_armed:
-                                for address, label in IMAGE_WORK_POINTS.items():
+                                for address, label in (IMAGE_WORK_POINTS | IMAGE_WORK_WAIT_POINTS).items():
                                     remote.breakpoint(address)
                                     armed[address] = label
                                 image_work_armed = True
@@ -1377,6 +1384,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 busy=remote.read(parameters + 0x3e30, 1)[0])
                     if pc == 0x102456fc:
                         record['worker_stage'] = remote.get(registers, 'r1')
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 8
+                if pc in IMAGE_WORK_WAIT_POINTS:
+                    if pc in (0x10268c2a, 0x10268c2e):
+                        record['returned_or_seeded_flags'] = hex(int.from_bytes(
+                            remote.read(remote.get(registers, 'sp') + 8, 4), 'little'))
+                        record['parameters'] = hex(remote.get(registers, 'r4'))
+                    if pc == 0x10266476:
+                        pointer = remote.get(registers, 'r0')
+                        if 0xb2c00000 <= pointer <= 0xb5efffe4:
+                            record['dependent_event'] = [hex(value) for value in struct.unpack(
+                                '<3I', remote.read(pointer + 0x10, 12))]
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
                 if pc in BODY_CONFIGURATION_POINTS:

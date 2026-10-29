@@ -1,0 +1,338 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "handlers": [
+    "0x103699a4",
+    "0x10369968"
+  ],
+  "interrupt_ids": [
+    99,
+    100
+  ],
+  "status_addresses": [
+    "0x20380024",
+    "0x203c0024"
+  ],
+  "callbacks": [
+    "0x102e468a",
+    "0x102e4608"
+  ],
+  "translator": "0x102637c2",
+  "cases": [
+    {
+      "bank": 0,
+      "name": "empty",
+      "status": "0x0",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e468a",
+          "category": 0,
+          "status": "0x0"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 0,
+      "name": "bit12-forwarded",
+      "status": "0x1000",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e468a",
+          "category": 0,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [
+        {
+          "code": "0x42190805",
+          "payload": "0x1000"
+        }
+      ],
+      "events": [
+        {
+          "api": "0x103610cc",
+          "object": "0xb1864850",
+          "bits": "0x400000"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb186487c",
+          "bits": "0x8"
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "name": "service-masked",
+      "status": "0x1000",
+      "service_forward_mask": "0x0",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e468a",
+          "category": 0,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 0,
+      "name": "library-mode-one",
+      "status": "0x1000",
+      "service_forward_mask": "0x1000",
+      "library_mode": 1,
+      "classifications": [
+        {
+          "callback": "0x102e468a",
+          "category": 2,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 0,
+      "name": "bit12-with-error-bit7",
+      "status": "0x1080",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e468a",
+          "category": 1,
+          "status": "0x1080"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "bytes": 4,
+          "value": "0x1080"
+        }
+      ],
+      "forwarded": [
+        {
+          "code": "0x42190805",
+          "payload": "0x1080"
+        }
+      ],
+      "events": [
+        {
+          "api": "0x103854c4",
+          "object": "0xb1d52938",
+          "bits": "0x100"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb1864850",
+          "bits": "0x400000"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb186487c",
+          "bits": "0x8"
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "name": "empty",
+      "status": "0x0",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e4608",
+          "category": 0,
+          "status": "0x0"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 1,
+      "name": "bit12-forwarded",
+      "status": "0x1000",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e4608",
+          "category": 0,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [
+        {
+          "code": "0x42190805",
+          "payload": "0x1000"
+        }
+      ],
+      "events": [
+        {
+          "api": "0x103610cc",
+          "object": "0xb1864850",
+          "bits": "0x400000"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb186487c",
+          "bits": "0x8"
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "name": "service-masked",
+      "status": "0x1000",
+      "service_forward_mask": "0x0",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e4608",
+          "category": 0,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 1,
+      "name": "library-mode-one",
+      "status": "0x1000",
+      "service_forward_mask": "0x1000",
+      "library_mode": 1,
+      "classifications": [
+        {
+          "callback": "0x102e4608",
+          "category": 2,
+          "status": "0x1000"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "forwarded": [],
+      "events": []
+    },
+    {
+      "bank": 1,
+      "name": "bit12-with-error-bit7",
+      "status": "0x1080",
+      "service_forward_mask": "0x1000",
+      "library_mode": 0,
+      "classifications": [
+        {
+          "callback": "0x102e4608",
+          "category": 1,
+          "status": "0x1080"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "bytes": 4,
+          "value": "0x1080"
+        }
+      ],
+      "forwarded": [
+        {
+          "code": "0x42190805",
+          "payload": "0x1080"
+        }
+      ],
+      "events": [
+        {
+          "api": "0x103854c4",
+          "object": "0xb1d52a8c",
+          "bits": "0x100"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb1864850",
+          "bits": "0x400000"
+        },
+        {
+          "api": "0x103610cc",
+          "object": "0xb186487c",
+          "bits": "0x8"
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Record task/event API calls without scheduling tasks."
+  ],
+  "limitations": [
+    "Synthetic status, library mode and callback registration; actual binding requires runtime evidence.",
+    "Service forwarding masks are distinct from unverified hardware interrupt masks.",
+    "Ordinary register storage records acknowledgement writes without hardware clearing.",
+    "No image processing, DMA transfer, device completion or photo is generated.",
+    "Bit 12 can be forwarded together with an error category; notification alone is not success."
+  ]
+}
