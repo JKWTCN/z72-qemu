@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Execute C 1.70 output register setters against synthetic descriptors."""
+"""Execute C 1.70 output setters and result reader with synthetic descriptors."""
 import argparse
 import hashlib
 import json
@@ -63,12 +63,30 @@ def probe(image):
             offsets = [0x50 + bank * 0x10 + index * 4 for index in range(4 if planes else 1)]
             require([native.word(base + offset) for offset in offsets] == targets[:len(offsets)],
                     'Original output address bank forwarding differs')
+        result_registers = [native.word(0xb18069d4 + channel * 4 + offset)
+                            for offset in (0x280, 0x2a8, 0x2d0, 0x2f8)]
+        require(all(base <= address < base + 0x100 for address in result_registers),
+                'Output result register lies outside its channel')
+        supplied = (0x1234007a, 0x5678008b, 0x13572468, 0x24681357)
+        for address, value in zip(result_registers, supplied):
+            native.u.mem_write(address, struct.pack('<I', value))
+        native.u.mem_write(descriptor, b'\xa5' * 12)
+        native.call(0x1eb1b0, 0, channel, descriptor)
+        result = bytes(native.u.mem_read(descriptor, 12))
+        require(result == struct.pack('<BBHII', 0x7a, 0x8b, 0xa5a5, supplied[2], supplied[3]),
+                'Original output result extraction differs')
         cases.append(dict(channel=channel, base=hex(base),
                           field_registers={key: hex(value) for key, value in registers.items()},
                           address_banks=['0x50', '0x60'], addresses_per_bank=4 if planes else 1,
+                          result_reader='0x1020b1b0',
+                          result_registers=[hex(address) for address in result_registers],
+                          result_field_offsets=[0, 1, 4, 8],
+                          result_field_bytes=[1, 1, 4, 4],
+                          result_padding_preserved=True,
+                          result_values=[result[0], result[1], *struct.unpack_from('<2I', result, 4)],
                           bank_selection_preserves_other_bits=True))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
-                execution='original Thumb setters with synthetic descriptors and MMIO storage',
+                execution='original Thumb setters/result reader with synthetic descriptors and MMIO storage',
                 builder=dict(entry='0x1023a63c', supplied_count=2, stored_count_minus_one=1,
                              count_register='0x2006a548',
                              buffer_extent=extent, extent_register='0x2006a580',
@@ -86,4 +104,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS original output descriptor fields, bank selection and address forwarding')
+    print('PASS original output descriptor setters and result reader')
