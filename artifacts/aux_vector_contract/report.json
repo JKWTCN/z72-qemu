@@ -1,0 +1,398 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x102ebb0c",
+  "grid": [
+    2,
+    2
+  ],
+  "cell_stride": 16,
+  "signed_component_offsets": [
+    0,
+    2
+  ],
+  "metric_offset": 4,
+  "field_bits": 16,
+  "metric_maximum": 10000,
+  "rejected_component_values": [
+    -512,
+    512
+  ],
+  "cases": [
+    {
+      "components": [
+        32,
+        -64
+      ],
+      "metric": 100,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 4,
+      "records": [
+        [
+          32,
+          -64,
+          1024,
+          100,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          100,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          100,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          100,
+          32768,
+          -65536
+        ]
+      ]
+    },
+    {
+      "components": [
+        32,
+        -64
+      ],
+      "metric": 10000,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 4,
+      "records": [
+        [
+          32,
+          -64,
+          1024,
+          10000,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          10000,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          10000,
+          32768,
+          -65536
+        ],
+        [
+          32,
+          -64,
+          1024,
+          10000,
+          32768,
+          -65536
+        ]
+      ]
+    },
+    {
+      "components": [
+        32,
+        -64
+      ],
+      "metric": 10001,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        -512,
+        0
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        512,
+        0
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        0,
+        -512
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        0,
+        512
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        513,
+        -513
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 4,
+      "records": [
+        [
+          513,
+          -513,
+          1024,
+          0,
+          525312,
+          -525312
+        ],
+        [
+          513,
+          -513,
+          1024,
+          0,
+          525312,
+          -525312
+        ],
+        [
+          513,
+          -513,
+          1024,
+          0,
+          525312,
+          -525312
+        ],
+        [
+          513,
+          -513,
+          1024,
+          0,
+          525312,
+          -525312
+        ]
+      ]
+    },
+    {
+      "components": [
+        -511,
+        511
+      ],
+      "metric": 0,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 4,
+      "records": [
+        [
+          -511,
+          511,
+          1024,
+          0,
+          -523264,
+          523264
+        ],
+        [
+          -511,
+          511,
+          1024,
+          0,
+          -523264,
+          523264
+        ],
+        [
+          -511,
+          511,
+          1024,
+          0,
+          -523264,
+          523264
+        ],
+        [
+          -511,
+          511,
+          1024,
+          0,
+          -523264,
+          523264
+        ]
+      ]
+    },
+    {
+      "components": [
+        0,
+        0
+      ],
+      "metric": 65535,
+      "roi": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "selected": 0,
+      "records": []
+    },
+    {
+      "components": [
+        32,
+        -64
+      ],
+      "metric": 100,
+      "roi": [
+        16,
+        16,
+        48,
+        48
+      ],
+      "selected": 4,
+      "records": [
+        [
+          32,
+          -64,
+          256,
+          100,
+          8192,
+          -16384
+        ],
+        [
+          32,
+          -64,
+          256,
+          100,
+          8192,
+          -16384
+        ],
+        [
+          32,
+          -64,
+          256,
+          100,
+          8192,
+          -16384
+        ],
+        [
+          32,
+          -64,
+          256,
+          100,
+          8192,
+          -16384
+        ]
+      ]
+    },
+    {
+      "components": [
+        32,
+        -64
+      ],
+      "metric": 100,
+      "roi": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "selected": 1,
+      "records": [
+        [
+          32,
+          -64,
+          1024,
+          100,
+          32768,
+          -65536
+        ]
+      ]
+    }
+  ],
+  "aggregate": {
+    "entry": "0x102ebcb2",
+    "origin": [
+      32,
+      32
+    ],
+    "valid": 1,
+    "metric": 100,
+    "position": [
+      33,
+      30
+    ],
+    "tag": 4951
+  },
+  "component_units_per_coordinate": 32,
+  "limitations": [
+    "Synthetic cells and ROI; no image analysis or hardware completion.",
+    "Only this consumer is checked; the remaining cell bytes are not assigned semantics.",
+    "Exact sentinel rejection is not a general component range check."
+  ]
+}

@@ -369,6 +369,21 @@ def auxiliary_image_snapshot(remote):
         result['section_descriptor'] = hex(descriptor)
         if descriptor & 3 == 2:
             result['physical_base'] = hex((descriptor & 0xfff00000) | 0x1000)
+    # 0x1022e6b0 uses the subcontext at 0xb1887df0, not 0xb1887d70.
+    handle = word(0xb1887e0c)
+    node, count = word(0xb1d607e8), word(0xb1d607f0)
+    dispatch = dict(handle_address='0xb1887e0c', handle=hex(handle),
+                    registry_count=count, scanned=0, matches=[])
+    for index in range(min(count, 64)):
+        if not 0xb1800000 <= node <= 0xb5effff3:
+            break
+        entry = word(node + 8)
+        if 0xb1800000 <= entry <= 0xb5efffdf and word(entry + 4) == handle:
+            dispatch['matches'].append(dict(index=index, record=hex(entry),
+                route=remote.read(entry, 1)[0], callback=hex(word(entry + 0x1c))))
+        dispatch['scanned'] += 1
+        node = word(node + 4)
+    result['input_result_dispatch'] = dispatch
     if 0xb1800000 <= current <= 0xb5efff27:
         result['configuration'] = {hex(offset): hex(word(current + offset)) for offset in
             (0, 4, 0xc, 0x10, 0x14, 0x18, 0x20, 0x24, 0x28,

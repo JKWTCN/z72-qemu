@@ -313,8 +313,23 @@ class NativeCaptureCaller:
                         parameters=hex(self.word(pointer + 0x144)),
                         pending=hex(self.word(pointer + 0x14C)))
             if pc == 0x10236150 and 0xB1800000 <= r0 <= 0xB5FFFFF3:
-                detail['auxiliary_request'] = dict(mode=self.remote.read(r0, 1)[0],
-                    source=hex(self.word(r0 + 4)), target=hex(self.word(r0 + 8)))
+                source, target = self.word(r0 + 4), self.word(r0 + 8)
+                request = dict(mode=self.remote.read(r0, 1)[0], source=hex(source), target=hex(target))
+                if 0xB1800000 <= source <= 0xB5FFFFD9:
+                    request['source_geometry'] = list(struct.unpack('<hh', self.remote.read(source + 0x22, 4)))
+                    payload = self.word(source + 4)
+                    if 0xB1800000 <= payload <= 0xB5FFFFFC:
+                        address = self.word(payload)
+                        request['source_address'] = hex(address)
+                        if (0x50300000 <= address <= 0x5F8D1400 or
+                                0x5F900000 <= address <= 0x626FF000):
+                            sample = self.remote.read(address, 4096)
+                            request['source_sample'] = dict(bytes=len(sample),
+                                sha256=hashlib.sha256(sample).hexdigest(), unique_bytes=len(set(sample)))
+                if 0xB1800000 <= target <= 0xB5FFFFE3:
+                    request['target_range'] = dict(address=hex(self.word(target + 0x14)),
+                                                   bytes=self.word(target + 0x18))
+                detail['auxiliary_request'] = request
             if pc == 0x10236198:
                 detail['auxiliary_submit_status'] = self.remote.get(registers, 'r6')
             if pc == 0x10244B92 and 0xB1800000 <= r0 <= 0xB5FFFFE7:
