@@ -1,0 +1,180 @@
+{
+  "firmware_included": false,
+  "observation": "automatic-native-lcd-register-preview",
+  "manual_mode1_events": 0,
+  "manual_boundary_events": 0,
+  "application": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 89,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "samples": [
+    {
+      "before": {
+        "raw_frames": 43,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 30,
+        "processing_grids": 30,
+        "primary_frames": 0
+      },
+      "after": {
+        "raw_frames": 43,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 30,
+        "processing_grids": 30,
+        "primary_frames": 0
+      },
+      "png_bytes": 69288,
+      "sha256": "5fb533f185bac6987812c3f5349ca25f9d09aedd511bb7885588c079e41abd2f",
+      "planes": [
+        {
+          "address": "0xdcec4800",
+          "bytes": 698368,
+          "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 2
+        },
+        {
+          "address": "0xcbbaf000",
+          "bytes": 1396736,
+          "sha256": "cd2a2a5dcc2e06d15b910c28d1c22738857f0d0b3160499c8aaac30a9114148e",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 209
+        },
+        {
+          "address": "0xcbd04000",
+          "bytes": 698368,
+          "sha256": "0bc3dd7535cfab6e9f79cdb28fa943b53a8de5fca1a8f9e7d237aecf86428044",
+          "minimum": 0,
+          "maximum": 255,
+          "unique_bytes": 227
+        }
+      ]
+    },
+    {
+      "before": {
+        "raw_frames": 44,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 31,
+        "processing_grids": 31,
+        "primary_frames": 0
+      },
+      "after": {
+        "raw_frames": 44,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 31,
+        "processing_grids": 31,
+        "primary_frames": 0
+      },
+      "png_bytes": 69288,
+      "sha256": "5fb533f185bac6987812c3f5349ca25f9d09aedd511bb7885588c079e41abd2f",
+      "planes": [
+        {
+          "address": "0xdcec4800",
+          "bytes": 698368,
+          "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 2
+        },
+        {
+          "address": "0xcbbaf000",
+          "bytes": 1396736,
+          "sha256": "cd2a2a5dcc2e06d15b910c28d1c22738857f0d0b3160499c8aaac30a9114148e",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 209
+        },
+        {
+          "address": "0xcbd04000",
+          "bytes": 698368,
+          "sha256": "0bc3dd7535cfab6e9f79cdb28fa943b53a8de5fca1a8f9e7d237aecf86428044",
+          "minimum": 0,
+          "maximum": 255,
+          "unique_bytes": 227
+        }
+      ]
+    },
+    {
+      "before": {
+        "raw_frames": 45,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 32,
+        "processing_grids": 32,
+        "primary_frames": 0
+      },
+      "after": {
+        "raw_frames": 45,
+        "startup_grids": 2,
+        "startup_grid_address": 1576293376,
+        "processing_frames": 32,
+        "processing_grids": 32,
+        "primary_frames": 0
+      },
+      "png_bytes": 69288,
+      "sha256": "5fb533f185bac6987812c3f5349ca25f9d09aedd511bb7885588c079e41abd2f",
+      "planes": [
+        {
+          "address": "0xdcb3c800",
+          "bytes": 698368,
+          "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 2
+        },
+        {
+          "address": "0xcbbaf000",
+          "bytes": 1396736,
+          "sha256": "cd2a2a5dcc2e06d15b910c28d1c22738857f0d0b3160499c8aaac30a9114148e",
+          "minimum": 16,
+          "maximum": 235,
+          "unique_bytes": 209
+        },
+        {
+          "address": "0xcbd04000",
+          "bytes": 698368,
+          "sha256": "0bc3dd7535cfab6e9f79cdb28fa943b53a8de5fca1a8f9e7d237aecf86428044",
+          "minimum": 0,
+          "maximum": 255,
+          "unique_bytes": 227
+        }
+      ]
+    }
+  ],
+  "distinct_images": 1,
+  "distinct_backgrounds": 1,
+  "model_source_sha256": "a6b478cc8a87700e08f4f42b3ef55f843fc0f4d825911df837927bfc0b4d6f18",
+  "limitations": [
+    "Laboratory sensor, power and startup synchronization inputs are enabled.",
+    "Grayscale register-buffer composition; hardware scanout latch and color processing remain unverified.",
+    "Images remain private local artifacts; this report contains metadata and hashes only.",
+    "Capture and photo writing are not proven by live-view images."
+  ]
+}
