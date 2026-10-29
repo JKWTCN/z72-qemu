@@ -262,6 +262,85 @@ def check(qemu):
                     write(0x20102100, 0x120)
                     tick()
                     assert processed() == 5 and read(0x20100020) == 0 and read(0x20380024) == 0
+                    # Native bank0 descriptors: three u16 views and one
+                    # experimental packed RAW12 grid. Padding belongs to RAM.
+                    def grids():
+                        return monitor('qom-get', dict(path=path, property='processing-grid-count'))
+
+                    for channel, control, stride in ((1, 0x20121, 128), (2, 0x10621, 96)):
+                        base = 0x20100400 + channel * 0x40
+                        for offset, value in ((0, control), (0x10, stride), (0x14, stride),
+                                (0x18, 128 if channel == 1 else 0), (0x20, 0x0028003c),
+                                (0x28, 0x12000 if channel == 1 else 0),
+                                (0x2c, 0x24000 if channel == 1 else 0)):
+                            write(base + offset, value)
+                    grid_targets = []
+                    for slot in range(4):
+                        scalar = 0xb3001000 + slot * 0x50000
+                        packed = 0xb3201000 + slot * 0x10000
+                        write(0x20102200 + (slot * 16 + 1) * 4, scalar)
+                        write(0x20102200 + (slot * 16 + 2) * 4, packed)
+                        for target, stride, used in (
+                                *((scalar + plane * 0x12000, 128, 120) for plane in range(3)),
+                                (packed, 96, 90)):
+                            grid_targets.append(target)
+                            command(f'memset {target:#x} {stride * 40:#x} 0xa5')
+                            write(target - 4, 0x11223344)
+                            write(target + stride * 40, 0x55667788)
+                    write(0x20102100, 0x121)
+                    write(0x20102000, 0x121)
+                    write(0x20102648, 1)
+                    # An invalid final plane, an overlap or a code-cache
+                    # destination must reject the entire grid bank.
+                    for invalid in (0x20068500, 0xb3001000, 0xbaa01000):
+                        for slot in range(4):
+                            target = (0xb3001000 + slot * 0x50000
+                                      if invalid == 0xb3001000 else invalid)
+                            write(0x20102200 + (slot * 16 + 2) * 4, target)
+                        tick()
+                        assert grids() == 0 and read(0x20100020) == 8
+                        assert all(read(target) == 0xa5a5a5a5 for target in grid_targets)
+                        write(0x20100020, 8)
+                        write(0x20380024, 0x1002)
+                    for slot in range(4):
+                        write(0x20102200 + (slot * 16 + 2) * 4, 0xb3201000 + slot * 0x10000)
+                    for address, invalid, valid in ((0x20102648, 0, 1),
+                            (0x20100490, 95, 96), (0x20100460, 0x0028003e, 0x0028003c)):
+                        write(address, invalid)
+                        tick()
+                        assert grids() == 0 and read(0x20100020) == 8
+                        assert all(read(target) == 0xa5a5a5a5 for target in grid_targets)
+                        write(address, valid)
+                        write(0x20100020, 8)
+                        write(0x20380024, 0x1002)
+                    for expected in range(1, 6):
+                        tick()
+                        assert grids() == expected and read(0x20100020) == 12, (grids(), expected, hex(read(0x20100020)), processed())
+                        frame = count() - 1
+                        slot = frame % 4
+                        for plane in range(4):
+                            stride, used = (128, 120) if plane < 3 else (96, 90)
+                            target = (0xb3001000 + slot * 0x50000 + plane * 0x12000
+                                      if plane < 3 else 0xb3201000 + slot * 0x10000)
+                            for y in (0, 19, 39):
+                                sy = 2 + y * (918 - 4) // 40
+                                values = []
+                                for x in range(0, 60, 1 if plane < 3 else 2):
+                                    sx = 2 + x * (1380 - 4) // 60
+                                    bright = ((sx // 64) ^ (sy // 64) ^ frame) & 1
+                                    values.append((4095 if bright else 0).to_bytes(2, 'little')
+                                                  if plane < 3 else bytes([255 if bright else 0]) * 3)
+                                row = b''.join(values)
+                                for x in range(0, used - 3, 4):
+                                    assert read(target + y * stride + x) == int.from_bytes(row[x:x + 4], 'little')
+                                if used % 4:
+                                    assert command(f'readw {target + y * stride + used - 2:#x}') == int.from_bytes(row[-2:], 'little')
+                                assert read(target + y * stride + used) == 0xa5a5a5a5
+                            assert read(target - 4) == 0x11223344
+                            assert read(target + stride * 40) == 0x55667788
+                        write(0x20100020, 12)
+                        write(0x20380024, 0x1002)
+                    write(0x20102100, 0x120)
                     # Boundary causes obey their masks and require successful RAW DMA.
                     def clear_input_causes():
                         for bank in (0, 3, 4):
@@ -340,6 +419,7 @@ def check(qemu):
             monitor('system_reset')
             assert count() == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
+            assert monitor('qom-get', dict(path=path, property='processing-grid-count')) == 0
             assert all(read(address) == 0 for address in (0x20380020, 0x20380024, 0x203c0020, 0x203c0024))
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()

@@ -350,6 +350,37 @@ def image_work_snapshot(remote):
                         # 0x103d0c3a selects/removes tracking queues with these flags.
                         queue_flags=hex(word(parameters + 0x6c)),
                         busy=remote.read(parameters + 0x3e30, 1)[0])
+                    owner = word(parameters + 0xc)
+                    if unused < 4 and 0xb2c00000 <= owner <= 0xb5effd40:
+                        data = remote.read(owner, 0x2c0)
+                        job['owner_output_words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
+                                                     for offset in range(0x60, 0x84, 4)}
+                        if unused == 0:
+                            descriptors = []
+                            for offset in (0x6c, 0x74, 0x78, 0x7c, 0x80):
+                                pointer = struct.unpack_from('<I', data, offset)[0]
+                                size = 0x80 if offset == 0x74 else 0x60
+                                if 0xb2c00000 <= pointer <= 0xb5f00000 - size:
+                                    values = struct.unpack('<' + str(size // 4) + 'I', remote.read(pointer, size))
+                                    descriptors.append(dict(owner_offset=hex(offset), address=hex(pointer),
+                                        fields={hex(at * 4): hex(value) for at, value in enumerate(values)}))
+                            job['owner_output_descriptors'] = descriptors
+                        headers = []
+                        seen = set()
+                        for offset in range(0x10, len(data), 4):
+                            pointer = struct.unpack_from('<I', data, offset)[0]
+                            if pointer in seen or not 0xb2c00000 <= pointer <= 0xb5efffc8:
+                                continue
+                            seen.add(pointer)
+                            header = remote.read(pointer, 0x38)
+                            shapes = [struct.unpack_from('<HH', header, at) for at in (0x1e, 0x28)]
+                            if not any(shape in ((30, 20), (60, 40), (1380, 918), (1024, 682))
+                                       for shape in shapes):
+                                continue
+                            headers.append(dict(owner_offset=hex(offset), address=hex(pointer),
+                                fields={hex(at): hex(struct.unpack_from('<I', header, at)[0])
+                                        for at in range(0, 0x38, 4)}))
+                        job['owner_image_headers'] = headers
                     if request <= 0xb5effd30:
                         data = remote.read(request + 0x8c, 88)
                         states = list(data[::8])
@@ -675,6 +706,8 @@ def snapshot(remote):
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
+        processing_bank_jobs=[processing_worker_snapshot(remote, task)
+                              for task in (0xb1d52600, 0xb1d52648)],
         image_service=image_service_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
@@ -796,6 +829,8 @@ def input_dma_snapshot(machine):
             result = dict(frames=count, address=hex(address), stride=stride)
             result['processing_frames'] = machine.qmp.command('qom-get',
                 dict(path=path, property='processing-dma-count'))
+            result['processing_grids'] = machine.qmp.command('qom-get',
+                dict(path=path, property='processing-grid-count'))
             result['auxiliary_jobs'] = machine.qmp.command('qom-get',
                 dict(path=path, property='aux-image-process-count'))
             result['primary_frames'] = machine.qmp.command('qom-get',
