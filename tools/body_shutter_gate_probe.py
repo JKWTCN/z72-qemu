@@ -20,6 +20,12 @@ AFTER_ACTION = {
     0x10542038: 'action-check-result',
     0x104e6c28: 'release-gate-result',
     0x104e6c66: 'past-release-gate',
+    0x104e6c70: 'release-action-qualification-result',
+    0x105548e2: 'release-action-context-check',
+    0x105548ec: 'release-action-property-check',
+    0x10554902: 'release-action-qualification-return',
+    0x104e16b4: 'release-action-configuration-entry',
+    0x104e1714: 'release-action-configuration-early-return',
     0x1053e598: 'event1-check-result',
     0x1053e62c: 'release-gate-clear-path',
 }
@@ -264,6 +270,28 @@ def processing_worker_snapshot(remote, task):
     return result
 
 
+def task_wait_snapshot(remote, task):
+    handle = int.from_bytes(remote.read(task, 4), 'little')
+    kernel_id = handle & 0xffff
+    result = dict(object=hex(task), handle=hex(handle), kernel_id=hex(kernel_id))
+    if not 0 < kernel_id < 512:
+        return result
+    tcb = 0xb2c32f30 + kernel_id * 0xd8
+    fields = struct.unpack('<48I', remote.read(tcb, 192))
+    if fields[2] & 0xffff != kernel_id:
+        return result
+    # Original scheduler 0x10107040/0x1010709c stores/restores SP at +0xbc.
+    # +0x40 is the syscall wait stack; +0x44 holds a wait argument.
+    stack = fields[47]
+    result.update(tcb=hex(tcb), flags=hex(fields[2]), entry=hex(fields[5]),
+                  saved_sp=hex(stack), syscall_sp=hex(fields[16]), stack_code_candidates=[])
+    if 0xb5000000 <= stack <= 0xb5effc00:
+        values = struct.unpack('<256I', remote.read(stack, 1024))
+        result['stack_code_candidates'] = [dict(offset=hex(index * 4), value=hex(value))
+            for index, value in enumerate(values) if 0x10020000 <= value < 0x107a0000]
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -412,6 +440,8 @@ def snapshot(remote):
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines,
         resources=resources, capture_readiness=readiness, cores=cores,
+        capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
+                       (('driver', 0xb23edde8), ('backend', 0xb21e2654))},
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,
@@ -436,6 +466,8 @@ def snapshot(remote):
         action_state=state, handler_object=hex(handler_object),
         action_handler=hex(word(handler_object + 0x14)),
         release_gate=word(0xb1821e84), event1_pending=word(0xb201bdd4),
+        release_action_context=dict(byte_b202c017=remote.read(0xb202c017, 1)[0],
+                                    byte_b202c97a=remote.read(0xb202c97a, 1)[0]),
         event1_notifications=[hex(notification) for notification, event in
                               struct.iter_unpack('<II', notifications) if event == 1],
         capture_state=list(remote.read(0xb23f6a80, 2)),
@@ -535,7 +567,8 @@ def input_dma_snapshot(machine):
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
-            watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False):
+            watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
+            input_boundary_events=False, shutter_on_ready=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -546,6 +579,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         armed = dict(RETURN_POINTS)
     if reconfigure:
         armed.update(RECONFIGURE_POINTS)
+    if input_boundary_events:
+        armed.update({0x102389c2: 'input-boundary-wait',
+                      0x102389c6: 'input-boundary-wait-return'})
     if frame_notify:
         armed.update({0x10238d4a: 'input-frame-task',
                       0x10238c40: 'input-frame-dequeue',
@@ -621,10 +657,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             require(remote.command(f'Z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
                     'Memory watchpoint rejected')
             memory_watch_armed = True
-        if not shutter_on_preview:
+        if not (shutter_on_preview or shutter_on_ready):
             machine.set_key(24 if returning else 8 if playback else 25, 0)
         preview_press_sent = False
         preview_half_tick = None
+        boundary_frame = 0
+        boundary_path = None
+        if input_boundary_events:
+            paths = ['/machine/unattached/' + name for name in machine.config_names]
+            boundary_path = next(path for path in paths if machine.qmp.command(
+                'qom-get', dict(path=path, property='master-role')))
+            boundary_frame = machine.qmp.command('qom-get',
+                dict(path=boundary_path, property='input-dma-count'))
         deadline = started + seconds
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
@@ -713,13 +757,37 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
-                            pc == 0x103191c4 and remote.get(registers, 'r1') != 0x10326677 or
+                            pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
                 if keep and pc == 0x103231b2:
                     record['state_transition'] = dict(previous=remote.get(registers, 'r7'),
                         next=remote.get(registers, 'r0'), request=remote.get(registers, 'r10'))
                 if pc == 0x1046c3c2:
                     record['display_configuration'] = remote.read(remote.get(registers, 'r1'), 24).hex()
+                if input_boundary_events and pc == 0x102389c2:
+                    requested = remote.get(registers, 'r1')
+                    routes = ((0x100000, 0, 3), (0x200000, 0, 4),
+                              (0x800000, 3, 5), (0x1000000, 3, 0), (0x4000000, 4, 7))
+                    frames = machine.qmp.command('qom-get',
+                        dict(path=boundary_path, property='input-dma-count'))
+                    lines = []
+                    if requested and not requested & ~0x5b00000 and frames > boundary_frame:
+                        selected = [(bank, bit) for mask, bank, bit in routes if requested & mask]
+                        enabled = all(int.from_bytes(remote.read(0x20068200 + bank * 32, 4),
+                                                     'little') & 1 << bit for bank, bit in selected)
+                        if enabled:
+                            for bank, bit in selected:
+                                line = bank * 32 + bit
+                                for level in (1, 0):
+                                    machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
+                                                   f'input-event {line} {level}')
+                                lines.append(line)
+                            boundary_frame = frames
+                    record['input_boundary'] = dict(requested=hex(requested), raw_frames=frames,
+                                                     injected_lines=lines)
+                if input_boundary_events and pc in (0x102389c2, 0x102389c6):
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 64
                 if pc == 0x103e1d30:
                     pointer = remote.get(registers, 'r5')
                     record['display_frame'] = dict(address=hex(pointer),
@@ -811,13 +879,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         words={hex(offset): hex(int.from_bytes(remote.read(packet + offset, 4), 'little'))
                                for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x1c, 0x20,
                                               0xdc, 0xe0, 0xe4, 0xe8, 0xec, 0xf0, 0xf4, 0xf8)})
-                    if shutter_on_preview and not preview_press_sent:
+                    if (shutter_on_preview or shutter_on_ready) and not preview_press_sent:
                         paths = ['/machine/unattached/' + name for name in machine.config_names]
                         path = next(path for path in paths if machine.qmp.command(
                             'qom-get', dict(path=path, property='master-role')))
                         completed = machine.qmp.command('qom-get',
                             dict(path=path, property='processing-dma-count'))
-                        if completed:
+                        gate = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
+                        if completed and (not shutter_on_ready or gate == 0):
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if half_before_full and preview_half_tick is None:
                                 machine.set_key(24, 0)
@@ -827,6 +896,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 machine.set_key(25, 0)
                                 preview_press_sent = True
                                 record['shutter_after_processing_frames'] = completed
+                                record['release_gate_before_press'] = gate
                                 if half_before_full:
                                     record['half_press_counter_seconds'] = (
                                         ticks - preview_half_tick) / before['counter_frequency']
@@ -952,7 +1022,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < (32 if pc == 0x103bded0 or
+                    repeat = hits[pc] < (64 if shutter_on_ready and not preview_press_sent and
+                                        pc == 0x103e1dea else 32 if pc == 0x103bded0 or
                                         half_before_full and pc == 0x103e1dea else 8)
             remote.breakpoint(pc, False)
             if repeat:
@@ -975,6 +1046,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     shutter_on_preview=shutter_on_preview,
                     preview_press_sent=preview_press_sent,
                     half_before_full=half_before_full, preview_half_sent=preview_half_tick is not None,
+                    input_boundary_events=input_boundary_events,
+                    shutter_on_ready=shutter_on_ready,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
@@ -1044,6 +1117,10 @@ def main():
                         help='Leave shutter contacts released until a display submission follows processed pixels')
     parser.add_argument('--half-before-full', action='store_true',
                         help='After preview starts, hold half-press for at least half a counter second before full-press')
+    parser.add_argument('--input-boundary-events', action='store_true',
+                        help='Laboratory input: pulse supported masked boundary causes at native waits after RAW DMA advances')
+    parser.add_argument('--shutter-on-ready', action='store_true',
+                        help='Full-press at a processed display submission after the native release gate clears')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1070,6 +1147,12 @@ def main():
             not args.playback, 'Preview shutter requires processing and a shooting reconfiguration observation')
     require(not args.half_before_full or args.shutter_on_preview,
             'Staged shutter requires preview-triggered input')
+    require(not args.input_boundary_events or args.frame_generate and args.frame_notify and
+            args.reconfigure_watch and not args.playback,
+            'Input boundary experiment requires RAW DMA and shooting reconfiguration observation')
+    require(not args.shutter_on_ready or args.frame_process and args.reconfigure_watch and
+            not args.playback and not args.shutter_on_preview,
+            'Ready shutter requires processing and shooting observation without preview-triggered input')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1154,6 +1237,8 @@ def main():
                                     watch_bytes=args.watch_bytes, watch_count=args.watch_count,
                                     shutter_on_preview=args.shutter_on_preview,
                                     half_before_full=args.half_before_full,
+                                    input_boundary_events=args.input_boundary_events,
+                                    shutter_on_ready=args.shutter_on_ready,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,

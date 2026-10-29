@@ -1155,7 +1155,15 @@ static void input_generate_frame(NikonZ72BootConfig *s)
         if (s->frame_notify) {
             /* Recovered frame timing / queued-output input causes. Keep
              * this opt-in until native buffer ownership is fully verified. */
-            *boot_config_value(s, 0x20068210) |= 0x41;
+            *boot_config_value(s, 0x20068210) |= 0x41 |
+                (*boot_config_value(s, 0x20068200) & 0x18);
+            /* Input reconfiguration waits for these enabled boundary
+             * causes at b188814c. They follow the completed RAW transfer;
+             * they do not claim auxiliary output buffers were written. */
+            *boot_config_value(s, 0x20068270) |=
+                *boot_config_value(s, 0x20068260) & 0x21;
+            *boot_config_value(s, 0x20068290) |=
+                *boot_config_value(s, 0x20068280) & 0x80;
             input_update_irqs(s);
         }
     }

@@ -101,7 +101,7 @@ def check(qemu):
             start()
             tick()
             assert count() == int(active)
-            assert read(0x20068210) == (0x41 if active and notifying else 0)
+            assert read(0x20068210) == (0x59 if active and notifying else 0)
             if active:
                 assert read(targets[0]) == 0
                 assert read(targets[0] + 96) == 0xffffffff
@@ -118,9 +118,9 @@ def check(qemu):
                 for target in targets:
                     assert read(target - 4) == 0x12345678
                     assert read(target + 416) == 0x87654321
-                assert read(0x20068210) == (0x41 if notifying else 0)
+                assert read(0x20068210) == (0x59 if notifying else 0)
                 assert all(read(0x20068210 + bank * 32) == 0 for bank in range(1, 8))
-                write(0x20068210, 0x41)
+                write(0x20068210, 0x59)
                 write(0x20068060, 3)
                 tick()
                 assert count() == 5, 'Stop request left input DMA active'
@@ -128,7 +128,7 @@ def check(qemu):
                 start()
                 tick()
                 assert count() == 6
-                write(0x20068210, 0x41)
+                write(0x20068210, 0x59)
                 for address, invalid, valid in ((0x20069514, 7, 6),
                         (0x20069518, 131 << 16, 130 << 16),
                         (0x20069518, (130 << 16) | 1, 130 << 16),
@@ -218,6 +218,30 @@ def check(qemu):
                     write(0x20102100, 0x120)
                     tick()
                     assert processed() == 5 and read(0x20100020) == 0
+                    # Boundary causes obey their masks and require successful RAW DMA.
+                    def clear_input_causes():
+                        for bank in (0, 3, 4):
+                            write(0x20068210 + bank * 32, 0xffffffff)
+
+                    clear_input_causes()
+                    write(0x20068200, 0)
+                    write(0x20068260, 0x25)
+                    write(0x20068280, 0x180)
+                    tick()
+                    assert read(0x20068210) == 0x41
+                    assert read(0x20068270) == 0x21
+                    assert read(0x20068290) == 0x80
+                    clear_input_causes()
+                    write(0x20068260, 1)
+                    write(0x20068280, 0)
+                    tick()
+                    assert read(0x20068270) == 1 and read(0x20068290) == 0
+                    clear_input_causes()
+                    planes([0] * 4)
+                    previous = count()
+                    tick()
+                    assert count() == previous
+                    assert all(read(0x20068210 + bank * 32) == 0 for bank in (0, 3, 4))
             monitor('system_reset')
             assert count() == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
