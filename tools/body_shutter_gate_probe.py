@@ -774,7 +774,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
-            capture_wait_idle=False):
+            capture_wait_idle=False, application_only=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -784,11 +784,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if returning:
         armed = dict(RETURN_POINTS)
     if reconfigure:
-        armed.update(RECONFIGURE_POINTS)
+        armed.update({address: label for address, label in RECONFIGURE_POINTS.items()
+                      if not application_only or address in
+                      (0x103e1dea, 0x1023c5dc)})
     if input_boundary_events:
         armed.update({0x102389c2: 'input-boundary-wait',
                       0x102389c6: 'input-boundary-wait-return'})
-    if frame_notify:
+    if frame_notify and not application_only:
         armed.update({0x10238d4a: 'input-frame-task',
                       0x10238c40: 'input-frame-dequeue',
                       0x1023c960: 'input-completed-enqueue',
@@ -826,6 +828,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if capture_submit_on_ready:
         armed.update({0x10239c34: 'primary-input-builder',
                       0x1038848a: 'primary-input-remap-request'})
+    if application_only:
+        armed.update({0x103ba6ea: 'body-native-capture-api',
+                      0x103ba164: 'body-native-capture-release',
+                      0x103f36fa: 'body-operation59-api',
+                      0x103f19c0: 'body-operation59-task',
+                      0x104e1690: 'release-configuration-timer-callback',
+                      0x1010000c: 'execution-prefetch-abort',
+                      0x10100010: 'execution-data-abort'})
     records = []
     hits = {}
     callback_hits = 0
@@ -1282,6 +1292,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if keep:
                     records.append(record)
+                if application_only and pc in (0x1010000c, 0x10100010):
+                    record['faults'] = {name: hex(remote.read_register(name)) for name in
+                                       ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}
+                    record['faulting_pc'] = hex((remote.get(registers, 'lr') -
+                        (4 if pc == 0x1010000c else 8)) & 0xffffffff)
+                    break
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
                     latch = int.from_bytes(remote.read(0xb26b38dc, 4), 'little')
                     record['mode1_output_latch'] = latch
@@ -1318,6 +1334,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     half_before_full=half_before_full, preview_half_sent=preview_half_tick is not None,
                     input_boundary_events=input_boundary_events,
                     shutter_on_ready=shutter_on_ready,
+                    application_only=application_only,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             not (capture_caller and capture_caller.ui_hits.get(address, 0)) and
@@ -1405,6 +1422,8 @@ def main():
                         help='Enable experimental grayscale block matching for auxiliary image requests')
     parser.add_argument('--capture-wait-idle', action='store_true',
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
+    parser.add_argument('--application-only', action='store_true',
+                        help='Limit body-shutter tracing to application, timer and capture entries')
     args = parser.parse_args()
     require(10 <= args.watch <= 900, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1442,6 +1461,9 @@ def main():
             'Diagnostic capture requires processing and shooting observation without body shutter input')
     require(not args.capture_wait_idle or args.capture_submit_on_ready,
             'Idle capture observation requires the diagnostic native capture caller')
+    require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
+            not (args.playback or args.capture_submit_on_ready or args.input_boundary_events),
+            'Application-only observation requires a processed-preview body shutter')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1535,6 +1557,7 @@ def main():
                                     shutter_on_ready=args.shutter_on_ready,
                                     capture_submit_on_ready=args.capture_submit_on_ready,
                                     capture_wait_idle=args.capture_wait_idle,
+                                    application_only=args.application_only,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
