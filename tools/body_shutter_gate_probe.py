@@ -353,7 +353,16 @@ def primary_input_snapshot(remote):
                            for offset in range(0, 0x14, 4)},
         dma={hex(offset): hex(word(0x20069800 + offset))
              for offset in (8, 0x14, 0x18, 0x3c, 0x40, 0x44, 0x48, 0x50, 0x60)},
+        second_dma={hex(offset): hex(word(0x20069900 + offset))
+                    for offset in (8, 0x50, 0x54, 0x58, 0x5c, 0x60, 0x64, 0x68, 0x6c)},
         buffers=[])
+    result['address_remap'] = []
+    for base in (0x201350b0, 0x2013d0b0):
+        values = struct.unpack('<40I', remote.read(base, 0xa0))
+        result['address_remap'].append(dict(base=hex(base), entries=[dict(slot=index,
+            target_page=hex(values[index]), mask_page=hex(values[index + 8]),
+            aperture_page=hex(values[index + 16]), word_60=hex(values[index + 24]),
+            word_80=hex(values[index + 32])) for index in range(8)]))
     ttbr = (remote.read_register('TTBR0_S') if all(name in remote.register_numbers
             for name in ('TTBR0_S', 'TTBCR_S')) and
             remote.read_register('TTBCR_S') == 0 else None)

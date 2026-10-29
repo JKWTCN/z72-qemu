@@ -1,0 +1,338 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "builder": "0x10239c34",
+  "descriptor_writer": "0x10239900",
+  "geometry_writer": "0x1020905a",
+  "cases": [
+    {
+      "split": false,
+      "source_format": 2,
+      "bits_per_sample": 12,
+      "geometry": [
+        "0x2",
+        "0xb000000",
+        "0x15900000",
+        "0x0",
+        "0x0"
+      ],
+      "first_stride": 4224,
+      "first_addresses": [
+        "0x68000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "second_stride": 0,
+      "second_addresses": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "mapping_requests": [],
+      "remap_registers": {
+        "target": [
+          "0x68000",
+          "0x6a000",
+          "0x6c000",
+          "0x6e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "mask": [
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "aperture": [
+          "0x18000",
+          "0x1a000",
+          "0x1c000",
+          "0x1e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      }
+    },
+    {
+      "split": true,
+      "source_format": 2,
+      "bits_per_sample": 12,
+      "geometry": [
+        "0x2",
+        "0xb000000",
+        "0x15900000",
+        "0x1",
+        "0x1560"
+      ],
+      "first_stride": 4224,
+      "first_addresses": [
+        "0x62700000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "second_stride": 12432,
+      "second_addresses": [
+        "0x18001080",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "mapping_requests": [
+        {
+          "domain": 2,
+          "address": "0x68000000",
+          "bytes": 75497472
+        }
+      ],
+      "remap_registers": {
+        "target": [
+          "0x68000",
+          "0x6a000",
+          "0x6c000",
+          "0x6e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "mask": [
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "aperture": [
+          "0x18000",
+          "0x1a000",
+          "0x1c000",
+          "0x1e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      }
+    },
+    {
+      "split": true,
+      "source_format": 3,
+      "bits_per_sample": 16,
+      "geometry": [
+        "0x0",
+        "0xb000000",
+        "0x15900000",
+        "0x1",
+        "0x1560"
+      ],
+      "first_stride": 5632,
+      "first_addresses": [
+        "0x62700000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "second_stride": 16576,
+      "second_addresses": [
+        "0x18001600",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "mapping_requests": [
+        {
+          "domain": 2,
+          "address": "0x68000000",
+          "bytes": 75497472
+        }
+      ],
+      "remap_registers": {
+        "target": [
+          "0x68000",
+          "0x6a000",
+          "0x6c000",
+          "0x6e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "mask": [
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "aperture": [
+          "0x18000",
+          "0x1a000",
+          "0x1c000",
+          "0x1e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      }
+    },
+    {
+      "split": true,
+      "source_format": 0,
+      "bits_per_sample": 14,
+      "geometry": [
+        "0x1",
+        "0xb000000",
+        "0x15900000",
+        "0x1",
+        "0x1560"
+      ],
+      "first_stride": 4928,
+      "first_addresses": [
+        "0x62700000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "second_stride": 14512,
+      "second_addresses": [
+        "0x18001340",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "mapping_requests": [
+        {
+          "domain": 2,
+          "address": "0x68000000",
+          "bytes": 75497472
+        }
+      ],
+      "remap_registers": {
+        "target": [
+          "0x68000",
+          "0x6a000",
+          "0x6c000",
+          "0x6e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "mask": [
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0xfe000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ],
+        "aperture": [
+          "0x18000",
+          "0x1a000",
+          "0x1c000",
+          "0x1e000",
+          "0x0",
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      }
+    }
+  ],
+  "native_geometry_and_dma_setters": true,
+  "remap_constructor": "0x1038816a",
+  "remap_request": "0x1038848a",
+  "remap_writer": "0x102ddc76",
+  "remap_lookup": "0x103880e4",
+  "remap_translation_cases": [
+    {
+      "source": "0x68000000",
+      "bytes": 1,
+      "aperture": "0x18000000"
+    },
+    {
+      "source": "0x69fff000",
+      "bytes": 8192,
+      "aperture": "0x19fff000"
+    },
+    {
+      "source": "0x6c001080",
+      "bytes": 4096,
+      "aperture": "0x1c001080"
+    },
+    {
+      "source": "0x6fffffff",
+      "bytes": 1,
+      "aperture": "0x1fffffff"
+    },
+    {
+      "source": "0x70000000",
+      "bytes": 1,
+      "aperture": "0xffffffff"
+    }
+  ],
+  "native_remap_programming": true,
+  "host_boundaries": [
+    "Uncontended lock/unlock."
+  ],
+  "limitations": [
+    "Synthetic full/partial buffer headers, addresses, input flags and remap window.",
+    "The synthetic window does not identify the running full-frame backing address.",
+    "Address-group forwarding does not establish ring rotation or completion timing.",
+    "No pixel packing order, DMA transfer, frame completion or photo is supplied."
+  ]
+}
