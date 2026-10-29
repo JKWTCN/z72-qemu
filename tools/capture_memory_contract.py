@@ -73,7 +73,9 @@ def probe(image):
                              (0x50560000, 0x30260000), (0x62059800, 0x36d59800),
                              (0x62700000, 0x62700000), (0x63d3c7fc, 0x63d3c7fc),
                              (0xab09e000, 0xab09e000), (0xab1ca000, 0xab1ca000),
-                             (0xac1c4ffc, 0xac1c4ffc)):
+                             (0xac1c4ffc, 0xac1c4ffc),
+                             (0xbaa00000, 0xbaa00000), (0xbad0a000, 0xbad0a000),
+                             (0xbb300000, 0xbb300000), (0xbee86000, 0x39086000)):
         row = engine.call(0x3a5ad8, source)
         require(0xb2b4145c <= row < 0xb2b415c4, 'Address-table lookup escaped its entries')
         start, kind, peer, end = struct.unpack('<4I', engine.u.mem_read(row, 16))

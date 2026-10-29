@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "profile": "0x11983578",
+  "constructor": "0x102e5e6c",
+  "allocator": "0x102e5fe4",
+  "constructor_arguments": [
+    "0x83900000",
+    "0x3b586000",
+    "0xaea000",
+    "0x107",
+    "0x57",
+    "0x68"
+  ],
+  "slot_count": 87,
+  "slot_stride": "0xaea000",
+  "metadata_bytes": "0x37bc",
+  "allocation": {
+    "requested_bytes": 68665344,
+    "source": "0xbad0a000",
+    "bytes": 68665344,
+    "view_bytes": 104,
+    "first_slot": 81,
+    "units": 6,
+    "end": "0xbee86000"
+  },
+  "code_cache_intersection": {
+    "start": "0xbad0a000",
+    "end": "0xbb300000",
+    "bytes": 6250496
+  },
+  "native_slot_construction_and_allocation": true,
+  "host_boundaries": [
+    "One bounded allocation of synthetic descriptor/view storage."
+  ],
+  "limitations": [
+    "Pool metadata uses synthetic RAM; no pixel storage is allocated or written.",
+    "The allocation reproduces the observed numeric overlap, not DMA address-space ownership.",
+    "No firmware wait, capture completion, JPEG or file is supplied."
+  ]
+}

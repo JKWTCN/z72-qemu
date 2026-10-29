@@ -903,7 +903,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
-            image_work_events=False):
+            image_work_events=False, capture_focus=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -921,7 +921,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if input_boundary_events:
         armed.update({0x102389c2: 'input-boundary-wait',
                       0x102389c6: 'input-boundary-wait-return'})
-    if frame_notify and not application_only:
+    if frame_notify and not (application_only or capture_focus):
         armed.update({0x10238d4a: 'input-frame-task',
                       0x10238c40: 'input-frame-dequeue',
                       0x1023c960: 'input-completed-enqueue',
@@ -959,7 +959,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if capture_submit_on_ready:
         armed.update({0x10239c34: 'primary-input-builder',
                       0x1038848a: 'primary-input-remap-request'})
-    if application_only:
+    if application_only or capture_focus:
         armed.update({0x103ba6ea: 'body-native-capture-api',
                       0x103ba164: 'body-native-capture-release',
                       0x103f36fa: 'body-operation59-api',
@@ -983,6 +983,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
             capture_caller = NativeCaptureCaller(remote)
+            if capture_focus:
+                selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
+                            0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
+                            0x10322fd4, 0x10323500, 0x1031dd00, 0x103e9d24,
+                            0x102389c2, 0x102389c6}
+                capture_caller.points = {address: label for address, label in
+                    capture_caller.points.items() if address not in capture_caller.ui_points or
+                    address in selected}
+                capture_caller.ui_points = {address: label for address, label in
+                    capture_caller.ui_points.items() if address in selected}
             armed.update(capture_caller.points)
         for address in armed:
             remote.breakpoint(address)
@@ -1154,6 +1164,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             if 0xb0000000 <= allocation <= 0xb5effff8:
                                 source, length = struct.unpack('<2I', remote.read(allocation, 8))
                                 row['allocation'] = primary_mapping_request(remote, 2, source, length)
+                                row['allocation']['descriptor'] = hex(allocation)
+                                if allocation <= 0xb5efffef:
+                                    row['allocation']['fields'] = {hex(offset): hex(int.from_bytes(
+                                        remote.read(allocation + offset, 4), 'little')) for offset in (8, 12)}
+                                    row['allocation']['field_0x10_byte'] = remote.read(allocation + 16, 1)[0]
                         record['primary_headers'].append(row)
                 if capture_caller and pc in capture_caller.ui_points:
                     record['ui_capture'], keep, repeat = capture_caller.ui_observation(pc, registers)
@@ -1514,7 +1529,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if keep:
                     records.append(record)
-                if application_only and pc in (0x1010000c, 0x10100010):
+                if (application_only or capture_focus) and pc in (0x1010000c, 0x10100010):
                     record['faults'] = {name: hex(remote.read_register(name)) for name in
                                        ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}
                     record['faulting_pc'] = hex((remote.get(registers, 'lr') -
@@ -1546,6 +1561,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         return dict(before=before, records=records, after=after,
                     diagnostic_capture=capture_caller.report if capture_caller else None,
                     capture_wait_idle=capture_wait_idle,
+                    capture_focus=capture_focus,
                     observed_seconds=round(time.monotonic() - started, 3),
                     observed_counter_seconds=round((after['counter_ticks'] - before['counter_ticks']) /
                                                    before['counter_frequency'], 6),
@@ -1644,12 +1660,16 @@ def main():
                         help='Diagnostic native-task capture API call after preview and release readiness')
     parser.add_argument('--trace-capture-resource-boot', action='store_true',
                         help='Observe capture resource bits 37/44 being written from reset')
+    parser.add_argument('--trace-primary-allocation-boot', action='store_true',
+                        help='Observe the C 1.70 primary allocation source and constructor arguments from reset')
     parser.add_argument('--processing-resource-header', action='store_true',
                         help='Supply group 23 with a zero experimental body and native storage trailer')
     parser.add_argument('--aux-image-process', action='store_true',
                         help='Enable experimental grayscale block matching for auxiliary image requests')
     parser.add_argument('--capture-wait-idle', action='store_true',
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
+    parser.add_argument('--capture-focus', action='store_true',
+                        help='Trace diagnostic capture admission, stop and primary allocation without background input work')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
@@ -1693,6 +1713,10 @@ def main():
             'Diagnostic capture requires processing and shooting observation without body shutter input')
     require(not args.capture_wait_idle or args.capture_submit_on_ready,
             'Idle capture observation requires the diagnostic native capture caller')
+    require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
+            'Focused capture requires the diagnostic caller without reconfiguration tracing')
+    require(not (args.trace_primary_allocation_boot and args.trace_capture_resource_boot),
+            'Select one boot observation')
     require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
             not (args.playback or args.capture_submit_on_ready or args.input_boundary_events),
             'Application-only observation requires a processed-preview body shutter')
@@ -1708,7 +1732,10 @@ def main():
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local/body-shutter-gate-store'
     args.update_image = None
-    if args.trace_capture_resource_boot:
+    if args.trace_primary_allocation_boot:
+        from tools.capture_allocation_boot_trace import CaptureAllocationMachine
+        machine = CaptureAllocationMachine(args)
+    elif args.trace_capture_resource_boot:
         from tools.capture_resource_boot_trace import CaptureResourceMachine
         machine = CaptureResourceMachine(args)
     else:
@@ -1793,6 +1820,7 @@ def main():
                                     shutter_on_ready=args.shutter_on_ready,
                                     capture_submit_on_ready=args.capture_submit_on_ready,
                                     capture_wait_idle=args.capture_wait_idle,
+                                    capture_focus=args.capture_focus,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
                                     image_work_events=args.image_work_events,
@@ -1804,6 +1832,8 @@ def main():
         report['processing_resource_header'] = args.processing_resource_header
         if args.trace_capture_resource_boot:
             report['capture_resource_boot_writes'] = machine.resource_boot_writes
+        if args.trace_primary_allocation_boot:
+            report['primary_allocation_boot_writes'] = machine.allocation_boot_writes
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
         report['final_application'] = machine.status()
