@@ -647,7 +647,14 @@
         "field_7c": 0
       }
     ],
-    "host_function_boundaries_used": false
+    "host_function_boundaries_used": false,
+    "target_descriptor": {
+      "entry": "0x1030ddf8",
+      "address_offset": "0x14",
+      "length_offset": "0x18",
+      "address": "0x5a000000",
+      "bytes": 27648
+    }
   },
   "interrupt_entry": "0x10294364",
   "interrupts": [

@@ -77,8 +77,18 @@ def builder_contract(native):
                        target=hex(native.word(output + 0x4c)), scratch=hex(scratch),
                        field_7c=native.word(output + 0x7c))
         cases.append(row)
+    target_descriptor = native.DATA + 0x2c00
+    native.u.mem_write(target_descriptor, b'\xa5' * 0x1c)
+    native.u.mem_write(target_descriptor + 4, struct.pack('<I', target))
+    native.call(0x2eddf8, target_descriptor)
+    require([native.word(target_descriptor + offset) for offset in (8, 0xc, 0x10)] == [0, 0, 0] and
+            native.word(target_descriptor + 0x14) == 0x5a000000 and
+            native.word(target_descriptor + 0x18) == 0x6c00,
+            'Auxiliary image target descriptor initialization differs')
     return dict(entry='0x10235ff6', source_geometry_offsets=['0x22', '0x24'],
-                cases=cases, host_function_boundaries_used=False)
+                cases=cases, host_function_boundaries_used=False,
+                target_descriptor=dict(entry='0x1030ddf8', address_offset='0x14',
+                    length_offset='0x18', address='0x5a000000', bytes=0x6c00))
 
 
 def probe(image):

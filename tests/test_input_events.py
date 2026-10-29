@@ -70,6 +70,52 @@ def check(qemu):
 
             groups = (94, 94, 95, 96, 96, 97, 97, 98)
             for role, thread, peer in ((0, 1, 3), (1, 3, 1)):
+                aux = 0x20201000
+                store(thread, aux + 0x2c, 0xff)
+                require(read(thread, aux + 0x2c) == 0,
+                        'Auxiliary status accepted a software-created event')
+                signal(role, 0, 1, 'aux-image-event')
+                require(read(thread, aux + 0x2c) == 1 and not pending(thread, 116),
+                        'Masked auxiliary event was lost or raised an interrupt')
+                store(thread, aux + 0x20, 3)
+                require(pending(thread, 116) and not pending(peer, 116) and
+                        read(peer, aux + 0x2c) == 0,
+                        'Auxiliary interrupt routing or engine isolation differs')
+                signal(role, 1, 1, 'aux-image-event')
+                store(thread, aux + 0x2c, 1)
+                clear_pending(thread, 116)
+                require(read(thread, aux + 0x2c) == 2 and pending(thread, 116),
+                        'Auxiliary acknowledgement lost another cause')
+                store(thread, aux + 0x20, 0)
+                clear_pending(thread, 116)
+                require(read(thread, aux + 0x2c) == 2 and not pending(thread, 116),
+                        'Auxiliary masking lost status or retained the interrupt')
+                store(thread, aux + 0x20, 2)
+                require(pending(thread, 116), 'Auxiliary unmask lost the pending cause')
+                store(thread, aux + 0x2c, 2)
+                clear_pending(thread, 116)
+                signal(role, 1, 1, 'aux-image-event')
+                require(read(thread, aux + 0x2c) == 0 and not pending(thread, 116),
+                        'Held auxiliary input manufactured another event')
+                signal(role, 1, 0, 'aux-image-event')
+                signal(role, 1, 1, 'aux-image-event')
+                require(read(thread, aux + 0x2c) == 2 and pending(thread, 116),
+                        'Auxiliary second rising edge was lost')
+                for line in (0, 1):
+                    signal(role, line, 0, 'aux-image-event')
+                store(thread, aux + 0x2c, 0xff)
+                clear_pending(thread, 116)
+                store(thread, aux + 0x20, 0)
+                store(thread, BASE + 0x1000, 0x13572468)
+                store(thread, aux + 0x178, BASE + 0x1000)
+                for offset, value in ((4, 1), (4, 0), (0, 1), (0, 0), (0x14, 1)):
+                    store(thread, aux + offset, value)
+                store(thread, aux + 0x1a0, 0xffffffff)
+                require(read(thread, aux + 0x2c) == 0 and not pending(thread, 116) and
+                        read(thread, aux + 0x1a0) == 0 and
+                        read(thread, aux + 0x178) == BASE + 0x1000 and
+                        read(thread, BASE + 0x1000) == 0x13572468,
+                        'Auxiliary control writes manufactured completion or output data')
                 for bank, irq in enumerate(groups):
                     mask = 0x20068200 + bank * 0x20
                     status = mask + 0x10
@@ -184,6 +230,8 @@ def check(qemu):
                             'Result window accepted a software write')
 
             for role, thread in ((0, 1), (1, 3)):
+                store(thread, 0x20201020, 1)
+                signal(role, 0, 1, 'aux-image-event')
                 store(thread, 0x20060034, 1)
                 signal(role, 0, 1, 'sync-event')
                 store(thread, 0x20060040, 1)
@@ -193,6 +241,14 @@ def check(qemu):
             require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK',
                     'Input event reset failed')
             for role, thread in ((0, 1), (1, 3)):
+                require(read(thread, 0x20201020) == 0 and
+                        read(thread, 0x2020102c) == 0 and not pending(thread, 116) and
+                        read(thread, 0x20201004) == 0 and read(thread, 0x20201014) == 0,
+                        'Reset retained auxiliary configuration, status or interrupt')
+                store(thread, 0x20201020, 1)
+                signal(role, 0, 1, 'aux-image-event')
+                require(read(thread, 0x2020102c) == 1 and pending(thread, 116),
+                        'Reset retained the auxiliary edge detector')
                 require(read(thread, 0x20060034) == 0 and
                         read(thread, 0x20060038) == 0 and not pending(thread, 86),
                         'Reset retained synchronization status or interrupt')
@@ -222,7 +278,8 @@ def check(qemu):
                 signal(role, 0, 1)
                 require(read(thread, 0x20068210) == 1 and pending(thread, 94),
                         'Reset retained the edge detector')
-            print('PASS input events: eight banks, 43 sync lines, automatic-sample bank, '
+            print('PASS input events: auxiliary image bank, eight input banks, '
+                  '43 sync lines, automatic-sample bank, '
                   'result window, masks, IRQs, reset and isolation', flush=True)
         finally:
             if stream is not None:

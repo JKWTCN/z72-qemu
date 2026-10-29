@@ -361,6 +361,14 @@ def auxiliary_image_snapshot(remote):
              0x100, 0x104, 0x108, 0x10c, 0x110, 0x118, 0x11c, 0x120, 0x124,
              0x128, 0x12c, 0x130, 0x140, 0x160, 0x164, 0x168, 0x16c, 0x170,
              0x178, 0x188, 0x1a0)})
+    translation = {name: remote.read_register(name) for name in remote.register_numbers
+                   if name.startswith(('TTBR0', 'TTBR1', 'TTBCR'))}
+    result['translation_registers'] = {name: hex(value) for name, value in translation.items()}
+    if 'TTBR0_S' in translation and translation.get('TTBCR_S') == 0:
+        descriptor = word((translation['TTBR0_S'] & 0xffffc000) + 0x202 * 4)
+        result['section_descriptor'] = hex(descriptor)
+        if descriptor & 3 == 2:
+            result['physical_base'] = hex((descriptor & 0xfff00000) | 0x1000)
     if 0xb1800000 <= current <= 0xb5efff27:
         result['configuration'] = {hex(offset): hex(word(current + offset)) for offset in
             (0, 4, 0xc, 0x10, 0x14, 0x18, 0x20, 0x24, 0x28,
