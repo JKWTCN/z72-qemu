@@ -331,7 +331,9 @@ class Machine:
         gpios, configs = children('nikon-z72-controller-gpio'), children('nikon-z72-boot-config')
         self.gpio_names, self.config_names = gpios, configs
         require(len(gpios) == 8 and len(configs) == 2, 'Missing controller or engine inputs')
-        for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1),
+        # G0 is the active-low lens detection input. There is no lens peer
+        # attached to this laboratory machine.
+        for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1), (6, 0, 1),
                                   (1, 11, 1), (6, 14, 1), (6, 15, 1),
                                   (6, SHUTTER_CONTACTS[0], 1),
                                   (6, SHUTTER_CONTACTS[1], 1)):

@@ -322,7 +322,17 @@ def snapshot(remote):
         engines[name] = dict(
             input_format=hex(word(0x20068500)),
             input_geometry=[hex(word(0x20069500 + i * 4)) for i in range(3)])
+    remote.select_thread(5)
+    lens_descriptor = word(0x2000EE10 + 96 * 4)
+    lens_detection = dict(controller_g0_level=word(0x40021810) & 1,
+        descriptor=hex(lens_descriptor),
+        debounced_samples=list(remote.read(0x2000E92C, 2)),
+        reported_connection=remote.read(0x2000E778, 1)[0])
+    if 0x20000000 <= lens_descriptor <= 0x2001FFF0:
+        lens_detection['descriptor_fields'] = [hex(value) for value in
+            struct.unpack('<4I', remote.read(lens_descriptor, 16))]
     remote.select_thread(1)
+    lens_detection['master_connection'] = remote.read(0xB188A27A, 1)[0]
     resources = {}
     for index in (11, 71, 80):
         row = 0xb185eb70 + index * 28
@@ -446,7 +456,7 @@ def snapshot(remote):
         driver_pending_functions=driver_pending,
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
-        engine_inputs=engines,
+        engine_inputs=engines, lens_detection=lens_detection,
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654))},

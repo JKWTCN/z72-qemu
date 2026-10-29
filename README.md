@@ -57,9 +57,12 @@ complete capture processing and the natural production
 of a few notifications remain pending. Boot-time device registration
 completes through its local callback, and the peer returns the video-buffer
 completion and a successful card query. Capture initialization also completes
-successfully. Full release reaches the application action, where a retained
-gate stops capture; its upstream completion notification and full capture processing
-remain under investigation. See
+successfully. With the processing profile, the application release gate clears.
+The console now supplies the detached lens detection level; this stops the
+reconnection loop and lets the native capture API accept a diagnostic request.
+The body shutter has not yet reached the observed submission entries, and
+capture completion and photo files remain unverified. See
+[capture submission research](research/z7ii/capture_release_submit.md) and
 [notification chain research](research/z7ii/notification_chain.md).
 The steady menu cycle no longer shows the
 "Turn camera off and then on again" dialog: with the sampling source
