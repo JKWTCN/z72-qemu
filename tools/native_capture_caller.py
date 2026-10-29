@@ -14,6 +14,27 @@ from tools.sdk_file_probe import CALLBACK, CODE, OBJECT, ORIGINAL_CALLBACK
 REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
+POST_SUBMIT_POINTS = {
+    0x1032385A: 'capture-driver-request-consumed',
+    0x10233222: 'capture-input-ready-request',
+    0x10233250: 'capture-input-ready-return',
+    0x103234E8: 'capture-driver-state14-entry',
+    0x10322E3E: 'capture-subsystem-stop-entry',
+    0x10322EF8: 'capture-local-stop-return',
+    0x10322F30: 'capture-processing-stop-return',
+    0x10322FD4: 'capture-subsystem-stop-return',
+    0x10323500: 'capture-driver-state14-stop-return',
+    0x1031DCCC: 'capture-stop-ready-update',
+    0x1031DCF8: 'capture-stop-ready-flags',
+    0x1031DD00: 'capture-stop-all-ready',
+    0x102301DC: 'capture-input-drain-return',
+    0x1023C82C: 'capture-input-disable-return',
+    0x10321A4C: 'capture-driver-notification',
+    0x103E9D24: 'capture-release-notification',
+    0x102389C2: 'capture-input-boundary-wait',
+    0x102389C6: 'capture-input-boundary-return',
+}
+
 
 def caller_code():
     code, literals = bytearray(), []
@@ -117,7 +138,8 @@ class NativeCaptureCaller:
                           0x1034D780: 'lens-retry-query-result',
                           0x1030E3E2: 'lens-control-retry',
                           0x10311462: 'lens-control-handshake-result',
-                          0x10311498: 'lens-control-response'}
+                          0x10311498: 'lens-control-response',
+                          **POST_SUBMIT_POINTS}
         self.points.update(self.ui_points)
         self.ui_hits = {}
         remote.select_thread(1)
@@ -164,6 +186,8 @@ class NativeCaptureCaller:
     def trigger(self):
         require(not self.report['triggered'], 'Capture diagnostic already triggered')
         remote = self.remote
+        remote.select_thread(1)
+        self.report['trigger_counter_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
         remote.select_thread(3)
         ring, sequence_address = 0xC60F0000, 0xC1006F74
         written, consumed = self.word(ring + 8), self.word(ring + 16)
@@ -198,7 +222,8 @@ class NativeCaptureCaller:
                     pc == 0x1042F4DA and r0 != 2 or
                     pc == 0x1042F2A8 and r0 not in (0x04400041, 0x04400042) or
                     pc == 0x1042F2E8 and (nor_event is None or nor_event[0] not in (67, 68)) or
-                    pc == 0x1030E3E2 and r1 != 11)
+                    pc == 0x1030E3E2 and r1 != 11 or
+                    pc in POST_SUBMIT_POINTS and not self.report['triggered'])
         self.ui_hits[pc] = self.ui_hits.get(pc, 0) + int(keep)
         detail = None
         if keep:
@@ -209,6 +234,14 @@ class NativeCaptureCaller:
                 blocking_resources=self.blocking_resources(),
                 callback_slots={str(operation): hex(self.word(0xB23F6FE4 + operation * 4))
                                 for operation in (6, 7, 8, 9)})
+            if pc in POST_SUBMIT_POINTS:
+                detail['stop_ready_flags'] = hex(self.word(0xB1868B64))
+                detail['input_ready_fields'] = {hex(offset): hex(self.word(0xB1887D70 + offset))
+                    for offset in (0x4C, 0x5C, 0x7C, 0x120)}
+            if pc in (0x10321A4C, 0x103E9D24):
+                detail['notification'] = hex(r0)
+                if 0xB1800000 <= r1 <= 0xB5FFFFFC:
+                    detail['notification_first_word'] = hex(self.word(r1))
             if pc == 0x1042DDA0 and 0xB1800000 <= r1 <= 0xB5FFFFFC:
                 detail['completion_status'] = self.word(r1)
             if consumed is not None:
@@ -234,6 +267,13 @@ class NativeCaptureCaller:
                         struct.unpack('<9I', self.remote.read(descriptor, 36))]
             if pc == 0x10311498 and 0xB1800000 <= r1 <= 0xB5FFFFFD:
                 detail['response_status'] = self.remote.read(r1 + 1, 1)[0]
+            if pc in (0x102389C2, 0x102389C6):
+                detail['input_wait_mask'] = hex(self.remote.get(registers, 'r4'))
+                detail['input_state'] = list(self.remote.read(0xB1888145, 3))
+                detail['input_processing_flags'] = hex(self.word(0xB26B38CC))
+                detail['input_banks'] = [dict(bank=bank,
+                    mask=hex(self.word(0x20068200 + bank * 32)),
+                    status=hex(self.word(0x20068210 + bank * 32))) for bank in range(8)]
             if pc in (0x10318836, 0x103ED6BC):
                 sp = self.remote.get(registers, 'sp')
                 words = struct.unpack('<24I', self.remote.read(sp, 96))
@@ -264,6 +304,10 @@ class NativeCaptureCaller:
 
     def close(self):
         self.remote.select_thread(1)
+        if self.report['triggered']:
+            ticks = int.from_bytes(self.remote.read(0x04266008, 8), 'little')
+            self.report['observed_after_trigger_counter_seconds'] = round(
+                (ticks - self.report['trigger_counter_ticks']) / 48000000, 6)
         self.report['result_words'] = list(struct.unpack('<9I', self.remote.read(RESULT, 36)))
         self.report['api_returned'] = self.report['result_words'][1] == 1
         self.report['api_accepted'] = self.report['api_returned'] and self.report['result_words'][0] == 0

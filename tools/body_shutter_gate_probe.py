@@ -501,6 +501,7 @@ def snapshot(remote):
         capture_driver_state=remote.read(0xb1868af1, 1)[0],
         capture_driver_pending_state=remote.read(0xb1868afa, 1)[0],
         capture_driver_mode=remote.read(0xb1868af7, 1)[0],
+        capture_stop_ready_flags=hex(word(0xb1868b64)),
         stop_queue_count=word(0xb23ef3d0),
         processing_command=remote.read(0xb1868310, 1)[0],
         processing_state=remote.read(0xb1868311, 1)[0],
@@ -964,12 +965,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         repeat = hits[pc] < 8
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
                     if pc == 0x10321a4c:
-                        callback_hits += 1
+                        callback_hits += int(keep)
                         record['notification'] = hex(remote.get(registers, 'r0'))
                         if remote.get(registers, 'r0') == 0x041a000d:
                             record['result_bytes'] = list(remote.read(
                                 remote.get(registers, 'r1'), 2))
-                        repeat = callback_hits < 8
+                        if not capture_caller:
+                            repeat = callback_hits < 8
                     if pc == 0x10397260:
                         record['stop_command'] = list(struct.unpack('<4I', remote.read(0xb23ed1a0, 16)))
                     if pc in (0x1026c37c, 0x1026c174, 0x1026c220, 0x1026c25e):
@@ -1159,7 +1161,8 @@ def main():
                         help='Laboratory input: pulse GPIO input 0 at armed return-path handshake waits/submissions')
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
-    parser.add_argument('--watch', type=int, default=30)
+    parser.add_argument('--watch', type=int, default=30,
+                        help='Host seconds to observe the requested stage (10..900)')
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
@@ -1189,7 +1192,7 @@ def main():
     parser.add_argument('--capture-wait-idle', action='store_true',
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
     args = parser.parse_args()
-    require(10 <= args.watch <= 300, 'Watch time out of bounds')
+    require(10 <= args.watch <= 900, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
     require(not args.tail_frame_events or args.reconfigure_watch and args.frame_notify,
             'Tail event experiment requires reconfiguration observation and frame notification')
