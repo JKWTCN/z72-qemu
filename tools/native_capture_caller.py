@@ -128,6 +128,7 @@ class NativeCaptureCaller:
     def __init__(self, remote):
         self.remote = remote
         self.code, self.return_pc, completion = caller_code()
+        self.completion_pc = completion
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
                        completion: 'diagnostic-capture-completion',
@@ -418,6 +419,10 @@ class NativeCaptureCaller:
         elif pc == self.native_return:
             self.report['caller_returned'] = remote.get(registers, 'sp') == self.entry_sp
             require(self.report['caller_returned'], 'Capture caller did not restore its task stack')
+        elif pc == self.completion_pc:
+            pointer = remote.get(registers, 'r1')
+            self.report['completion_payload_at_entry'] = dict(r1=hex(pointer),
+                first_word=self.word(pointer) if 0xB1800000 <= pointer <= 0xB5FFFFFC else None)
         return None
 
     def close(self):
