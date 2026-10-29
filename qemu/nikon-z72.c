@@ -1568,10 +1568,31 @@ static void boot_config_write(void *opaque, hwaddr offset,
         return;
     }
     if (address == 0x2006800c) {
-        /* The native channel-disable setter pairs with 0x20068008.
-         * Stop subsequent source frames without inventing a flush response. */
+        uint32_t disabled = s->input_running & (uint32_t)value;
+
+        /* The source completes transfers synchronously. Report only actual
+         * enabled-to-disabled transitions, using the native disable-end
+         * causes (distinct from the hard-stop/flush causes at 0x68060). */
         *stored = (uint32_t)value;
         s->input_running &= ~(uint32_t)value;
+        if (s->input_stop_complete && s->master_role && s->sensor_sample &&
+            s->auto_complete) {
+            uint32_t first = 0, second = 0;
+
+            if (disabled & 1) { first |= 1u << 9; }
+            if (disabled & 4) { first |= 1u << 13; }
+            if (disabled & 8) { first |= 1u << 15; }
+            if (disabled & 0x10) { first |= 1u << 31; }
+            /* Two native descriptor profiles share this disable operand. */
+            if (disabled & 0x20) { first |= (1u << 17) | (1u << 27); }
+            if (disabled & 0x40) { first |= 1u << 19; }
+            if (disabled & 0x200) { second |= 1u << 7; }
+            if (disabled & 0x400) { second |= 1u << 3; }
+            if (disabled & 0x800) { second |= 1u << 11; }
+            *boot_config_value(s, 0x20068210) |= first;
+            *boot_config_value(s, 0x20068230) |= second;
+            input_update_irqs(s);
+        }
         return;
     }
     if (address == 0x20068000 || address == 0x20068004 ||

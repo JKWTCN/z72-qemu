@@ -15,10 +15,12 @@ from tools.boot_region_probe import RegionProbe
 
 
 class StopProbe(RegionProbe):
+    RECORDER = RegionProbe.DATA + 0x28000
+
     def __init__(self, image):
         super().__init__(image)
         self.u.mem_map(0x20068000, 0x1000)
-        self.writes, self.events = [], []
+        self.writes, self.events, self.task_events, self.notifications = [], [], [], []
         self.u.hook_add(UC_HOOK_MEM_WRITE, self.write, begin=0x20068000, end=0x20068fff)
 
     def write(self, u, access, address, size, value, unused):
@@ -32,6 +34,12 @@ class StopProbe(RegionProbe):
             u.mem_write(target, bytes(length))
         elif address == 0x103610cc:
             self.events.append(u.reg_read(UC_ARM_REG_R1))
+        elif address == 0x103606e4:
+            self.task_events.append((u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_R1)))
+        elif address == self.RECORDER:
+            self.notifications.append((u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_R1)))
+        elif address in (0x10360f18, 0x10360f12):
+            pass  # Uncontended lock boundaries; native mask and callback code still runs.
         else:
             return super().boundary(u, address, size, unused)
         u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
@@ -72,10 +80,64 @@ def probe(image):
             require(engine.writes == [(register, mask)], 'Input run control differs')
             writes.append(dict(entry=hex(entry), register=hex(register), mask=hex(mask)))
         run_controls.append(dict(selector=selector, start=writes[0], disable=writes[1]))
+    # Supply a synthetic registered cause group and two native DMA handle fields.
+    # The original disable orchestrator, mask writer, decoder and callbacks execute.
+    saved_group = bytes(engine.u.mem_read(0xb1806840, 36))
+    synthetic_group = struct.pack('<9I', 0x10000000, *([0xffffffff] * 8))
+    for address, value in ((0xb18096cc, engine.DATA + 0x1000),
+                           (0xb18096d0, engine.DATA + 0x2000),
+                           (engine.DATA + 0x1008, 0x20), (engine.DATA + 0x2008, 0x40)):
+        engine.u.mem_write(address, struct.pack('<I', value))
+    disable_cases = []
+    for pending, physical, bank, bits, logical, callback in (
+            (1, [1], 0, 0x200, 1, 0x10239524),
+            (2, [4, 8], 0, 0xa000, 0xc, 0x10239298),
+            (4, [0x800], 1, 0x800, 0x800, 0x102392be),
+            (8, [0x10], 0, 0x80000000, 0x10, 0x10239480),
+            (0x10, [0x20], 0, 0x20000, 0x40, 0x10239410),
+            (0x20, [0x40], 0, 0x80000, 0x80, 0x102393ea),
+            (0x40, [0x20], 0, 0x8000000, 0x20, 0x10239436),
+            (0x100, [0x400], 1, 8, 0x400, 0x1023938c),
+            (0x200, [0x200], 1, 0x80, 0x200, 0x1023931c)):
+        engine.u.mem_write(0x20068000, bytes(0x1000))
+        engine.u.mem_write(0xb26b38cc, struct.pack('<2I', 2, 1))
+        engine.u.mem_write(0xb1806840, synthetic_group)
+        engine.writes.clear()
+        engine.call(0x1023c796 - 0x10020000, pending)
+        engine.u.mem_write(0xb1806840, saved_group)
+        disables = [value for address, value in engine.writes if address == 0x2006800c]
+        require(disables == physical, 'Native soft disable operands differ')
+        require(engine.word(0x20068200 + bank * 32) & bits == bits,
+                'Native soft disable did not enable its completion causes')
+        status = [0] * 8
+        status[bank] = bits
+        engine.u.mem_write(engine.DATA, struct.pack('<8I', *status))
+        decoded = engine.call(0x1ead46, engine.DATA)
+        require(decoded == logical, f'Disable cause routing differs: {pending:#x}, {decoded:#x}')
+        engine.u.mem_write(0xb26b38c8, struct.pack('<I', pending))
+        engine.task_events.clear()
+        engine.call(callback - 0x10020000, 0x41072800, engine.DATA)
+        require(engine.word(0xb26b38c8) == 0, 'Disable callback retained its pending bit')
+        require(engine.task_events == [(0xb26b3888, 0x1000)], 'Disable completion task event differs')
+        # Another outstanding channel must prevent aggregate completion.
+        engine.u.mem_write(0xb26b38c8, struct.pack('<I', pending | 0x10000))
+        engine.task_events.clear()
+        engine.call(callback - 0x10020000, 0x41072800, engine.DATA)
+        require(engine.word(0xb26b38c8) == 0x10000 and not engine.task_events,
+                'Disable callback completed with another channel outstanding')
+        disable_cases.append(dict(pending=hex(pending), physical=[hex(v) for v in physical],
+            bank=bank, bits=hex(bits), logical=hex(logical), callback=hex(callback),
+            task_event='0x1000', waits_for_other_channels=True))
+    engine.u.mem_write(0xb1888168, struct.pack('<I', engine.RECORDER | 1))
+    engine.notifications.clear()
+    engine.call(0x10238d4a - 0x10020000, 0x1000)
+    require(engine.notifications == [(0x041a0004, 0)], 'Disable task notification differs')
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
                 decoder='0x1020a71a', callback='0x1020c0a8', cases=cases,
                 run_controls=run_controls,
+                disable_cases=disable_cases, disable_task_notification='0x041a0004',
                 limitations=['Synthetic memory and event API boundaries only.',
+                             'Registered mask group and two DMA handle fields are synthetic.',
                              'No physical response latency or pixel transfer is established.'])
 
 

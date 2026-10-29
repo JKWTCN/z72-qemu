@@ -55,6 +55,9 @@ POST_SUBMIT_POINTS = {
     0x103CD46A: 'capture-processing-peer-finish',
     0x102301DC: 'capture-input-drain-return',
     0x1023C82C: 'capture-input-disable-return',
+    0x10238DEE: 'capture-input-disable-notification',
+    0x102316A2: 'capture-input-disable-task-drain',
+    0x102302EA: 'capture-input-disabled-queue-drain',
     0x102300B0: 'capture-input-pending-clear',
     0x102300EC: 'capture-input-active-mask',
     0x102300FA: 'capture-input-active-cleared',
@@ -277,6 +280,9 @@ class NativeCaptureCaller:
                 detail['stop_ready_flags'] = hex(self.word(0xB1868B64))
                 detail['driver_context_count'] = self.word(0xB1868B58)
                 detail['input_runtime_states'] = list(self.remote.read(0xB1887D70, 8))
+                detail['input_disable_pending'] = hex(self.word(0xB26B38C8))
+                detail['input_disable_flags'] = hex(self.word(0xB26B38CC))
+                detail['input_disable_requested'] = self.word(0xB26B38D0)
                 detail['driver_finish_comparison_word'] = hex(self.word(0xB1868C34))
                 detail['input_ready_fields'] = {hex(offset): hex(self.word(0xB1887D70 + offset))
                     for offset in (0x5C, 0x7C, 0x80, 0x120)}

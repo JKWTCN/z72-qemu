@@ -138,8 +138,121 @@
       }
     }
   ],
+  "disable_cases": [
+    {
+      "pending": "0x1",
+      "physical": [
+        "0x1"
+      ],
+      "bank": 0,
+      "bits": "0x200",
+      "logical": "0x1",
+      "callback": "0x10239524",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x2",
+      "physical": [
+        "0x4",
+        "0x8"
+      ],
+      "bank": 0,
+      "bits": "0xa000",
+      "logical": "0xc",
+      "callback": "0x10239298",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x4",
+      "physical": [
+        "0x800"
+      ],
+      "bank": 1,
+      "bits": "0x800",
+      "logical": "0x800",
+      "callback": "0x102392be",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x8",
+      "physical": [
+        "0x10"
+      ],
+      "bank": 0,
+      "bits": "0x80000000",
+      "logical": "0x10",
+      "callback": "0x10239480",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x10",
+      "physical": [
+        "0x20"
+      ],
+      "bank": 0,
+      "bits": "0x20000",
+      "logical": "0x40",
+      "callback": "0x10239410",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x20",
+      "physical": [
+        "0x40"
+      ],
+      "bank": 0,
+      "bits": "0x80000",
+      "logical": "0x80",
+      "callback": "0x102393ea",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x40",
+      "physical": [
+        "0x20"
+      ],
+      "bank": 0,
+      "bits": "0x8000000",
+      "logical": "0x20",
+      "callback": "0x10239436",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x100",
+      "physical": [
+        "0x400"
+      ],
+      "bank": 1,
+      "bits": "0x8",
+      "logical": "0x400",
+      "callback": "0x1023938c",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x200",
+      "physical": [
+        "0x200"
+      ],
+      "bank": 1,
+      "bits": "0x80",
+      "logical": "0x200",
+      "callback": "0x1023931c",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    }
+  ],
+  "disable_task_notification": "0x041a0004",
   "limitations": [
     "Synthetic memory and event API boundaries only.",
+    "Registered mask group and two DMA handle fields are synthetic.",
     "No physical response latency or pixel transfer is established."
   ]
 }

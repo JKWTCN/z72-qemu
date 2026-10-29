@@ -8,10 +8,10 @@ import time
 
 
 def check(qemu):
-    for role, enabled, sampling, notifying in (
-            ('master', True, True, False), ('master', True, True, True),
-            ('master', False, True, True), ('master', True, False, True),
-            ('slave', True, True, True)):
+    for role, enabled, sampling, notifying, stopping in (
+            ('master', True, True, False, True), ('master', True, True, True, True),
+            ('master', False, True, True, True), ('master', True, False, True, True),
+            ('slave', True, True, True, True), ('master', False, True, False, False)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -22,6 +22,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.frame-notify={"on" if notifying else "off"}',
             '-global', f'nikon-z72-boot-config.frame-process={"on" if role == "master" and enabled and sampling and notifying else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
+            '-global', f'nikon-z72-boot-config.input-stop-complete={"on" if stopping else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -264,6 +265,31 @@ def check(qemu):
                 write(0x2006800c, 0x600)
                 tick()
                 assert count() == previous, 'Combined disable left RAW DMA active'
+            # A soft disable completes a real running channel once. It must
+            # never reuse the hard-stop causes or claim another pixel DMA.
+            previous = count()
+            for operand, first, second in (
+                    (1, 0x200, 0), (4, 0x2000, 0), (8, 0x8000, 0),
+                    (0x10, 0x80000000, 0), (0x20, 0x8020000, 0),
+                    (0x40, 0x80000, 0), (0x200, 0, 0x80),
+                    (0x400, 0, 8), (0x800, 0, 0x800), (2, 0, 0),
+                    (0x600, 0, 0x88), (0x10000, 0, 0)):
+                write(0x2006800c, 0xffffffff)
+                for bank in range(8):
+                    write(0x20068210 + bank * 32, 0xffffffff)
+                    write(0x20068200 + bank * 32, 0)
+                write(0x20068008, operand)
+                write(0x20068200, 0)
+                write(0x2006800c, operand)
+                expected = role == 'master' and sampling and stopping
+                assert read(0x20068210) == (first if expected else 0)
+                assert read(0x20068230) == (second if expected else 0)
+                assert all(read(0x20068210 + bank * 32) == 0 for bank in range(2, 8))
+                write(0x20068210, 0xffffffff)
+                write(0x20068230, 0xffffffff)
+                write(0x2006800c, operand)
+                assert read(0x20068210) == read(0x20068230) == 0, 'Repeated disable completed twice'
+                assert count() == previous, 'Disable fabricated a pixel transfer'
             monitor('system_reset')
             assert count() == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
