@@ -1583,9 +1583,9 @@ static void boot_config_write(void *opaque, hwaddr offset,
             if (disabled & 4) { first |= 1u << 13; }
             if (disabled & 8) { first |= 1u << 15; }
             if (disabled & 0x10) { first |= 1u << 31; }
-            /* Two native descriptor profiles share this disable operand. */
-            if (disabled & 0x20) { first |= (1u << 17) | (1u << 27); }
-            if (disabled & 0x40) { first |= 1u << 19; }
+            if (disabled & 0x20) { first |= 1u << 27; }
+            if (disabled & 0x40) { first |= 1u << 17; }
+            if (disabled & 0x80) { first |= 1u << 19; }
             if (disabled & 0x200) { second |= 1u << 7; }
             if (disabled & 0x400) { second |= 1u << 3; }
             if (disabled & 0x800) { second |= 1u << 11; }

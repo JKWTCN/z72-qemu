@@ -80,13 +80,14 @@ def probe(image):
             require(engine.writes == [(register, mask)], 'Input run control differs')
             writes.append(dict(entry=hex(entry), register=hex(register), mask=hex(mask)))
         run_controls.append(dict(selector=selector, start=writes[0], disable=writes[1]))
-    # Supply a synthetic registered cause group and two native DMA handle fields.
+    # Supply a synthetic registered cause group and two handle pointers, whose
+    # descriptors (including their disable operands) are original scatter data.
     # The original disable orchestrator, mask writer, decoder and callbacks execute.
     saved_group = bytes(engine.u.mem_read(0xb1806840, 36))
     synthetic_group = struct.pack('<9I', 0x10000000, *([0xffffffff] * 8))
-    for address, value in ((0xb18096cc, engine.DATA + 0x1000),
-                           (0xb18096d0, engine.DATA + 0x2000),
-                           (engine.DATA + 0x1008, 0x20), (engine.DATA + 0x2008, 0x40)):
+    require(engine.word(0xb18067bc) == 0x40 and engine.word(0xb18067cc) == 0x80,
+            'Original DMA descriptor operands differ')
+    for address, value in ((0xb18096cc, 0xb18067b4), (0xb18096d0, 0xb18067c4)):
         engine.u.mem_write(address, struct.pack('<I', value))
     disable_cases = []
     for pending, physical, bank, bits, logical, callback in (
@@ -94,8 +95,8 @@ def probe(image):
             (2, [4, 8], 0, 0xa000, 0xc, 0x10239298),
             (4, [0x800], 1, 0x800, 0x800, 0x102392be),
             (8, [0x10], 0, 0x80000000, 0x10, 0x10239480),
-            (0x10, [0x20], 0, 0x20000, 0x40, 0x10239410),
-            (0x20, [0x40], 0, 0x80000, 0x80, 0x102393ea),
+            (0x10, [0x40], 0, 0x20000, 0x40, 0x10239410),
+            (0x20, [0x80], 0, 0x80000, 0x80, 0x102393ea),
             (0x40, [0x20], 0, 0x8000000, 0x20, 0x10239436),
             (0x100, [0x400], 1, 8, 0x400, 0x1023938c),
             (0x200, [0x200], 1, 0x80, 0x200, 0x1023931c)):
@@ -159,7 +160,7 @@ def probe(image):
                     low_task_event='0x20', notification='0x041a0006', input_task_event='0x20',
                     drain_handler='0x10235944', enable_mask_supplied_by_existing_configuration=True),
                 limitations=['Synthetic memory and event API boundaries only.',
-                             'Registered mask group and two DMA handle fields are synthetic.',
+                             'Registered mask group and two handle pointers are synthetic; DMA descriptors are original.',
                              'No physical response latency or pixel transfer is established.'])
 
 

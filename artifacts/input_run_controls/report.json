@@ -191,7 +191,7 @@
     {
       "pending": "0x10",
       "physical": [
-        "0x20"
+        "0x40"
       ],
       "bank": 0,
       "bits": "0x20000",
@@ -203,7 +203,7 @@
     {
       "pending": "0x20",
       "physical": [
-        "0x40"
+        "0x80"
       ],
       "bank": 0,
       "bits": "0x80000",
@@ -266,7 +266,7 @@
   },
   "limitations": [
     "Synthetic memory and event API boundaries only.",
-    "Registered mask group and two DMA handle fields are synthetic.",
+    "Registered mask group and two handle pointers are synthetic; DMA descriptors are original.",
     "No physical response latency or pixel transfer is established."
   ]
 }
