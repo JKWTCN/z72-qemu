@@ -2428,7 +2428,7 @@ type_init(boot_config_register_types)
 #define TYPE_NIKON_Z72_BOOT_STORE "nikon-z72-boot-store"
 OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72BootStore, NIKON_Z72_BOOT_STORE)
 
-#define Z72_BOOT_STORE_FILES 4
+#define Z72_BOOT_STORE_FILES 5
 
 typedef struct NikonZ72BootFile {
     char *path;

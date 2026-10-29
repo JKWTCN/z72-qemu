@@ -116,7 +116,9 @@ class NativeCaptureCaller:
             masks.append(dict(descriptor=hex(descriptor), capacity=capacity,
                               pointer=hex(pointer), set_bits=bits))
         common = sorted(set(masks[0]['set_bits']) & set(masks[2]['set_bits']))
-        return dict(masks=masks, primary_scratch_intersection=common)
+        return dict(masks=masks, primary_scratch_intersection=common,
+                    processing_resource_flags=[self.word(address) for address in (0xB18685B8, 0xB18685BC)],
+                    ui_reason_byte=self.remote.read(0xB20A15EE, 1)[0])
 
     def trigger(self):
         require(not self.report['triggered'], 'Capture diagnostic already triggered')

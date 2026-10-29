@@ -71,22 +71,37 @@ class Monitor:
         return reply['return']
 
 
-def run(qemu):
-    with tempfile.TemporaryDirectory() as td:
+def run(qemu, wsl=False):
+    def guest_path(path):
+        value = str(path)
+        if wsl and len(value) > 2 and value[1] == ':':
+            return '/mnt/' + value[0].lower() + value[2:].replace('\\', '/')
+        return value
+
+    work_root = Path(__file__).resolve().parents[1] / '.local'
+    work_root.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=work_root) as td:
         root = Path(td)
         first, second = root / 'first.bin', root / 'second.bin'
         first.write_bytes(image(0x11223344))
         second.write_bytes(image(0x55667788))
+        auxiliary = []
+        for index, address in enumerate((0x132c0000, 0x132e0000, 0x13e80000, 0x13420000)):
+            path = root / f'auxiliary-{index}.bin'
+            path.write_bytes(struct.pack('<I', 0xA1000000 + index))
+            auxiliary.append((path, address, 0xA1000000 + index))
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             gdb_port = listener.getsockname()[1]
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             qmp_port = listener.getsockname()[1]
-        machine = ('nikon-z72-dual-lab,master-boot-image=' + str(first) +
-                   ',slave-boot-image=' + str(first))
+        machine = ('nikon-z72-dual-lab,master-boot-image=' + guest_path(first) +
+                   ',slave-boot-image=' + guest_path(first) + ',master-boot-aux=' +
+                   ',,'.join(f'{guest_path(path)}@{address:x}' for path, address, _ in auxiliary))
         with (root / 'qemu.log').open('wb') as log:
-            process = subprocess.Popen([qemu, '-M', machine, '-smp', '4',
+            process = subprocess.Popen((['wsl.exe', '--exec'] if wsl else []) +
+                [guest_path(qemu), '-M', machine, '-smp', '4',
                 '-display', 'none', '-serial', 'none', '-monitor', 'none',
                 '-nic', 'none', '-S', '-gdb', f'tcp:127.0.0.1:{gdb_port}',
                 '-qmp', f'tcp:127.0.0.1:{qmp_port},server=on,wait=off'],
@@ -94,6 +109,7 @@ def run(qemu):
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
             try:
                 remote = None
+                monitor = None
                 deadline = time.monotonic() + 30
                 while remote is None:
                     try:
@@ -104,7 +120,6 @@ def run(qemu):
                                 (root / 'qemu.log').read_text(errors='replace'))
                         require(time.monotonic() < deadline, 'Machine startup timed out')
                         time.sleep(0.05)
-                monitor = None
                 while monitor is None:
                     try:
                         monitor = Monitor(qmp_port)
@@ -115,6 +130,11 @@ def run(qemu):
 
                 def marker():
                     return struct.unpack('<I', remote.read(MARKER_ADDRESS, 4))[0]
+
+                def check_auxiliary():
+                    for _, address, expected in auxiliary:
+                        require(int.from_bytes(remote.read(address, 4), 'little') == expected,
+                                'Auxiliary parameter image did not reload')
 
                 def program_counter():
                     registers = remote.regs()
@@ -131,10 +151,13 @@ def run(qemu):
 
                 run_and_halt()
                 require(marker() == 0x11223344, 'The stored first image did not run')
+                check_auxiliary()
+                for _, address, _ in auxiliary:
+                    remote.write(address, bytes(4))
 
                 monitor.command('stop')
                 monitor.command('qom-set', {'path': '/machine/master-boot-store',
-                                           'property': 'image', 'value': str(second)})
+                                           'property': 'image', 'value': guest_path(second)})
                 monitor.command('system_reset')
                 program = None
                 deadline = time.monotonic() + 10
@@ -143,6 +166,7 @@ def run(qemu):
                     program = program_counter()
                 require(program == 0x10020000, 'The core did not restart at the entry')
                 run_and_halt()
+                check_auxiliary()
                 require(marker() == 0x55667788,
                         'The reset did not boot the reprogrammed image')
 
@@ -176,20 +200,27 @@ def run(qemu):
                 require(marker() == 0x55667788, 'Disabled fixture still replaced the stored image')
                 remote.sock.close()
             finally:
-                process.terminate()
+                if wsl and monitor is not None:
+                    try:
+                        monitor.command('quit')
+                    except (ConnectionError, OSError):
+                        pass
+                if process.poll() is None:
+                    process.terminate()
                 try:
                     process.wait(timeout=5)
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=5)
-    print('PASS stored image reset, explicit decoded-window fixture and damaged-window rejection')
+    print('PASS stored image/four auxiliary resets, explicit decoded-window fixture and damaged-window rejection')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
+    parser.add_argument('--wsl', action='store_true')
     arguments = parser.parse_args()
-    run(arguments.qemu)
+    run(arguments.qemu, arguments.wsl)
 
 
 if __name__ == '__main__':

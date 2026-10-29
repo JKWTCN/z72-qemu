@@ -25,6 +25,13 @@ def resource_header_image():
     return bytes(image)
 
 
+def processing_resource_image():
+    """Supply group 23's storage trailer with a zero experimental payload."""
+    image = bytearray(0xe0000)
+    image[-4:] = b'ENDM'
+    return bytes(image)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--destination', type=Path, required=True)

@@ -1157,6 +1157,8 @@ def main():
                         help='Diagnostic native-task capture API call after preview and release readiness')
     parser.add_argument('--trace-capture-resource-boot', action='store_true',
                         help='Observe capture resource bits 37/44 being written from reset')
+    parser.add_argument('--processing-resource-header', action='store_true',
+                        help='Supply group 23 with a zero experimental body and native storage trailer')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1288,6 +1290,7 @@ def main():
                                     tail_frame_events=args.tail_frame_events,
                                     mode1_frame_events=args.mode1_frame_events))
         report['native_lcd_before'] = initial_lcd
+        report['processing_resource_header'] = args.processing_resource_header
         if args.trace_capture_resource_boot:
             report['capture_resource_boot_writes'] = machine.resource_boot_writes
         if initial_dma is not None:

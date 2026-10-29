@@ -28,7 +28,7 @@ from analyze.update_container import master_member
 from analyze.upgrade_signature import verify_update
 from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
-from tools.create_lab_parameters import parameter_images, resource_header_image
+from tools.create_lab_parameters import parameter_images, resource_header_image, processing_resource_image
 from tools.dual_boot_probe import dual_machine
 
 SYNC_WAIT = 0x102d949e
@@ -257,6 +257,10 @@ class Machine:
         for name, data in zip(('group17.bin', 'group18.bin', 'group32.bin'),
                               (*parameter_images(), resource_header_image())):
             (work / name).write_bytes(data)
+        auxiliary = BOOT_AUXILIARY
+        if getattr(self.args, 'processing_resource_header', False):
+            (work / 'group23.bin').write_bytes(processing_resource_image())
+            auxiliary += (('group23.bin', 0x13420000),)
         devices = (
             'nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',
             'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys,'
@@ -265,9 +269,7 @@ class Machine:
             f'nikon-z72-controller-panel,bus=controller-i2c0,address=13,'
             f'id=shoulder,initial-state={work / "aux.bin"}')
         devices += tuple(f'loader,file={work / name},addr={address:#x},force-raw=on'
-                         for name, address in (('group17.bin', 0x132c0000),
-                                               ('group18.bin', 0x132e0000),
-                                               ('group32.bin', 0x13e80000)))
+                         for name, address in auxiliary)
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
         card = getattr(self.args, 'sd_card', None)
@@ -292,7 +294,7 @@ class Machine:
                              # so the file list travels as one value.
                              'master-boot-aux=' + ','.join(
                                  f'{work / name}@{address:#x}'
-                                 for name, address in BOOT_AUXILIARY).replace(',', ',,')),
+                                 for name, address in auxiliary).replace(',', ',,')),
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
