@@ -645,6 +645,9 @@ struct NikonZ72BootConfig {
     uint32_t input_running;
     uint64_t input_dma_count;
     uint32_t input_dma_address;
+    uint64_t primary_dma_count;
+    uint32_t primary_dma_address;
+    uint32_t primary_second_address;
     uint64_t processing_dma_count;
     uint64_t frame_count;
     uint32_t input_last_read;
@@ -1311,6 +1314,168 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     transfer_update_irq(s);
 }
 
+static void input_raw12_row(uint8_t *row, unsigned width, unsigned start_x,
+                            unsigned y, uint64_t phase)
+{
+    for (unsigned x = 0; x < width; x += 2) {
+        uint8_t level = (((start_x + x) / 64 + y / 64 + phase) & 1) ? 0xff : 0;
+        memset(row + x * 3 / 2, level, 3);
+    }
+}
+
+/* Domain 2's native constructor writes these eight remap entries. This
+ * decoder is local to the DMA master; it does not alias CPU code addresses. */
+static bool input_primary_remap(NikonZ72BootConfig *s, uint32_t bus,
+                                uint32_t *physical, uint64_t *available)
+{
+    unsigned matches = 0;
+
+    for (unsigned slot = 0; slot < 8; slot++) {
+        const uint8_t *entry = s->transport_table + 0xd0b0 + slot * 4;
+        uint32_t target = ldl_le_p(entry);
+        uint32_t mask = ldl_le_p(entry + 0x20);
+        uint32_t base = ldl_le_p(entry + 0x40);
+        uint64_t span;
+        uint32_t offset_mask;
+
+        if (!mask || mask > 0xfffff || target > 0xfffff || base > 0xfffff) {
+            continue;
+        }
+        offset_mask = ~(mask << 12);
+        span = (uint64_t)offset_mask + 1;
+        if ((span & (span - 1)) || (target & ~mask) || (base & ~mask) ||
+            (bus & ~offset_mask) != base << 12) {
+            continue;
+        }
+        if (ldl_le_p(entry + 0x60) || ldl_le_p(entry + 0x80)) {
+            return false;  /* Extended attributes have not been recovered. */
+        }
+        *physical = (target << 12) | (bus & offset_mask);
+        *available = span - (bus & offset_mask);
+        matches++;
+    }
+    return matches == 1;
+}
+
+typedef struct NikonZ72PrimaryWrite {
+    uint32_t address;
+    uint16_t row;
+    uint16_t offset;
+    uint16_t length;
+} NikonZ72PrimaryWrite;
+
+static void input_generate_primary(NikonZ72BootConfig *s)
+{
+    uint8_t geometry[20], first[0x70] = { 0 }, second[0x70] = { 0 };
+    uint8_t first_row[4224], second_row[8208];
+    AddressSpace *view;
+    uint32_t first_address, second_bus;
+    unsigned count = 0, index = 0;
+    g_autofree NikonZ72PrimaryWrite *writes = NULL;
+    const unsigned height = 5520, first_size = 4224 * height;
+
+    if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
+        !(s->input_running & 0x400)) {
+        return;
+    }
+    view = CPU(s->cpu)->as;
+    if (address_space_read(view, 0x20069500, MEMTXATTRS_UNSPECIFIED,
+                           geometry, sizeof(geometry)) != MEMTX_OK ||
+        address_space_read(view, 0x20069808, MEMTXATTRS_UNSPECIFIED,
+                           first + 8, 4) != MEMTX_OK ||
+        address_space_read(view, 0x20069814, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x14, 8) != MEMTX_OK ||
+        address_space_read(view, 0x2006983c, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x3c, 20) != MEMTX_OK ||
+        address_space_read(view, 0x20069850, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x50, 32) != MEMTX_OK ||
+        address_space_read(view, 0x20069908, MEMTXATTRS_UNSPECIFIED,
+                           second + 8, 4) != MEMTX_OK ||
+        address_space_read(view, 0x20069950, MEMTXATTRS_UNSPECIFIED,
+                           second + 0x50, 32) != MEMTX_OK) {
+        return;
+    }
+    /* C1.70's observed 8288 x 5520 RAW12 split: the first 2816 columns
+     * have a separate buffer, the remaining 5472 keep the full row stride.
+     * Other profiles and address-group rotation remain unsupported. */
+    if (ldl_le_p(geometry) != 2 || ldl_le_p(geometry + 4) != (2816u << 16) ||
+        ldl_le_p(geometry + 8) != (height << 16) ||
+        ldl_le_p(geometry + 12) != 1 || ldl_le_p(geometry + 16) != 5472 ||
+        ldl_le_p(first + 8) != 4224 || ldl_le_p(second + 8) != 12432 ||
+        ldl_le_p(first + 0x14) != 1 || ldl_le_p(first + 0x18) != 1 ||
+        ldl_le_p(first + 0x3c) != 0 || ldl_le_p(first + 0x40) != 1 ||
+        ldl_le_p(first + 0x44) != 0 || ldl_le_p(first + 0x48) != 3 ||
+        ldl_le_p(first + 0x4c) != 0) {
+        return;
+    }
+    for (unsigned offset = 0x54; offset < 0x70; offset += 4) {
+        if (ldl_le_p(first + offset) || ldl_le_p(second + offset)) {
+            return;
+        }
+    }
+    first_address = ldl_le_p(first + 0x50);
+    second_bus = ldl_le_p(second + 0x50);
+    if (!first_address || !second_bus ||
+        !processing_ram_range(view, first_address, first_size)) {
+        return;
+    }
+    /* Validate the entire remapped second stripe before changing either
+     * buffer. Its row gaps belong to the complete-frame buffer's left part. */
+    writes = g_new(NikonZ72PrimaryWrite, height + 8);
+    for (unsigned y = 0; y < height; y++) {
+        uint64_t bus = (uint64_t)second_bus + y * 12432;
+        unsigned offset = 0;
+
+        while (offset < sizeof(second_row)) {
+            uint32_t physical;
+            uint64_t available;
+            unsigned length;
+
+            if (bus > UINT32_MAX || count >= height + 8 ||
+                !input_primary_remap(s, bus, &physical, &available)) {
+                return;
+            }
+            length = MIN(available, sizeof(second_row) - offset);
+            if (!processing_ram_range(view, physical, length) ||
+                ((uint64_t)physical < (uint64_t)first_address + first_size &&
+                 first_address < (uint64_t)physical + length)) {
+                return;
+            }
+            writes[count++] = (NikonZ72PrimaryWrite) {
+                .address = physical, .row = y, .offset = offset, .length = length,
+            };
+            bus += length;
+            offset += length;
+        }
+    }
+    for (unsigned y = 0; y < height; y++) {
+        input_raw12_row(first_row, 2816, 0, y, s->primary_dma_count);
+        input_raw12_row(second_row, 5472, 2816, y, s->primary_dma_count);
+        if (address_space_write(view, (hwaddr)first_address + y * 4224,
+                                MEMTXATTRS_UNSPECIFIED, first_row,
+                                sizeof(first_row)) != MEMTX_OK) {
+            return;
+        }
+        while (index < count && writes[index].row == y) {
+            NikonZ72PrimaryWrite *write = &writes[index++];
+            if (address_space_write(view, write->address, MEMTXATTRS_UNSPECIFIED,
+                                    second_row + write->offset,
+                                    write->length) != MEMTX_OK) {
+                return;
+            }
+        }
+    }
+    s->primary_dma_address = first_address;
+    s->primary_second_address = writes[0].address;
+    s->primary_dma_count++;
+    if (s->frame_notify) {
+        /* Both RAW stripes were written. Do not claim statistics output
+         * or processing/JPEG completion from this input transfer. */
+        *boot_config_value(s, 0x20068210) |= 0x41;
+        input_update_irqs(s);
+    }
+}
+
 static void input_generate_frame(NikonZ72BootConfig *s)
 {
     uint8_t geometry[12], planes[16], word[4];
@@ -1360,10 +1525,7 @@ static void input_generate_frame(NikonZ72BootConfig *s)
     }
     pixels = g_malloc0(length);
     for (unsigned y = 0; y < height; y++) {
-        for (unsigned x = 0; x < width; x += 2) {
-            uint8_t level = ((x / 64 + y / 64 + s->input_dma_count) & 1) ? 0xff : 0;
-            memset(pixels + y * stride + x * 3 / 2, level, 3);
-        }
+        input_raw12_row(pixels + y * stride, width, 0, y, s->input_dma_count);
     }
     if (address_space_write(view, target, MEMTXATTRS_UNSPECIFIED,
                             pixels, length) == MEMTX_OK) {
@@ -1391,6 +1553,7 @@ static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
 
+    input_generate_primary(s);
     input_generate_frame(s);
     *boot_config_value(s, 0x20060044) |= 0x10;
     if (s->sensor_sample) {
@@ -2231,6 +2394,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->input_running = 0;
     s->input_dma_count = 0;
     s->input_dma_address = 0;
+    s->primary_dma_count = 0;
+    s->primary_dma_address = 0;
+    s->primary_second_address = 0;
     s->processing_dma_count = 0;
     input_update_irqs(s);
     sync_update_irqs(s);
@@ -2290,8 +2456,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 41,
-    .minimum_version_id = 41,
+    .version_id = 42,
+    .minimum_version_id = 42,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2324,6 +2490,9 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(input_running, NikonZ72BootConfig),
         VMSTATE_UINT64(input_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(input_dma_address, NikonZ72BootConfig),
+        VMSTATE_UINT64(primary_dma_count, NikonZ72BootConfig),
+        VMSTATE_UINT32(primary_dma_address, NikonZ72BootConfig),
+        VMSTATE_UINT32(primary_second_address, NikonZ72BootConfig),
         VMSTATE_UINT64_V(processing_dma_count, NikonZ72BootConfig, 39),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
@@ -2381,6 +2550,12 @@ static void boot_config_init(Object *obj)
     object_property_add_uint64_ptr(obj, "input-dma-count", &s->input_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "primary-input-dma-count", &s->primary_dma_count,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "primary-input-dma-address", &s->primary_dma_address,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "primary-input-second-dma-address", &s->primary_second_address,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-dma-count", &s->processing_dma_count,
                                   OBJ_PROP_FLAG_READ);

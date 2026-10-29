@@ -724,6 +724,11 @@ def input_dma_snapshot(machine):
                 dict(path=path, property='processing-dma-count'))
             result['auxiliary_jobs'] = machine.qmp.command('qom-get',
                 dict(path=path, property='aux-image-process-count'))
+            result['primary_frames'] = machine.qmp.command('qom-get',
+                dict(path=path, property='primary-input-dma-count'))
+            for key, name in (('primary_address', 'primary-input-dma-address'),
+                              ('primary_second_address', 'primary-input-second-dma-address')):
+                result[key] = hex(machine.qmp.command('qom-get', dict(path=path, property=name)))
             if count and address and 0 < stride <= 16384:
                 data = machine._bytes(address, stride)
                 result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
