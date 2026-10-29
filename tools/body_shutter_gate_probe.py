@@ -207,6 +207,10 @@ CORE_WORKER_POINTS = {
 
 RECONFIGURE_POINTS = {
     **CORE_WORKER_POINTS,
+    0x103ba6ea: 'reconfigure-remote-capture-submit',
+    0x103ba164: 'reconfigure-release-phase-submit',
+    0x103f36fa: 'reconfigure-operation59-api',
+    0x103f19c0: 'reconfigure-operation59-task',
     0x1022827c: 'reconfigure-capture-callback-registration',
     0x103e7312: 'reconfigure-capture-mode-request',
     0x10528afe: 'reconfigure-release-settings-build',
@@ -446,6 +450,9 @@ def snapshot(remote):
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654))},
+        release_control=dict(header=list(remote.read(0xb186935c, 16)),
+            words={hex(offset): hex(word(0xb186935c + offset))
+                   for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,

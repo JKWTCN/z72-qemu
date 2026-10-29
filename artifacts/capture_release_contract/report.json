@@ -1,0 +1,71 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "command_lookup": "0x10463d70",
+  "routes": [
+    {
+      "opcode": "0x100e",
+      "record": "0x119e15ec",
+      "callbacks": [
+        "0x10490695",
+        "0x10490a03",
+        "0x1049063f"
+      ]
+    },
+    {
+      "opcode": "0x90c0",
+      "record": "0x119e16b0",
+      "callbacks": [
+        "0x10490a7b",
+        "0x10490ac9",
+        "0x1049063f"
+      ]
+    },
+    {
+      "opcode": "0x9207",
+      "record": "0x119e18e0",
+      "callbacks": [
+        "0x10490acf",
+        "0x10490b2f",
+        "0x0"
+      ]
+    }
+  ],
+  "operation": 59,
+  "submit": "0x103f36fa",
+  "callback_slot": "0xb23f70d0",
+  "cases": [
+    {
+      "callback_supplied": true,
+      "slot_occupied": false,
+      "result": 0,
+      "queued": [
+        {
+          "entry": "0x103f19c1",
+          "length": 12,
+          "parameters": [
+            257,
+            258,
+            259
+          ]
+        }
+      ]
+    },
+    {
+      "callback_supplied": false,
+      "slot_occupied": false,
+      "result": 1,
+      "queued": []
+    },
+    {
+      "callback_supplied": true,
+      "slot_occupied": true,
+      "result": 1,
+      "queued": []
+    }
+  ],
+  "host_boundaries": [
+    "record queue submission without executing the capture task"
+  ],
+  "limitation": "Local route and synthetic submit contract only; no USB device, native shutter, exposure or file write is exercised."
+}
