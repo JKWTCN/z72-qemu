@@ -201,6 +201,10 @@ CORE_WORKER_POINTS = {
 
 RECONFIGURE_POINTS = {
     **CORE_WORKER_POINTS,
+    0x102290b0: 'reconfigure-readiness-state-compare',
+    0x102295f6: 'reconfigure-readiness-notification',
+    0x103eddb8: 'reconfigure-readiness-consumer',
+    0x103edd08: 'reconfigure-operation13-state-update',
     0x10389b56: 'reconfigure-processing-address-bindings',
     0x10389b90: 'reconfigure-processing-port-configure',
     0x103b4b1e: 'reconfigure-processing-worker-configure-begin',
@@ -281,6 +285,19 @@ def snapshot(remote):
         resources[str(index)] = dict(buffer=hex(word(row + 8)), length=word(row + 12),
             region=word(row + 20), notification_mask=hex(word(callbacks + 40)),
             subscriber_count=int.from_bytes(remote.read(callbacks + 44, 2), 'little'))
+    readiness = dict(state=remote.read(0xb18697e0, 1)[0],
+        callback=hex(word(0xb18697e4)), enabled_notifications=hex(word(0xb18697e8)),
+        operation13_pending=word(0xb23f6a7c), operation13_callback=hex(word(0xb23f7018)),
+        bitmaps=[])
+    for address in (0xb1869818, 0xb1869820):
+        capacity, pointer = struct.unpack('<2I', remote.read(address, 8))
+        row = dict(descriptor=hex(address), capacity=capacity, pointer=hex(pointer))
+        if 0 < capacity <= 128 and 0xb1800000 <= pointer <= 0xb5effff0:
+            values = struct.unpack('<' + 'I' * ((capacity + 31) // 32),
+                                   remote.read(pointer, ((capacity + 31) // 32) * 4))
+            row['set_bits'] = [index for index in range(capacity)
+                               if values[index // 32] & 1 << (index % 32)]
+        readiness['bitmaps'].append(row)
     delay_channels = []
     for channel in range(12):
         base = 0x2c010100 + channel * 0x100
@@ -381,7 +398,7 @@ def snapshot(remote):
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines,
-        resources=resources, cores=cores,
+        resources=resources, capture_readiness=readiness, cores=cores,
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,
@@ -505,7 +522,7 @@ def input_dma_snapshot(machine):
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
-            watch_bytes=4, watch_count=1):
+            watch_bytes=4, watch_count=1, shutter_on_preview=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -591,7 +608,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             require(remote.command(f'Z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
                     'Memory watchpoint rejected')
             memory_watch_armed = True
-        machine.set_key(24 if returning else 8 if playback else 25, 0)
+        if not shutter_on_preview:
+            machine.set_key(24 if returning else 8 if playback else 25, 0)
+        preview_press_sent = False
         deadline = started + seconds
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
@@ -778,6 +797,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         words={hex(offset): hex(int.from_bytes(remote.read(packet + offset, 4), 'little'))
                                for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x1c, 0x20,
                                               0xdc, 0xe0, 0xe4, 0xe8, 0xec, 0xf0, 0xf4, 0xf8)})
+                    if shutter_on_preview and not preview_press_sent:
+                        paths = ['/machine/unattached/' + name for name in machine.config_names]
+                        path = next(path for path in paths if machine.qmp.command(
+                            'qom-get', dict(path=path, property='master-role')))
+                        completed = machine.qmp.command('qom-get',
+                            dict(path=path, property='processing-dma-count'))
+                        if completed:
+                            machine.set_key(25, 0)
+                            preview_press_sent = True
+                            record['shutter_after_processing_frames'] = completed
                 if playback or returning or reconfigure:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
@@ -919,6 +948,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     memory_watch=(dict(address=hex(watch_address), bytes=watch_bytes,
                                        limit=watch_count, observed=watched_count)
                                   if watch_address is not None else None),
+                    shutter_on_preview=shutter_on_preview,
+                    preview_press_sent=preview_press_sent,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
@@ -984,6 +1015,8 @@ def main():
                         help='Stop an observed stage after this many watched accesses (1..64)')
     parser.add_argument('--frame-process', action='store_true',
                         help='Enable the functional full-scale RAW12 to monochrome preview path')
+    parser.add_argument('--shutter-on-preview', action='store_true',
+                        help='Leave shutter contacts released until a display submission follows processed pixels')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1006,6 +1039,8 @@ def main():
                 for address in (args.watch_read, args.watch_write)), 'Memory watch range wraps')
     require(not args.frame_notify or args.frame_generate, 'Frame notification requires generated input pixels')
     require(not args.frame_process or args.frame_generate, 'Frame processing requires generated input pixels')
+    require(not args.shutter_on_preview or args.frame_process and args.reconfigure_watch and
+            not args.playback, 'Preview shutter requires processing and a shooting reconfiguration observation')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1083,6 +1118,7 @@ def main():
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
                                     watch_read=args.watch_read, watch_write=args.watch_write,
                                     watch_bytes=args.watch_bytes, watch_count=args.watch_count,
+                                    shutter_on_preview=args.shutter_on_preview,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,

@@ -1,0 +1,86 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "calculation": "0x10229080",
+  "state": "0xb18697e0",
+  "descriptors": [
+    "0xb1869818",
+    "0xb1869820"
+  ],
+  "cases": [
+    {
+      "first_bitmap": "0x0",
+      "second_bitmap": "0x0",
+      "result": 2,
+      "changed": 1,
+      "repeat_changed": 0
+    },
+    {
+      "first_bitmap": "0x1",
+      "second_bitmap": "0x0",
+      "result": 1,
+      "changed": 1,
+      "repeat_changed": 0
+    },
+    {
+      "first_bitmap": "0x0",
+      "second_bitmap": "0x1",
+      "result": 0,
+      "changed": 1,
+      "repeat_changed": 0
+    },
+    {
+      "first_bitmap": "0x1",
+      "second_bitmap": "0x1",
+      "result": 1,
+      "changed": 1,
+      "repeat_changed": 0
+    }
+  ],
+  "notification_entry": "0x102295f6",
+  "notification_cases": [
+    {
+      "changed": 0,
+      "enabled": "0x20",
+      "notifications": []
+    },
+    {
+      "changed": 1,
+      "enabled": "0x0",
+      "notifications": []
+    },
+    {
+      "changed": 1,
+      "enabled": "0x20",
+      "notifications": [
+        {
+          "code": "0x4100005",
+          "payload": "0x0"
+        }
+      ]
+    }
+  ],
+  "input_predicate": "0x1022962a",
+  "input_predicate_cases": [
+    {
+      "input": 0,
+      "result": 1
+    },
+    {
+      "input": 1,
+      "result": 0
+    },
+    {
+      "input": 20,
+      "result": 0
+    },
+    {
+      "input": 39,
+      "result": 0
+    }
+  ],
+  "host_boundaries": [
+    "recording notification subscriber"
+  ],
+  "limitation": "Synthetic bitmap contract only; native pending bits, application event 1 and capture completion require separate runtime evidence."
+}
