@@ -201,6 +201,8 @@ CORE_WORKER_POINTS = {
 
 RECONFIGURE_POINTS = {
     **CORE_WORKER_POINTS,
+    0x10389b56: 'reconfigure-processing-address-bindings',
+    0x10389b90: 'reconfigure-processing-port-configure',
     0x103b4b1e: 'reconfigure-processing-worker-configure-begin',
     0x103b4b26: 'reconfigure-processing-worker-configure-return',
     0x103b4b2e: 'reconfigure-processing-worker-controls-return',
@@ -368,6 +370,8 @@ def snapshot(remote):
             struct.unpack('<32I', remote.read(0x20102880, 128)))},
         processing_ports=[[hex(value) for value in struct.unpack('<16I', remote.read(
             0x20102000 + index * 0x100, 64))] for index in range(2)],
+        processing_address_banks=[[hex(value) for value in struct.unpack('<64I', remote.read(
+            0x20102200 + index * 0x100, 256))] for index in range(2)],
         processing_dma=[dict(channel=channel, words=[hex(value) for value in struct.unpack(
             '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)],
         mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
@@ -750,6 +754,21 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if pc == 0x103b4f2a:
                             record['processing_core']['returned_flags'] = hex(int.from_bytes(remote.read(
                                 remote.get(registers, 'sp'), 4), 'little'))
+                if pc == 0x10389b56:
+                    pointer = remote.get(registers, 'r2')
+                    values = struct.unpack('<80I', remote.read(pointer, 320))
+                    record['processing_address_bindings'] = dict(address=hex(pointer),
+                        bank_selector=remote.get(registers, 'r1'),
+                        banks=[[hex(value) for value in values[index * 16:(index + 1) * 16]]
+                               for index in range(4)], enabled=list(values[64:]))
+                if pc == 0x10389b90:
+                    pointer = remote.get(registers, 'r1')
+                    data = remote.read(pointer, 20)
+                    record['processing_port_configuration'] = dict(address=hex(pointer),
+                        controls=list(data[:8]), word_8=hex(struct.unpack_from('<I', data, 8)[0]),
+                        word_c=hex(struct.unpack_from('<I', data, 12)[0]),
+                        halfword_10=struct.unpack_from('<H', data, 16)[0],
+                        byte_12=data[18], port=data[19])
                 if pc == 0x103e1dea:
                     packet = remote.get(registers, 'r1')
                     record['display_packet'] = dict(address=hex(packet),

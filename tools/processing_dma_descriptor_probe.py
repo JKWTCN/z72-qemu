@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Recover the processing DMA register contract by executing its original setter."""
+"""Recover processing DMA and port contracts by executing original setters."""
 import argparse
 import hashlib
 import json
@@ -74,6 +74,47 @@ def probe(image):
         require(native.notifications == expected, 'Original processing completion event mapping differs')
         completion_cases.append(dict(status_18=hex(status), notifications=[
             dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
+    binding_cases = []
+    binding_parameters = native.DATA + 0x3000
+    for port in (0, 1):
+        addresses = [0x54000000 + port * 0x1000000 + row * 0x100000 + column * 0x1000
+                     for row in range(4) for column in range(16)]
+        addresses[32] = 0
+        enabled = [2 if column == 5 else int(column in (0, 15)) for column in range(16)]
+        seed = [0x77000000 + index * 4 for index in range(128)]
+        native.u.mem_write(0x20102200, struct.pack('<128I', *seed))
+        native.u.mem_write(binding_parameters, struct.pack('<80I', *addresses, *enabled))
+        native.call(0x39d188, 0, port, binding_parameters)
+        expected = seed[:]
+        for index, address in enumerate(addresses):
+            if enabled[index % 16]:
+                expected[port * 64 + index] = address
+        actual = list(struct.unpack('<128I', native.u.mem_read(0x20102200, 512)))
+        require(actual == expected, 'Original processing address-bank selection differs')
+        control = 0x20102000 + port * 0x100
+        native.u.mem_write(control, struct.pack('<I', 0xa5a501f0))
+        native.call(0x39d08a, 0, port)
+        started = native.word(control)
+        require(started == 0xa5a501f1, 'Original processing port enable differs')
+        native.call(0x39d0a2, 0, port)
+        stopped = native.word(control)
+        require(stopped == 0xa5a501f0, 'Original processing port disable differs')
+        binding_cases.append(dict(bank_selector=port, control_port=port,
+            bank_base=hex(0x20102200 + port * 0x100),
+            supplied_addresses=[hex(value) for value in addresses], enabled=enabled,
+            registers=[hex(value) for value in actual[port * 64:(port + 1) * 64]],
+            inactive_bank_preserved=True, control_started=hex(started), control_stopped=hex(stopped)))
+    native.u.mem_write(0xb1cf0f40, struct.pack('<8I', *([(native.DATA + 0x2000) | 1] * 8)))
+    routed_event_cases = []
+    for status, event in ((1, 1), (2, 2), (0x10000, 0x100), (0x20000, 0x200)):
+        native.notifications.clear()
+        native.u.mem_write(0x20100018, struct.pack('<3I', 0, status, 0))
+        native.call(0x39ce38)
+        require(native.notifications == [[0x41051002, event]],
+                'Original processing subscriber status mapping differs: ' + repr((status, native.notifications)))
+        routed_event_cases.append(dict(status_1c=hex(status), subscriber=(status.bit_length() - 1) % 16,
+            notifications=[
+            dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
                 entry='0x103bda1e', register_table='0x10789cc0',
                 host_boundaries=['two counter reads, advanced by nine ticks',
@@ -83,6 +124,10 @@ def probe(image):
                     rectangle_fields=['0x2a', '0x2c', '0x2e', '0x30'],
                     size_fields=['0x32', '0x34'], other_flags=0),
                 cases=cases, completion_handler='0x103bce38', completion_cases=completion_cases,
+                port_bindings=dict(entry='0x103bd188', matrix_rows=4, matrix_columns=16,
+                    enable_flags_offset='0x100', cases=binding_cases,
+                    enable_entry='0x103bd08a', disable_entry='0x103bd0a2'),
+                routed_event_cases=routed_event_cases,
                 pixel_transfer_verified=False,
                 limitation='Packing, submission and handler event mapping are verified; channel direction, pixel formats, data movement and hardware completion timing remain unverified.')
 
@@ -95,4 +140,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS original processing DMA packing, submission and completion event mapping')
+    print('PASS original processing DMA packing, submission, event mapping and port address banks')
