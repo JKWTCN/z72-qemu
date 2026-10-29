@@ -323,6 +323,28 @@ def image_work_snapshot(remote):
     return result
 
 
+def input_context_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result = []
+    # These three queues are traversed as contexts by 0x102300b0.
+    for address in (0xb25eeba4, 0xb25eebc4, 0xb25eec04):
+        node, count = word(address), word(address + 8)
+        row = dict(address=hex(address), count=count, head=hex(node), contexts=[])
+        for unused in range(min(count, 8)):
+            if not 0xb2c00000 <= node <= 0xb5effff4:
+                break
+            context = word(node + 8)
+            if 0xb2c00000 <= context <= 0xb5effeaf:
+                row['contexts'].append(dict(address=hex(context),
+                    consumers=remote.read(context + 0xc, 1)[0],
+                    parameters=hex(word(context + 0x144)),
+                    pending=hex(word(context + 0x14c))))
+            node = word(node)
+        result.append(row)
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -484,6 +506,7 @@ def snapshot(remote):
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
                         ('image', 0xb238e654), ('processing', 0xb23ecc80))},
+        input_context_queues=input_context_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))

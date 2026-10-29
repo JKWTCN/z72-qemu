@@ -42,6 +42,9 @@ POST_SUBMIT_POINTS = {
     0x103CD46A: 'capture-processing-peer-finish',
     0x102301DC: 'capture-input-drain-return',
     0x1023C82C: 'capture-input-disable-return',
+    0x102300B0: 'capture-input-pending-clear',
+    0x102300EC: 'capture-input-active-mask',
+    0x102300FA: 'capture-input-active-cleared',
     0x10321A4C: 'capture-driver-notification',
     0x103E9D24: 'capture-release-notification',
     0x102389C2: 'capture-input-boundary-wait',
@@ -262,6 +265,13 @@ class NativeCaptureCaller:
                 pointer = r0 if pc == 0x1032A792 else self.remote.get(registers, 'r5')
                 if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
                     detail['released_context'] = dict(address=hex(pointer),
+                        consumers=self.remote.read(pointer + 0xC, 1)[0],
+                        parameters=hex(self.word(pointer + 0x144)),
+                        pending=hex(self.word(pointer + 0x14C)))
+            if pc in (0x102300EC, 0x102300FA):
+                pointer = self.remote.get(registers, 'r5')
+                if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
+                    detail['input_pending_context'] = dict(address=hex(pointer),
                         consumers=self.remote.read(pointer + 0xC, 1)[0],
                         parameters=hex(self.word(pointer + 0x144)),
                         pending=hex(self.word(pointer + 0x14C)))
