@@ -41,6 +41,32 @@ class InterruptProbe(RegionProbe):
 
 def probe(image):
     native = InterruptProbe(image)
+    bindings = []
+    device, parameters = native.DATA, native.DATA + 0x100
+    for bank in (0, 1):
+        base = 0x20380000 + bank * 0x40000
+        native.u.mem_write(device, bytes(4) + bytes([bank]) + bytes(3))
+        native.u.mem_write(parameters, bytes([2, 5]))
+        native.call(0x1036a62c - 0x10020000, device, parameters)
+        require(native.word(base + 0x300) == 0x205, 'Original input control byte order differs')
+        native.u.mem_write(parameters, struct.pack('<4H', 0, 0, 1380, 918))
+        native.call(0x1036a642 - 0x10020000, device, parameters)
+        require([native.word(base + offset) for offset in (0x304, 0x308)] == [0, 0x05640396],
+                'Original input rectangle order differs')
+        addresses = [0x61000000 + index * 0x10000 for index in range(16)]
+        native.u.mem_write(parameters, struct.pack('<16IH', *addresses, 2080))
+        native.call(0x1036a672 - 0x10020000, device, parameters)
+        actual = [native.word(base + 0x310 + index * 4) for index in range(16)]
+        require(actual == addresses and native.word(base + 0x30c) == 2080,
+                'Original input binding or stride differs')
+        native.call(0x1036a246 - 0x10020000, device, 0x1402)
+        native.call(0x10369faa - 0x10020000, device)
+        require([native.word(base + offset) for offset in (8, 0x10, 0x20)] == [1, 1, 0x1402],
+                'Original input start or interrupt mask differs')
+        bindings.append(dict(bank=bank, control_300='0x205', rectangle_304='0x0',
+            size_308='0x5640396', stride_30c=2080,
+            addresses_310_to_34c=[hex(value) for value in actual],
+            start_08=1, start_10=1, interrupt_mask_20='0x1402'))
     cases = []
     for bank, handler, callback in ((0, 0x103699a4, 0x102e468a), (1, 0x10369968, 0x102e4608)):
         status_address = 0x20380024 + bank * 0x40000
@@ -85,6 +111,10 @@ def probe(image):
         handlers=['0x103699a4', '0x10369968'], interrupt_ids=[99, 100],
         status_addresses=['0x20380024', '0x203c0024'], callbacks=['0x102e468a', '0x102e4608'],
         translator='0x102637c2', cases=cases,
+        input_bindings=dict(control_setter='0x1036a62c', rectangle_setter='0x1036a642',
+            addresses_setter='0x1036a672', start_setter='0x10369faa',
+            interrupt_mask_setter='0x1036a246', cases=bindings,
+            limitation='Register packing only; address groups, ring phase and control semantics remain unverified.'),
         host_boundaries=['Record task/event API calls without scheduling tasks.'],
         limitations=['Synthetic status, library mode and callback registration; actual binding requires runtime evidence.',
                     'Service forwarding masks are distinct from unverified hardware interrupt masks.',

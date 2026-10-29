@@ -325,6 +325,72 @@
       ]
     }
   ],
+  "input_bindings": {
+    "control_setter": "0x1036a62c",
+    "rectangle_setter": "0x1036a642",
+    "addresses_setter": "0x1036a672",
+    "start_setter": "0x10369faa",
+    "interrupt_mask_setter": "0x1036a246",
+    "cases": [
+      {
+        "bank": 0,
+        "control_300": "0x205",
+        "rectangle_304": "0x0",
+        "size_308": "0x5640396",
+        "stride_30c": 2080,
+        "addresses_310_to_34c": [
+          "0x61000000",
+          "0x61010000",
+          "0x61020000",
+          "0x61030000",
+          "0x61040000",
+          "0x61050000",
+          "0x61060000",
+          "0x61070000",
+          "0x61080000",
+          "0x61090000",
+          "0x610a0000",
+          "0x610b0000",
+          "0x610c0000",
+          "0x610d0000",
+          "0x610e0000",
+          "0x610f0000"
+        ],
+        "start_08": 1,
+        "start_10": 1,
+        "interrupt_mask_20": "0x1402"
+      },
+      {
+        "bank": 1,
+        "control_300": "0x205",
+        "rectangle_304": "0x0",
+        "size_308": "0x5640396",
+        "stride_30c": 2080,
+        "addresses_310_to_34c": [
+          "0x61000000",
+          "0x61010000",
+          "0x61020000",
+          "0x61030000",
+          "0x61040000",
+          "0x61050000",
+          "0x61060000",
+          "0x61070000",
+          "0x61080000",
+          "0x61090000",
+          "0x610a0000",
+          "0x610b0000",
+          "0x610c0000",
+          "0x610d0000",
+          "0x610e0000",
+          "0x610f0000"
+        ],
+        "start_08": 1,
+        "start_10": 1,
+        "interrupt_mask_20": "0x1402"
+      }
+    ],
+    "limitation": "Register packing only; address groups, ring phase and control semantics remain unverified."
+  },
   "host_boundaries": [
     "Record task/event API calls without scheduling tasks."
   ],

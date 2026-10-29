@@ -649,6 +649,10 @@ struct NikonZ72BootConfig {
     uint32_t primary_dma_address;
     uint32_t primary_second_address;
     uint64_t processing_dma_count;
+    MemoryRegion image_interrupts[2];
+    NikonZ72ConfigWord image_interrupt_words[2];
+    uint32_t image_interrupt_masks[2];
+    uint32_t image_interrupt_status[2];
     uint64_t frame_count;
     uint32_t input_last_read;
     bool pcie_link;
@@ -1222,6 +1226,80 @@ static bool aux_image_process_frame(NikonZ72BootConfig *s)
     return true;
 }
 
+static void image_update_irqs(NikonZ72BootConfig *s)
+{
+    if (!s->intc) {
+        return;
+    }
+    for (unsigned bank = 0; bank < 2; bank++) {
+        qemu_set_irq(qdev_get_gpio_in(s->intc, 99 + bank - 32),
+            (s->image_interrupt_status[bank] & s->image_interrupt_masks[bank]) != 0);
+    }
+}
+
+static uint64_t image_interrupt_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+    NikonZ72BootConfig *s = word->device;
+
+    return offset == 0 ? s->image_interrupt_masks[word->index] :
+                         s->image_interrupt_status[word->index];
+}
+
+static void image_interrupt_write(void *opaque, hwaddr offset,
+                                 uint64_t value, unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+    NikonZ72BootConfig *s = word->device;
+
+    if (offset == 0) {
+        s->image_interrupt_masks[word->index] = value;
+    } else {
+        s->image_interrupt_status[word->index] &= ~(uint32_t)value;
+    }
+    image_update_irqs(s);
+}
+
+static const MemoryRegionOps image_interrupt_ops = {
+    .read = image_interrupt_read,
+    .write = image_interrupt_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
+/* C1.70's active bank0 input: the same four RAW buffers as sensor DMA,
+ * with the native list rotated by two slots. Membership is checked here;
+ * the physical ring phase remains an experimental timing assumption. */
+static bool image_preview_input(AddressSpace *view, uint32_t source,
+                                uint32_t width, uint32_t height, uint32_t stride)
+{
+    uint8_t run[12], geometry[8], bindings[0x50];
+    bool bound = false;
+
+    if (address_space_read(view, 0x20380008, MEMTXATTRS_UNSPECIFIED,
+                           run, sizeof(run)) != MEMTX_OK ||
+        !(ldl_le_p(run) & 1) || !(ldl_le_p(run + 8) & 1) ||
+        address_space_read(view, 0x20380044, MEMTXATTRS_UNSPECIFIED,
+                           geometry, sizeof(geometry)) != MEMTX_OK ||
+        ldl_le_p(geometry) != 0 || ldl_le_p(geometry + 4) != (width << 16 | height) ||
+        address_space_read(view, 0x20380300, MEMTXATTRS_UNSPECIFIED,
+                           bindings, sizeof(bindings)) != MEMTX_OK ||
+        ldl_le_p(bindings) != 0 || ldl_le_p(bindings + 4) != 0 ||
+        ldl_le_p(bindings + 8) != 0 || ldl_le_p(bindings + 12) != stride) {
+        return false;
+    }
+    for (unsigned slot = 0; slot < 4; slot++) {
+        bound |= ldl_le_p(bindings + 0x10 + slot * 4) == source;
+    }
+    for (unsigned offset = 0x20; offset < sizeof(bindings); offset += 4) {
+        if (ldl_le_p(bindings + offset)) {
+            return false;  /* Additional input planes are not implemented. */
+        }
+    }
+    return bound;
+}
+
 /* Functional monochrome preview for the observed C1.70 stream profile.
  * The 40000000 DMA operand is treated as an internal input stream here;
  * it is not read as a guest RAM pointer. Crop/nearest scaling and NV12 are
@@ -1238,6 +1316,7 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     g_autofree uint8_t *raw = NULL;
 
     if (!s->frame_process || width != 1380 || height != 918 || stride != 2080 ||
+        !image_preview_input(view, source, width, height, stride) ||
         address_space_read(view, 0x20102100, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
         (ldl_le_p(control) & 0xf) != 1 ||
         address_space_read(view, 0x20102608, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
@@ -1303,15 +1382,23 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
                 pixels[y * row + x] = raw[sy * stride + (sx / 2) * 3] ? 235 : 16;
             }
         }
-        address_space_write(view, targets[index], MEMTXATTRS_UNSPECIFIED, pixels, y_length);
-        address_space_write(view, uv_targets[index], MEMTXATTRS_UNSPECIFIED,
-                            pixels + y_length, y_length / 2);
+        if (address_space_write(view, targets[index], MEMTXATTRS_UNSPECIFIED,
+                                 pixels, y_length) != MEMTX_OK ||
+            address_space_write(view, uv_targets[index], MEMTXATTRS_UNSPECIFIED,
+                                 pixels + y_length, y_length / 2) != MEMTX_OK) {
+            return;
+        }
     }
     s->processing_dma_count++;
     /* Original table b1801e38: status20 bit3 -> event80 -> bank1 frame
      * callback. Bank0 statistics are not generated by this preview model. */
     stl_le_p(s->transfer_table + 0x20, ldl_le_p(s->transfer_table + 0x20) | 8);
     transfer_update_irq(s);
+    /* Native IRQ99 -> 0x102e468a -> 0x42190805. Input was read and
+     * monochrome output was written. This is the functional raster model,
+     * not a claim that statistics or calibration operators were executed. */
+    s->image_interrupt_status[0] |= 0x1002;
+    image_update_irqs(s);
 }
 
 static void input_raw12_row(uint8_t *row, unsigned width, unsigned start_x,
@@ -2412,6 +2499,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->primary_dma_address = 0;
     s->primary_second_address = 0;
     s->processing_dma_count = 0;
+    memset(s->image_interrupt_masks, 0, sizeof(s->image_interrupt_masks));
+    memset(s->image_interrupt_status, 0, sizeof(s->image_interrupt_status));
+    image_update_irqs(s);
     input_update_irqs(s);
     sync_update_irqs(s);
     if (s->intc) {
@@ -2456,6 +2546,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     sync_update_irqs(s);
     sd_update_irq(s);
     aux_image_update_irq(s);
+    image_update_irqs(s);
     if (s->intc) {
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), s->gate_pending);
         if (s->release_config) {
@@ -2470,8 +2561,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 42,
-    .minimum_version_id = 42,
+    .version_id = 43,
+    .minimum_version_id = 43,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2508,6 +2599,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(primary_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_second_address, NikonZ72BootConfig),
         VMSTATE_UINT64_V(processing_dma_count, NikonZ72BootConfig, 39),
+        VMSTATE_UINT32_ARRAY(image_interrupt_masks, NikonZ72BootConfig, 2),
+        VMSTATE_UINT32_ARRAY(image_interrupt_status, NikonZ72BootConfig, 2),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -2681,6 +2774,14 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
     const unsigned parameter_first = boot_config_index_of(0x20013000);
     const unsigned release_first = boot_config_index_of(0x04281034);
     if (s->release_config) {
+        for (unsigned bank = 0; bank < 2; bank++) {
+            s->image_interrupt_words[bank] = (NikonZ72ConfigWord) { s, bank };
+            memory_region_init_io(&s->image_interrupts[bank], OBJECT(dev),
+                &image_interrupt_ops, &s->image_interrupt_words[bank],
+                bank ? "z72-image-interrupt-bank1" : "z72-image-interrupt-bank0", 8);
+            memory_region_add_subregion_overlap(root, 0x20380020 + bank * 0x40000,
+                                                &s->image_interrupts[bank], 1);
+        }
         memory_region_init_io(&s->transfer_ram, OBJECT(dev), &transfer_ops,
                               s, "z72-transfer-control-lab", 0x100);
         memory_region_add_subregion_overlap(root, 0x20100000,

@@ -53,10 +53,15 @@ def check(qemu):
                         assert 'return' in reply, reply
                         return reply['return']
 
+            irq_levels = {}
+
             def command(text):
                 stream.write(text.encode() + b'\n')
                 stream.flush()
                 reply = stream.readline().decode().strip().split()
+                while reply and reply[0] == 'IRQ':
+                    irq_levels[int(reply[2])] = reply[1] == 'raise'
+                    reply = stream.readline().decode().strip().split()
                 assert reply and reply[0] == 'OK', reply
                 return int(reply[1], 0) if len(reply) > 1 else None
 
@@ -73,6 +78,8 @@ def check(qemu):
                      if item['type'] == 'child<nikon-z72-boot-config>']
             assert len(names) == 1
             path = '/machine/unattached/' + names[0]
+            gic = next(item['name'] for item in devices if item['type'] == 'child<arm_gic>')
+            command('irq_intercept_in /machine/unattached/' + gic)
 
             def count():
                 return monitor('qom-get', dict(path=path, property='input-dma-count'))
@@ -182,10 +189,29 @@ def check(qemu):
                     tick()
                     assert processed() == 0, 'Processing ran before sequence enable'
                     write(0x20102608, 1)
+                    tick()
+                    assert processed() == 0 and read(0x20380024) == 0, 'Processing ran without image input binding'
+                    for address, value in ((0x20380008, 1), (0x20380010, 1),
+                                           (0x20380048, 0x05640396), (0x2038030c, 2080),
+                                           (0x20380310, 0xb0101000), (0x20380020, 0x1002)):
+                        write(address, value)
+                    # Image input rejection must preserve output ownership and completion state.
+                    for address, invalid, valid in (
+                            (0x20380008, 0, 1), (0x20380010, 0, 1),
+                            (0x20380048, 0x05640394, 0x05640396),
+                            (0x20380300, 1, 0), (0x20380304, 1, 0),
+                            (0x20380308, 1, 0), (0x2038030c, 2081, 2080),
+                            (0x20380310, 0, 0xb0101000), (0x20380320, 0xb0101000, 0)):
+                        write(address, invalid)
+                        tick()
+                        assert processed() == 0 and read(0x20380024) == 0
+                        assert all(read(0xb2001000 + slot * 0x10000 + index * 0x1000) == 0x12345678
+                                   for slot in range(4) for index in range(3))
+                        write(address, valid)
                     # A rejected third output must not partially write the first two.
                     write(0x20100568, 32)
                     tick()
-                    assert processed() == 0 and read(0x20100020) == 0
+                    assert processed() == 0 and read(0x20100020) == 0 and read(0x20380024) == 0
                     assert all(read(0xb2001000 + slot * 0x10000 + index * 0x1000) == 0x12345678
                                for slot in range(4) for index in range(3))
                     write(0x20100568, 0x100)
@@ -201,6 +227,23 @@ def check(qemu):
                         tick()
                         assert processed() == expected
                         assert read(0x20100020) == 8, 'Output notification not tied to completed raster'
+                        assert read(0x20380024) == 0x1002, 'Image completion not tied to the raster'
+                        assert read(0x20380020) == 0x1002 and read(0x203c0024) == 0
+                        assert irq_levels.get(99 - 32, False), 'Image completion did not reach IRQ99'
+                        assert not irq_levels.get(100 - 32, False), 'Bank0 raster asserted IRQ100'
+                        write(0x20380020, 0)
+                        assert read(0x20380024) == 0x1002 and not irq_levels.get(99 - 32, False)
+                        write(0x20380020, 0x1002)
+                        assert irq_levels.get(99 - 32, False), 'Unmasking a latched result did not restore IRQ99'
+                        write(0x20380024, 2)
+                        assert read(0x20380024) == 0x1000, 'Image status did not clear only written bits'
+                        write(0x20380024, 4)
+                        assert read(0x20380024) == 0x1000
+                        write(0x20380024, 0x1000)
+                        assert read(0x20380024) == 0
+                        assert not irq_levels.get(99 - 32, False), 'Image acknowledgement left IRQ99 asserted'
+                        write(0x203c0024, 0xffffffff)
+                        assert read(0x203c0024) == 0, 'Status writes injected a completion'
                         frame = count() - 1
                         slot = frame % 4
                         first = (0x10, 0x10, 0xeb, 0x10, 0x10, 0xeb, 0x10, 0x10)
@@ -218,7 +261,7 @@ def check(qemu):
                         write(0x20100020, 8)
                     write(0x20102100, 0x120)
                     tick()
-                    assert processed() == 5 and read(0x20100020) == 0
+                    assert processed() == 5 and read(0x20100020) == 0 and read(0x20380024) == 0
                     # Boundary causes obey their masks and require successful RAW DMA.
                     def clear_input_causes():
                         for bank in (0, 3, 4):
@@ -292,9 +335,12 @@ def check(qemu):
                 write(0x2006800c, operand)
                 assert read(0x20068210) == read(0x20068230) == read(0x200682f0) == 0, 'Repeated disable completed twice'
                 assert count() == previous, 'Disable fabricated a pixel transfer'
+            write(0x20380020, 0xffffffff)
+            write(0x203c0020, 0xffffffff)
             monitor('system_reset')
             assert count() == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
+            assert all(read(address) == 0 for address in (0x20380020, 0x20380024, 0x203c0020, 0x203c0024))
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'Reset retained an enabled DMA channel'

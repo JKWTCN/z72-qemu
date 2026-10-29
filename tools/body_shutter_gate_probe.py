@@ -54,6 +54,11 @@ IMAGE_WORK_WAIT_POINTS = {
     0x10268c2e: 'image-work-service-wait-return',
     0x10263a14: 'image-work-service-event-producer',
     0x10266476: 'image-work-dependent-wait',
+    0x1026830e: 'image-work-second-service-wait',
+    0x10268312: 'image-work-second-service-wait-return',
+    0x10262e28: 'image-work-second-service-event-producer',
+    0x103699a4: 'image-device-bank0-interrupt',
+    0x10369968: 'image-device-bank1-interrupt',
 }
 AFTER_PLAYBACK = {
     0x103f25ec: 'operation18-api',
@@ -371,6 +376,18 @@ def image_work_snapshot(remote):
     return result
 
 
+def image_service_snapshot(remote):
+    def words(address, count):
+        return struct.unpack('<' + str(count) + 'I', remote.read(address, count * 4))
+    return dict(library_modes=list(remote.read(0xb1801ecc, 2)),
+        library_callbacks=[hex(value) for value in words(0xb1801ed4, 2)],
+        service_fields={hex(index * 4): hex(value)
+                        for index, value in enumerate(words(0xb18095c4, 24))},
+        banks=[dict(base=hex(base), registers={hex(index * 4): hex(value)
+                    for index, value in enumerate(words(base, 256))})
+               for base in (0x20380000, 0x203c0000)])
+
+
 def input_context_snapshot(remote):
     def word(address):
         return int.from_bytes(remote.read(address, 4), 'little')
@@ -658,6 +675,7 @@ def snapshot(remote):
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
+        image_service=image_service_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
@@ -1390,6 +1408,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if pc in (0x10268c2a, 0x10268c2e):
                         record['returned_or_seeded_flags'] = hex(int.from_bytes(
                             remote.read(remote.get(registers, 'sp') + 8, 4), 'little'))
+                        record['parameters'] = hex(remote.get(registers, 'r4'))
+                    if pc in (0x1026830e, 0x10268312):
+                        record['returned_or_seeded_flags'] = hex(int.from_bytes(
+                            remote.read(remote.get(registers, 'sp'), 4), 'little'))
                         record['parameters'] = hex(remote.get(registers, 'r4'))
                     if pc == 0x10266476:
                         pointer = remote.get(registers, 'r0')
