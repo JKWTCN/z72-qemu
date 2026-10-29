@@ -106,6 +106,9 @@ CAPTURE_CONTROLLER_POINTS = {
     0x080354b8: 'capture-controller-backend-hardware-start',
     0x08034d40: 'capture-controller-backend-phase-complete',
     0x08034dc0: 'capture-controller-backend-notification',
+    0x080368ce: 'capture-controller-step-input-armed',
+    0x0803661c: 'capture-controller-step-trigger',
+    0x08034ff0: 'capture-controller-step-request',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -992,7 +995,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
-            image_work_events=False, capture_focus=False, capture_counter_seconds=None):
+            image_work_events=False, capture_focus=False, capture_counter_seconds=None,
+            controller_step_trigger=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1068,6 +1072,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     breakpoints_installed = False
     capture_caller = None
     capture_input_path = None
+    controller_step_trigger_sent = False
     try:
         before = snapshot(remote)
         if capture_submit_on_ready:
@@ -1236,6 +1241,29 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     backend_words=[hex(value) for value in
                         struct.unpack('<5I', remote.read(0x20017584, 20))],
                     backend_request=list(remote.read(0x2000e8c0, 6)))
+                if pc == 0x080368ce:
+                    def controller_word(address):
+                        return int.from_bytes(remote.read(address, 4), 'little')
+                    record['step_input'] = dict(
+                        port=controller_word(0x40013810) & 15,
+                        mask=hex(controller_word(0x40013c00)),
+                        rising=hex(controller_word(0x40013c08)),
+                        falling=hex(controller_word(0x40013c0c)),
+                        pending=hex(controller_word(0x40013c14)),
+                        original_level=(controller_word(0x40021810) >> 8) & 1)
+                    if controller_step_trigger and not controller_step_trigger_sent:
+                        source = record['step_input']
+                        require(source['port'] == 6 and int(source['mask'], 16) & 0x100 and
+                                (int(source['rising'], 16) | int(source['falling'], 16)) & 0x100 and
+                                not int(source['pending'], 16) & 0x100,
+                                'Controller G8 step input is not armed and clear')
+                        original = source['original_level']
+                        for level in (1 - original, original):
+                            machine._qtest(f'set_irq_in /machine/unattached/{machine.gpio_names[6]} '
+                                           f'unnamed-gpio-in 8 {level}')
+                        controller_step_trigger_sent = True
+                        record['controller_step_trigger_host_supplied'] = True
+                        capture_caller.report['controller_step_trigger_host_supplied'] = True
                 if pc == 0x080369d0:
                     pointer = remote.get(registers, 'r0')
                     if 0x20000000 <= pointer <= 0x2003fff8:
@@ -1249,7 +1277,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 remote.select_thread(thread)
                 records.append(record)
                 hits[pc] = hits.get(pc, 0) + 1
-                repeat = hits[pc] < 8
+                repeat = hits[pc] < (32 if pc == 0x08034de0 else 8)
             if thread <= 2:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
@@ -1763,6 +1791,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     diagnostic_capture=capture_caller.report if capture_caller else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
+                    controller_step_trigger=dict(requested=controller_step_trigger,
+                                                 supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
                         reached=bool(capture_caller.report['triggered'] and
                             after['counter_ticks'] - capture_caller.report['trigger_counter_ticks'] >=
@@ -1878,6 +1908,8 @@ def main():
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
     parser.add_argument('--capture-focus', action='store_true',
                         help='Trace diagnostic capture admission, stop and primary allocation without background input work')
+    parser.add_argument('--controller-step-trigger', action='store_true',
+                        help='Laboratory input: pulse and restore controller G8 after native capture preparation arms it')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
@@ -1926,6 +1958,8 @@ def main():
             'Idle capture observation requires the diagnostic native capture caller')
     require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
             'Focused capture requires the diagnostic caller without reconfiguration tracing')
+    require(not args.controller_step_trigger or args.capture_focus,
+            'Controller step input experiment requires focused capture tracing')
     require(not (args.trace_primary_allocation_boot and args.trace_capture_resource_boot),
             'Select one boot observation')
     require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
@@ -2033,6 +2067,7 @@ def main():
                                     capture_wait_idle=args.capture_wait_idle,
                                     capture_focus=args.capture_focus,
                                     capture_counter_seconds=args.capture_counter_seconds,
+                                    controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
                                     image_work_events=args.image_work_events,
