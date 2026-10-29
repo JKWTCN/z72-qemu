@@ -11,6 +11,7 @@ from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_PC, UC_ARM_REG_LR
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import BASE, MASTER_SHA, require
 from tools.boot_region_probe import RegionProbe
+from analyze.firmware_structure import analyze_eg, scatter_records
 
 
 class PoolProbe(RegionProbe):
@@ -24,7 +25,7 @@ class PoolProbe(RegionProbe):
             super().boundary(u, address, size, unused)
 
 
-def probe(image):
+def probe(image, slave=None):
     native = PoolProbe(image)
     profile_address = 0x11983578
     header, capacity, unit, limit, base, kind, alignment = struct.unpack_from(
@@ -57,7 +58,7 @@ def probe(image):
             'Pool construction crossed an unexpected host boundary')
     overlap = min(source + length, 0xbb300000) - max(source, 0xbaa00000)
     require(overlap == 0x5f6000, 'Code-cache intersection differs')
-    return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
+    report = dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         profile=hex(profile_address), constructor='0x102e5e6c', allocator='0x102e5fe4',
         constructor_arguments=[hex(value) for value in words],
         slot_count=limit, slot_stride=hex(unit), metadata_bytes='0x37bc',
@@ -69,14 +70,34 @@ def probe(image):
         limitations=['Pool metadata uses synthetic RAM; no pixel storage is allocated or written.',
                     'The allocation reproduces the observed numeric overlap, not DMA address-space ownership.',
                     'No firmware wait, capture completion, JPEG or file is supplied.'])
+    if slave is not None:
+        structure = analyze_eg(slave, 'slave')
+        peer_profile = 0x101f1660
+        require(struct.unpack_from('<5I2B', slave, peer_profile - BASE) ==
+                (header, capacity, unit, limit, base, kind, alignment),
+                'Slave image pool profile does not match the master descriptor pool')
+        records = [row for row in scatter_records(slave) if row['kind'] == 'zero' and
+                   row['destination'] == base and row['size'] == capacity]
+        require(len(records) == 1, 'Slave image pool initialization differs')
+        require(not any(row['kind'] == 'zero' and row['destination'] <= source and
+                        row['destination'] + row['size'] >= source + length
+                        for row in scatter_records(image)),
+                'Full image allocation is also covered by a master initialization span')
+        report['peer_storage'] = dict(slave_sha256=structure['sha256'],
+            profile=hex(peer_profile), initialization=records[0],
+            matching_profiles=True, full_allocation_within_slave_initialization=True,
+            full_allocation_within_master_initialization=False)
+    return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--master', required=True, type=Path)
+    parser.add_argument('--slave', type=Path,
+                        help='Compare the peer pool profile and original initialization ownership')
     parser.add_argument('--out', required=True, type=Path)
     args = parser.parse_args()
-    report = probe(args.master.read_bytes())
+    report = probe(args.master.read_bytes(), args.slave.read_bytes() if args.slave else None)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print('PASS original primary pool construction and six-unit allocation')

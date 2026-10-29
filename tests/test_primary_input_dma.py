@@ -1,28 +1,44 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Check the complete primary RAW12 split and device-local address remapping."""
+"""Check split RAW12 DMA, peer ownership and device-local address remapping."""
 import argparse
 import json
+import re
 import socket
 import subprocess
 import time
 
 
 def check(qemu):
-    for role, enabled, sampling, notifying in (
-            ('master', True, True, True), ('master', True, True, False),
-            ('master', False, True, True), ('master', True, False, True),
-            ('slave', True, True, True)):
+    height, first_stride, full_stride = 5520, 4224, 12432
+    first_length, full_length = first_stride * height, full_stride * height
+    rows = (0, 63, 64, 0x2000000 // full_stride, height - 1)
+    peer_guards = {0x88000000 - 4: 0x11223344, 0x88000000 + full_length: 0x55667788,
+                   0xbad0a000 - 4: 0x13572468, 0xbad0a000 + full_length: 0x24681357}
+    for full in (0x88000000, 0xbad0a000):
+        for y in rows:
+            peer_guards[full + y * full_stride] = 0xa5a5a5a5
+            peer_guards[full + y * full_stride + first_stride - 4] = 0x5a5a5a5a
+    for role, enabled, sampling, notifying, paired, linked in (
+            ('master', True, True, True, True, True), ('master', True, True, False, True, True),
+            ('master', False, True, True, True, True), ('master', True, False, True, True, True),
+            ('master', True, True, True, True, False), ('master', True, True, True, False, True),
+            ('slave', True, True, True, False, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
-        process = subprocess.Popen([qemu, '-M', f'nikon-z72-{"slave-" if role == "slave" else ""}lab',
+        machine = 'nikon-z72-dual-lab' if paired else f'nikon-z72-{"slave-" if role == "slave" else ""}lab'
+        loaders = []
+        if paired:
+            for address, value in peer_guards.items():
+                loaders += ['-device', f'loader,addr={address:#x},data={value:#x},data-len=4,cpu-num=2']
+        process = subprocess.Popen([qemu, '-M', machine, '-smp', '4' if paired else '2',
             '-accel', 'qtest', '-display', 'none', '-serial', 'none', '-qmp', 'stdio',
             '-global', f'nikon-z72-boot-config.frame-generate={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.frame-notify={"on" if notifying else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
-            '-global', 'nikon-z72-boot-config.transport-link=on',
-            '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
+            '-global', f'nikon-z72-boot-config.transport-link={"on" if linked else "off"}',
+            '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
         try:
@@ -58,20 +74,31 @@ def check(qemu):
                 assert reply and reply[0] == 'OK', reply
                 return reply[1] if len(reply) > 1 else None
 
-            def read(address):
+            def read(address, peer=False):
+                if peer:
+                    return int.from_bytes(data_at(address, 4, True), 'little')
                 return int(command(f'readl {address:#x}'), 0)
 
             def write(address, value):
                 command(f'writel {address:#x} {value:#x}')
 
-            def data_at(address, length):
+            def data_at(address, length, peer=False):
+                if peer:
+                    output = monitor('human-monitor-command',
+                        {'command-line': f'xp /{length}bx {address:#x}', 'cpu-index': 2})
+                    data = bytes(int(value, 16) for line in output.splitlines() if ':' in line
+                        for value in re.findall(r'0x([0-9a-fA-F]{2})(?=\s|$)', line.split(':', 1)[1]))
+                    assert len(data) == length, output[:200]
+                    return data
                 return bytes.fromhex(command(f'read {address:#x} {length:#x}')[2:])
 
             monitor('qmp_capabilities')
             names = [item['name'] for item in monitor('qom-list', dict(path='/machine/unattached'))
                      if item['type'] == 'child<nikon-z72-boot-config>']
-            assert len(names) == 1
-            path = '/machine/unattached/' + names[0]
+            assert len(names) == (2 if paired else 1)
+            path = next('/machine/unattached/' + name for name in names if
+                monitor('qom-get', dict(path='/machine/unattached/' + name,
+                    property='master-role')) == (role == 'master'))
 
             def property_value(name):
                 return monitor('qom-get', dict(path=path, property=name))
@@ -82,9 +109,8 @@ def check(qemu):
             def tick():
                 command('clock_step 33333333')
 
-            first, full, aperture = 0x62700000, 0x68000000, 0x18000000
-            height, first_stride, full_stride = 5520, 4224, 12432
-            first_length, full_length = first_stride * height, full_stride * height
+            # Equal numeric addresses in two engines must remain independent.
+            first, full, aperture = 0x88000000, 0x88000000, 0x18000000
             for address, value in ((0x20069500, 2), (0x20069504, 2816 << 16),
                     (0x20069508, height << 16), (0x2006950c, 1), (0x20069510, 5472),
                     (0x20069808, first_stride), (0x20069814, 1), (0x20069818, 1),
@@ -95,15 +121,10 @@ def check(qemu):
                 for address, value in ((0x2013d0b0, (full >> 12) + slot * 0x2000),
                         (0x2013d0d0, 0xfe000), (0x2013d0f0, (aperture >> 12) + slot * 0x2000)):
                     write(address + slot * 4, value)
-            active = role == 'master' and enabled and sampling
-            rows = (0, 63, 64, 0x2000000 // full_stride, height - 1)
+            active = role == 'master' and enabled and sampling and paired and linked
             if role == 'master':
-                for address, value in ((first - 4, 0x12345678), (first + first_length, 0x87654321),
-                        (full - 4, 0x11223344), (full + full_length, 0x55667788)):
+                for address, value in ((first - 4, 0x12345678), (first + first_length, 0x87654321)):
                     write(address, value)
-                for y in rows:
-                    write(full + y * full_stride, 0xa5a5a5a5)
-                    write(full + y * full_stride + first_stride - 4, 0x5a5a5a5a)
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'Primary DMA ran before its channel start'
@@ -122,17 +143,17 @@ def check(qemu):
 
                 for y in rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 0)
-                    assert data_at(full + y * full_stride + first_stride, 8208) == expected_row(y, 2816, 5472, 0)
-                    assert read(full + y * full_stride) == 0xa5a5a5a5, 'Second stripe overwrote the left columns'
-                    assert read(full + y * full_stride + first_stride - 4) == 0x5a5a5a5a
+                    assert data_at(full + y * full_stride + first_stride, 8208, True) == expected_row(y, 2816, 5472, 0)
+                    assert read(full + y * full_stride, True) == 0xa5a5a5a5, 'Second stripe overwrote the left columns'
+                    assert read(full + y * full_stride + first_stride - 4, True) == 0x5a5a5a5a
                 assert read(first - 4) == 0x12345678 and read(first + first_length) == 0x87654321
-                assert read(full - 4) == 0x11223344 and read(full + full_length) == 0x55667788
+                assert read(full - 4, True) == 0x11223344 and read(full + full_length, True) == 0x55667788
                 write(0x20068210, 0xffffffff)
-                original = (data_at(first, 256), data_at(full + first_stride, 256))
+                original = (data_at(first, 256), data_at(full + first_stride, 256, True))
                 # An invalid final mapping must prevent even the first stripe's writes.
                 for address, invalid, valid in ((0x2013d0b8, 0x20000, (full >> 12) + 0x4000),
                         (0x2013d0d8, 0, 0xfe000), (0x2013d0b0 + 0x60, 1, 0),
-                        (0x20069850, full, first), (0x20069850, 0x20068500, first),
+                        (0x20069850, 0xbaa00000, first), (0x20069850, 0x20068500, first),
                         (0x20069850, 0xac1c4ff0, first),
                         (0x20069950, 0x10020000, aperture + first_stride),
                         (0x20069854, first, 0), (0x20069500, 6, 2),
@@ -141,7 +162,7 @@ def check(qemu):
                     write(address, invalid)
                     tick()
                     assert count() == 1 and read(0x20068210) == 0
-                    assert (data_at(first, 256), data_at(full + first_stride, 256)) == original, \
+                    assert (data_at(first, 256), data_at(full + first_stride, 256, True)) == original, \
                         'Rejected primary descriptor partially wrote a stripe'
                     write(address, valid)
                 write(0x2013d0bc, full >> 12)
@@ -157,10 +178,14 @@ def check(qemu):
                 tick()
                 assert count() == 2
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
-                assert data_at(full + first_stride, 8208) == expected_row(0, 2816, 5472, 1)
-                # Exercise the observed table across adjacent RAM regions,
-                # using synthetic image storage outside the code cache.
-                native_full = 0xbc000000
+                assert data_at(full + first_stride, 8208, True) == expected_row(0, 2816, 5472, 1)
+                # Actual full-frame address belongs to peer storage, while
+                # the same numeric address holds the sender's execution RAM.
+                native_full = 0xbad0a000
+                first = 0x62700000
+                write(0x20069850, first)
+                cache_guard = bytes(range(256))
+                command(f'write {native_full:#x} {len(cache_guard):#x} 0x{cache_guard.hex()}')
                 for slot, (target, mask, base) in enumerate((
                         (0xe0000, 0xf8000, 0), (0xe8000, 0xf8000, 0x8000),
                         (0xb8000, 0xf8000, 0x10000), (0xc0000, 0xf8000, 0x18000),
@@ -169,32 +194,26 @@ def check(qemu):
                     for address, value in ((0x2013d0b0, target),
                             (0x2013d0d0, mask), (0x2013d0f0, base)):
                         write(address + slot * 4, value)
-                write(0x20069950, 0x14001080)
+                write(0x20069950, 0x12d0b080)
                 write(0x20068210, 0xffffffff)
-                native_rows = rows + tuple((boundary - native_full) // full_stride
-                    for boundary in (0xbc0a0000, 0xbc100000, 0xbd1e0000, 0xbd200000))
-                for y in native_rows:
-                    write(native_full + y * full_stride, 0xa5a5a5a5)
-                write(native_full - 4, 0x13572468)
-                write(native_full + full_length, 0x24681357)
+                native_rows = rows
                 tick()
                 assert count() == 3 and read(0x20068210) == (0x41 if notifying else 0)
                 assert property_value('primary-input-second-dma-address') == native_full + first_stride
                 for y in native_rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 2)
-                    assert data_at(native_full + y * full_stride + first_stride, 8208) == expected_row(y, 2816, 5472, 2)
-                    assert read(native_full + y * full_stride) == 0xa5a5a5a5
-                assert read(native_full - 4) == 0x13572468
-                assert read(native_full + full_length) == 0x24681357
-                # A live C1.70 allocation currently names RAM holding
-                # executable code. Refuse both stripes until its ownership
-                # contract is recovered, even though the RAM is writable.
-                write(0x20069950, 0x12d0b080)
+                    assert data_at(native_full + y * full_stride + first_stride, 8208, True) == expected_row(y, 2816, 5472, 2)
+                    assert read(native_full + y * full_stride, True) == 0xa5a5a5a5
+                assert read(native_full - 4, True) == 0x13572468
+                assert read(native_full + full_length, True) == 0x24681357
+                assert data_at(native_full, 256) == cache_guard, 'Peer DMA overwrote master execution RAM'
+                # A late row outside the peer pool rejects both stripes.
+                write(0x20069950, 0x14001080)
                 write(0x20068210, 0xffffffff)
-                original = (data_at(first, 256), data_at(0xbad0b080, 256))
+                original = (data_at(first, 256), data_at(native_full + first_stride, 256, True))
                 tick()
                 assert count() == 3 and read(0x20068210) == 0
-                assert (data_at(first, 256), data_at(0xbad0b080, 256)) == original
+                assert (data_at(first, 256), data_at(native_full + first_stride, 256, True)) == original
             monitor('system_reset')
             assert count() == 0 and property_value('primary-input-dma-address') == 0
             assert property_value('primary-input-second-dma-address') == 0
@@ -213,7 +232,7 @@ def check(qemu):
                 process.wait(timeout=5)
             for pipe in (process.stdin, process.stdout, process.stderr):
                 pipe.close()
-    print('PASS primary RAW12 split DMA, remapping, whole-request validation and lifecycle')
+    print('PASS primary split DMA, peer ownership, sender code isolation, validation and lifecycle')
 
 
 if __name__ == '__main__':

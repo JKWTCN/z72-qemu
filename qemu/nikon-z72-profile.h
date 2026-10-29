@@ -67,8 +67,8 @@ static const NikonZ72Window nikon_z72_windows[] = {
     /* Later buffer pools declared by the original initialization records.
      * Individual allocator extents may reserve a smaller usable portion. */
     {0xBB300000, 0x00DA0000, "z72-secondary-buffer-pool-lab"},
-    /* The native full-frame allocation BAD0A000 + 0417C000 and identity
-     * sections include these two gaps between initialization extents. */
+    /* Historical laboratory identity storage between initialization extents.
+     * Primary full-frame DMA now uses the slave image pool, not these gaps. */
     {0xBC0A0000, 0x00060000, "z72-primary-buffer-gap0-lab"},
     {0xBC100000, 0x010E0000, "z72-tertiary-buffer-pool-lab"},
     {0xBD1E0000, 0x00020000, "z72-primary-buffer-gap1-lab"},
@@ -92,6 +92,10 @@ static const NikonZ72Window nikon_z72_windows[] = {
 /* Isolated slave context: the code base matches master, so these are separate
  * machines. Message windows are plain RAM, without a transport device. */
 static const NikonZ72Window nikon_z72_slave_windows[] = {
+    /* Original slave zero-initialization record and pool profile 0x101F1660.
+     * The master's matching pool 0x11983578 describes this peer storage;
+     * its numeric addresses must not name the master's execution cache. */
+    {0x83900000, 0x3B586000, "z72-slave-primary-image-pool-lab"},
     {0x04008000, 0x00001000, "z72-slave-boot-stack-lab"},
     {0x10000000, 0x04000000, "z72-slave-code-lab"},
     {0xC1000000, 0x00A00000, "z72-slave-state-stack-lab"},

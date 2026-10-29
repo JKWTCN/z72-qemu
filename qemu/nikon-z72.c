@@ -1497,8 +1497,8 @@ static void input_raw12_row(uint8_t *row, unsigned width, unsigned start_x,
     }
 }
 
-/* Domain 2's native constructor writes these eight remap entries. This
- * decoder is local to the DMA master; it does not alias CPU code addresses. */
+/* Domain 2 names the peer image pool. Decode the aperture locally, then
+ * access the receiving engine's RAM rather than the sender's CPU view. */
 static bool input_primary_remap(NikonZ72BootConfig *s, uint32_t bus,
                                 uint32_t *physical, uint64_t *available)
 {
@@ -1542,17 +1542,19 @@ static void input_generate_primary(NikonZ72BootConfig *s)
 {
     uint8_t geometry[20], first[0x70] = { 0 }, second[0x70] = { 0 };
     uint8_t first_row[4224], second_row[8208];
-    AddressSpace *view;
+    AddressSpace *view, *peer_view;
     uint32_t first_address, second_bus;
     unsigned index = 0;
     g_autoptr(GArray) writes = NULL;
     const unsigned height = 5520, first_size = 4224 * height;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
-        !(s->input_running & 0x400)) {
+        !(s->input_running & 0x400) || !s->peer || s->peer->master_role ||
+        !s->transport_link || !s->peer->transport_link) {
         return;
     }
     view = CPU(s->cpu)->as;
+    peer_view = CPU(s->peer->cpu)->as;
     if (address_space_read(view, 0x20069500, MEMTXATTRS_UNSPECIFIED,
                            geometry, sizeof(geometry)) != MEMTX_OK ||
         address_space_read(view, 0x20069808, MEMTXATTRS_UNSPECIFIED,
@@ -1589,7 +1591,8 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     }
     first_address = ldl_le_p(first + 0x50);
     second_bus = ldl_le_p(second + 0x50);
-    if (!first_address || !second_bus ||
+    if (first_address < 0x62700000 || !second_bus ||
+        (uint64_t)first_address + first_size > 0xac1c5000 ||
         !processing_ram_range(view, first_address, first_size)) {
         return;
     }
@@ -1612,21 +1615,20 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                 return;
             }
             length = MIN(available, sizeof(second_row) - offset);
+            /* The matching slave initialization record bounds this pool.
+             * Equal numeric addresses in the two engines are independent. */
+            if (physical < 0x83900000 ||
+                (uint64_t)physical + length > 0xbee86000) {
+                return;
+            }
             span = length;
-            region = address_space_translate(view, physical, &translated, &span,
+            region = address_space_translate(peer_view, physical, &translated, &span,
                                              true, MEMTXATTRS_UNSPECIFIED);
-            /* The observed full allocation overlaps the boot code cache.
-             * Its ownership/eviction handshake is not recovered: ordinary
-             * writable RAM alone does not authorize a sensor overwrite. */
             if (!span || !memory_region_is_ram(region) || memory_region_is_rom(region) ||
-                region == &s->stage_ram) {
+                region == &s->stage_ram || region == &s->peer->stage_ram) {
                 return;
             }
             length = span;
-            if ((uint64_t)physical < (uint64_t)first_address + first_size &&
-                first_address < (uint64_t)physical + length) {
-                return;
-            }
             NikonZ72PrimaryWrite write = {
                 .address = physical, .row = y, .offset = offset, .length = length,
             };
@@ -1646,7 +1648,7 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         while (index < writes->len &&
                g_array_index(writes, NikonZ72PrimaryWrite, index).row == y) {
             NikonZ72PrimaryWrite *write = &g_array_index(writes, NikonZ72PrimaryWrite, index++);
-            if (address_space_write(view, write->address, MEMTXATTRS_UNSPECIFIED,
+            if (address_space_write(peer_view, write->address, MEMTXATTRS_UNSPECIFIED,
                                     second_row + write->offset,
                                     write->length) != MEMTX_OK) {
                 return;

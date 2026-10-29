@@ -38,5 +38,20 @@
     "Pool metadata uses synthetic RAM; no pixel storage is allocated or written.",
     "The allocation reproduces the observed numeric overlap, not DMA address-space ownership.",
     "No firmware wait, capture completion, JPEG or file is supplied."
-  ]
+  ],
+  "peer_storage": {
+    "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "profile": "0x101f1660",
+    "initialization": {
+      "table_offset": 82032,
+      "kind": "zero",
+      "source": 277202132,
+      "destination": 2207252480,
+      "size": 995647488,
+      "handler": 268566664
+    },
+    "matching_profiles": true,
+    "full_allocation_within_slave_initialization": true,
+    "full_allocation_within_master_initialization": false
+  }
 }

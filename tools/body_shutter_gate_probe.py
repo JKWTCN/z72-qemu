@@ -865,6 +865,16 @@ def input_dma_snapshot(machine):
             for key, name in (('primary_address', 'primary-input-dma-address'),
                               ('primary_second_address', 'primary-input-second-dma-address')):
                 result[key] = hex(machine.qmp.command('qom-get', dict(path=path, property=name)))
+            if result['primary_frames']:
+                primary = int(result['primary_address'], 16)
+                peer = int(result['primary_second_address'], 16)
+                result['primary_samples'] = []
+                for owner, cpu, target, length in (('master', 0, primary, 4224),
+                                                  ('slave', 2, peer, 8208)):
+                    data = machine._bytes(target, length, cpu=cpu)
+                    result['primary_samples'].append(dict(owner=owner, cpu=cpu,
+                        address=hex(target), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                        unique_bytes=len(set(data)), minimum=min(data), maximum=max(data)))
             if count and address and 0 < stride <= 16384:
                 data = machine._bytes(address, stride)
                 result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
