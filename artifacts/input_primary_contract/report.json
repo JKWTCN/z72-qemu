@@ -325,6 +325,32 @@
       "aperture": "0xffffffff"
     }
   ],
+  "dynamic_remap_cases": [
+    {
+      "source": "0xbad0a000",
+      "bytes": 75497472,
+      "aperture": "0x12d0a000",
+      "target_page": "0xb8000",
+      "mask_page": "0xf8000",
+      "aperture_page": "0x10000"
+    },
+    {
+      "source": "0x6ad0a000",
+      "bytes": 75497472,
+      "aperture": "0x12d0a000",
+      "target_page": "0x68000",
+      "mask_page": "0xf8000",
+      "aperture_page": "0x10000"
+    },
+    {
+      "source": "0xbad0a000",
+      "bytes": 75497472,
+      "aperture": "0x12d0a000",
+      "target_page": "0xb8000",
+      "mask_page": "0xf8000",
+      "aperture_page": "0x10000"
+    }
+  ],
   "native_remap_programming": true,
   "host_boundaries": [
     "Uncontended lock/unlock."

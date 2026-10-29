@@ -108,12 +108,32 @@ def probe(image):
                     if mask and bus & (mask << 12) == base << 12]
                 require(matches == [physical], 'Programmed remap does not invert native lookup')
         translations.append(dict(source=hex(source), bytes=length, aperture=hex(aperture)))
+    # Exercise retargeting, not only lookups within the constructor's initial
+    # backing. The observed device aperture can name different physical pools.
+    native.u.mem_write(window, struct.pack('<6I', 2, 0x8000000, 0x10000000,
+                                           0xb8000000, 1, 0))
+    require(native.call(0x1038816a - 0x10020000, window, 1) == 1,
+            'Original dynamic remap initialization failed')
+    dynamic = []
+    for source, expected_page in ((0xbad0a000, 0xb8000),
+                                  (0x6ad0a000, 0x68000), (0xbad0a000, 0xb8000)):
+        aperture = native.call(0x1038848a - 0x10020000, 2, source, 0x4800000)
+        require(aperture == 0x12d0a000, 'Original dynamic mapping returned another aperture')
+        target, mask, base = [native.word(address) for address in
+                             (0x2013d0b0, 0x2013d0d0, 0x2013d0f0)]
+        require((target, mask, base) == (expected_page, 0xf8000, 0x10000),
+                'Original dynamic remap register update differs')
+        require((target << 12) | (aperture & ~(mask << 12)) == source,
+                'Dynamic remap inverse differs')
+        dynamic.append(dict(source=hex(source), bytes=0x4800000, aperture=hex(aperture),
+                            target_page=hex(target), mask_page=hex(mask), aperture_page=hex(base)))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         builder='0x10239c34', descriptor_writer='0x10239900',
         geometry_writer='0x1020905a', cases=cases,
         native_geometry_and_dma_setters=True,
         remap_constructor='0x1038816a', remap_request='0x1038848a', remap_writer='0x102ddc76',
         remap_lookup='0x103880e4', remap_translation_cases=translations,
+        dynamic_remap_cases=dynamic,
         native_remap_programming=True, host_boundaries=['Uncontended lock/unlock.'],
         limitations=['Synthetic full/partial buffer headers, addresses, input flags and remap window.',
                     'The synthetic window does not identify the running full-frame backing address.',
