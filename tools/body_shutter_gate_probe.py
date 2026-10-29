@@ -75,6 +75,29 @@ CAPTURE_INPUT_POINTS = {
     0x1031ead8: 'capture-driver-input-flags-stored',
     0x1031cb20: 'capture-driver-stop-flags-entry',
     0x1032ae3c: 'capture-driver-input-mask-release',
+    0x10328d36: 'capture-driver-image-request',
+    0x10323b44: 'capture-driver-image-request-consumed',
+    0x10321224: 'capture-driver-image-launch',
+    0x10321284: 'capture-driver-image-launch-wait',
+    0x10321288: 'capture-driver-image-launch-wait-return',
+    0x10320e72: 'capture-driver-image-parameters-submitted',
+    0x10395dae: 'capture-processing-phase10-entry',
+    0x10395cf4: 'capture-processing-phase20-entry',
+    0x10395da4: 'capture-processing-ready-notification',
+    0x1022e802: 'capture-processing-ready-input-handler',
+    0x10327caa: 'capture-input-metadata-task-routing',
+    0x10326e86: 'capture-input-metadata-task',
+    0x1031cb3a: 'capture-driver-stop-flags-stored',
+    0x1024220a: 'capture-input-adapter-command',
+    0x102421aa: 'capture-input-adapter-response',
+    0x10394762: 'capture-processing-adapter-notification',
+    0x1026ec26: 'capture-delegate-ready-notification-route',
+}
+CAPTURE_CONTROLLER_POINTS = {
+    0x080369d0: 'capture-controller-channel9-request',
+    0x08036748: 'capture-controller-channel9-task',
+    0x08036d38: 'capture-controller-channel9-command2',
+    0x08036c60: 'capture-controller-channel9-result9',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -614,6 +637,9 @@ def snapshot(remote):
             input_format=hex(word(0x20068500)),
             input_geometry=[hex(word(0x20069500 + i * 4)) for i in range(3)])
     remote.select_thread(5)
+    controller_capture = dict(header=list(remote.read(0x2001359c, 6)),
+        words={hex(offset): hex(word(0x2001359c + offset)) for offset in range(0x14, 0x3c, 4)},
+        faults=[hex(word(0xe000ed28)), hex(word(0xe000ed2c))])
     lens_descriptor = word(0x2000EE10 + 96 * 4)
     lens_detection = dict(controller_g0_level=word(0x40021810) & 1,
         descriptor=hex(lens_descriptor),
@@ -750,6 +776,7 @@ def snapshot(remote):
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines, lens_detection=lens_detection,
+        controller_capture=controller_capture,
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
@@ -953,7 +980,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
-            image_work_events=False, capture_focus=False):
+            image_work_events=False, capture_focus=False, capture_counter_seconds=None):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1092,6 +1119,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         deadline = started + seconds
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if capture_counter_seconds is not None and capture_caller.report['triggered']:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if ticks - capture_caller.report['trigger_counter_ticks'] >= (
+                        capture_counter_seconds * before['counter_frequency']):
+                    break
             if shutter_click and preview_full_tick is not None and not click['released']:
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
@@ -1180,6 +1213,27 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 continue
             require(pc in armed, f'Unexpected stop at {pc:#x}')
             repeat = thread > 2
+            if thread == 5 and pc in CAPTURE_CONTROLLER_POINTS:
+                record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
+                    registers={name: hex(remote.get(registers, name)) for name in
+                               ('r0', 'r1', 'r2', 'r3', 'lr')},
+                    channel9_header=list(remote.read(0x2001359c, 6)),
+                    channel9_words=[hex(value) for value in
+                        struct.unpack('<10I', remote.read(0x200135b0, 40))])
+                if pc == 0x080369d0:
+                    pointer = remote.get(registers, 'r0')
+                    if 0x20000000 <= pointer <= 0x2003fff8:
+                        length = int.from_bytes(remote.read(pointer, 2), 'little')
+                        payload = int.from_bytes(remote.read(pointer + 4, 4), 'little')
+                        record['request_length'] = length
+                        if length and 0x20000000 <= payload < 0x20040000:
+                            record['request_code'] = remote.read(payload, 1)[0]
+                remote.select_thread(1)
+                record['counter_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                remote.select_thread(thread)
+                records.append(record)
+                hits[pc] = hits.get(pc, 0) + 1
+                repeat = hits[pc] < 8
             if thread <= 2:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
@@ -1194,7 +1248,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         paths = ['/machine/unattached/' + name for name in machine.config_names]
                         capture_input_path = next(path for path in paths if machine.qmp.command(
                             'qom-get', dict(path=path, property='master-role')))
-                        for address, label in CAPTURE_INPUT_POINTS.items():
+                        for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS).items():
                             require(address not in armed, 'Capture input observation overlaps a breakpoint')
                             armed[address] = label
                             remote.breakpoint(address)
@@ -1602,12 +1656,34 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if keep and 0xb1800000 <= pointer <= 0xb5effffc:
                             record['release_count_payload'] = int.from_bytes(remote.read(pointer, 4), 'little')
                     if pc == 0x1022e2e0:
-                        keep = keep and remote.get(registers, 'r0') in (0x041a0001, 0x041a0004)
-                    if pc in (0x1031eabe, 0x1031ead8, 0x1031cb20, 0x1032ae3c):
+                        keep = keep and remote.get(registers, 'r0') in (
+                            0x041a0001, 0x041a0004, 0x04200005)
+                    if pc in (0x1031eabe, 0x1031ead8, 0x1031cb20, 0x1031cb3a, 0x1032ae3c):
                         keep = keep and record['capture_state'][0] >= 7
                         if keep:
                             record['driver_input_flags'] = hex(int.from_bytes(
                                 remote.read(0xb1868ca0, 4), 'little'))
+                            record['driver_stop_flags'] = hex(int.from_bytes(
+                                remote.read(0xb1868cf0, 4), 'little'))
+                    if pc in (0x10328d36, 0x10323b44, 0x10321224, 0x10320e72,
+                              0x10395dae, 0x10395cf4, 0x10395da4, 0x1022e802,
+                              0x10327caa, 0x10326e86):
+                        record['processing_header'] = list(remote.read(0xb1868310, 16))
+                        record['processing_ready_callback'] = hex(int.from_bytes(
+                            remote.read(0xb18683e4, 4), 'little'))
+                    if pc == 0x1026ec26:
+                        record['delegate_ready_mode'] = remote.read(0xb186851c, 1)[0]
+                        record['delegate_ready_callback'] = hex(int.from_bytes(
+                            remote.read(0xb1868530, 4), 'little'))
+                    if pc == 0x10394762:
+                        code = remote.get(registers, 'r0')
+                        keep = keep and (0x03030001 <= code <= 0x03030005 or code == 0x0420010b)
+                    if pc in (0x1024220a, 0x102421aa):
+                        record['adapter_dispatch'] = [hex(value) for value in
+                            struct.unpack('<2I', remote.read(0xb18a7930, 8))]
+                        pointer = remote.get(registers, 'r0')
+                        if 0xb1800000 <= pointer <= 0xb5effff8:
+                            record['adapter_request'] = list(struct.unpack('<2I', remote.read(pointer, 8)))
                     if pc in (0x103b93d0, 0x103b940a, 0x103b9538, 0x103b9184,
                               0x103ba1cc, 0x103ba1d0, 0x103ba29c, 0x103b9848, 0x103b9826):
                         record['release_control_header'] = list(remote.read(0xb186935c, 16))
@@ -1671,6 +1747,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     diagnostic_capture=capture_caller.report if capture_caller else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
+                    capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
+                        reached=bool(capture_caller.report['triggered'] and
+                            after['counter_ticks'] - capture_caller.report['trigger_counter_ticks'] >=
+                            capture_counter_seconds * before['counter_frequency']))
+                        if capture_counter_seconds is not None else None),
                     observed_seconds=round(time.monotonic() - started, 3),
                     observed_counter_seconds=round((after['counter_ticks'] - before['counter_ticks']) /
                                                    before['counter_frequency'], 6),
@@ -1744,7 +1825,9 @@ def main():
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30,
-                        help='Host seconds to observe the requested stage (10..900)')
+                        help='Host seconds to observe the requested stage (10..1800)')
+    parser.add_argument('--capture-counter-seconds', type=float,
+                        help='End focused capture observation after this many camera counter seconds from submission')
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
@@ -1786,7 +1869,10 @@ def main():
     parser.add_argument('--image-work-events', action='store_true',
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
-    require(10 <= args.watch <= 900, 'Watch time out of bounds')
+    require(10 <= args.watch <= 1800, 'Watch time out of bounds')
+    require(args.capture_counter_seconds is None or
+            args.capture_focus and 0 < args.capture_counter_seconds <= 120,
+            'Camera counter window requires focused capture and a duration up to 120 seconds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
     require(not args.tail_frame_events or args.reconfigure_watch and args.frame_notify,
             'Tail event experiment requires reconfiguration observation and frame notification')
@@ -1930,6 +2016,7 @@ def main():
                                     capture_submit_on_ready=args.capture_submit_on_ready,
                                     capture_wait_idle=args.capture_wait_idle,
                                     capture_focus=args.capture_focus,
+                                    capture_counter_seconds=args.capture_counter_seconds,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
                                     image_work_events=args.image_work_events,

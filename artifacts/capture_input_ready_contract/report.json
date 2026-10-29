@@ -1,0 +1,154 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "notification": "0x10327976",
+  "routes": [
+    {
+      "code": "0x41a0002",
+      "payload": false,
+      "jobs": [
+        {
+          "entry": "0x10326677",
+          "bytes": 0,
+          "callback": "0x0",
+          "words": []
+        }
+      ],
+      "status": []
+    },
+    {
+      "code": "0x41a0003",
+      "payload": true,
+      "jobs": [
+        {
+          "entry": "0x103266fb",
+          "bytes": 0,
+          "callback": "0x0",
+          "words": []
+        }
+      ],
+      "status": []
+    },
+    {
+      "code": "0x41a0005",
+      "payload": true,
+      "jobs": [
+        {
+          "entry": "0x10326e87",
+          "bytes": 40,
+          "callback": "0x0",
+          "words": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            3,
+            1342181376,
+            9
+          ]
+        }
+      ],
+      "status": [
+        3
+      ]
+    }
+  ],
+  "constructor": "0x10326e86",
+  "constructor_context_payload_offset": "0x20",
+  "initial_flag_cases": [
+    {
+      "parameter_c0": 0,
+      "parameter_c4": 0,
+      "context_2b4": 0,
+      "parameter_dc": 0,
+      "flags": "0x228800"
+    },
+    {
+      "parameter_c0": 0,
+      "parameter_c4": 0,
+      "context_2b4": 0,
+      "parameter_dc": 1,
+      "flags": "0x224800"
+    },
+    {
+      "parameter_c0": 0,
+      "parameter_c4": 0,
+      "context_2b4": 1,
+      "parameter_dc": 0,
+      "flags": "0x118400"
+    },
+    {
+      "parameter_c0": 0,
+      "parameter_c4": 0,
+      "context_2b4": 1,
+      "parameter_dc": 1,
+      "flags": "0x114400"
+    },
+    {
+      "parameter_c0": 1,
+      "parameter_c4": 0,
+      "context_2b4": 0,
+      "parameter_dc": 0,
+      "flags": "0x88a000"
+    },
+    {
+      "parameter_c0": 1,
+      "parameter_c4": 0,
+      "context_2b4": 0,
+      "parameter_dc": 1,
+      "flags": "0x886000"
+    },
+    {
+      "parameter_c0": 1,
+      "parameter_c4": 1,
+      "context_2b4": 0,
+      "parameter_dc": 0,
+      "flags": "0x449000"
+    },
+    {
+      "parameter_c0": 1,
+      "parameter_c4": 1,
+      "context_2b4": 0,
+      "parameter_dc": 1,
+      "flags": "0x445000"
+    }
+  ],
+  "upstream": {
+    "adapter_callback": "0x10241fb2",
+    "notification": "0x03030023",
+    "adapter_task": "0x10241ed8",
+    "adapter_event": "0x8",
+    "forwarded_notification": "0x03030003",
+    "processing_callback": "0x10394762",
+    "processing_task": "0x10397b5c",
+    "completion_object": "0xb186832c",
+    "completion_event": "0x40",
+    "task_trigger": "0x0420010b",
+    "task_object": "0xb23ecc80",
+    "task_event": "0x20",
+    "cleared_completion_mask": "0x1000000",
+    "producer": "0x10395cf4",
+    "copied_bytes": 24
+  },
+  "host_boundaries": [
+    "record deferred task submission",
+    "record status update",
+    "record adapter and processing task events",
+    "copy synthetic results",
+    "supply a zero timestamp and record completion flag clear",
+    "stop at processing notification producer",
+    "accept synthetic context validation",
+    "stop at initial aggregate call"
+  ],
+  "limitations": [
+    "Synthetic payload and context; original routing and initial flag selection execute.",
+    "Constructor metadata work after its initial aggregate call is not executed.",
+    "Processing notification producer is selected but its body is not executed.",
+    "Completion flag and processing task use distinct objects; their connection is not executed.",
+    "Does not deliver a notification to the running camera or prove a hardware result."
+  ]
+}
