@@ -580,7 +580,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
-            input_boundary_events=False, shutter_on_ready=False):
+            input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -638,8 +638,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     watched_count = 0
     started = time.monotonic()
     breakpoints_installed = False
+    capture_caller = None
     try:
         before = snapshot(remote)
+        if capture_submit_on_ready:
+            from tools.native_capture_caller import NativeCaptureCaller
+            capture_caller = NativeCaptureCaller(remote)
+            armed.update(capture_caller.points)
         for address in armed:
             remote.breakpoint(address)
         breakpoints_installed = True
@@ -669,7 +674,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             require(remote.command(f'Z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
                     'Memory watchpoint rejected')
             memory_watch_armed = True
-        if not (shutter_on_preview or shutter_on_ready):
+        if not (shutter_on_preview or shutter_on_ready or capture_submit_on_ready):
             machine.set_key(24 if returning else 8 if playback else 25, 0)
         preview_press_sent = False
         preview_half_tick = None
@@ -768,6 +773,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
+                if capture_caller:
+                    return_pc = capture_caller.observe(pc, registers)
+                    if return_pc is not None:
+                        require(return_pc not in armed, 'Capture return observation overlaps a breakpoint')
+                        armed[return_pc] = 'diagnostic-capture-task-return'
+                        remote.breakpoint(return_pc)
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
                             pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
@@ -891,16 +902,21 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         words={hex(offset): hex(int.from_bytes(remote.read(packet + offset, 4), 'little'))
                                for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x1c, 0x20,
                                               0xdc, 0xe0, 0xe4, 0xe8, 0xec, 0xf0, 0xf4, 0xf8)})
-                    if (shutter_on_preview or shutter_on_ready) and not preview_press_sent:
+                    if (shutter_on_preview or shutter_on_ready or capture_submit_on_ready) and not preview_press_sent:
                         paths = ['/machine/unattached/' + name for name in machine.config_names]
                         path = next(path for path in paths if machine.qmp.command(
                             'qom-get', dict(path=path, property='master-role')))
                         completed = machine.qmp.command('qom-get',
                             dict(path=path, property='processing-dma-count'))
                         gate = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
-                        if completed and (not shutter_on_ready or gate == 0):
+                        if completed and (not (shutter_on_ready or capture_submit_on_ready) or gate == 0):
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                            if half_before_full and preview_half_tick is None:
+                            if capture_submit_on_ready:
+                                capture_caller.trigger()
+                                preview_press_sent = True
+                                record['diagnostic_capture_after_processing_frames'] = completed
+                                record['release_gate_before_diagnostic_capture'] = gate
+                            elif half_before_full and preview_half_tick is None:
                                 machine.set_key(24, 0)
                                 preview_half_tick = ticks
                                 record['half_press_after_processing_frames'] = completed
@@ -1035,7 +1051,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < (64 if pc == 0x1022827c or
-                                        shutter_on_ready and not preview_press_sent and
+                                        (shutter_on_ready or capture_submit_on_ready) and not preview_press_sent and
                                         pc == 0x103e1dea else 32 if pc == 0x103bded0 or
                                         half_before_full and pc == 0x103e1dea else 8)
             remote.breakpoint(pc, False)
@@ -1047,6 +1063,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 del armed[pc]
         after = snapshot(remote)
         return dict(before=before, records=records, after=after,
+                    diagnostic_capture=capture_caller.report if capture_caller else None,
                     observed_seconds=round(time.monotonic() - started, 3),
                     observed_counter_seconds=round((after['counter_ticks'] - before['counter_ticks']) /
                                                    before['counter_frequency'], 6),
@@ -1057,7 +1074,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                        limit=watch_count, observed=watched_count)
                                   if watch_address is not None else None),
                     shutter_on_preview=shutter_on_preview,
-                    preview_press_sent=preview_press_sent,
+                    preview_press_sent=preview_press_sent and not capture_submit_on_ready,
                     half_before_full=half_before_full, preview_half_sent=preview_half_tick is not None,
                     input_boundary_events=input_boundary_events,
                     shutter_on_ready=shutter_on_ready,
@@ -1066,6 +1083,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
+        if capture_caller:
+            capture_caller.close()
         if memory_watch_armed:
             remote.command(f'z{watch_type},{watch_address:x},{watch_bytes:x}')
         if breakpoints_installed:
@@ -1134,6 +1153,8 @@ def main():
                         help='Laboratory input: pulse supported masked boundary causes at native waits after RAW DMA advances')
     parser.add_argument('--shutter-on-ready', action='store_true',
                         help='Full-press at a processed display submission after the native release gate clears')
+    parser.add_argument('--capture-submit-on-ready', action='store_true',
+                        help='Diagnostic native-task capture API call after preview and release readiness')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1166,6 +1187,9 @@ def main():
     require(not args.shutter_on_ready or args.frame_process and args.reconfigure_watch and
             not args.playback and not args.shutter_on_preview,
             'Ready shutter requires processing and shooting observation without preview-triggered input')
+    require(not args.capture_submit_on_ready or args.frame_process and args.reconfigure_watch and
+            not (args.playback or args.shutter_on_ready or args.shutter_on_preview or args.half_before_full),
+            'Diagnostic capture requires processing and shooting observation without body shutter input')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1252,6 +1276,7 @@ def main():
                                     half_before_full=args.half_before_full,
                                     input_boundary_events=args.input_boundary_events,
                                     shutter_on_ready=args.shutter_on_ready,
+                                    capture_submit_on_ready=args.capture_submit_on_ready,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
