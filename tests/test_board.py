@@ -79,6 +79,8 @@ def smoke(qemu, machine, addresses):
                     # and processing work pools, including recovered edges.
                     remote.write(0x40100020, struct.pack('<I', 0xE1D120B0))
                     for address in (0x54F00000, 0x5D170000, 0x5F8D23FC,
+                                    0x62700000, 0x63D3C7FC, 0xAB09E000,
+                                    0xAB1CA000, 0xAC1C4FFC,
                                     0xB0100000, 0xB08FFFFC):
                         remote.set(r0=0x12345678, r1=address, pc=0x40100008, cpsr=0xD3)
                         remote.command('s')
@@ -88,7 +90,8 @@ def smoke(qemu, machine, addresses):
                         remote.command('s')
                         require(remote.get(remote.regs(), 'r2') == 0x5678,
                                 'Recovered buffer pool halfword read differs')
-                    for address in (0x5F8D2400, 0x5F8FFFFC, 0xB00FFFFC, 0xB0900000):
+                    for address in (0x5F8D2400, 0x5F8FFFFC, 0xAC1C5000,
+                                    0xAF1FFFFC, 0xB00FFFFC, 0xB0900000):
                         remote.set(r1=address, pc=0x4010000C, cpsr=0xD3)
                         remote.command('s')
                         require(remote.get(remote.regs(), 'pc') == 0x10,
@@ -334,6 +337,7 @@ def main():
            0xB5F00000, 0xB7CF0000, 0xB7CFC614,
            0x50300000, 0x50560000, 0x548FFFFC,
            0x54F00000, 0x5D170000, 0x5F8D23FC,
+           0x62700000, 0x63D3C7FC, 0xAB09E000, 0xAB1CA000, 0xAC1C4FFC,
            0xB0100000, 0xB08FFFFC,
            0x5F900000, 0x62059800, 0x626FFFFC, 0x34600000, 0x373FFFFC))
     smoke(args.qemu, 'nikon-z72-slave-lab',

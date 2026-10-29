@@ -61,12 +61,19 @@ def probe(image):
     record = records[0]
     require((record['destination'], record['size']) == (0x54900000, 0xafd2400),
             'Unexpected uncached initialization span')
+    primary = [row for row in scatter_records(image) if row['kind'] == 'zero' and
+               row['destination'] == 0x62700000]
+    require(len(primary) == 1 and primary[0]['size'] == 0x49ac5000,
+            'Unexpected primary input initialization span')
     engine = RegionProbe(image)
     engine.call(0x3a585c)  # Original runtime address-table constructor.
     cases = []
     for source, expected in ((0x54900000, 0x54900000), (0x54f00000, 0x54f00000),
                              (address, address), (0x5f8d23fc, 0x5f8d23fc),
-                             (0x50560000, 0x30260000), (0x62059800, 0x36d59800)):
+                             (0x50560000, 0x30260000), (0x62059800, 0x36d59800),
+                             (0x62700000, 0x62700000), (0x63d3c7fc, 0x63d3c7fc),
+                             (0xab09e000, 0xab09e000), (0xab1ca000, 0xab1ca000),
+                             (0xac1c4ffc, 0xac1c4ffc)):
         row = engine.call(0x3a5ad8, source)
         require(0xb2b4145c <= row < 0xb2b415c4, 'Address-table lookup escaped its entries')
         start, kind, peer, end = struct.unpack('<4I', engine.u.mem_read(row, 16))
@@ -80,6 +87,7 @@ def probe(image):
                 initialized_end=hex(record['destination'] + record['size']),
                 model_existing_backing_end='0x54f00000',
                 model_added_base='0x54f00000', model_added_size='0xa9d2400',
+                primary_input_initialization=primary[0], primary_input_end='0xac1c5000',
                 address_table_constructor='0x103c585c', lookup='0x103c5ad8',
                 cache_to_bus='0x103c5a7a', cases=cases,
                 processing_pool=processing_pool(image),

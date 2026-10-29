@@ -346,6 +346,39 @@ def input_context_snapshot(remote):
     return result
 
 
+def primary_input_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result = dict(geometry={hex(0x20069500 + offset): hex(word(0x20069500 + offset))
+                           for offset in range(0, 0x14, 4)},
+        dma={hex(offset): hex(word(0x20069800 + offset))
+             for offset in (8, 0x14, 0x18, 0x3c, 0x40, 0x44, 0x48, 0x50, 0x60)},
+        buffers=[])
+    ttbr = (remote.read_register('TTBR0_S') if all(name in remote.register_numbers
+            for name in ('TTBR0_S', 'TTBCR_S')) and
+            remote.read_register('TTBCR_S') == 0 else None)
+    for name, register in (('input', 0x20069850), ('output0', 0x2006a450),
+                           ('output1', 0x2006a550)):
+        address = word(register)
+        row = dict(name=name, address=hex(address))
+        # Only inspect recovered ordinary storage, never an arbitrary MMIO
+        # operand. A GDB-side read failure is evidence, not a guest completion.
+        if 0x62700000 <= address <= 0xac1c4000:
+            response = remote.command(f'm{address:x},1000')
+            row['readable'] = not response.startswith('E')
+            if row['readable']:
+                data = bytes.fromhex(response)
+                row['sample'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                    unique_bytes=len(set(data)), minimum=min(data), maximum=max(data))
+            if ttbr is not None:
+                descriptor = word((ttbr & 0xffffc000) + (address >> 20) * 4)
+                row['section_descriptor'] = hex(descriptor)
+                if descriptor & 3 == 2:
+                    row['physical_address'] = hex((descriptor & 0xfff00000) | (address & 0xfffff))
+        result['buffers'].append(row)
+    return result
+
+
 def auxiliary_image_snapshot(remote):
     def word(address):
         return int.from_bytes(remote.read(address, 4), 'little')
@@ -558,6 +591,7 @@ def snapshot(remote):
         input_context_queues=input_context_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
+        primary_input=primary_input_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))

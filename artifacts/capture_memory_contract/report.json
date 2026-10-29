@@ -14,6 +14,15 @@
   "model_existing_backing_end": "0x54f00000",
   "model_added_base": "0x54f00000",
   "model_added_size": "0xa9d2400",
+  "primary_input_initialization": {
+    "table_offset": 82080,
+    "kind": "zero",
+    "source": 305766292,
+    "destination": 1651507200,
+    "size": 1236029440,
+    "handler": 268566664
+  },
+  "primary_input_end": "0xac1c5000",
   "address_table_constructor": "0x103c585c",
   "lookup": "0x103c5ad8",
   "cache_to_bus": "0x103c5a7a",
@@ -71,6 +80,51 @@
       "kind": "0x1",
       "peer": "0x34600000",
       "converted": "0x36d59800"
+    },
+    {
+      "address": "0x62700000",
+      "row": "0xb2b4151c",
+      "start": "0x62700000",
+      "end": "0xaf200000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x62700000"
+    },
+    {
+      "address": "0x63d3c7fc",
+      "row": "0xb2b4151c",
+      "start": "0x62700000",
+      "end": "0xaf200000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0x63d3c7fc"
+    },
+    {
+      "address": "0xab09e000",
+      "row": "0xb2b4151c",
+      "start": "0x62700000",
+      "end": "0xaf200000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0xab09e000"
+    },
+    {
+      "address": "0xab1ca000",
+      "row": "0xb2b4151c",
+      "start": "0x62700000",
+      "end": "0xaf200000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0xab1ca000"
+    },
+    {
+      "address": "0xac1c4ffc",
+      "row": "0xb2b4151c",
+      "start": "0x62700000",
+      "end": "0xaf200000",
+      "kind": "0x0",
+      "peer": "0x0",
+      "converted": "0xac1c4ffc"
     }
   ],
   "processing_pool": {
