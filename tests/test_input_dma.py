@@ -242,6 +242,28 @@ def check(qemu):
                     tick()
                     assert count() == previous
                     assert all(read(0x20068210 + bank * 32) == 0 for bank in (0, 3, 4))
+                # Native channel disable is separate from the stop/flush command.
+                write(0x20069518, 130 << 16)
+                write(0x2006951c, 2 << 16)
+                write(0x20069a08, 208)
+                planes(targets)
+                start()
+                previous = count()
+                for disabled in (0, 0x400):
+                    write(0x2006800c, disabled)
+                    tick()
+                    previous += 1
+                    assert count() == previous, 'Unrelated disable stopped RAW DMA'
+                write(0x2006800c, 0x200)
+                tick()
+                assert count() == previous, 'Channel disable left RAW DMA active'
+                start()
+                tick()
+                previous += 1
+                assert count() == previous, 'Channel enable did not restart RAW DMA'
+                write(0x2006800c, 0x600)
+                tick()
+                assert count() == previous, 'Combined disable left RAW DMA active'
             monitor('system_reset')
             assert count() == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0

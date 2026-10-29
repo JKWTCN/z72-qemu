@@ -1349,6 +1349,13 @@ static void boot_config_write(void *opaque, hwaddr offset,
         input_update_irqs(s);
         return;
     }
+    if (address == 0x2006800c) {
+        /* The native channel-disable setter pairs with 0x20068008.
+         * Stop subsequent source frames without inventing a flush response. */
+        *stored = (uint32_t)value;
+        s->input_running &= ~(uint32_t)value;
+        return;
+    }
     if (address == 0x20068000 || address == 0x20068004 ||
         address == 0x20068010 || address == 0x20068014) {
         hwaddr base = address & ~0x4u;

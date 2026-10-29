@@ -1007,7 +1007,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                            0x103191c4, 0x103231b2,
                                            0x1032a792):
                     hits[pc] = hits.get(pc, 0) + int(keep)
-                    repeat = not keep or hits[pc] < 8
+                    limit = 32 if capture_caller and pc in capture_caller.ui_points else 8
+                    repeat = not keep or hits[pc] < limit
                     pointer = None
                     if pc == 0x1022e2e0:
                         code = remote.get(registers, 'r0')

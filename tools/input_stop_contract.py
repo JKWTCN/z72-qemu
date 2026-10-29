@@ -50,7 +50,7 @@ def probe(image):
         engine.writes.clear()
         engine.call(entry - 0x10020000)
         require(engine.writes[-1] == (0x20068060, command), 'Input request differs')
-        require((0x2006800c, logical) in engine.writes, 'Logical status clear differs')
+        require((0x2006800c, logical) in engine.writes, 'Input channel disable differs')
         masks = [engine.word(0x20068200 + index * 32) for index in range(8)]
         require(masks == status, 'Stop interrupt enables differ')
         engine.u.mem_write(engine.DATA, struct.pack('<8I', *status))
@@ -63,8 +63,18 @@ def probe(image):
         cases.append(dict(entry=hex(entry), command=hex(command), logical=hex(logical),
                           status=[hex(value) for value in status],
                           waiter_events=[hex(value) for value in engine.events]))
+    run_controls = []
+    for selector, mask in ((0, 0x400), (1, 0x200), (2, 0x600)):
+        writes = []
+        for entry, register in ((0x10208f72, 0x20068008), (0x10208ff6, 0x2006800c)):
+            engine.writes.clear()
+            engine.call(entry - 0x10020000, 0, selector)
+            require(engine.writes == [(register, mask)], 'Input run control differs')
+            writes.append(dict(entry=hex(entry), register=hex(register), mask=hex(mask)))
+        run_controls.append(dict(selector=selector, start=writes[0], disable=writes[1]))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
                 decoder='0x1020a71a', callback='0x1020c0a8', cases=cases,
+                run_controls=run_controls,
                 limitations=['Synthetic memory and event API boundaries only.',
                              'No physical response latency or pixel transfer is established.'])
 

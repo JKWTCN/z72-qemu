@@ -27,6 +27,14 @@ POST_SUBMIT_POINTS = {
     0x1031DCCC: 'capture-stop-ready-update',
     0x1031DCF8: 'capture-stop-ready-flags',
     0x1031DD00: 'capture-stop-all-ready',
+    0x10320220: 'capture-input-finish-job',
+    0x10320264: 'capture-input-finish-state-check',
+    0x10320272: 'capture-input-finish-ready',
+    0x10320520: 'capture-input-idle-ready',
+    0x10321EA2: 'capture-input-context-finish-check',
+    0x10322448: 'capture-processing-context-finish-check',
+    0x1032A792: 'capture-context-consumer-release',
+    0x1032A7B4: 'capture-context-consumer-released',
     0x102301DC: 'capture-input-drain-return',
     0x1023C82C: 'capture-input-disable-return',
     0x10321A4C: 'capture-driver-notification',
@@ -236,8 +244,17 @@ class NativeCaptureCaller:
                                 for operation in (6, 7, 8, 9)})
             if pc in POST_SUBMIT_POINTS:
                 detail['stop_ready_flags'] = hex(self.word(0xB1868B64))
+                detail['input_runtime_states'] = list(self.remote.read(0xB1887D70, 8))
+                detail['driver_finish_comparison_word'] = hex(self.word(0xB1868C34))
                 detail['input_ready_fields'] = {hex(offset): hex(self.word(0xB1887D70 + offset))
-                    for offset in (0x4C, 0x5C, 0x7C, 0x120)}
+                    for offset in (0x5C, 0x7C, 0x80, 0x120)}
+            if pc in (0x1032A792, 0x1032A7B4):
+                pointer = r0 if pc == 0x1032A792 else self.remote.get(registers, 'r5')
+                if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
+                    detail['released_context'] = dict(address=hex(pointer),
+                        consumers=self.remote.read(pointer + 0xC, 1)[0],
+                        parameters=hex(self.word(pointer + 0x144)),
+                        pending=hex(self.word(pointer + 0x14C)))
             if pc in (0x10321A4C, 0x103E9D24):
                 detail['notification'] = hex(r0)
                 if 0xB1800000 <= r1 <= 0xB5FFFFFC:
