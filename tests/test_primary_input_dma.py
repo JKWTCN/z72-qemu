@@ -122,6 +122,8 @@ def check(qemu):
                         (0x2013d0d0, 0xfe000), (0x2013d0f0, (aperture >> 12) + slot * 0x2000)):
                     write(address + slot * 4, value)
             active = role == 'master' and enabled and sampling and paired and linked
+            write(0x20068200, 0x98)
+            write(0x20068260, 0xc0000021)
             if role == 'master':
                 for address, value in ((first - 4, 0x12345678), (first + first_length, 0x87654321)):
                     write(address, value)
@@ -129,9 +131,11 @@ def check(qemu):
             tick()
             assert count() == 0, 'Primary DMA ran before its channel start'
             write(0x20068008, 0x400)
+            assert property_value('input-running') == 0x400
             tick()
             assert count() == int(active)
-            assert read(0x20068210) == (0x41 if active and notifying else 0)
+            assert read(0x20068210) == (0x59 if active and notifying else 0)
+            assert read(0x20068270) == (0x40000021 if active and notifying else 0)
             assert property_value('input-dma-count') == 0, 'Primary DMA changed the other input counter'
             if active:
                 assert property_value('primary-input-dma-address') == first
@@ -149,6 +153,7 @@ def check(qemu):
                 assert read(first - 4) == 0x12345678 and read(first + first_length) == 0x87654321
                 assert read(full - 4, True) == 0x11223344 and read(full + full_length, True) == 0x55667788
                 write(0x20068210, 0xffffffff)
+                write(0x20068270, 0xffffffff)
                 original = (data_at(first, 256), data_at(full + first_stride, 256, True))
                 # An invalid final mapping must prevent even the first stripe's writes.
                 for address, invalid, valid in ((0x2013d0b8, 0x20000, (full >> 12) + 0x4000),
@@ -162,6 +167,7 @@ def check(qemu):
                     write(address, invalid)
                     tick()
                     assert count() == 1 and read(0x20068210) == 0
+                    assert read(0x20068270) == 0
                     assert (data_at(first, 256), data_at(full + first_stride, 256, True)) == original, \
                         'Rejected primary descriptor partially wrote a stripe'
                     write(address, valid)
@@ -172,11 +178,14 @@ def check(qemu):
                 write(0x2013d0bc, (full >> 12) + 0x6000)
                 write(0x2013d0fc, (aperture >> 12) + 0x6000)
                 write(0x2006800c, 0x400)
+                assert property_value('input-running') == 0
                 tick()
                 assert count() == 1, 'Disabled primary input kept generating pixels'
                 write(0x20068008, 0x400)
                 tick()
                 assert count() == 2
+                assert read(0x20068210) == (0x59 if notifying else 0)
+                assert read(0x20068270) == (0x40000021 if notifying else 0)
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
                 assert data_at(full + first_stride, 8208, True) == expected_row(0, 2816, 5472, 1)
                 # Actual full-frame address belongs to peer storage, while
@@ -195,10 +204,14 @@ def check(qemu):
                             (0x2013d0d0, mask), (0x2013d0f0, base)):
                         write(address + slot * 4, value)
                 write(0x20069950, 0x12d0b080)
+                write(0x20068200, 0)
+                write(0x20068260, 0)
                 write(0x20068210, 0xffffffff)
+                write(0x20068270, 0xffffffff)
                 native_rows = rows
                 tick()
                 assert count() == 3 and read(0x20068210) == (0x41 if notifying else 0)
+                assert read(0x20068270) == 0, 'Disabled boundary causes were emitted'
                 assert property_value('primary-input-second-dma-address') == native_full + first_stride
                 for y in native_rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 2)
@@ -215,6 +228,7 @@ def check(qemu):
                 assert count() == 3 and read(0x20068210) == 0
                 assert (data_at(first, 256), data_at(native_full + first_stride, 256, True)) == original
             monitor('system_reset')
+            assert property_value('input-running') == 0
             assert count() == 0 and property_value('primary-input-dma-address') == 0
             assert property_value('primary-input-second-dma-address') == 0
             command(f'set_irq_in {path} frame-sync-enable 0 1')

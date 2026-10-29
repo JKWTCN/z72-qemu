@@ -1662,6 +1662,12 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         /* Both RAW stripes were written. Do not claim statistics output
          * or processing/JPEG completion from this input transfer. */
         *boot_config_value(s, 0x20068210) |= 0x41;
+        /* Native reconfiguration waits at b188814c for the enabled input
+         * boundaries, including bank 3 bit 30 for this primary stream. */
+        *boot_config_value(s, 0x20068210) |=
+            *boot_config_value(s, 0x20068200) & 0x18;
+        *boot_config_value(s, 0x20068270) |=
+            *boot_config_value(s, 0x20068260) & 0x40000021;
         input_update_irqs(s);
     }
 }
@@ -2823,6 +2829,8 @@ static void boot_config_init(Object *obj)
     s->input_handshake_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, input_handshake_complete, s);
     object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
                                    OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "input-running", &s->input_running,
+                                  OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "input-dma-count", &s->input_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,

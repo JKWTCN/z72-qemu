@@ -41,6 +41,20 @@ BODY_CONFIGURATION_POINTS = {
     0x104e1850: 'body-configuration-second-result',
     0x104e188e: 'body-configuration-loop-complete',
 }
+CAPTURE_INPUT_POINTS = {
+    0x1020aafc: 'capture-input-enable-entry',
+    0x1020ab00: 'capture-input-enable-return',
+    0x1020a830: 'capture-input-disable-entry',
+    0x1020a834: 'capture-input-disable-return',
+    0x1020ab3c: 'capture-input-hard-stop-entry',
+    0x1020ab40: 'capture-input-hard-stop-return',
+    0x1023938c: 'capture-primary-input-callback',
+    0x10238d4a: 'capture-input-task-event',
+    0x10238c40: 'capture-input-completed-dequeue',
+    0x10321d80: 'capture-input-driver-complete',
+    0x103231b2: 'capture-driver-state-update',
+    0x103e6e94: 'capture-state-update',
+}
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
     0x103cc960: 'image-work-tracking-enqueue-mode1',
@@ -850,6 +864,10 @@ def input_dma_snapshot(machine):
             address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
             stride = machine._words(0x20069a08, 1)[0]
             result = dict(frames=count, address=hex(address), stride=stride)
+            result['running_mask'] = hex(machine.qmp.command('qom-get',
+                dict(path=path, property='input-running')))
+            result['frame_ticks'] = machine.qmp.command('qom-get',
+                dict(path=path, property='frame-sync-count'))
             result['startup_grid_frames'] = machine.qmp.command('qom-get',
                 dict(path=path, property='input-grid-count'))
             result['startup_grid_address'] = hex(machine.qmp.command('qom-get',
@@ -988,6 +1006,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     started = time.monotonic()
     breakpoints_installed = False
     capture_caller = None
+    capture_input_path = None
     try:
         before = snapshot(remote)
         if capture_submit_on_ready:
@@ -1149,6 +1168,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         require(return_pc not in armed, 'Capture return observation overlaps a breakpoint')
                         armed[return_pc] = 'diagnostic-capture-task-return'
                         remote.breakpoint(return_pc)
+                    if capture_focus and armed[pc] == 'diagnostic-capture-caller':
+                        paths = ['/machine/unattached/' + name for name in machine.config_names]
+                        capture_input_path = next(path for path in paths if machine.qmp.command(
+                            'qom-get', dict(path=path, property='master-role')))
+                        for address, label in CAPTURE_INPUT_POINTS.items():
+                            require(address not in armed, 'Capture input observation overlaps a breakpoint')
+                            armed[address] = label
+                            remote.breakpoint(address)
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
                             pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
@@ -1389,7 +1416,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             for level in (0, 1, 0):
                                 machine._qtest(f'set_irq_in /machine/unattached/{machine.config_names[0]} '
                                                f'gpio-input 0 {level}')
-                if frame_notify and pc in (0x10238d4a, 0x10238c40, 0x1023c960, 0x1023beec,
+                if frame_notify and not (capture_focus and pc in CAPTURE_INPUT_POINTS) and pc in (0x10238d4a, 0x10238c40, 0x1023c960, 0x1023beec,
                                            0x1022e2e0, 0x1022e0ae, 0x1022e154, 0x1022e1aa,
                                            0x10321d80, 0x10321d94, 0x10321dbe, 0x10321e22, 0x10321e24,
                                            0x1032206e, 0x10322126, 0x10322250, 0x10325304,
@@ -1537,6 +1564,20 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc in (0x104e1714, 0x104e1910):
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
+                if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x1020aafc, 0x1020ab00, 0x1020a830, 0x1020a834):
+                        keep = keep and bool(remote.get(registers, 'r1') & 0x600)
+                    record['input_source'] = {name: machine.qmp.command('qom-get',
+                        dict(path=capture_input_path, property=property_name)) for name, property_name in
+                        (('running_mask', 'input-running'), ('frame_ticks', 'frame-sync-count'),
+                         ('primary_frames', 'primary-input-dma-count'))}
+                    if pc == 0x1023938c:
+                        pointer = remote.get(registers, 'r1')
+                        if 0xb1800000 <= pointer <= 0xb5efffe0:
+                            record['input_cause_words'] = [hex(value) for value in
+                                struct.unpack('<8I', remote.read(pointer, 32))]
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = not keep or hits[pc] < 8
                 if keep:
                     records.append(record)
                 if (application_only or capture_focus) and pc in (0x1010000c, 0x10100010):

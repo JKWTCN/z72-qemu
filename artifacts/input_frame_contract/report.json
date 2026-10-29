@@ -100,6 +100,19 @@
       ]
     },
     {
+      "bank": 3,
+      "bits": "0x40000000",
+      "logical": "0x400",
+      "callback": "0x1023938c",
+      "group": 2,
+      "events": [
+        {
+          "object": "0xb188814c",
+          "bits": "0x2000000"
+        }
+      ]
+    },
+    {
       "bank": 4,
       "bits": "0x80",
       "logical": "0x200",
