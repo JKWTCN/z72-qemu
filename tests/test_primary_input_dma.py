@@ -158,6 +158,23 @@ def check(qemu):
                 assert count() == 2
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
                 assert data_at(full + first_stride, 8208) == expected_row(0, 2816, 5472, 1)
+                # The observed table reaches gaps between existing master
+                # storage regions. Reject the whole transfer until the
+                # backing/translation contract is recovered.
+                for slot, (target, mask, base) in enumerate((
+                        (0xe0000, 0xf8000, 0), (0xe8000, 0xf8000, 0x8000),
+                        (0xb8000, 0xf8000, 0x10000), (0xc0000, 0xf8000, 0x18000),
+                        (0xc0000, 0xf0000, 0x20000), (0xd0000, 0xf0000, 0x30000),
+                        (0xc0000, 0xf0000, 0x40000), (0, 0, 0))):
+                    for address, value in ((0x2013d0b0, target),
+                            (0x2013d0d0, mask), (0x2013d0f0, base)):
+                        write(address + slot * 4, value)
+                write(0x20069950, 0x12d0b080)
+                write(0x20068210, 0xffffffff)
+                original = data_at(first, 256)
+                tick()
+                assert count() == 2 and read(0x20068210) == 0
+                assert data_at(first, 256) == original
             monitor('system_reset')
             assert count() == 0 and property_value('primary-input-dma-address') == 0
             assert property_value('primary-input-second-dma-address') == 0

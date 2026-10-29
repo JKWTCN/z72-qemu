@@ -738,6 +738,29 @@ def input_dma_snapshot(machine):
             machine.qmp.command('cont')
 
 
+def primary_mapping_request(remote, domain, address, length):
+    result = dict(domain=domain, address=hex(address), bytes=length)
+    pointer, count = struct.unpack('<2I', remote.read(0xb1808948, 8))
+    if 0 < count <= 8 and 0xb0000000 <= pointer <= 0xb5f00000 - count * 24:
+        result['native_windows'] = [[hex(value) for value in struct.unpack(
+            '<6I', remote.read(pointer + index * 24, 24))] for index in range(count)]
+    if all(name in remote.register_numbers for name in ('TTBR0_S', 'TTBCR_S')) and \
+            remote.read_register('TTBCR_S') == 0:
+        ttbr = remote.read_register('TTBR0_S')
+        result['sections'] = []
+        for source in sorted({address, address + length - 1,
+                              0xbad0a000, 0xbc0a0000, 0xbd1e0000, 0xbee7c0ff}):
+            if not 0 <= source <= 0xffffffff:
+                continue
+            descriptor = int.from_bytes(remote.read(
+                (ttbr & 0xffffc000) + (source >> 20) * 4, 4), 'little')
+            row = dict(address=hex(source), descriptor=hex(descriptor))
+            if descriptor & 3 == 2:
+                row['physical_address'] = hex((descriptor & 0xfff00000) | (source & 0xfffff))
+            result['sections'].append(row)
+    return result
+
+
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
@@ -792,6 +815,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x1032a792: 'input-context-consumer-release',
                       0x10321e22: 'input-context-consumer-return',
                       0x10321e24: 'input-context-driver-output-return'})
+    if capture_submit_on_ready:
+        armed.update({0x10239c34: 'primary-input-builder',
+                      0x1038848a: 'primary-input-remap-request'})
     records = []
     hits = {}
     callback_hits = 0
@@ -946,6 +972,29 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
                             pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
+                if pc == 0x1038848a:
+                    domain = remote.get(registers, 'r0')
+                    keep, repeat = domain == 2, domain != 2
+                    if keep:
+                        record['mapping_request'] = primary_mapping_request(remote, domain,
+                            remote.get(registers, 'r1'), remote.get(registers, 'r2'))
+                if pc == 0x10239c34:
+                    argument = remote.get(registers, 'r0')
+                    full, partial = struct.unpack('<2I', remote.read(argument + 0xc, 8))
+                    record['primary_headers'] = []
+                    for kind, pointer in (('full', full), ('partial', partial)):
+                        row = dict(kind=kind, pointer=hex(pointer))
+                        if 0xb0000000 <= pointer <= 0xb5efffc0:
+                            header = remote.read(pointer, 0x38)
+                            allocation = struct.unpack_from('<I', header, 4)[0]
+                            row.update(format=header[0x24],
+                                width=struct.unpack_from('<H', header, 0x28)[0],
+                                height=struct.unpack_from('<H', header, 0x2a)[0],
+                                target=hex(struct.unpack_from('<I', header, 0x34)[0]))
+                            if 0xb0000000 <= allocation <= 0xb5effff8:
+                                source, length = struct.unpack('<2I', remote.read(allocation, 8))
+                                row['allocation'] = primary_mapping_request(remote, 2, source, length)
+                        record['primary_headers'].append(row)
                 if capture_caller and pc in capture_caller.ui_points:
                     record['ui_capture'], keep, repeat = capture_caller.ui_observation(pc, registers)
                     if (capture_wait_idle and idle_preview_seen and not preview_press_sent and
