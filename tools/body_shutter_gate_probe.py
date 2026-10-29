@@ -30,6 +30,17 @@ AFTER_ACTION = {
     0x1053e598: 'event1-check-result',
     0x1053e62c: 'release-gate-clear-path',
 }
+BODY_CONFIGURATION_POINTS = {
+    0x1052273e: 'body-configuration-submit',
+    0x10635cf6: 'body-configuration-wrapper',
+    0x104847c2: 'body-configuration-list',
+    0x10484800: 'body-configuration-node-call',
+    0x10484802: 'body-configuration-node-return',
+    0x1048480a: 'body-configuration-cancel-check',
+    0x104e1824: 'body-configuration-first-result',
+    0x104e1850: 'body-configuration-second-result',
+    0x104e188e: 'body-configuration-loop-complete',
+}
 AFTER_PLAYBACK = {
     0x103f25ec: 'operation18-api',
     0x103ef386: 'operation18-task-request',
@@ -317,7 +328,8 @@ def image_work_snapshot(remote):
                 if 0xb2c00000 <= parameters <= 0xb5efc1cf:
                     row['jobs'].append(dict(request=hex(request), parameters=hex(parameters),
                         owner=hex(word(parameters + 0xc)),
-                        pending=hex(word(parameters + 0x6c)),
+                        # 0x103d0c3a selects/removes tracking queues with these flags.
+                        queue_flags=hex(word(parameters + 0x6c)),
                         busy=remote.read(parameters + 0x3e30, 1)[0]))
             node = word(node + 4)
         result.append(row)
@@ -774,7 +786,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
-            capture_wait_idle=False, application_only=False):
+            capture_wait_idle=False, application_only=False, shutter_click=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -886,6 +898,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         preview_press_sent = False
         idle_preview_seen = False
         preview_half_tick = None
+        preview_full_tick = None
+        click = dict(requested=shutter_click, released=False)
         boundary_frame = 0
         boundary_path = None
         if input_boundary_events:
@@ -897,6 +911,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         deadline = started + seconds
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if shutter_click and preview_full_tick is not None and not click['released']:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if ticks - preview_full_tick >= before['counter_frequency'] // 4:
+                    machine.set_key(25, 1)
+                    machine.set_key(24, 1)
+                    click.update(released=True, release_ticks=ticks,
+                        held_counter_seconds=(ticks - preview_full_tick) / before['counter_frequency'])
             remote.sock.settimeout(min(1, max(0.2, deadline - time.monotonic())))
             try:
                 reply = remote.command('vCont;c')
@@ -1167,6 +1189,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             elif not half_before_full or ticks - preview_half_tick >= before['counter_frequency'] // 2:
                                 machine.set_key(25, 0)
                                 preview_press_sent = True
+                                preview_full_tick = ticks
+                                click['press_ticks'] = ticks
                                 record['shutter_after_processing_frames'] = completed
                                 record['release_gate_before_press'] = gate
                                 if half_before_full:
@@ -1281,9 +1305,30 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if not repeat:
                         record['switch_words'] = [hex(x) for x in struct.unpack(
                             '<III', remote.read(0xb25eaeac, 12))]
-                        for address, label in ({} if playback else AFTER_ACTION).items():
-                            remote.breakpoint(address)
+                        following = {} if playback else dict(AFTER_ACTION)
+                        if application_only:
+                            following.update(BODY_CONFIGURATION_POINTS)
+                        for address, label in following.items():
+                            if address not in armed:
+                                remote.breakpoint(address)
                             armed[address] = label
+                    if shutter_click:
+                        hits[pc] = hits.get(pc, 0) + 1
+                        repeat = hits[pc] < 64
+                if pc in BODY_CONFIGURATION_POINTS:
+                    pointer = remote.get(registers, 'r0') if pc in (0x10635cf6, 0x104847c2) else None
+                    if pointer is not None and 0xb1800000 <= pointer <= 0xb5efff38:
+                        record['configuration_list'] = dict(address=hex(pointer),
+                            callback=hex(remote.get(registers, 'r1')),
+                            queue=[hex(value) for value in struct.unpack('<5I', remote.read(pointer + 0x9c, 20))])
+                    if pc in (0x10484800, 0x10484802, 0x1048480a):
+                        pointer = remote.get(registers, 'r4')
+                        if 0xb1800000 <= pointer <= 0xb5efffb0:
+                            record['configuration_node'] = dict(address=hex(pointer),
+                                fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
+                                        for offset in (0, 4, 0x34, 0x40, 0x44, 0x48, 0x4c)})
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 64
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
@@ -1335,6 +1380,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     input_boundary_events=input_boundary_events,
                     shutter_on_ready=shutter_on_ready,
                     application_only=application_only,
+                    shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             not (capture_caller and capture_caller.ui_hits.get(address, 0)) and
@@ -1424,6 +1470,8 @@ def main():
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
+    parser.add_argument('--shutter-click', action='store_true',
+                        help='Release full and half contacts after at least a quarter counter second')
     args = parser.parse_args()
     require(10 <= args.watch <= 900, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1464,6 +1512,8 @@ def main():
     require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
             not (args.playback or args.capture_submit_on_ready or args.input_boundary_events),
             'Application-only observation requires a processed-preview body shutter')
+    require(not args.shutter_click or args.shutter_on_ready or args.shutter_on_preview,
+            'Shutter click requires a processed-preview body shutter')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1558,6 +1608,7 @@ def main():
                                     capture_submit_on_ready=args.capture_submit_on_ready,
                                     capture_wait_idle=args.capture_wait_idle,
                                     application_only=args.application_only,
+                                    shutter_click=args.shutter_click,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
