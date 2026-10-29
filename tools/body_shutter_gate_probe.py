@@ -318,7 +318,7 @@ def image_work_snapshot(remote):
                         owner=hex(word(parameters + 0xc)),
                         pending=hex(word(parameters + 0x6c)),
                         busy=remote.read(parameters + 0x3e30, 1)[0]))
-            node = word(node)
+            node = word(node + 4)
         result.append(row)
     return result
 
@@ -327,8 +327,8 @@ def input_context_snapshot(remote):
     def word(address):
         return int.from_bytes(remote.read(address, 4), 'little')
     result = []
-    # These three queues are traversed as contexts by 0x102300b0.
-    for address in (0xb25eeba4, 0xb25eebc4, 0xb25eec04):
+    # These four queues are traversed as contexts by 0x102300b0.
+    for address in (0xb25eeba4, 0xb25eebc4, 0xb25eebe4, 0xb25eec04):
         node, count = word(address), word(address + 8)
         row = dict(address=hex(address), count=count, head=hex(node), contexts=[])
         for unused in range(min(count, 8)):
@@ -340,7 +340,7 @@ def input_context_snapshot(remote):
                     consumers=remote.read(context + 0xc, 1)[0],
                     parameters=hex(word(context + 0x144)),
                     pending=hex(word(context + 0x14c))))
-            node = word(node)
+            node = word(node + 4)
         result.append(row)
     return result
 
