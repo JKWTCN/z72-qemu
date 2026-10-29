@@ -1,0 +1,178 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "handler": "0x1036939e",
+  "interrupt_id": 106,
+  "status": "0x24073480",
+  "mask": "0x24073484",
+  "current_pointer": "0xb1801eb8",
+  "accumulated_flags": "0xb1801eb0",
+  "cases": [
+    {
+      "name": "empty",
+      "status": "0x0",
+      "mask": "0xffffffff",
+      "mode": 1,
+      "result_flags": "0x0",
+      "accumulated": "0x0",
+      "result_word_88": 0,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "name": "result-word-only",
+      "status": "0x8000000",
+      "mask": "0x0",
+      "mode": 1,
+      "result_flags": "0x1",
+      "accumulated": "0x1",
+      "result_word_88": 305419896,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x8000000"
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "name": "mode-done-only",
+      "status": "0x1000",
+      "mask": "0x1000",
+      "mode": 1,
+      "result_flags": "0x2",
+      "accumulated": "0x2",
+      "result_word_88": 0,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x1000"
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "name": "masked-mode-done",
+      "status": "0x8001000",
+      "mask": "0x0",
+      "mode": 1,
+      "result_flags": "0x1",
+      "accumulated": "0x1",
+      "result_word_88": 305419896,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x8001000"
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "name": "mode-zero",
+      "status": "0x8001000",
+      "mask": "0x1000",
+      "mode": 0,
+      "result_flags": "0x3",
+      "accumulated": "0x1",
+      "result_word_88": 305419896,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x8001000"
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "name": "combined-mode-one",
+      "status": "0x8001000",
+      "mask": "0x1000",
+      "mode": 1,
+      "result_flags": "0x3",
+      "accumulated": "0x3",
+      "result_word_88": 305419896,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x8001000"
+        }
+      ],
+      "notifications": [
+        {
+          "notification": "0x41051501",
+          "result_pointer": "0x50000200",
+          "flags": "0x3",
+          "result_word_88": 305419896
+        }
+      ]
+    },
+    {
+      "name": "combined-output-bounds",
+      "status": "0x800c000",
+      "mask": "0xc000",
+      "mode": 0,
+      "result_flags": "0x60001",
+      "accumulated": "0x60001",
+      "result_word_88": 305419896,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x800c000"
+        }
+      ],
+      "notifications": [
+        {
+          "notification": "0x41051501",
+          "result_pointer": "0x50000200",
+          "flags": "0x60001",
+          "result_word_88": 305419896
+        }
+      ]
+    },
+    {
+      "name": "enabled-summary-cause",
+      "status": "0x20040000",
+      "mask": "0x40000",
+      "mode": 1,
+      "result_flags": "0x20",
+      "accumulated": "0x0",
+      "result_word_88": 0,
+      "acknowledgements": [
+        {
+          "address": "0x24073480",
+          "bytes": 4,
+          "value": "0x20040000"
+        }
+      ],
+      "notifications": [
+        {
+          "notification": "0x41051501",
+          "result_pointer": "0x50000200",
+          "flags": "0x20",
+          "result_word_88": 0
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Record the registered completion callback."
+  ],
+  "limitations": [
+    "Synthetic status, mask, mode, register bytes and current descriptor.",
+    "Ordinary test storage records acknowledgement writes; no device is simulated.",
+    "No input pixels, JPEG bitstream, hardware completion or photograph is produced."
+  ]
+}
