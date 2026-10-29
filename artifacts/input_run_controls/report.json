@@ -250,6 +250,20 @@
     }
   ],
   "disable_task_notification": "0x041a0004",
+  "independent_disable": {
+    "pending": "0x80",
+    "physical": "0x2",
+    "bank": 7,
+    "bits": "0x8",
+    "logical": "0x2",
+    "callback": "0x102394dc",
+    "interrupt_group": 4,
+    "low_task_event": "0x20",
+    "notification": "0x041a0006",
+    "input_task_event": "0x20",
+    "drain_handler": "0x10235944",
+    "enable_mask_supplied_by_existing_configuration": true
+  },
   "limitations": [
     "Synthetic memory and event API boundaries only.",
     "Registered mask group and two DMA handle fields are synthetic.",

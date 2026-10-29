@@ -29,13 +29,18 @@ class PendingProbe(ContextProbe):
     def __init__(self, image):
         super().__init__(image)
         self.events = []
+        self.flag_updates = []
 
     def boundary(self, u, address, size, unused):
         if address == self.RECORDER:
             payload = u.reg_read(UC_ARM_REG_R1)
             self.events.append(dict(notification=hex(u.reg_read(UC_ARM_REG_R0)),
-                status=bytes(u.mem_read(payload, 1))[0], context=hex(self.word(payload + 8))))
+                status=bytes(u.mem_read(payload, 1))[0] if payload else None,
+                context=hex(self.word(payload + 8)) if payload else None))
             u.reg_write(UC_ARM_REG_R0, 0)
+            u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+        elif address == 0x103610cc:
+            self.flag_updates.append((u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_R1)))
             u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
         else:
             super().boundary(u, address, size, unused)
@@ -77,6 +82,43 @@ def pending_contract(image):
                 limitation='Synthetic queues and context masks; no DMA or hardware completion is supplied.')
 
 
+def disable_drain_contract(image):
+    engine = PendingProbe(image)
+    context, node = engine.DATA + 0x200, engine.DATA + 0x4000
+    queue = 0xb25eeba4
+    engine.u.mem_write(0xb1887e80, struct.pack('<I', engine.RECORDER | 1))
+    cases = []
+    for configured in (1, 0x80, 0):
+        for address in (queue, queue + 0x20, queue + 0x40, queue + 0x60):
+            engine.call(0x32fa90, address)
+        engine.u.mem_write(context, bytes(0x150))
+        engine.u.mem_write(context + 0x14c, struct.pack('<I', 1))
+        engine.u.mem_write(node, struct.pack('<3I', node, node, context))
+        engine.u.mem_write(queue, struct.pack('<5I', node, node, 1, 1, node))
+        engine.u.mem_write(0xb1887d70, bytes(0x64))
+        engine.u.mem_write(0xb1887d75, b'\x04\x02')
+        engine.u.mem_write(0xb1887dcc, struct.pack('<I', configured))
+        engine.events.clear()
+        engine.flag_updates.clear()
+        engine.call(0x2102ea)
+        drained = configured == 0
+        expected = [dict(notification='0x41a0008', status=0, context=hex(context)),
+                    dict(notification='0x41a000c', status=None, context=None)] if drained else []
+        require(engine.events == expected and engine.word(queue + 8) == int(not drained) and
+                engine.word(context + 0x14c) == int(not drained),
+                'Disabled input staging drain differs')
+        states = list(engine.u.mem_read(0xb1887d75, 2))
+        require(states == ([5, 0] if drained else [4, 2]), 'Disabled input state transition differs')
+        require(engine.flag_updates == ([(0xb1887d9c, 2)] if drained else []),
+                'Disabled input flag update differs')
+        cases.append(dict(configured_mask=hex(configured), remaining=engine.word(queue + 8),
+            pending=hex(engine.word(context + 0x14c)), states=states, events=list(engine.events)))
+    return dict(entry='0x102302ea', staging_queue=hex(queue), initial_pending='0x1', cases=cases,
+        native_list_operations=True, native_state_transition=True,
+        host_boundaries=['uncontended lock/unlock', 'record callback', 'record event flag update'],
+        limitation='Synthetic staging object and configuration; no device completion or capture counter change.')
+
+
 def probe(image):
     engine = ContextProbe(image)
     context = engine.DATA
@@ -103,6 +145,7 @@ def probe(image):
                 release_entry='0x1032a792', consumer_offset='0xc', releases=releases,
                 header_entry='0x10324f04', caller_argument='context + 8', flags=flags,
                 pending_clear=pending_contract(image),
+                disable_drain=disable_drain_contract(image),
                 limitations=['Synthetic context, driver counters, query results and uncontended locks.',
                              'These fields alone do not identify a display request or pixel-processing job.'])
 

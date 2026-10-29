@@ -132,10 +132,32 @@ def probe(image):
     engine.notifications.clear()
     engine.call(0x10238d4a - 0x10020000, 0x1000)
     require(engine.notifications == [(0x041a0004, 0)], 'Disable task notification differs')
+    # Logical input 0x80 has an independent end event, outside the aggregate
+    # pending word above. The configured stream already enables bank 7 bit 3.
+    engine.writes.clear()
+    engine.call(0x1023c796 - 0x10020000, 0x80)
+    require(engine.writes == [(0x2006800c, 2)], 'Independent disable operand differs')
+    status = [0] * 8
+    status[7] = 8
+    engine.u.mem_write(engine.DATA, struct.pack('<8I', *status))
+    require(engine.call(0x1ead46, engine.DATA) == 2, 'Independent disable routing differs')
+    engine.task_events.clear()
+    engine.call(0x102394dc - 0x10020000, 0x41072804, engine.DATA)
+    require(engine.task_events == [(0xb26b3888, 0x20)], 'Independent disable event differs')
+    engine.notifications.clear()
+    engine.call(0x10238d4a - 0x10020000, 0x20)
+    require(engine.notifications == [(0x041a0006, 0)], 'Independent disable notification differs')
+    engine.task_events.clear()
+    engine.call(0x1022e2e0 - 0x10020000, 0x041a0006, 0)
+    require(engine.task_events == [(0xb25eeb78, 0x20)], 'Independent input task event differs')
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
                 decoder='0x1020a71a', callback='0x1020c0a8', cases=cases,
                 run_controls=run_controls,
                 disable_cases=disable_cases, disable_task_notification='0x041a0004',
+                independent_disable=dict(pending='0x80', physical='0x2', bank=7, bits='0x8',
+                    logical='0x2', callback='0x102394dc', interrupt_group=4,
+                    low_task_event='0x20', notification='0x041a0006', input_task_event='0x20',
+                    drain_handler='0x10235944', enable_mask_supplied_by_existing_configuration=True),
                 limitations=['Synthetic memory and event API boundaries only.',
                              'Registered mask group and two DMA handle fields are synthetic.',
                              'No physical response latency or pixel transfer is established.'])

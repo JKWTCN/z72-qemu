@@ -268,12 +268,12 @@ def check(qemu):
             # A soft disable completes a real running channel once. It must
             # never reuse the hard-stop causes or claim another pixel DMA.
             previous = count()
-            for operand, first, second in (
-                    (1, 0x200, 0), (4, 0x2000, 0), (8, 0x8000, 0),
-                    (0x10, 0x80000000, 0), (0x20, 0x8020000, 0),
-                    (0x40, 0x80000, 0), (0x200, 0, 0x80),
-                    (0x400, 0, 8), (0x800, 0, 0x800), (2, 0, 0),
-                    (0x600, 0, 0x88), (0x10000, 0, 0)):
+            for operand, first, second, last in (
+                    (1, 0x200, 0, 0), (4, 0x2000, 0, 0), (8, 0x8000, 0, 0),
+                    (0x10, 0x80000000, 0, 0), (0x20, 0x8020000, 0, 0),
+                    (0x40, 0x80000, 0, 0), (0x200, 0, 0x80, 0),
+                    (0x400, 0, 8, 0), (0x800, 0, 0x800, 0), (2, 0, 0, 8),
+                    (0x600, 0, 0x88, 0), (0x10000, 0, 0, 0)):
                 write(0x2006800c, 0xffffffff)
                 for bank in range(8):
                     write(0x20068210 + bank * 32, 0xffffffff)
@@ -284,11 +284,13 @@ def check(qemu):
                 expected = role == 'master' and sampling and stopping
                 assert read(0x20068210) == (first if expected else 0)
                 assert read(0x20068230) == (second if expected else 0)
-                assert all(read(0x20068210 + bank * 32) == 0 for bank in range(2, 8))
+                assert read(0x200682f0) == (last if expected else 0)
+                assert all(read(0x20068210 + bank * 32) == 0 for bank in range(2, 7))
                 write(0x20068210, 0xffffffff)
                 write(0x20068230, 0xffffffff)
+                write(0x200682f0, 0xffffffff)
                 write(0x2006800c, operand)
-                assert read(0x20068210) == read(0x20068230) == 0, 'Repeated disable completed twice'
+                assert read(0x20068210) == read(0x20068230) == read(0x200682f0) == 0, 'Repeated disable completed twice'
                 assert count() == previous, 'Disable fabricated a pixel transfer'
             monitor('system_reset')
             assert count() == 0

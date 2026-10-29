@@ -58,6 +58,8 @@ POST_SUBMIT_POINTS = {
     0x10238DEE: 'capture-input-disable-notification',
     0x102316A2: 'capture-input-disable-task-drain',
     0x102302EA: 'capture-input-disabled-queue-drain',
+    0x10235944: 'capture-input-independent-disable',
+    0x10235966: 'capture-input-independent-configuration-cleared',
     0x102300B0: 'capture-input-pending-clear',
     0x102300EC: 'capture-input-active-mask',
     0x102300FA: 'capture-input-active-cleared',

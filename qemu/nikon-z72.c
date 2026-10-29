@@ -1591,6 +1591,11 @@ static void boot_config_write(void *opaque, hwaddr offset,
             if (disabled & 0x800) { second |= 1u << 11; }
             *boot_config_value(s, 0x20068210) |= first;
             *boot_config_value(s, 0x20068230) |= second;
+            /* This channel ends through its own task event, independently
+             * of the other channels' aggregate disable pending word. */
+            if (disabled & 2) {
+                *boot_config_value(s, 0x200682f0) |= 8;
+            }
             input_update_irqs(s);
         }
         return;

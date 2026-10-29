@@ -191,6 +191,62 @@
     ],
     "limitation": "Synthetic queues and context masks; no DMA or hardware completion is supplied."
   },
+  "disable_drain": {
+    "entry": "0x102302ea",
+    "staging_queue": "0xb25eeba4",
+    "initial_pending": "0x1",
+    "cases": [
+      {
+        "configured_mask": "0x1",
+        "remaining": 1,
+        "pending": "0x1",
+        "states": [
+          4,
+          2
+        ],
+        "events": []
+      },
+      {
+        "configured_mask": "0x80",
+        "remaining": 1,
+        "pending": "0x1",
+        "states": [
+          4,
+          2
+        ],
+        "events": []
+      },
+      {
+        "configured_mask": "0x0",
+        "remaining": 0,
+        "pending": "0x0",
+        "states": [
+          5,
+          0
+        ],
+        "events": [
+          {
+            "notification": "0x41a0008",
+            "status": 0,
+            "context": "0x50000200"
+          },
+          {
+            "notification": "0x41a000c",
+            "status": null,
+            "context": null
+          }
+        ]
+      }
+    ],
+    "native_list_operations": true,
+    "native_state_transition": true,
+    "host_boundaries": [
+      "uncontended lock/unlock",
+      "record callback",
+      "record event flag update"
+    ],
+    "limitation": "Synthetic staging object and configuration; no device completion or capture counter change."
+  },
   "limitations": [
     "Synthetic context, driver counters, query results and uncontended locks.",
     "These fields alone do not identify a display request or pixel-processing job."

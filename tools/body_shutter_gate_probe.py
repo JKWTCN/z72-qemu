@@ -25,7 +25,8 @@ AFTER_ACTION = {
     0x105548ec: 'release-action-property-check',
     0x10554902: 'release-action-qualification-return',
     0x104e16b4: 'release-action-configuration-entry',
-    0x104e1714: 'release-action-configuration-early-return',
+    0x104e1714: 'release-action-configuration-return',
+    0x104e1910: 'release-action-configuration-timer-choice',
     0x1053e598: 'event1-check-result',
     0x1053e62c: 'release-gate-clear-path',
 }
@@ -1171,6 +1172,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
+                if pc in (0x104e1714, 0x104e1910):
+                    record['configuration_saved_registers'] = {
+                        name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if keep:
                     records.append(record)
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
