@@ -469,6 +469,186 @@
       "shadow_copy_bytes": 112
     }
   ],
+  "builder": {
+    "entry": "0x10235ff6",
+    "source_geometry_offsets": [
+      "0x22",
+      "0x24"
+    ],
+    "cases": [
+      {
+        "mode": 0,
+        "width": 320,
+        "height": 224,
+        "accepted": true,
+        "grid": [
+          10,
+          7
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 0,
+        "width": 319,
+        "height": 224,
+        "accepted": false
+      },
+      {
+        "mode": 0,
+        "width": 320,
+        "height": 223,
+        "accepted": false
+      },
+      {
+        "mode": 0,
+        "width": 1536,
+        "height": 256,
+        "accepted": true,
+        "grid": [
+          48,
+          8
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 0,
+        "width": 1537,
+        "height": 224,
+        "accepted": false
+      },
+      {
+        "mode": 0,
+        "width": 320,
+        "height": 1024,
+        "accepted": true,
+        "grid": [
+          10,
+          32
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 0,
+        "width": 320,
+        "height": 1025,
+        "accepted": false
+      },
+      {
+        "mode": 0,
+        "width": 960,
+        "height": 416,
+        "accepted": true,
+        "grid": [
+          30,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 0,
+        "width": 992,
+        "height": 416,
+        "accepted": false
+      },
+      {
+        "mode": 0,
+        "width": 641,
+        "height": 431,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 1,
+        "width": 640,
+        "height": 432,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb2652960",
+        "field_7c": 0
+      },
+      {
+        "mode": 2,
+        "width": 640,
+        "height": 432,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 1
+      },
+      {
+        "mode": 2,
+        "width": 640,
+        "height": 432,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb25f2960",
+        "field_7c": 0
+      },
+      {
+        "mode": 3,
+        "width": 640,
+        "height": 432,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb2652960",
+        "field_7c": 1
+      },
+      {
+        "mode": 3,
+        "width": 640,
+        "height": 432,
+        "accepted": true,
+        "grid": [
+          20,
+          13
+        ],
+        "source": "0x58000000",
+        "target": "0x5a000000",
+        "scratch": "0xb2652960",
+        "field_7c": 0
+      }
+    ],
+    "host_function_boundaries_used": false
+  },
   "interrupt_entry": "0x10294364",
   "interrupts": [
     {

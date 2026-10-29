@@ -40,6 +40,47 @@ class AuxProbe(RegionProbe):
             super().boundary(u, address, size, unused)
 
 
+def builder_contract(native):
+    request, source_handle, target_handle, source, target, output = [
+        native.DATA + offset for offset in (0x2000, 0x2200, 0x2400, 0x2600, 0x2800, 0x2a00)]
+    native.u.mem_write(source_handle + 4, struct.pack('<I', source))
+    native.u.mem_write(target_handle + 4, struct.pack('<I', target))
+    native.u.mem_write(source, struct.pack('<I', 0x58000000))
+    native.u.mem_write(target, struct.pack('<I', 0x5a000000))
+    cases = []
+    for mode, width, height, accepted in (
+            (0, 320, 224, 1), (0, 319, 224, 0), (0, 320, 223, 0),
+            (0, 1536, 256, 1), (0, 1537, 224, 0),
+            (0, 320, 1024, 1), (0, 320, 1025, 0),
+            (0, 960, 416, 1), (0, 992, 416, 0), (0, 641, 431, 1),
+            (1, 640, 432, 1), (2, 640, 432, 1), (2, 640, 432, 1),
+            (3, 640, 432, 1), (3, 640, 432, 1)):
+        native.u.mem_write(request, struct.pack('<3I', mode, source_handle, target_handle))
+        native.u.mem_write(source_handle + 0x22, struct.pack('<hh', width, height))
+        native.u.mem_write(output, bytes(0xe0))
+        result = native.call(0x215ff6, request, output)
+        require(result == accepted, 'Auxiliary image descriptor admission differs')
+        row = dict(mode=mode, width=width, height=height, accepted=bool(result))
+        if result:
+            require(native.word(output + 0x70) == width // 32 and
+                    native.word(output + 0x74) == height // 32,
+                    'Auxiliary image grid derivation differs')
+            require(all(native.word(output + offset + index * 4) == address
+                        for offset, address in ((0x2c, 0x58000000), (0x3c, 0x58000000),
+                                                (0x4c, 0x5a000000), (0x5c, 0x5a000000))
+                        for index in range(4)), 'Auxiliary image address forwarding differs')
+            scratch = 0xb25f2960 if mode in (0, 2) else 0xb2652960
+            require(native.word(output + 0x78) == scratch,
+                    'Auxiliary image scratch selection differs')
+            row.update(grid=[native.word(output + 0x70), native.word(output + 0x74)],
+                       source=hex(native.word(output + 0x2c)),
+                       target=hex(native.word(output + 0x4c)), scratch=hex(scratch),
+                       field_7c=native.word(output + 0x7c))
+        cases.append(row)
+    return dict(entry='0x10235ff6', source_geometry_offsets=['0x22', '0x24'],
+                cases=cases, host_function_boundaries_used=False)
+
+
 def probe(image):
     native = AuxProbe(image)
     controls = []
@@ -119,7 +160,7 @@ def probe(image):
         configuration_fields=[dict(source=hex(offset), register=hex(native.BASE + register))
                               for offset, register in fields],
         combined_control=dict(register='0x20201100', source='byte +0x44 low two bits -> bits 2..3; nonzero word +0x48 -> bit 0'),
-        configurations=configurations, interrupt_entry='0x10294364',
+        configurations=configurations, builder=builder_contract(native), interrupt_entry='0x10294364',
         interrupts=interrupts, host_boundaries=['record interrupt callback'],
         limitations=['Synthetic register storage and result value; no pixels or hardware completion.',
                      'Records the status acknowledgement write; does not emulate its hardware semantics.',
@@ -134,4 +175,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS 6 auxiliary image run controls, 2 configurations and 6 interrupt causes')
+    print('PASS 6 auxiliary image run controls, 2 configurations, 15 descriptors and 6 interrupt causes')
