@@ -71,6 +71,10 @@ CAPTURE_INPUT_POINTS = {
     0x1022e2e0: 'capture-input-tail-notification',
     0x1022ff42: 'capture-input-tail-worker-parameter-check',
     0x10230052: 'capture-input-tail-driver-notification',
+    0x1031eabe: 'capture-driver-input-flags-entry',
+    0x1031ead8: 'capture-driver-input-flags-stored',
+    0x1031cb20: 'capture-driver-stop-flags-entry',
+    0x1032ae3c: 'capture-driver-input-mask-release',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -806,6 +810,7 @@ def snapshot(remote):
         capture_driver_mode=remote.read(0xb1868af7, 1)[0],
         capture_driver_context_count=word(0xb1868b58),
         capture_driver_finish_comparison_word=hex(word(0xb1868c34)),
+        capture_driver_input_flags=hex(word(0xb1868ca0)),
         capture_stop_ready_flags=hex(word(0xb1868b64)),
         stop_queue_count=word(0xb23ef3d0),
         processing_command=remote.read(0xb1868310, 1)[0],
@@ -1598,6 +1603,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             record['release_count_payload'] = int.from_bytes(remote.read(pointer, 4), 'little')
                     if pc == 0x1022e2e0:
                         keep = keep and remote.get(registers, 'r0') in (0x041a0001, 0x041a0004)
+                    if pc in (0x1031eabe, 0x1031ead8, 0x1031cb20, 0x1032ae3c):
+                        keep = keep and record['capture_state'][0] >= 7
+                        if keep:
+                            record['driver_input_flags'] = hex(int.from_bytes(
+                                remote.read(0xb1868ca0, 4), 'little'))
                     if pc in (0x103b93d0, 0x103b940a, 0x103b9538, 0x103b9184,
                               0x103ba1cc, 0x103ba1d0, 0x103ba29c, 0x103b9848, 0x103b9826):
                         record['release_control_header'] = list(remote.read(0xb186935c, 16))

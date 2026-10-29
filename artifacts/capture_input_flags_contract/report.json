@@ -1,0 +1,229 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x1031eabe",
+  "aggregate": "0xb1868ca0",
+  "release": "0x1032ae3c",
+  "omitted_bit_cases": 32,
+  "cases": [
+    {
+      "released_mask": "0x400",
+      "required_flags": "0x500",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031eabb",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x800",
+      "required_flags": "0x900",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031eabb",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x1000",
+      "required_flags": "0x1140",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031eabb",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x2000",
+      "required_flags": "0x2140",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031eabb",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x4000",
+      "required_flags": "0x4381",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e9d1",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x8000",
+      "required_flags": "0x8380",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e9d1",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x10000",
+      "required_flags": "0x10011",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e867",
+          "bytes": 4,
+          "words": [
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "released_mask": "0x20000",
+      "required_flags": "0x20001",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e867",
+          "bytes": 4,
+          "words": [
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "released_mask": "0x40000",
+      "required_flags": "0x40011",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e867",
+          "bytes": 4,
+          "words": [
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "released_mask": "0x80000",
+      "required_flags": "0x80001",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e867",
+          "bytes": 4,
+          "words": [
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "released_mask": "0x100000",
+      "required_flags": "0x10003f",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e83f",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x200000",
+      "required_flags": "0x200021",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e83f",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x400000",
+      "required_flags": "0x40003f",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e83f",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    },
+    {
+      "released_mask": "0x800000",
+      "required_flags": "0x800021",
+      "deferred_jobs": [
+        {
+          "entry": "0x1031e83f",
+          "bytes": 0,
+          "words": []
+        }
+      ]
+    }
+  ],
+  "all_flags_jobs": [
+    {
+      "entry": "0x1031eabb",
+      "bytes": 0,
+      "words": []
+    },
+    {
+      "entry": "0x1031e9d1",
+      "bytes": 0,
+      "words": []
+    },
+    {
+      "entry": "0x1031e867",
+      "bytes": 4,
+      "words": [
+        32
+      ]
+    },
+    {
+      "entry": "0x1031e83f",
+      "bytes": 0,
+      "words": []
+    }
+  ],
+  "release_effects": [
+    {
+      "before": "0xffffffff",
+      "mask": "0x4000",
+      "after": "0xffffbfff"
+    },
+    {
+      "before": "0xa5a5a5a5",
+      "mask": "0x10000",
+      "after": "0xa5a4a5a5"
+    },
+    {
+      "before": "0xffffffff",
+      "mask": "0xffffffff",
+      "after": "0x0"
+    }
+  ],
+  "tail_only": {
+    "flags": "0x1",
+    "releases": [],
+    "jobs": []
+  },
+  "host_boundaries": [
+    "uncontended lock/unlock",
+    "record mask release",
+    "record deferred task submission",
+    "parameter refresh return"
+  ],
+  "limitations": [
+    "Synthetic aggregate inputs; native OR, prerequisite checks and job construction execute.",
+    "Does not identify runtime flag producers or supply flags to the running firmware."
+  ]
+}
