@@ -440,10 +440,20 @@ def input_context_snapshot(remote):
                 break
             context = word(node + 8)
             if 0xb2c00000 <= context <= 0xb5effeaf:
-                row['contexts'].append(dict(address=hex(context),
+                item = dict(address=hex(context),
                     consumers=remote.read(context + 0xc, 1)[0],
                     parameters=hex(word(context + 0x144)),
-                    pending=hex(word(context + 0x14c))))
+                    pending=hex(word(context + 0x14c)))
+                if unused == 0:
+                    item['output_headers'] = []
+                    for offset in (0x68, 0x6c, 0x70, 0x74):
+                        pointer = word(context + offset)
+                        size = {0x68: 0x38, 0x6c: 0x60, 0x70: 0x34, 0x74: 0x80}[offset]
+                        if 0xb2c00000 <= pointer <= 0xb5f00000 - size:
+                            values = struct.unpack('<' + str(size // 4) + 'I', remote.read(pointer, size))
+                            item['output_headers'].append(dict(offset=hex(offset), address=hex(pointer),
+                                words=[hex(value) for value in values]))
+                row['contexts'].append(item)
             node = word(node + 4)
         result.append(row)
     return result
@@ -728,7 +738,7 @@ def snapshot(remote):
         input_completed_heads=completed_heads,
         input_interrupts=dict(
             controls={hex(offset): hex(word(0x20068000 + offset))
-                      for offset in (0, 4, 8, 0x10, 0x14, 0x18)},
+                      for offset in (0, 4, 8, 0x10, 0x14, 0x18, 0x100, 0x104, 0x140, 0x144)},
             banks=[dict(mask=hex(word(0x20068200 + index * 32)),
                         status=hex(word(0x20068210 + index * 32))) for index in range(8)],
             callbacks={hex(index * 4): hex(value) for index, value in enumerate(
@@ -1505,6 +1515,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
                     latch = int.from_bytes(remote.read(0xb26b38dc, 4), 'little')
                     record['mode1_output_latch'] = latch
+                    record['mode1_output_controls'] = {hex(address): hex(int.from_bytes(
+                        remote.read(address, 4), 'little')) for address in
+                        (0x20068100, 0x20068104, 0x2006a53c, 0x2006a548,
+                         0x2006a550, 0x2006a560, 0x2006a580)}
                     if latch == 1:
                         pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:

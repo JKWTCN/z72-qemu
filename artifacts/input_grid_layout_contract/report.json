@@ -1,0 +1,64 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "lookup": "0x102ce4f6",
+  "constructor": "0x102ce622",
+  "destination_view_offset": "0x14",
+  "cases": [
+    {
+      "selector": 15,
+      "variant": 0,
+      "template": "0x119bfb60",
+      "row_bytes": 64,
+      "columns": 30,
+      "rows": 12,
+      "storage_bytes": 768,
+      "fields": {
+        "0x0": "0x40",
+        "0x2": "0x10",
+        "0x4": "0x6",
+        "0x6": "0x44",
+        "0x8": "0x4",
+        "0xa": "0x1e",
+        "0xc": "0xc",
+        "0x10": "0x787",
+        "0x12": "0x0",
+        "0x14": "0x5"
+      },
+      "byte_e": 0,
+      "byte_16": 0,
+      "padding_preserved": true
+    },
+    {
+      "selector": 3,
+      "variant": 0,
+      "template": "0x119bcb90",
+      "row_bytes": 64,
+      "columns": 30,
+      "rows": 20,
+      "storage_bytes": 1280,
+      "fields": {
+        "0x0": "0x40",
+        "0x2": "0x1e",
+        "0x4": "0x12",
+        "0x6": "0x2c",
+        "0x8": "0x2c",
+        "0xa": "0x1e",
+        "0xc": "0x14",
+        "0x10": "0x876",
+        "0x12": "0x0",
+        "0x14": "0x2"
+      },
+      "byte_e": 0,
+      "byte_16": 0,
+      "padding_preserved": true
+    }
+  ],
+  "host_function_boundaries_used": false,
+  "limitations": [
+    "Synthetic selectors; the startup template has independent runtime binding evidence.",
+    "Pitch is aligned from twice the column count; numerical sample interpretation remains unverified.",
+    "The auxiliary field 5 or 2 does not determine sample width in this constructor.",
+    "No pixel transfer, output completion or sensor timing is generated."
+  ]
+}
