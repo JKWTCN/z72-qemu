@@ -14,6 +14,9 @@ from tools.sdk_file_probe import CALLBACK, CODE, OBJECT, ORIGINAL_CALLBACK
 REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
+FINISH_POINTS = {0x10321EA2, 0x10322448, 0x1032A792, 0x1032A7B4,
+                 0x103D0C72, 0x103CD46A}
+
 POST_SUBMIT_POINTS = {
     0x1032385A: 'capture-driver-request-consumed',
     0x10233222: 'capture-input-ready-request',
@@ -35,6 +38,8 @@ POST_SUBMIT_POINTS = {
     0x10322448: 'capture-processing-context-finish-check',
     0x1032A792: 'capture-context-consumer-release',
     0x1032A7B4: 'capture-context-consumer-released',
+    0x103D0C72: 'capture-processing-job-busy-check',
+    0x103CD46A: 'capture-processing-peer-finish',
     0x102301DC: 'capture-input-drain-return',
     0x1023C82C: 'capture-input-disable-return',
     0x10321A4C: 'capture-driver-notification',
@@ -163,6 +168,7 @@ class NativeCaptureCaller:
         self.report = dict(caller_fixture=True, triggered=False, caller_entered=False,
                            caller_returned=False, body_shutter_used=False,
                            hardware_completion_host_supplied=False,
+                           finish_observation_max_contexts=4,
                            request_words=[0, 1, 0, 0, 1],
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         self.entry_sp = None
@@ -232,6 +238,9 @@ class NativeCaptureCaller:
                     pc == 0x1042F2E8 and (nor_event is None or nor_event[0] not in (67, 68)) or
                     pc == 0x1030E3E2 and r1 != 11 or
                     pc in POST_SUBMIT_POINTS and not self.report['triggered'])
+        if keep and pc in FINISH_POINTS:
+            keep = (self.remote.read(0xB1868AF1, 1)[0] == 14 and
+                    self.word(0xB1868B58) <= 4)
         self.ui_hits[pc] = self.ui_hits.get(pc, 0) + int(keep)
         detail = None
         if keep:
@@ -244,6 +253,7 @@ class NativeCaptureCaller:
                                 for operation in (6, 7, 8, 9)})
             if pc in POST_SUBMIT_POINTS:
                 detail['stop_ready_flags'] = hex(self.word(0xB1868B64))
+                detail['driver_context_count'] = self.word(0xB1868B58)
                 detail['input_runtime_states'] = list(self.remote.read(0xB1887D70, 8))
                 detail['driver_finish_comparison_word'] = hex(self.word(0xB1868C34))
                 detail['input_ready_fields'] = {hex(offset): hex(self.word(0xB1887D70 + offset))
@@ -255,6 +265,17 @@ class NativeCaptureCaller:
                         consumers=self.remote.read(pointer + 0xC, 1)[0],
                         parameters=hex(self.word(pointer + 0x144)),
                         pending=hex(self.word(pointer + 0x14C)))
+            if pc in (0x103D0C72, 0x103CD46A):
+                pointer = self.remote.get(registers, 'r4')
+                if pc == 0x103CD46A:
+                    payload = self.remote.get(registers, 'r2')
+                    request = self.word(payload) if 0xB1800000 <= payload <= 0xB5FFFFFC else 0
+                    pointer = self.word(request) if 0xB2C00000 <= request <= 0xB5EFFFFC else 0
+                if 0xB2C00000 <= pointer <= 0xB5EFC1CF:
+                    detail['processing_job'] = dict(parameters=hex(pointer),
+                        owner=hex(self.word(pointer + 0xC)),
+                        pending=hex(self.word(pointer + 0x6C)),
+                        busy=self.remote.read(pointer + 0x3E30, 1)[0])
             if pc in (0x10321A4C, 0x103E9D24):
                 detail['notification'] = hex(r0)
                 if 0xB1800000 <= r1 <= 0xB5FFFFFC:

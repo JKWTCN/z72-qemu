@@ -300,6 +300,29 @@ def task_wait_snapshot(remote, task):
     return result
 
 
+def image_work_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result = []
+    for address in (0xb238e774, 0xb238e794, 0xb238e7b4):
+        node, count = word(address), word(address + 8)
+        row = dict(address=hex(address), count=count, jobs=[])
+        for unused in range(min(count, 8)):
+            if not 0xb2c00000 <= node <= 0xb5effff4:
+                break
+            request = word(node + 8)
+            if 0xb2c00000 <= request <= 0xb5effffc:
+                parameters = word(request)
+                if 0xb2c00000 <= parameters <= 0xb5efc1cf:
+                    row['jobs'].append(dict(request=hex(request), parameters=hex(parameters),
+                        owner=hex(word(parameters + 0xc)),
+                        pending=hex(word(parameters + 0x6c)),
+                        busy=remote.read(parameters + 0x3e30, 1)[0]))
+            node = word(node)
+        result.append(row)
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -459,7 +482,9 @@ def snapshot(remote):
         engine_inputs=engines, lens_detection=lens_detection,
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
-                       (('driver', 0xb23edde8), ('backend', 0xb21e2654))},
+                       (('driver', 0xb23edde8), ('backend', 0xb21e2654),
+                        ('image', 0xb238e654), ('processing', 0xb23ecc80))},
+        image_work_queues=image_work_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
@@ -501,6 +526,8 @@ def snapshot(remote):
         capture_driver_state=remote.read(0xb1868af1, 1)[0],
         capture_driver_pending_state=remote.read(0xb1868afa, 1)[0],
         capture_driver_mode=remote.read(0xb1868af7, 1)[0],
+        capture_driver_context_count=word(0xb1868b58),
+        capture_driver_finish_comparison_word=hex(word(0xb1868c34)),
         capture_stop_ready_flags=hex(word(0xb1868b64)),
         stop_queue_count=word(0xb23ef3d0),
         processing_command=remote.read(0xb1868310, 1)[0],
