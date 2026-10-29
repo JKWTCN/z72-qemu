@@ -97,7 +97,27 @@ class NativeCaptureCaller:
                           0x1042F26C: 'system-controller-request-result',
                           0x1042F298: 'system-controller-final-check',
                           0x1042F29E: 'system-controller-configuration-error',
-                          0x1042F246: 'system-controller-configuration-return'}
+                          0x1042F246: 'system-controller-configuration-return',
+                          0x1042F2A8: 'nor-write-notification',
+                          0x1042F2E8: 'nor-write-event-consumer',
+                          0x1042F382: 'nor-controller-stage-request',
+                          0x1042F434: 'nor-controller-stage-dispatch',
+                          0x1042DC90: 'lens-controller-stage-request',
+                          0x1042DD54: 'lens-disconnect-request',
+                          0x1042DD72: 'lens-connect-request',
+                          0x103BF6CC: 'storage-object-write',
+                          0x103713B8: 'nor-program-request',
+                          0x103713F6: 'nor-program-return',
+                          0x103713F8: 'nor-erase-request',
+                          0x10371436: 'nor-erase-return',
+                          0x103ED6BC: 'lens-contact-notification',
+                          0x1042DCDE: 'lens-board-notification',
+                          0x1042E018: 'lens-connection-event-producer',
+                          0x10318836: 'lens-link-state-emitter',
+                          0x1034D780: 'lens-retry-query-result',
+                          0x1030E3E2: 'lens-control-retry',
+                          0x10311462: 'lens-control-handshake-result',
+                          0x10311498: 'lens-control-response'}
         self.points.update(self.ui_points)
         self.ui_hits = {}
         remote.select_thread(1)
@@ -170,9 +190,15 @@ class NativeCaptureCaller:
             message = self.remote.get(registers, 'r5')
             if 0xB1800000 <= message <= 0xB5FFFFE8:
                 consumed = list(struct.unpack('<2I', self.remote.read(message + 0x10, 8)))
-        keep = not (pc == 0x1020F84C and r0 not in (51, 52, 53) or
-                    pc == 0x1020F8DC and (consumed is None or consumed[0] not in (51, 52, 53)) or
-                    pc == 0x1042F4DA and r0 != 2)
+        nor_event = None
+        if pc == 0x1042F2E8 and 0xB1800000 <= r0 <= 0xB5FFFFE8:
+            nor_event = list(struct.unpack('<2I', self.remote.read(r0 + 0x10, 8)))
+        keep = not (pc == 0x1020F84C and r0 not in (46, 47, 51, 52, 53) or
+                    pc == 0x1020F8DC and (consumed is None or consumed[0] not in (46, 47, 51, 52, 53)) or
+                    pc == 0x1042F4DA and r0 != 2 or
+                    pc == 0x1042F2A8 and r0 not in (0x04400041, 0x04400042) or
+                    pc == 0x1042F2E8 and (nor_event is None or nor_event[0] not in (67, 68)) or
+                    pc == 0x1030E3E2 and r1 != 11)
         self.ui_hits[pc] = self.ui_hits.get(pc, 0) + int(keep)
         detail = None
         if keep:
@@ -187,6 +213,32 @@ class NativeCaptureCaller:
                 detail['completion_status'] = self.word(r1)
             if consumed is not None:
                 detail['consumed_event'] = consumed
+            if nor_event is not None:
+                detail['nor_event'] = nor_event
+            if pc == 0x103ED6BC and 0xB1800000 <= r0 < 0xB6000000:
+                detail['contact_payload_byte'] = self.remote.read(r0, 1)[0]
+            if pc in (0x10318836, 0x1034D780):
+                detail['lens_request_flags'] = list(struct.unpack('<14I',
+                    self.remote.read(0xB295114C, 56)))
+                detail['retry_count'] = self.remote.read(0xB2951190, 1)[0]
+            if pc == 0x1034D780:
+                sp = self.remote.get(registers, 'sp')
+                detail['query_1016_result'] = self.word(sp)
+            if pc == 0x1030E3E2:
+                detail['retry_policy'] = list(self.remote.read(0xB2955D44, 3))
+            if pc == 0x10311462:
+                descriptor = self.word(0xB18A785C)
+                detail['handshake_gpio_descriptor'] = hex(descriptor)
+                if 0xB1800000 <= descriptor <= 0xB5FFFFDC:
+                    detail['handshake_gpio_fields'] = [hex(value) for value in
+                        struct.unpack('<9I', self.remote.read(descriptor, 36))]
+            if pc == 0x10311498 and 0xB1800000 <= r1 <= 0xB5FFFFFD:
+                detail['response_status'] = self.remote.read(r1 + 1, 1)[0]
+            if pc in (0x10318836, 0x103ED6BC):
+                sp = self.remote.get(registers, 'sp')
+                words = struct.unpack('<24I', self.remote.read(sp, 96))
+                detail['stack_code_candidates'] = [dict(offset=hex(index * 4), value=hex(value))
+                    for index, value in enumerate(words) if 0x10020000 <= value < 0x10800000]
         return detail, keep, self.ui_hits[pc] < 32
 
     def observe(self, pc, registers):
