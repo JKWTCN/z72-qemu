@@ -724,3 +724,11 @@ synchronization bank contract (latching, mask routing, write-one
 acknowledgement, level retention, reset and engine isolation) and the
 result-window write rejection. See
 [sensor sampling research](../research/z7ii/sensor_frames.md).
+
+`tests/test_input_dma.py` also checks the optional `frame-process` path:
+native port/sequence gating, validation of all three output descriptors before
+any writes, four destination slots, independently specified luminance values,
+neutral chroma, padding/guards, completion status acknowledgement and reset.
+It exercises the full-scale RAW12 monochrome model with synthetic firmware-free
+descriptors. This does not qualify native live view or photography; see
+[processing contracts and runtime evidence](../research/z7ii/display_output.md).

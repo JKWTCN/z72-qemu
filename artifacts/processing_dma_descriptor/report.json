@@ -127,6 +127,8 @@
     "enable_flags_offset": "0x100",
     "cases": [
       {
+        "bank_selector": 0,
+        "control_port": 0,
         "bank_base": "0x20102200",
         "supplied_addresses": [
           "0x54000000",
@@ -280,11 +282,11 @@
         ],
         "inactive_bank_preserved": true,
         "control_started": "0xa5a501f1",
-        "control_stopped": "0xa5a501f0",
-        "bank_selector": 0,
-        "control_port": 0
+        "control_stopped": "0xa5a501f0"
       },
       {
+        "bank_selector": 1,
+        "control_port": 1,
         "bank_base": "0x20102300",
         "supplied_addresses": [
           "0x55000000",
@@ -438,9 +440,7 @@
         ],
         "inactive_bank_preserved": true,
         "control_started": "0xa5a501f1",
-        "control_stopped": "0xa5a501f0",
-        "bank_selector": 1,
-        "control_port": 1
+        "control_stopped": "0xa5a501f0"
       }
     ],
     "enable_entry": "0x103bd08a",
@@ -486,6 +486,47 @@
           "event": "0x200"
         }
       ]
+    }
+  ],
+  "bank_event_cases": [
+    {
+      "status_20": "0x4",
+      "notifications": [
+        {
+          "code": "0x41051003",
+          "event": "0x1"
+        }
+      ]
+    },
+    {
+      "status_20": "0x8",
+      "notifications": [
+        {
+          "code": "0x41051003",
+          "event": "0x80"
+        }
+      ]
+    },
+    {
+      "status_20": "0xc",
+      "notifications": [
+        {
+          "code": "0x41051003",
+          "event": "0x81"
+        }
+      ]
+    }
+  ],
+  "bank_callback_cases": [
+    {
+      "event": "0x1",
+      "logical_event": 1,
+      "bank": 0
+    },
+    {
+      "event": "0x80",
+      "logical_event": 1,
+      "bank": 1
     }
   ],
   "pixel_transfer_verified": false,

@@ -630,10 +630,12 @@ struct NikonZ72BootConfig {
     bool sample_group1;
     /* Sensor frame generation state */
     bool frame_generate;
+    bool frame_process;
     bool frame_notify;
     uint32_t input_running;
     uint64_t input_dma_count;
     uint32_t input_dma_address;
+    uint64_t processing_dma_count;
     uint64_t frame_count;
     uint32_t input_last_read;
     bool pcie_link;
@@ -982,6 +984,115 @@ static void auto_sample_event(void *opaque, int line, int level)
  * event in the third bank. The optional phase source sets bank 2 bit 7
  * only while software enables it; neither source supplies pixel data.
  * The 30 Hz period is a functional choice, not a measured rate. */
+static void transfer_update_irq(NikonZ72BootConfig *s);
+
+static bool processing_ram_range(AddressSpace *view, uint32_t address,
+                                 hwaddr length)
+{
+    hwaddr offset, span = length;
+    MemoryRegion *region;
+
+    if (!address || !length || (uint64_t)address + length > UINT32_MAX) {
+        return false;
+    }
+    region = address_space_translate(view, address, &offset, &span, true,
+                                     MEMTXATTRS_UNSPECIFIED);
+    return memory_region_is_ram(region) && !memory_region_is_rom(region) &&
+           span >= length;
+}
+
+/* Functional monochrome preview for the observed C1.70 stream profile.
+ * The 40000000 DMA operand is treated as an internal input stream here;
+ * it is not read as a guest RAM pointer. Crop/nearest scaling and NV12 are
+ * explicit model assumptions. Accept only full-scale RAW12 pairs, whose
+ * packing is unambiguous, and retain the firmware's destination ownership. */
+static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
+                                uint32_t width, uint32_t height, uint32_t stride)
+{
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t control[4], descriptors[3][52], addresses[256], input_descriptor[52];
+    uint32_t targets[3], uv_targets[3], widths[3], heights[3], strides[3];
+    unsigned slot = (s->input_dma_count - 1) & 3;
+    size_t raw_length = (size_t)stride * height;
+    g_autofree uint8_t *raw = NULL;
+
+    if (!s->frame_process || width != 1380 || height != 918 || stride != 2080 ||
+        address_space_read(view, 0x20102100, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
+        (ldl_le_p(control) & 0xf) != 1 ||
+        address_space_read(view, 0x20102608, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
+        !(ldl_le_p(control) & 1) ||
+        address_space_read(view, 0x20100600, MEMTXATTRS_UNSPECIFIED,
+                           input_descriptor, 52) != MEMTX_OK ||
+        ldl_le_p(input_descriptor) != 0x09000201 ||
+        ldl_le_p(input_descriptor + 0x20) != 0x03920560 ||
+        address_space_read(view, 0x20102200, MEMTXATTRS_UNSPECIFIED, addresses, 256) != MEMTX_OK ||
+        ldl_le_p(addresses + (slot * 16 + 8) * 4) != 0x40000000 ||
+        !processing_ram_range(view, source, raw_length)) {
+        return;
+    }
+    /* Validate all three output planes before changing any destination. */
+    for (unsigned index = 0; index < 3; index++) {
+        uint8_t *d = descriptors[index];
+        unsigned channel = index + 3;
+        if (address_space_read(view, 0x20100400 + channel * 0x40,
+                               MEMTXATTRS_UNSPECIFIED, d, 52) != MEMTX_OK) {
+            return;
+        }
+        widths[index] = ldl_le_p(d + 0x20) & 0xffff;
+        heights[index] = ldl_le_p(d + 0x20) >> 16;
+        strides[index] = ldl_le_p(d + 0x10);
+        targets[index] = ldl_le_p(addresses + (slot * 16 + channel) * 4);
+        uint64_t uv = (uint64_t)targets[index] + ldl_le_p(d + 0x28);
+        hwaddr y_length = (hwaddr)strides[index] * heights[index];
+        if (ldl_le_p(d) != 0x09000201 || !widths[index] || !heights[index] ||
+            (widths[index] & 1) || (heights[index] & 1) ||
+            widths[index] > 1920 || heights[index] > 1280 ||
+            strides[index] < widths[index] || strides[index] > 2048 ||
+            ldl_le_p(d + 0x14) != strides[index] ||
+            ldl_le_p(d + 0x24) != 0 || ldl_le_p(d + 0x2c) != 0 ||
+            ldl_le_p(d + 0x30) != 0 || ldl_le_p(d + 0x28) < y_length ||
+            uv > UINT32_MAX || !processing_ram_range(view, targets[index], y_length) ||
+            !processing_ram_range(view, uv, y_length / 2)) {
+            return;
+        }
+        uv_targets[index] = uv;
+    }
+    raw = g_malloc(raw_length);
+    if (address_space_read(view, source, MEMTXATTRS_UNSPECIFIED, raw, raw_length) != MEMTX_OK) {
+        return;
+    }
+    for (unsigned y = 0; y < height; y++) {
+        for (unsigned x = 0; x < width * 3 / 2; x += 3) {
+            uint8_t *pair = raw + y * stride + x;
+            if ((pair[0] != 0 && pair[0] != 255) || pair[0] != pair[1] || pair[0] != pair[2]) {
+                return;
+            }
+        }
+    }
+    for (unsigned index = 0; index < 3; index++) {
+        unsigned w = widths[index], h = heights[index], row = strides[index];
+        size_t y_length = (size_t)row * h;
+        g_autofree uint8_t *pixels = g_malloc(y_length * 3 / 2);
+        memset(pixels, 16, y_length);
+        memset(pixels + y_length, 128, y_length / 2);
+        for (unsigned y = 0; y < h; y++) {
+            unsigned sy = 2 + (uint64_t)y * (height - 4) / h;
+            for (unsigned x = 0; x < w; x++) {
+                unsigned sx = 2 + (uint64_t)x * (width - 4) / w;
+                pixels[y * row + x] = raw[sy * stride + (sx / 2) * 3] ? 235 : 16;
+            }
+        }
+        address_space_write(view, targets[index], MEMTXATTRS_UNSPECIFIED, pixels, y_length);
+        address_space_write(view, uv_targets[index], MEMTXATTRS_UNSPECIFIED,
+                            pixels + y_length, y_length / 2);
+    }
+    s->processing_dma_count++;
+    /* Original table b1801e38: status20 bit3 -> event80 -> bank1 frame
+     * callback. Bank0 statistics are not generated by this preview model. */
+    stl_le_p(s->transfer_table + 0x20, ldl_le_p(s->transfer_table + 0x20) | 8);
+    transfer_update_irq(s);
+}
+
 static void input_generate_frame(NikonZ72BootConfig *s)
 {
     uint8_t geometry[12], planes[16], word[4];
@@ -1040,6 +1151,7 @@ static void input_generate_frame(NikonZ72BootConfig *s)
                             pixels, length) == MEMTX_OK) {
         s->input_dma_address = target;
         s->input_dma_count++;
+        input_process_frame(s, target, width, height, stride);
         if (s->frame_notify) {
             /* Recovered frame timing / queued-output input causes. Keep
              * this opt-in until native buffer ownership is fully verified. */
@@ -1047,7 +1159,6 @@ static void input_generate_frame(NikonZ72BootConfig *s)
             input_update_irqs(s);
         }
     }
-    /* Processing results are not generated by this input source. */
 }
 
 static void frame_sync_tick(void *opaque)
@@ -1853,6 +1964,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->input_running = 0;
     s->input_dma_count = 0;
     s->input_dma_address = 0;
+    s->processing_dma_count = 0;
     input_update_irqs(s);
     sync_update_irqs(s);
     if (s->intc) {
@@ -1910,8 +2022,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 38,
-    .minimum_version_id = 38,
+    .version_id = 39,
+    .minimum_version_id = 39,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -1937,6 +2049,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(input_running, NikonZ72BootConfig),
         VMSTATE_UINT64(input_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(input_dma_address, NikonZ72BootConfig),
+        VMSTATE_UINT64_V(processing_dma_count, NikonZ72BootConfig, 39),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -1993,6 +2106,8 @@ static void boot_config_init(Object *obj)
     object_property_add_uint64_ptr(obj, "input-dma-count", &s->input_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "processing-dma-count", &s->processing_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
@@ -2251,6 +2366,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
                          display_complete, false),
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
+        DEFINE_PROP_BOOL("frame-process", NikonZ72BootConfig, frame_process, false),
         DEFINE_PROP_BOOL("frame-notify", NikonZ72BootConfig, frame_notify, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),

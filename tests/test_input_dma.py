@@ -20,6 +20,7 @@ def check(qemu):
             '-display', 'none', '-serial', 'none', '-qmp', 'stdio',
             '-global', f'nikon-z72-boot-config.frame-generate={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.frame-notify={"on" if notifying else "off"}',
+            '-global', f'nikon-z72-boot-config.frame-process={"on" if role == "master" and enabled and sampling and notifying else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
@@ -147,8 +148,79 @@ def check(qemu):
                     assert read(0x20068500) == 0
                     if target == 0xb08fff00:
                         assert read(target) == 0x11223344, 'Rejected frame partially wrote RAM'
+                if notifying:
+                    # Native stream profile and small, independently checked output rasters.
+                    def processed():
+                        return monitor('qom-get', dict(path=path, property='processing-dma-count'))
+
+                    planes([0xb0101000] * 4)
+                    write(0x20069518, 1380 << 16)
+                    write(0x2006951c, 918 << 16)
+                    write(0x20069a08, 2080)
+                    write(0x20100600, 0x09000201)
+                    write(0x20100620, 0x03920560)
+                    for slot in range(4):
+                        write(0x20102200 + (slot * 16 + 8) * 4, 0x40000000)
+                        for index in range(3):
+                            target = 0xb2001000 + slot * 0x10000 + index * 0x1000
+                            write(0x20102200 + (slot * 16 + index + 3) * 4, target)
+                            write(target, 0x12345678)
+                            write(target - 4, 0x11223344)
+                            write(target + 64, 0x55667788)
+                            write(target + 0x100 + 32, 0x99887766)
+                    for channel in range(3, 6):
+                        base = 0x20100400 + channel * 0x40
+                        write(base, 0x09000201)
+                        write(base + 0x10, 16)
+                        write(base + 0x14, 16)
+                        write(base + 0x20, 4 << 16 | 8)
+                        write(base + 0x28, 0x100)
+                    tick()
+                    assert processed() == 0, 'Processing ran before port enable'
+                    write(0x20102100, 0x121)
+                    tick()
+                    assert processed() == 0, 'Processing ran before sequence enable'
+                    write(0x20102608, 1)
+                    # A rejected third output must not partially write the first two.
+                    write(0x20100568, 32)
+                    tick()
+                    assert processed() == 0 and read(0x20100020) == 0
+                    assert all(read(0xb2001000 + slot * 0x10000 + index * 0x1000) == 0x12345678
+                               for slot in range(4) for index in range(3))
+                    write(0x20100568, 0x100)
+                    for slot in range(4):
+                        write(0x20102200 + (slot * 16 + 5) * 4, 0x20068500)
+                    tick()
+                    assert processed() == 0 and read(0x20100020) == 0
+                    assert read(0x20068500) == 0
+                    for slot in range(4):
+                        write(0x20102200 + (slot * 16 + 5) * 4,
+                              0xb2003000 + slot * 0x10000)
+                    for expected in range(1, 6):
+                        tick()
+                        assert processed() == expected
+                        assert read(0x20100020) == 8, 'Output notification not tied to completed raster'
+                        frame = count() - 1
+                        slot = frame % 4
+                        first = (0x10, 0x10, 0xeb, 0x10, 0x10, 0xeb, 0x10, 0x10)
+                        if frame & 1:
+                            first = tuple(0xfb - value for value in first)
+                        for index in range(3):
+                            target = 0xb2001000 + slot * 0x10000 + index * 0x1000
+                            assert read(target) == int.from_bytes(bytes(first[:4]), 'little')
+                            assert read(target + 4) == int.from_bytes(bytes(first[4:]), 'little')
+                            assert read(target + 8) == 0x10101010, 'Row padding changed'
+                            assert read(target + 0x100) == 0x80808080
+                            assert read(target - 4) == 0x11223344
+                            assert read(target + 64) == 0x55667788
+                            assert read(target + 0x100 + 32) == 0x99887766
+                        write(0x20100020, 8)
+                    write(0x20102100, 0x120)
+                    tick()
+                    assert processed() == 5 and read(0x20100020) == 0
             monitor('system_reset')
             assert count() == 0
+            assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'Reset retained an enabled DMA channel'
@@ -164,7 +236,7 @@ def check(qemu):
                 process.wait(timeout=5)
             for pipe in (process.stdin, process.stdout, process.stderr):
                 pipe.close()
-    print('PASS RAW12 input DMA profiles')
+    print('PASS RAW12 input DMA and monochrome processing profiles')
 
 
 if __name__ == '__main__':

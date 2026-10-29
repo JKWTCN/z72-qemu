@@ -46,14 +46,19 @@ the channel's work buffers rotate through the frame pool. The browser
 console renders the final LCD output plane (1024×682 luminance,
 currently the cleared frame) beside the graphics surface; see
 [display output research](research/z7ii/display_output.md).
+An opt-in monochrome processing model now reads completed RAW12 DMA and writes
+the firmware's preview descriptors. A C1.70 run completed 62 processing frames
+and rotated all four native LCD buffers with nonempty luminance data. Its
+initialization still uses diagnostic finite-output events; full processing
+and photography remain incomplete.
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
-live-view pixels from the capture pipeline and the natural production
+complete capture processing and the natural production
 of a few notifications remain pending. Boot-time device registration
 completes through its local callback, and the peer returns the video-buffer
 completion and a successful card query. Capture initialization also completes
 successfully. Full release reaches the application action, where a retained
-gate stops capture; its upstream completion notification and live-view pixel transfer
+gate stops capture; its upstream completion notification and full capture processing
 remain under investigation. See
 [notification chain research](research/z7ii/notification_chain.md).
 The steady menu cycle no longer shows the

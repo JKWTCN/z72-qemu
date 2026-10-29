@@ -372,6 +372,7 @@ def snapshot(remote):
             0x20102000 + index * 0x100, 64))] for index in range(2)],
         processing_address_banks=[[hex(value) for value in struct.unpack('<64I', remote.read(
             0x20102200 + index * 0x100, 256))] for index in range(2)],
+        processing_sequence=[hex(value) for value in struct.unpack('<37I', remote.read(0x20102600, 148))],
         processing_dma=[dict(channel=channel, words=[hex(value) for value in struct.unpack(
             '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)],
         mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
@@ -490,6 +491,8 @@ def input_dma_snapshot(machine):
             address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
             stride = machine._words(0x20069a08, 1)[0]
             result = dict(frames=count, address=hex(address), stride=stride)
+            result['processing_frames'] = machine.qmp.command('qom-get',
+                dict(path=path, property='processing-dma-count'))
             if count and address and 0 < stride <= 16384:
                 data = machine._bytes(address, stride)
                 result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
@@ -979,6 +982,8 @@ def main():
                         help='Power-of-two memory watch window size in bytes (4..256)')
     parser.add_argument('--watch-count', type=int, default=1,
                         help='Stop an observed stage after this many watched accesses (1..64)')
+    parser.add_argument('--frame-process', action='store_true',
+                        help='Enable the functional full-scale RAW12 to monochrome preview path')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1000,6 +1005,7 @@ def main():
     require(all(address is None or address + args.watch_bytes <= 0x100000000
                 for address in (args.watch_read, args.watch_write)), 'Memory watch range wraps')
     require(not args.frame_notify or args.frame_generate, 'Frame notification requires generated input pixels')
+    require(not args.frame_process or args.frame_generate, 'Frame processing requires generated input pixels')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1068,6 +1074,7 @@ def main():
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,
+                      frame_process=args.frame_process,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,

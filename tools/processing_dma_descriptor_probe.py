@@ -115,6 +115,23 @@ def probe(image):
         routed_event_cases.append(dict(status_1c=hex(status), subscriber=(status.bit_length() - 1) % 16,
             notifications=[
             dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
+    native.u.mem_write(0xb1801d60, struct.pack('<I', (native.DATA + 0x2000) | 1))
+    bank_event_cases = []
+    for status, event in ((4, 1), (8, 0x80), (12, 0x81)):
+        native.notifications.clear()
+        native.u.mem_write(0x20100018, struct.pack('<3I', 0, 0, status))
+        native.call(0x39ce38)
+        require(native.notifications == [[0x41051003, event]],
+                'Original processing bank status mapping differs')
+        bank_event_cases.append(dict(status_20=hex(status), notifications=[
+            dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
+    native.u.mem_write(0xb180954c, struct.pack('<I', (native.DATA + 0x2000) | 1))
+    bank_callback_cases = []
+    for event, bank in ((1, 0), (0x80, 1)):
+        native.notifications.clear()
+        native.call(0x395148, 0, event)
+        require(native.notifications == [[1, bank]], 'Original processing bank callback differs')
+        bank_callback_cases.append(dict(event=hex(event), logical_event=1, bank=bank))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
                 entry='0x103bda1e', register_table='0x10789cc0',
                 host_boundaries=['two counter reads, advanced by nine ticks',
@@ -128,6 +145,7 @@ def probe(image):
                     enable_flags_offset='0x100', cases=binding_cases,
                     enable_entry='0x103bd08a', disable_entry='0x103bd0a2'),
                 routed_event_cases=routed_event_cases,
+                bank_event_cases=bank_event_cases, bank_callback_cases=bank_callback_cases,
                 pixel_transfer_verified=False,
                 limitation='Packing, submission and handler event mapping are verified; channel direction, pixel formats, data movement and hardware completion timing remain unverified.')
 
