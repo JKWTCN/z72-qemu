@@ -67,7 +67,11 @@ static const NikonZ72Window nikon_z72_windows[] = {
     /* Later buffer pools declared by the original initialization records.
      * Individual allocator extents may reserve a smaller usable portion. */
     {0xBB300000, 0x00DA0000, "z72-secondary-buffer-pool-lab"},
+    /* The native full-frame allocation BAD0A000 + 0417C000 and identity
+     * sections include these two gaps between initialization extents. */
+    {0xBC0A0000, 0x00060000, "z72-primary-buffer-gap0-lab"},
     {0xBC100000, 0x010E0000, "z72-tertiary-buffer-pool-lab"},
+    {0xBD1E0000, 0x00020000, "z72-primary-buffer-gap1-lab"},
     {0xBD200000, 0x06BCB400, "z72-processing-buffer-pool-lab"},
     {0xC3E00000, 0x0883B000, "z72-image-buffer-pool-lab"},
     {0xCC700000, 0x337E5400, "z72-frame-buffer-pool-lab"},

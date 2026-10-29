@@ -81,6 +81,7 @@ def smoke(qemu, machine, addresses):
                     for address in (0x54F00000, 0x5D170000, 0x5F8D23FC,
                                     0x62700000, 0x63D3C7FC, 0xAB09E000,
                                     0xAB1CA000, 0xAC1C4FFC,
+                                    0xBC0A0000, 0xBC0FFFFC, 0xBD1E0000, 0xBD1FFFFC,
                                     0xB0100000, 0xB08FFFFC):
                         remote.set(r0=0x12345678, r1=address, pc=0x40100008, cpsr=0xD3)
                         remote.command('s')
@@ -338,6 +339,7 @@ def main():
            0x50300000, 0x50560000, 0x548FFFFC,
            0x54F00000, 0x5D170000, 0x5F8D23FC,
            0x62700000, 0x63D3C7FC, 0xAB09E000, 0xAB1CA000, 0xAC1C4FFC,
+           0xBC0A0000, 0xBC0FFFFC, 0xBD1E0000, 0xBD1FFFFC,
            0xB0100000, 0xB08FFFFC,
            0x5F900000, 0x62059800, 0x626FFFFC, 0x34600000, 0x373FFFFC))
     smoke(args.qemu, 'nikon-z72-slave-lab',

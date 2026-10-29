@@ -1370,8 +1370,8 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     uint8_t first_row[4224], second_row[8208];
     AddressSpace *view;
     uint32_t first_address, second_bus;
-    unsigned count = 0, index = 0;
-    g_autofree NikonZ72PrimaryWrite *writes = NULL;
+    unsigned index = 0;
+    g_autoptr(GArray) writes = NULL;
     const unsigned height = 5520, first_size = 4224 * height;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
@@ -1421,7 +1421,7 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     }
     /* Validate the entire remapped second stripe before changing either
      * buffer. Its row gaps belong to the complete-frame buffer's left part. */
-    writes = g_new(NikonZ72PrimaryWrite, height + 8);
+    writes = g_array_sized_new(false, false, sizeof(NikonZ72PrimaryWrite), height + 8);
     for (unsigned y = 0; y < height; y++) {
         uint64_t bus = (uint64_t)second_bus + y * 12432;
         unsigned offset = 0;
@@ -1429,21 +1429,30 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         while (offset < sizeof(second_row)) {
             uint32_t physical;
             uint64_t available;
+            hwaddr translated, span;
+            MemoryRegion *region;
             unsigned length;
 
-            if (bus > UINT32_MAX || count >= height + 8 ||
+            if (bus > UINT32_MAX ||
                 !input_primary_remap(s, bus, &physical, &available)) {
                 return;
             }
             length = MIN(available, sizeof(second_row) - offset);
-            if (!processing_ram_range(view, physical, length) ||
-                ((uint64_t)physical < (uint64_t)first_address + first_size &&
-                 first_address < (uint64_t)physical + length)) {
+            span = length;
+            region = address_space_translate(view, physical, &translated, &span,
+                                             true, MEMTXATTRS_UNSPECIFIED);
+            if (!span || !memory_region_is_ram(region) || memory_region_is_rom(region)) {
                 return;
             }
-            writes[count++] = (NikonZ72PrimaryWrite) {
+            length = span;
+            if ((uint64_t)physical < (uint64_t)first_address + first_size &&
+                first_address < (uint64_t)physical + length) {
+                return;
+            }
+            NikonZ72PrimaryWrite write = {
                 .address = physical, .row = y, .offset = offset, .length = length,
             };
+            g_array_append_val(writes, write);
             bus += length;
             offset += length;
         }
@@ -1456,8 +1465,9 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                                 sizeof(first_row)) != MEMTX_OK) {
             return;
         }
-        while (index < count && writes[index].row == y) {
-            NikonZ72PrimaryWrite *write = &writes[index++];
+        while (index < writes->len &&
+               g_array_index(writes, NikonZ72PrimaryWrite, index).row == y) {
+            NikonZ72PrimaryWrite *write = &g_array_index(writes, NikonZ72PrimaryWrite, index++);
             if (address_space_write(view, write->address, MEMTXATTRS_UNSPECIFIED,
                                     second_row + write->offset,
                                     write->length) != MEMTX_OK) {
@@ -1466,7 +1476,7 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         }
     }
     s->primary_dma_address = first_address;
-    s->primary_second_address = writes[0].address;
+    s->primary_second_address = g_array_index(writes, NikonZ72PrimaryWrite, 0).address;
     s->primary_dma_count++;
     if (s->frame_notify) {
         /* Both RAW stripes were written. Do not claim statistics output

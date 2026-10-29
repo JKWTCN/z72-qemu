@@ -158,9 +158,9 @@ def check(qemu):
                 assert count() == 2
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
                 assert data_at(full + first_stride, 8208) == expected_row(0, 2816, 5472, 1)
-                # The observed table reaches gaps between existing master
-                # storage regions. Reject the whole transfer until the
-                # backing/translation contract is recovered.
+                # The native allocation and identity sections establish
+                # backing through the old initialization-record gaps.
+                native_full = 0xbad0a000
                 for slot, (target, mask, base) in enumerate((
                         (0xe0000, 0xf8000, 0), (0xe8000, 0xf8000, 0x8000),
                         (0xb8000, 0xf8000, 0x10000), (0xc0000, 0xf8000, 0x18000),
@@ -171,10 +171,21 @@ def check(qemu):
                         write(address + slot * 4, value)
                 write(0x20069950, 0x12d0b080)
                 write(0x20068210, 0xffffffff)
-                original = data_at(first, 256)
+                native_rows = rows + tuple((boundary - native_full) // full_stride
+                    for boundary in (0xbb300000, 0xbc0a0000, 0xbc100000, 0xbd1e0000, 0xbd200000))
+                for y in native_rows:
+                    write(native_full + y * full_stride, 0xa5a5a5a5)
+                write(native_full - 4, 0x13572468)
+                write(native_full + full_length, 0x24681357)
                 tick()
-                assert count() == 2 and read(0x20068210) == 0
-                assert data_at(first, 256) == original
+                assert count() == 3 and read(0x20068210) == (0x41 if notifying else 0)
+                assert property_value('primary-input-second-dma-address') == 0xbad0b080
+                for y in native_rows:
+                    assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 2)
+                    assert data_at(native_full + y * full_stride + first_stride, 8208) == expected_row(y, 2816, 5472, 2)
+                    assert read(native_full + y * full_stride) == 0xa5a5a5a5
+                assert read(native_full - 4) == 0x13572468
+                assert read(native_full + full_length) == 0x24681357
             monitor('system_reset')
             assert count() == 0 and property_value('primary-input-dma-address') == 0
             assert property_value('primary-input-second-dma-address') == 0
