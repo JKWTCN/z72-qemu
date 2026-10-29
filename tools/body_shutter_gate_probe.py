@@ -187,7 +187,25 @@ RETURN_POINTS = {
     0x103c0664: 'resource-read-result',
 }
 
+CORE_WORKER_POINTS = {
+    0x103b4e1e: 'reconfigure-processing-core-entry',
+    0x103b4e60: 'reconfigure-processing-core-configure-begin',
+    0x103b4e64: 'reconfigure-processing-core-configure-return',
+    0x103b4ef4: 'reconfigure-processing-core-port-enable',
+    0x103b4f10: 'reconfigure-processing-core-notify-start',
+    0x103b4f26: 'reconfigure-processing-core-notification-wait',
+    0x103b4f2a: 'reconfigure-processing-core-notification-return',
+    0x103b4fbe: 'reconfigure-processing-core-module-poll',
+    0x103b4fd0: 'reconfigure-processing-core-completion',
+}
+
 RECONFIGURE_POINTS = {
+    **CORE_WORKER_POINTS,
+    0x103b4b1e: 'reconfigure-processing-worker-configure-begin',
+    0x103b4b26: 'reconfigure-processing-worker-configure-return',
+    0x103b4b2e: 'reconfigure-processing-worker-controls-return',
+    0x103b4b3e: 'reconfigure-processing-worker-notification-wait',
+    0x103b4b42: 'reconfigure-processing-worker-notification-return',
     0x103bdb9e: 'reconfigure-processing-dma-configure',
     0x103bd03a: 'reconfigure-processing-controller-control4',
     0x103bded0: 'reconfigure-processing-module-configure',
@@ -213,6 +231,22 @@ RECONFIGURE_POINTS = {
     0x103259cc: 'reconfigure-context-request',
     0x10326264: 'reconfigure-context-request-return',
 }
+
+
+def processing_worker_snapshot(remote, task):
+    descriptor = int.from_bytes(remote.read(task + 0x3c, 4), 'little')
+    result = dict(task=hex(task), descriptor=hex(descriptor),
+                  state=remote.read(task + 0x40, 1)[0], event_object=hex(task + 0x2c))
+    if 0xb1800000 <= descriptor < 0xb5efffe8:
+        nodes = int.from_bytes(remote.read(descriptor, 4), 'little')
+        count = remote.read(descriptor + 4, 1)[0]
+        if count <= 64 and 0xb1800000 <= nodes < 0xb5effc00:
+            data = remote.read(nodes, count * 16)
+            result['nodes'] = [dict(index=index, tags=list(data[index * 16:index * 16 + 8]),
+                word_8=hex(struct.unpack_from('<I', data, index * 16 + 8)[0]),
+                word_c=hex(struct.unpack_from('<I', data, index * 16 + 12)[0]))
+                for index in range(count)]
+    return result
 
 
 def snapshot(remote):
@@ -330,6 +364,10 @@ def snapshot(remote):
     return dict(system_mode=mode[0], previous_mode=mode[1],
         processing_controller={hex(index * 4): hex(value) for index, value in enumerate(
             struct.unpack('<17I', remote.read(0x20100000, 68)))},
+        processing_address_table={hex(index * 4): hex(value) for index, value in enumerate(
+            struct.unpack('<32I', remote.read(0x20102880, 128)))},
+        processing_ports=[[hex(value) for value in struct.unpack('<16I', remote.read(
+            0x20102000 + index * 0x100, 64))] for index in range(2)],
         processing_dma=[dict(channel=channel, words=[hex(value) for value in struct.unpack(
             '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)],
         mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
@@ -459,7 +497,8 @@ def input_dma_snapshot(machine):
 
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
-            reconfigure=False, tail_frame_events=False, mode1_frame_events=False):
+            reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
+            watch_bytes=4, watch_count=1):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -511,6 +550,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     watch_address = watch_read if watch_read is not None else watch_write
     watch_type = 3 if watch_read is not None else 2
     memory_watch_armed = False
+    watched_count = 0
     started = time.monotonic()
     breakpoints_installed = False
     try:
@@ -541,7 +581,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                    f'input-event {line} {level}')
                 tail_events.append(line)
         if watch_address is not None:
-            require(remote.command(f'Z{watch_type},{watch_address:x},4') == 'OK',
+            require(remote.command(f'Z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
                     'Memory watchpoint rejected')
             memory_watch_armed = True
         machine.set_key(24 if returning else 8 if playback else 25, 0)
@@ -562,20 +602,29 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             registers = remote.regs()
             pc = remote.get(registers, 'pc')
             watched = re.search(r'(?:rwatch|watch):([0-9a-f]+);', reply)
-            if watched and int(watched[1], 16) == watch_address:
+            watched_address = int(watched[1], 16) if watched else None
+            if watched_address is not None and watch_address <= watched_address < watch_address + watch_bytes:
                 record = dict(entry='watched-read' if watch_type == 3 else 'watched-write',
                     pc=hex(pc), thread=thread,
-                    address=hex(watch_address), registers={name: hex(remote.get(registers, name))
+                    address=hex(watched_address), registers={name: hex(remote.get(registers, name))
                         for name in ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                                      'r8', 'r9', 'r10', 'r11', 'r12', 'sp', 'lr', 'cpsr')})
+                record['address_kind'] = 'reported-watch-window'
+                window_before = None
+                if watch_type == 2 and watch_bytes > 4 and 0x20100000 <= watch_address < 0x20110000 - watch_bytes:
+                    window_before = remote.read(watch_address, watch_bytes)
                 if pc == 0x10361044:
                     record['saved_return'] = hex(int.from_bytes(remote.read(
                         remote.get(registers, 'sp'), 4), 'little'))
-                if 0x20140000 <= watch_address < 0x2014f000:
+                if 0x20100000 <= watched_address < 0x2014f000:
                     record['stack_words'] = [hex(value) for value in struct.unpack(
                         '<32I', remote.read(remote.get(registers, 'sp'), 128))]
-                if watch_type == 2 and 0xb2c00000 <= watch_address <= 0xb5effffc:
-                    record['previous_word'] = hex(int.from_bytes(remote.read(watch_address, 4), 'little'))
+                read_watched_word = watch_type == 2 and (
+                    0xb2c00000 <= watched_address <= 0xb5effffc or
+                    0x20100000 <= watched_address <= 0x2010fffc)
+                if read_watched_word:
+                    record['previous_window_word' if watch_bytes > 4 else 'previous_word'] = hex(
+                        int.from_bytes(remote.read(watched_address, 4), 'little'))
                 if pc in (0x1024ffb4, 0x1024ffda):
                     descriptor = remote.get(registers, 'r5') - 0x14
                     columns, rows = struct.unpack('<HH', remote.read(descriptor + 0x1e, 4))
@@ -587,20 +636,36 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         field_30=hex(int.from_bytes(remote.read(descriptor + 0x30, 4), 'little')))
                 if 'TTBR0_S' in remote.register_numbers:
                     ttbr = remote.read_register('TTBR0_S')
-                    section_address = (ttbr & 0xffffc000) + (watch_address >> 20) * 4
+                    section_address = (ttbr & 0xffffc000) + (watched_address >> 20) * 4
                     section = int.from_bytes(remote.read(section_address, 4), 'little')
                     record['translation'] = dict(ttbr0=hex(ttbr),
                         section_address=hex(section_address), section=hex(section))
                     if section & 3 == 2:
                         record['translation']['section_physical_address'] = hex(
-                            (section & 0xfff00000) | (watch_address & 0xfffff))
+                            (section & 0xfff00000) | (watched_address & 0xfffff))
                 records.append(record)
-                require(remote.command(f'z{watch_type},{watch_address:x},4') == 'OK',
+                require(remote.command(f'z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
                         'Memory watchpoint removal failed')
                 memory_watch_armed = False
                 remote.sock.settimeout(15)
                 remote.command(f'vCont;s:{thread:x}')
-                break
+                if read_watched_word:
+                    record['current_window_word' if watch_bytes > 4 else 'current_word'] = hex(
+                        int.from_bytes(remote.read(watched_address, 4), 'little'))
+                if window_before is not None:
+                    window_after = remote.read(watch_address, watch_bytes)
+                    record['changed_window_words'] = [dict(address=hex(watch_address + index * 4),
+                        previous=hex(previous), current=hex(current))
+                        for index, (previous, current) in enumerate(zip(
+                            struct.unpack('<' + 'I' * (watch_bytes // 4), window_before),
+                            struct.unpack('<' + 'I' * (watch_bytes // 4), window_after))) if previous != current]
+                watched_count += 1
+                if watched_count >= watch_count:
+                    break
+                require(remote.command(f'Z{watch_type},{watch_address:x},{watch_bytes:x}') == 'OK',
+                        'Memory watchpoint rearm failed')
+                memory_watch_armed = True
+                continue
             require(pc in armed, f'Unexpected stop at {pc:#x}')
             repeat = thread > 2
             if thread <= 2:
@@ -665,6 +730,26 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         '<17I', remote.read(0x20100000, 68))]
                     record['processing_dma'] = [dict(channel=channel, words=[hex(value) for value in struct.unpack(
                         '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)]
+                if pc in (0x103b4b1e, 0x103b4b26, 0x103b4b2e, 0x103b4b3e, 0x103b4b42):
+                    task = remote.get(registers, 'r4')
+                    record['processing_worker'] = processing_worker_snapshot(remote, task)
+                    if pc == 0x103b4b3e:
+                        record['processing_worker']['wait_flags'] = hex(remote.get(registers, 'r1'))
+                    if pc == 0x103b4b42:
+                        record['processing_worker']['returned_flags'] = hex(int.from_bytes(remote.read(
+                            remote.get(registers, 'sp') + 4, 4), 'little'))
+                if pc in CORE_WORKER_POINTS:
+                    index = remote.get(registers, 'r5')
+                    task = remote.get(registers, 'r0') if pc == 0x103b4e1e else 0xb1d52600 + index * 72
+                    if task in (0xb1d52600, 0xb1d52648):
+                        record['processing_core'] = processing_worker_snapshot(remote, task)
+                        if pc == 0x103b4e1e:
+                            record['processing_core']['activation'] = remote.get(registers, 'r1')
+                        if pc == 0x103b4f26:
+                            record['processing_core']['wait_flags'] = hex(remote.get(registers, 'r1'))
+                        if pc == 0x103b4f2a:
+                            record['processing_core']['returned_flags'] = hex(int.from_bytes(remote.read(
+                                remote.get(registers, 'sp'), 4), 'little'))
                 if pc == 0x103e1dea:
                     packet = remote.get(registers, 'r1')
                     record['display_packet'] = dict(address=hex(packet),
@@ -793,7 +878,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < 8
+                    repeat = hits[pc] < (32 if pc == 0x103bded0 else 8)
             remote.breakpoint(pc, False)
             if repeat:
                 remote.sock.settimeout(15)
@@ -809,13 +894,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     driver_notification_hits=callback_hits,
                     tail_frame_events=tail_events,
                     mode1_frame_events=mode1_events,
+                    memory_watch=(dict(address=hex(watch_address), bytes=watch_bytes,
+                                       limit=watch_count, observed=watched_count)
+                                  if watch_address is not None else None),
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
         if memory_watch_armed:
-            remote.command(f'z{watch_type},{watch_address:x},4')
+            remote.command(f'z{watch_type},{watch_address:x},{watch_bytes:x}')
         if breakpoints_installed:
             for address in armed:
                 remote.breakpoint(address, False)
@@ -865,9 +953,13 @@ def main():
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
-                        help='Capture the first read overlapping this four-byte window, single-step it, then stop observing')
+                        help='Capture and single-step watched reads; the default access limit is one')
     parser.add_argument('--watch-write', type=lambda value: int(value, 0),
-                        help='Capture and single-step the first write in each observed stage, then stop that stage')
+                        help='Capture and single-step watched writes; the default access limit is one')
+    parser.add_argument('--watch-bytes', type=int, default=4,
+                        help='Power-of-two memory watch window size in bytes (4..256)')
+    parser.add_argument('--watch-count', type=int, default=1,
+                        help='Stop an observed stage after this many watched accesses (1..64)')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -883,6 +975,11 @@ def main():
     require(args.watch_write is None or 0 <= args.watch_write <= 0xfffffffc and
             args.watch_write % 4 == 0, 'Write watch address out of bounds')
     require(args.watch_read is None or args.watch_write is None, 'Choose one memory watch type')
+    require(4 <= args.watch_bytes <= 256 and args.watch_bytes & (args.watch_bytes - 1) == 0,
+            'Memory watch window size out of bounds')
+    require(1 <= args.watch_count <= 64, 'Memory watch access count out of bounds')
+    require(all(address is None or address + args.watch_bytes <= 0x100000000
+                for address in (args.watch_read, args.watch_write)), 'Memory watch range wraps')
     require(not args.frame_notify or args.frame_generate, 'Frame notification requires generated input pixels')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
@@ -959,6 +1056,7 @@ def main():
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
                                     watch_read=args.watch_read, watch_write=args.watch_write,
+                                    watch_bytes=args.watch_bytes, watch_count=args.watch_count,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
@@ -970,12 +1068,13 @@ def main():
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
                             gpio_handshake_events=args.gpio_handshake_events,
-                            watch_write=args.watch_write, frame_notify=args.frame_notify)
+                            watch_write=args.watch_write, frame_notify=args.frame_notify,
+                            watch_bytes=args.watch_bytes, watch_count=args.watch_count)
             state = machine.status()
             report['return_liveview'] = dict(application=state, trace=trace)
             if state['index'] == 3 and state['input_ready']:
                 report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write,
-                                                        frame_notify=args.frame_notify)
+                    frame_notify=args.frame_notify, watch_bytes=args.watch_bytes, watch_count=args.watch_count)
                 report['post_shutter_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
         if args.frame_generate:
