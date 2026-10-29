@@ -54,6 +54,20 @@ CAPTURE_INPUT_POINTS = {
     0x10321d80: 'capture-input-driver-complete',
     0x103231b2: 'capture-driver-state-update',
     0x103e6e94: 'capture-state-update',
+    0x103b93d0: 'capture-release-stop-entry',
+    0x103b940a: 'capture-release-stop-state-updated',
+    0x103b9538: 'capture-release-signal',
+    0x103b9184: 'capture-release-completion-notification',
+    0x103ba1cc: 'capture-release-phase-request',
+    0x103ba1d0: 'capture-release-phase-request-return',
+    0x103ba29c: 'capture-release-phase-result',
+    0x103b9848: 'capture-release-count-notification',
+    0x103b9826: 'capture-release-count-updated',
+    0x10238d64: 'capture-input-task-before-dequeue',
+    0x10238d02: 'capture-input-task-after-disable',
+    0x1023c6ec: 'capture-input-task10-consumer',
+    0x1023beec: 'capture-input-completed-enqueue',
+    0x103cc8e8: 'capture-image-tracking-enqueue-mode2',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -1571,6 +1585,32 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         dict(path=capture_input_path, property=property_name)) for name, property_name in
                         (('running_mask', 'input-running'), ('frame_ticks', 'frame-sync-count'),
                          ('primary_frames', 'primary-input-dma-count'))}
+                    if pc == 0x103b9848:
+                        keep = keep and remote.get(registers, 'r0') == 0x04100074
+                        pointer = remote.get(registers, 'r1')
+                        if keep and 0xb1800000 <= pointer <= 0xb5effffc:
+                            record['release_count_payload'] = int.from_bytes(remote.read(pointer, 4), 'little')
+                    if pc in (0x103b93d0, 0x103b940a, 0x103b9538, 0x103b9184,
+                              0x103ba1cc, 0x103ba1d0, 0x103ba29c, 0x103b9848, 0x103b9826):
+                        record['release_control_header'] = list(remote.read(0xb186935c, 16))
+                        record['release_control_words'] = {hex(offset): hex(int.from_bytes(
+                            remote.read(0xb186935c + offset, 4), 'little')) for offset in
+                            (0x34, 0x38, 0x3c, 0x40, 0x44, 0x48, 0x60, 0x68)}
+                        if pc == 0x103ba1cc:
+                            record['release_phase_request'] = [hex(value) for value in
+                                struct.unpack('<2I', remote.read(remote.get(registers, 'r0'), 8))]
+                        if pc == 0x103ba29c:
+                            record['release_phase_result'] = remote.read(remote.get(registers, 'sp'), 1)[0]
+                    if pc in (0x10238d4a, 0x10238d64, 0x10238d02):
+                        keep = keep and record['input_source']['primary_frames'] > 0
+                    if pc in (0x1023beec, 0x103cc8e8):
+                        keep = keep and record['capture_state'][0] >= 7
+                    if keep and pc in (0x10238d64, 0x10238d02, 0x1023c6ec, 0x1023beec):
+                        record['input_pipeline'] = dict(
+                            flags=hex(int.from_bytes(remote.read(0xb26b38cc, 4), 'little')),
+                            queues=[int.from_bytes(remote.read(0xb26b392c + index * 32, 4), 'little')
+                                    for index in range(4)],
+                            fourth_object=hex(remote.get(registers, 'r8')))
                     if pc == 0x1023938c:
                         pointer = remote.get(registers, 'r1')
                         if 0xb1800000 <= pointer <= 0xb5efffe0:

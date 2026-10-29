@@ -74,6 +74,19 @@
       ]
     },
     {
+      "bank": 0,
+      "bits": "0x80",
+      "logical": "0x10000000",
+      "callback": "0x102391b2",
+      "group": 0,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x10"
+        }
+      ]
+    },
+    {
       "bank": 3,
       "bits": "0x1",
       "logical": "0x20",
@@ -139,6 +152,99 @@
       ]
     }
   ],
+  "finite_task": {
+    "dispatcher": "0x10238d4a",
+    "event": "0x10",
+    "consumer": "0x1023c6ec",
+    "queue": "0xb26b3984",
+    "cases": [
+      {
+        "finite_flag": true,
+        "queued": 1,
+        "alternate_inhibited": false,
+        "callback": true,
+        "remaining": 0,
+        "notifications": [
+          {
+            "code": "0x41a0001",
+            "context": "0x50001000"
+          }
+        ]
+      },
+      {
+        "finite_flag": true,
+        "queued": 0,
+        "alternate_inhibited": false,
+        "callback": true,
+        "remaining": 0,
+        "notifications": [
+          {
+            "code": "0x41a0001",
+            "context": "0x0"
+          }
+        ]
+      },
+      {
+        "finite_flag": false,
+        "queued": 1,
+        "alternate_inhibited": false,
+        "callback": true,
+        "remaining": 1,
+        "notifications": [
+          {
+            "code": "0x41a0004",
+            "context": "0x0"
+          }
+        ]
+      },
+      {
+        "finite_flag": false,
+        "queued": 1,
+        "alternate_inhibited": true,
+        "callback": true,
+        "remaining": 1,
+        "notifications": []
+      },
+      {
+        "finite_flag": true,
+        "queued": 1,
+        "alternate_inhibited": false,
+        "callback": false,
+        "remaining": 0,
+        "notifications": []
+      }
+    ],
+    "upper_callback": "0x1022e2e0",
+    "input_events": [
+      {
+        "code": "0x41a0001",
+        "context": "0x0",
+        "task": "0xb25eeb78",
+        "bits": "0x10000"
+      },
+      {
+        "code": "0x41a0001",
+        "context": "0x50001000",
+        "task": "0xb25eeb78",
+        "bits": "0x10000"
+      },
+      {
+        "code": "0x41a0004",
+        "context": "0x0",
+        "task": "0xb25eeb78",
+        "bits": "0x10"
+      },
+      {
+        "code": "0x41a0004",
+        "context": "0x50001000",
+        "task": "0xb25eeb78",
+        "bits": "0x10"
+      }
+    ],
+    "host_boundaries": [
+      "lock/unlock success and queue-node release"
+    ]
+  },
   "limitations": [
     "Synthetic event storage and host task/event API boundaries.",
     "Task delivery does not prove frame-buffer ownership or pixel processing."
