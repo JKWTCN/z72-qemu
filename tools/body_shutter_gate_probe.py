@@ -98,6 +98,14 @@ CAPTURE_CONTROLLER_POINTS = {
     0x08036748: 'capture-controller-channel9-task',
     0x08036d38: 'capture-controller-channel9-command2',
     0x08036c60: 'capture-controller-channel9-result9',
+    0x08035030: 'capture-controller-backend-configure',
+    0x08035054: 'capture-controller-backend-configured',
+    0x0803501c: 'capture-controller-backend-request',
+    0x08034de0: 'capture-controller-backend-task',
+    0x08035204: 'capture-controller-backend-start',
+    0x080354b8: 'capture-controller-backend-hardware-start',
+    0x08034d40: 'capture-controller-backend-phase-complete',
+    0x08034dc0: 'capture-controller-backend-notification',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -639,6 +647,10 @@ def snapshot(remote):
     remote.select_thread(5)
     controller_capture = dict(header=list(remote.read(0x2001359c, 6)),
         words={hex(offset): hex(word(0x2001359c + offset)) for offset in range(0x14, 0x3c, 4)},
+        backend_header=list(remote.read(0x2001756c, 24)),
+        backend_words={hex(offset): hex(word(0x2001756c + offset)) for offset in range(0x18, 0x2c, 4)},
+        backend_request=list(remote.read(0x2000e8c0, 6)),
+        backend_timer_bases=[hex(word(0x20018718 + offset)) for offset in (0x58, 0xd0)],
         faults=[hex(word(0xe000ed28)), hex(word(0xe000ed2c))])
     lens_descriptor = word(0x2000EE10 + 96 * 4)
     lens_detection = dict(controller_g0_level=word(0x40021810) & 1,
@@ -1219,7 +1231,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                ('r0', 'r1', 'r2', 'r3', 'lr')},
                     channel9_header=list(remote.read(0x2001359c, 6)),
                     channel9_words=[hex(value) for value in
-                        struct.unpack('<10I', remote.read(0x200135b0, 40))])
+                        struct.unpack('<10I', remote.read(0x200135b0, 40))],
+                    backend_header=list(remote.read(0x2001756c, 24)),
+                    backend_words=[hex(value) for value in
+                        struct.unpack('<5I', remote.read(0x20017584, 20))],
+                    backend_request=list(remote.read(0x2000e8c0, 6)))
                 if pc == 0x080369d0:
                     pointer = remote.get(registers, 'r0')
                     if 0x20000000 <= pointer <= 0x2003fff8:
