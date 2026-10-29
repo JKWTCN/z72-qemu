@@ -580,7 +580,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
-            input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False):
+            input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
+            capture_wait_idle=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -677,6 +678,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if not (shutter_on_preview or shutter_on_ready or capture_submit_on_ready):
             machine.set_key(24 if returning else 8 if playback else 25, 0)
         preview_press_sent = False
+        idle_preview_seen = False
         preview_half_tick = None
         boundary_frame = 0
         boundary_path = None
@@ -782,6 +784,15 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
                             pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
+                if capture_caller and pc in capture_caller.ui_points:
+                    record['ui_capture'], keep, repeat = capture_caller.ui_observation(pc, registers)
+                    if (capture_wait_idle and idle_preview_seen and not preview_press_sent and
+                            pc == 0x1020f8dc and keep and
+                            not record['ui_capture']['blocking_resources'] and
+                            int.from_bytes(remote.read(0xb1821e84, 4), 'little') == 0):
+                        capture_caller.trigger()
+                        preview_press_sent = True
+                        record['diagnostic_capture_after_idle_event'] = True
                 if keep and pc == 0x103231b2:
                     record['state_transition'] = dict(previous=remote.get(registers, 'r7'),
                         next=remote.get(registers, 'r0'), request=remote.get(registers, 'r10'))
@@ -912,10 +923,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if completed and (not (shutter_on_ready or capture_submit_on_ready) or gate == 0):
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
-                                capture_caller.trigger()
-                                preview_press_sent = True
-                                record['diagnostic_capture_after_processing_frames'] = completed
-                                record['release_gate_before_diagnostic_capture'] = gate
+                                idle_preview_seen = True
+                                blocked = capture_caller.blocking_resources() if capture_wait_idle else []
+                                record['capture_pending_resources'] = blocked
+                                if not blocked:
+                                    capture_caller.trigger()
+                                    preview_press_sent = True
+                                    record['diagnostic_capture_after_processing_frames'] = completed
+                                    record['release_gate_before_diagnostic_capture'] = gate
                             elif half_before_full and preview_half_tick is None:
                                 machine.set_key(24, 0)
                                 preview_half_tick = ticks
@@ -1064,6 +1079,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         after = snapshot(remote)
         return dict(before=before, records=records, after=after,
                     diagnostic_capture=capture_caller.report if capture_caller else None,
+                    capture_wait_idle=capture_wait_idle,
                     observed_seconds=round(time.monotonic() - started, 3),
                     observed_counter_seconds=round((after['counter_ticks'] - before['counter_ticks']) /
                                                    before['counter_frequency'], 6),
@@ -1080,6 +1096,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     shutter_on_ready=shutter_on_ready,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
+                            not (capture_caller and capture_caller.ui_hits.get(address, 0)) and
                             (address != 0x10321a4c or callback_hits == 0)])
     finally:
         remote.sock.settimeout(15)
@@ -1159,6 +1176,8 @@ def main():
                         help='Observe capture resource bits 37/44 being written from reset')
     parser.add_argument('--processing-resource-header', action='store_true',
                         help='Supply group 23 with a zero experimental body and native storage trailer')
+    parser.add_argument('--capture-wait-idle', action='store_true',
+                        help='Defer the diagnostic capture until the native filtered resource intersection clears')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1194,6 +1213,8 @@ def main():
     require(not args.capture_submit_on_ready or args.frame_process and args.reconfigure_watch and
             not (args.playback or args.shutter_on_ready or args.shutter_on_preview or args.half_before_full),
             'Diagnostic capture requires processing and shooting observation without body shutter input')
+    require(not args.capture_wait_idle or args.capture_submit_on_ready,
+            'Idle capture observation requires the diagnostic native capture caller')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1285,6 +1306,7 @@ def main():
                                     input_boundary_events=args.input_boundary_events,
                                     shutter_on_ready=args.shutter_on_ready,
                                     capture_submit_on_ready=args.capture_submit_on_ready,
+                                    capture_wait_idle=args.capture_wait_idle,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,

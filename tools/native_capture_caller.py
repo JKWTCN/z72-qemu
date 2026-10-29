@@ -83,6 +83,23 @@ class NativeCaptureCaller:
                        0x103BA784: 'capture-submit-return',
                        0x103BAA06: 'capture-validation-return',
                        0x103BAA70: 'capture-preparation-return'}
+        self.ui_points = {0x1042E038: 'ui-capture-configuration',
+                          0x1042E06E: 'ui-operation7-submit-return',
+                          0x1042E0AE: 'ui-operation6-submit-return',
+                          0x1042DDA0: 'ui-capture-operation-completion',
+                          0x1020F84C: 'ui-capture-event-queued',
+                          0x1020F8DC: 'ui-resource37-event-return',
+                          0x1042F4DA: 'ui-capture-reason-clear',
+                          0x1042F1EC: 'system-controller-configuration-entry',
+                          0x1042F242: 'system-controller-configuration-status',
+                          0x1042F244: 'system-controller-configuration-abort',
+                          0x1042F264: 'system-controller-capability-result',
+                          0x1042F26C: 'system-controller-request-result',
+                          0x1042F298: 'system-controller-final-check',
+                          0x1042F29E: 'system-controller-configuration-error',
+                          0x1042F246: 'system-controller-configuration-return'}
+        self.points.update(self.ui_points)
+        self.ui_hits = {}
         remote.select_thread(1)
         require(self.word(CALLBACK) == ORIGINAL_CALLBACK, 'Unexpected resource-8 callback')
         self.saved = remote.read(OBJECT, 0x200)
@@ -100,6 +117,10 @@ class NativeCaptureCaller:
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         self.entry_sp = None
         self.native_return = None
+        excluded = self.remote.read(0x118FA48B, 40)
+        require(len(set(excluded)) == 40 and max(excluded) < 124,
+                'Unexpected capture resource exclusion table')
+        self.excluded_mask = sum(1 << bit for bit in excluded)
         self.report['resources_before'] = self.resource_masks()
 
     def word(self, address):
@@ -135,6 +156,38 @@ class NativeCaptureCaller:
             remote.write(address, struct.pack('<I', value))
         remote.select_thread(1)
         self.report['triggered'] = True
+
+    def blocking_resources(self):
+        data = self.remote.read(0xB23F7E24, 32)
+        intersection = (int.from_bytes(data[:16], 'little') &
+                        int.from_bytes(data[16:], 'little') & ~self.excluded_mask)
+        return [bit for bit in range(124) if intersection & 1 << bit]
+
+    def ui_observation(self, pc, registers):
+        r0, r1 = [self.remote.get(registers, name) for name in ('r0', 'r1')]
+        consumed = None
+        if pc == 0x1020F8DC:
+            message = self.remote.get(registers, 'r5')
+            if 0xB1800000 <= message <= 0xB5FFFFE8:
+                consumed = list(struct.unpack('<2I', self.remote.read(message + 0x10, 8)))
+        keep = not (pc == 0x1020F84C and r0 not in (51, 52, 53) or
+                    pc == 0x1020F8DC and (consumed is None or consumed[0] not in (51, 52, 53)) or
+                    pc == 0x1042F4DA and r0 != 2)
+        self.ui_hits[pc] = self.ui_hits.get(pc, 0) + int(keep)
+        detail = None
+        if keep:
+            detail = dict(mode=self.remote.read(0xB2098536, 1)[0],
+                configuration_state=list(self.remote.read(0xB2098784, 3)),
+                reason_byte=self.remote.read(0xB20A15EE, 1)[0],
+                resource37_set=bool(self.word(0xB23F7E28) & 0x20),
+                blocking_resources=self.blocking_resources(),
+                callback_slots={str(operation): hex(self.word(0xB23F6FE4 + operation * 4))
+                                for operation in (6, 7, 8, 9)})
+            if pc == 0x1042DDA0 and 0xB1800000 <= r1 <= 0xB5FFFFFC:
+                detail['completion_status'] = self.word(r1)
+            if consumed is not None:
+                detail['consumed_event'] = consumed
+        return detail, keep, self.ui_hits[pc] < 32
 
     def observe(self, pc, registers):
         remote = self.remote
