@@ -645,6 +645,9 @@ struct NikonZ72BootConfig {
     uint32_t input_running;
     uint64_t input_dma_count;
     uint32_t input_dma_address;
+    uint64_t input_grid_count;
+    uint32_t input_grid_address;
+    uint32_t input_grid_phase;
     uint64_t primary_dma_count;
     uint32_t primary_dma_address;
     uint32_t primary_second_address;
@@ -1734,12 +1737,81 @@ static void input_generate_frame(NikonZ72BootConfig *s)
     }
 }
 
+/* Bounded startup-only sensor grid. The native constructor establishes the
+ * u16 pitch and the analysis registers establish the 30x12 view. Sampling
+ * the laboratory checker at cell centres is a functional approximation;
+ * numeric normalization and the general ring protocol remain unverified.
+ * Only the observed two selected-bank configurations are accepted. */
+static void input_generate_startup_grid(NikonZ72BootConfig *s)
+{
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t grid[24], output[132] = {0}, row[60];
+    static const uint32_t recipe[] = {3, 0x50787, 16, 6, 0x1044, 0xc1e};
+    static const unsigned registers[] = {0x14, 0x18, 0x24, 0x3c, 0x40,
+                                          0x44, 0x48, 0x4c, 0x50, 0x60, 0x80};
+    uint32_t target, selection, extent;
+
+    if (!s->auto_complete || !s->master_role || !s->sensor_sample ||
+        !s->frame_generate || !(s->input_running & 0x10) || s->input_grid_phase >= 2 ||
+        address_space_read(view, 0x2006a2bc, MEMTXATTRS_UNSPECIFIED, grid, sizeof(grid)) != MEMTX_OK) {
+        return;
+    }
+    for (unsigned index = 0; index < G_N_ELEMENTS(registers); index++) {
+        unsigned offset = registers[index];
+        if (address_space_read(view, 0x2006a500 + offset, MEMTXATTRS_UNSPECIFIED,
+                               output + offset, 4) != MEMTX_OK) {
+            return;
+        }
+    }
+    for (unsigned index = 0; index < G_N_ELEMENTS(recipe); index++) {
+        if ((uint32_t)ldl_le_p(grid + index * 4) != recipe[index]) {
+            return;
+        }
+    }
+    selection = ldl_le_p(output + 0x3c);
+    extent = ldl_le_p(output + 0x80);
+    target = ldl_le_p(output + 0x50 + s->input_grid_phase * 0x10);
+    if (ldl_le_p(output + 0x14) != 3 || ldl_le_p(output + 0x18) != 1 ||
+        ldl_le_p(output + 0x24) || ldl_le_p(output + 0x40) != 1 ||
+        ldl_le_p(output + 0x44) || ldl_le_p(output + 0x48) != 60 ||
+        ldl_le_p(output + 0x4c) || selection != s->input_grid_phase ||
+        extent != (s->input_grid_phase ? 0 : 0x12000) ||
+        (s->input_grid_phase && target != s->input_grid_address) ||
+        ldl_le_p(output + 0x50) != ldl_le_p(output + 0x60) ||
+        !processing_ram_range(view, target, s->input_grid_phase ? 768 : 61 * 0x12000) ||
+        (target < 0xbb300000 && (uint64_t)target + 768 > 0xbaa00000)) {
+        return;
+    }
+    /* The active view occupies 768 bytes inside a larger allocation block.
+     * Preserve row padding and all other storage in that allocation. */
+    for (unsigned y = 0; y < 12; y++) {
+        unsigned sy = 6 + y * 4 + 2;
+        for (unsigned x = 0; x < 30; x++) {
+            unsigned sx = 16 + x * 68 + 34;
+            unsigned level = ((sx / 64 + sy / 64 + s->frame_sync_count) & 1) ? 4095 : 0;
+            stw_le_p(row + x * 2, level);
+        }
+        if (address_space_write(view, target + y * 64, MEMTXATTRS_UNSPECIFIED,
+                                row, sizeof(row)) != MEMTX_OK) {
+            return;
+        }
+    }
+    s->input_grid_address = target;
+    s->input_grid_count++;
+    s->input_grid_phase++;
+    if (s->frame_notify) {
+        *boot_config_value(s, 0x20068270) |= 0x80;
+        input_update_irqs(s);
+    }
+}
+
 static void frame_sync_tick(void *opaque)
 {
     NikonZ72BootConfig *s = opaque;
 
     input_generate_primary(s);
     input_generate_frame(s);
+    input_generate_startup_grid(s);
     *boot_config_value(s, 0x20060044) |= 0x10;
     if (s->sensor_sample) {
         if (s->frame_phase && (*boot_config_value(s, 0x20060040) & 0x80)) {
@@ -1910,6 +1982,10 @@ static void boot_config_write(void *opaque, hwaddr offset,
      * first event group so the firmware's polling sees activity. */
     if (address == 0x20068008 && value) {
         *stored = (uint32_t)value;
+        if ((value & 0x10) && !(s->input_running & 0x10)) {
+            s->input_grid_phase = 0;
+            s->input_grid_address = 0;
+        }
         s->input_running |= value;
         *boot_config_value(s, 0x20068200) |= 0x79;
         input_update_irqs(s);
@@ -2579,6 +2655,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->input_running = 0;
     s->input_dma_count = 0;
     s->input_dma_address = 0;
+    s->input_grid_count = 0;
+    s->input_grid_address = 0;
+    s->input_grid_phase = 0;
     s->primary_dma_count = 0;
     s->primary_dma_address = 0;
     s->primary_second_address = 0;
@@ -2646,8 +2725,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 44,
-    .minimum_version_id = 44,
+    .version_id = 45,
+    .minimum_version_id = 45,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2680,6 +2759,9 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(input_running, NikonZ72BootConfig),
         VMSTATE_UINT64(input_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(input_dma_address, NikonZ72BootConfig),
+        VMSTATE_UINT64(input_grid_count, NikonZ72BootConfig),
+        VMSTATE_UINT32(input_grid_address, NikonZ72BootConfig),
+        VMSTATE_UINT32(input_grid_phase, NikonZ72BootConfig),
         VMSTATE_UINT64(primary_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_second_address, NikonZ72BootConfig),
@@ -2743,6 +2825,10 @@ static void boot_config_init(Object *obj)
     object_property_add_uint64_ptr(obj, "input-dma-count", &s->input_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "input-grid-count", &s->input_grid_count,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "input-grid-address", &s->input_grid_address,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "primary-input-dma-count", &s->primary_dma_count,
                                   OBJ_PROP_FLAG_READ);

@@ -708,6 +708,8 @@ def snapshot(remote):
         processing_dma=[dict(channel=channel, words=[hex(value) for value in struct.unpack(
             '<13I', remote.read(0x20100400 + channel * 0x40, 52))]) for channel in range(16)],
         mode1_output=dict(configuration=output_config.hex(), registers=output_registers),
+        input_grid_configuration={hex(0x2006a2bc + index * 4): hex(value)
+            for index, value in enumerate(struct.unpack('<24I', remote.read(0x2006a2bc, 96)))},
         driver_work_queue=[hex(value) for value in driver_queue],
         driver_pending_functions=driver_pending,
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
@@ -848,6 +850,10 @@ def input_dma_snapshot(machine):
             address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
             stride = machine._words(0x20069a08, 1)[0]
             result = dict(frames=count, address=hex(address), stride=stride)
+            result['startup_grid_frames'] = machine.qmp.command('qom-get',
+                dict(path=path, property='input-grid-count'))
+            result['startup_grid_address'] = hex(machine.qmp.command('qom-get',
+                dict(path=path, property='input-grid-address')))
             result['processing_frames'] = machine.qmp.command('qom-get',
                 dict(path=path, property='processing-dma-count'))
             result['processing_grids'] = machine.qmp.command('qom-get',
@@ -910,6 +916,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         armed.update({address: label for address, label in RECONFIGURE_POINTS.items()
                       if not application_only or address in
                       (0x103e1dea, 0x1023c5dc)})
+    elif shutter_on_preview or shutter_on_ready or capture_submit_on_ready:
+        armed[0x103e1dea] = 'reconfigure-display-frame-submit'
     if input_boundary_events:
         armed.update({0x102389c2: 'input-boundary-wait',
                       0x102389c6: 'input-boundary-wait-return'})
@@ -1314,7 +1322,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 if half_before_full:
                                     record['half_press_counter_seconds'] = (
                                         ticks - preview_half_tick) / before['counter_frequency']
-                if playback or returning or reconfigure:
+                if playback or returning or reconfigure or shutter_on_preview or shutter_on_ready or capture_submit_on_ready:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
                     record['driver_pending_state'] = remote.read(0xb1868afa, 1)[0]
@@ -1521,7 +1529,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                          0x2006a550, 0x2006a560, 0x2006a580)}
                     if latch == 1:
                         pulse_mode1()
-                if reconfigure and pc in RECONFIGURE_POINTS:
+                if pc in RECONFIGURE_POINTS and (reconfigure or pc == 0x103e1dea):
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < (64 if pc == 0x1022827c or
                                         (shutter_on_ready or capture_submit_on_ready) and not preview_press_sent and

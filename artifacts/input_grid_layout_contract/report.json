@@ -4,6 +4,7 @@
   "lookup": "0x102ce4f6",
   "constructor": "0x102ce622",
   "destination_view_offset": "0x14",
+  "analysis_builder": "0x1023a07e",
   "cases": [
     {
       "selector": 15,
@@ -27,7 +28,16 @@
       },
       "byte_e": 0,
       "byte_16": 0,
-      "padding_preserved": true
+      "padding_preserved": true,
+      "analysis_registers": {
+        "0x2006a2bc": "0x3",
+        "0x2006a2c0": "0x50787",
+        "0x2006a2c4": "0x10",
+        "0x2006a2c8": "0x6",
+        "0x2006a2cc": "0x1044",
+        "0x2006a2d0": "0xc1e"
+      },
+      "analysis_host_memory_copies": 1
     },
     {
       "selector": 3,
@@ -51,10 +61,22 @@
       },
       "byte_e": 0,
       "byte_16": 0,
-      "padding_preserved": true
+      "padding_preserved": true,
+      "analysis_registers": {
+        "0x2006a2bc": "0x3",
+        "0x2006a2c0": "0x20876",
+        "0x2006a2c4": "0x1e",
+        "0x2006a2c8": "0x12",
+        "0x2006a2cc": "0xb02c",
+        "0x2006a2d0": "0x141e"
+      },
+      "analysis_host_memory_copies": 1
     }
   ],
-  "host_function_boundaries_used": false,
+  "constructor_host_function_boundaries_used": false,
+  "analysis_host_boundaries": [
+    "Bounded memory copies at 0x10360fac; no MMIO or completion substitution."
+  ],
   "limitations": [
     "Synthetic selectors; the startup template has independent runtime binding evidence.",
     "Pitch is aligned from twice the column count; numerical sample interpretation remains unverified.",

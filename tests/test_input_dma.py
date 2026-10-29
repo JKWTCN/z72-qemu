@@ -387,6 +387,67 @@ def check(qemu):
                 write(0x2006800c, 0x600)
                 tick()
                 assert count() == previous, 'Combined disable left RAW DMA active'
+            # Startup grid: the observed bank0 view, then the reselected
+            # zero-increment view. This is independent of RAW DMA count.
+            def startup_grids():
+                return monitor('qom-get', dict(path=path, property='input-grid-count'))
+
+            grid_target = 0xb4001000 if role == 'master' else 0xc3001000
+            command(f'memset {grid_target:#x} 0x304 0xa5')
+            write(grid_target - 4, 0x11223344)
+            for index, value in enumerate((3, 0x50787, 16, 6, 0x1044, 0xc1e)):
+                write(0x2006a2bc + index * 4, value)
+            for offset, value in ((0x14, 3), (0x18, 1), (0x24, 0), (0x3c, 0),
+                    (0x40, 1), (0x44, 0), (0x48, 60), (0x4c, 0),
+                    (0x50, grid_target), (0x60, grid_target), (0x80, 0x12000)):
+                write(0x2006a500 + offset, value)
+            write(0x20068270, 0xffffffff)
+            tick()
+            assert startup_grids() == 0, 'Startup grid ran before input enable'
+            write(0x20068008, 0x10)
+            # Reject altered geometry, missing ownership and an unmapped
+            # allocation before touching the first destination row.
+            for address, invalid, valid in ((0x2006a2d0, 0xd1e, 0xc1e),
+                    (0x2006a514, 1, 3), (0x2006a548, 61, 60),
+                    (0x2006a560, 0, grid_target), (0x2006a580, 0, 0x12000)):
+                write(address, invalid)
+                tick()
+                assert startup_grids() == 0 and read(0x20068270) == 0
+                assert read(grid_target) == 0xa5a5a5a5
+                write(address, valid)
+            for invalid in (0x20068500, 0xbaa01000):
+                write(0x2006a550, invalid)
+                write(0x2006a560, invalid)
+                tick()
+                assert startup_grids() == 0 and read(0x20068270) == 0
+                assert read(grid_target) == 0xa5a5a5a5
+            write(0x2006a550, grid_target)
+            write(0x2006a560, grid_target)
+            tick()
+            assert startup_grids() == int(active)
+            assert read(0x20068270) == (0x80 if active and notifying else 0)
+            if active:
+                phase = monitor('qom-get', dict(path=path, property='frame-sync-count')) - 1
+                assert read(grid_target) == (0xfff if phase & 1 else 0xfff0000)
+                assert read(grid_target + 60) == 0xa5a5a5a5
+                assert read(grid_target - 4) == 0x11223344
+                assert read(grid_target + 768) == 0xa5a5a5a5
+            else:
+                assert read(grid_target) == 0xa5a5a5a5
+            write(0x20068270, 0x80)
+            tick()
+            assert startup_grids() == int(active) and read(0x20068270) == 0
+            write(0x2006a53c, 1)
+            tick()
+            assert startup_grids() == int(active), 'Bank switch reused the old increment'
+            write(0x2006a580, 0)
+            tick()
+            assert startup_grids() == 2 * int(active)
+            assert read(0x20068270) == (0x80 if active and notifying else 0)
+            write(0x20068270, 0x80)
+            write(0x20068008, 0x10)
+            tick()
+            assert startup_grids() == 2 * int(active) and read(0x20068270) == 0
             # A soft disable completes a real running channel once. It must
             # never reuse the hard-stop causes or claim another pixel DMA.
             previous = count()
@@ -418,6 +479,8 @@ def check(qemu):
             write(0x203c0020, 0xffffffff)
             monitor('system_reset')
             assert count() == 0
+            assert startup_grids() == 0
+            assert monitor('qom-get', dict(path=path, property='input-grid-address')) == 0
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
             assert monitor('qom-get', dict(path=path, property='processing-grid-count')) == 0
             assert all(read(address) == 0 for address in (0x20380020, 0x20380024, 0x203c0020, 0x203c0024))
