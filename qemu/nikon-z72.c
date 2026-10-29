@@ -651,6 +651,7 @@ struct NikonZ72BootConfig {
     uint64_t primary_dma_count;
     uint32_t primary_dma_address;
     uint32_t primary_second_address;
+    bool primary_frame_written;
     uint64_t processing_dma_count;
     uint64_t processing_grid_count;
     MemoryRegion image_interrupts[2];
@@ -1658,6 +1659,7 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     s->primary_dma_address = first_address;
     s->primary_second_address = g_array_index(writes, NikonZ72PrimaryWrite, 0).address;
     s->primary_dma_count++;
+    s->primary_frame_written = true;
     if (s->frame_notify) {
         /* Both RAW stripes were written. Do not claim statistics output
          * or processing/JPEG completion from this input transfer. */
@@ -1992,6 +1994,9 @@ static void boot_config_write(void *opaque, hwaddr offset,
         if ((value & 0x10) && !(s->input_running & 0x10)) {
             s->input_grid_phase = 0;
         }
+        if ((value & 0x400) && !(s->input_running & 0x400)) {
+            s->primary_frame_written = false;
+        }
         s->input_running |= value;
         input_update_irqs(s);
         return;
@@ -2017,6 +2022,12 @@ static void boot_config_write(void *opaque, hwaddr offset,
             if (disabled & 0x80) { first |= 1u << 19; }
             if (disabled & 0x200) { second |= 1u << 7; }
             if (disabled & 0x400) { second |= 1u << 3; }
+            /* The native finite stop arms bank 0 bit 7 at 102389fa before
+             * disabling input. End only a primary frame actually written in
+             * this run; the per-channel disable acknowledgement is separate. */
+            if ((disabled & 0x400) && s->primary_frame_written && s->frame_notify) {
+                first |= *boot_config_value(s, 0x20068200) & 0x80;
+            }
             if (disabled & 0x800) { second |= 1u << 11; }
             *boot_config_value(s, 0x20068210) |= first;
             *boot_config_value(s, 0x20068230) |= second;
@@ -2026,6 +2037,9 @@ static void boot_config_write(void *opaque, hwaddr offset,
                 *boot_config_value(s, 0x200682f0) |= 8;
             }
             input_update_irqs(s);
+        }
+        if (value & 0x400) {
+            s->primary_frame_written = false;
         }
         return;
     }
@@ -2121,7 +2135,10 @@ static void boot_config_write(void *opaque, hwaddr offset,
     *stored = value;
     if (address == 0x20068060) {
         switch (value) {
-        case 3: s->input_running &= ~0x600u; break;
+        case 3:
+            s->input_running &= ~0x600u;
+            s->primary_frame_written = false;
+            break;
         case 4: s->input_running &= ~0x10u; break;
         case 8: s->input_running &= ~0x20u; break;
         case 0x10: s->input_running &= ~0x800u; break;
@@ -2666,6 +2683,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->primary_dma_count = 0;
     s->primary_dma_address = 0;
     s->primary_second_address = 0;
+    s->primary_frame_written = false;
     s->processing_dma_count = 0;
     s->processing_grid_count = 0;
     memset(s->image_interrupt_masks, 0, sizeof(s->image_interrupt_masks));
@@ -2730,8 +2748,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 45,
-    .minimum_version_id = 45,
+    .version_id = 46,
+    .minimum_version_id = 46,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2770,6 +2788,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT64(primary_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_second_address, NikonZ72BootConfig),
+        VMSTATE_BOOL(primary_frame_written, NikonZ72BootConfig),
         VMSTATE_UINT64_V(processing_dma_count, NikonZ72BootConfig, 39),
         VMSTATE_UINT64(processing_grid_count, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(image_interrupt_masks, NikonZ72BootConfig, 2),

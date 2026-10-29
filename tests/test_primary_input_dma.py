@@ -37,6 +37,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.frame-notify={"on" if notifying else "off"}',
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
+            '-global', 'nikon-z72-boot-config.input-stop-complete=on',
             '-global', f'nikon-z72-boot-config.transport-link={"on" if linked else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -180,8 +181,18 @@ def check(qemu):
                 write(0x2013d0fc, (aperture >> 12) + 0x6000)
                 write(0x2006800c, 0x400)
                 assert property_value('input-running') == 0
+                assert read(0x20068210) == (0x80 if notifying else 0)
+                write(0x20068210, 0xffffffff)
                 tick()
                 assert count() == 1, 'Disabled primary input kept generating pixels'
+                # A new run with no successful transfer cannot reuse the old
+                # frame's tail, even if its stop interrupt is enabled.
+                write(0x20069850, 0)
+                write(0x20068008, 0x400)
+                tick()
+                write(0x2006800c, 0x400)
+                assert count() == 1 and read(0x20068210) == 0
+                write(0x20069850, first)
                 write(0x20068008, 0x400)
                 tick()
                 assert count() == 2
@@ -228,6 +239,8 @@ def check(qemu):
                 tick()
                 assert count() == 3 and read(0x20068210) == 0
                 assert (data_at(first, 256), data_at(native_full + first_stride, 256, True)) == original
+                write(0x2006800c, 0x400)
+                assert read(0x20068210) == 0, 'Masked primary tail was delivered'
             monitor('system_reset')
             assert property_value('input-running') == 0
             assert count() == 0 and property_value('primary-input-dma-address') == 0
@@ -235,6 +248,10 @@ def check(qemu):
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'Reset retained a running primary input'
+            write(0x20068200, 0x80)
+            write(0x20068008, 0x400)
+            write(0x2006800c, 0x400)
+            assert read(0x20068210) == 0, 'Reset retained a completed primary frame'
             monitor('quit')
             process.wait(timeout=5)
         finally:

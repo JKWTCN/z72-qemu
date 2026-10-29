@@ -68,6 +68,9 @@ CAPTURE_INPUT_POINTS = {
     0x1023c6ec: 'capture-input-task10-consumer',
     0x1023beec: 'capture-input-completed-enqueue',
     0x103cc8e8: 'capture-image-tracking-enqueue-mode2',
+    0x1022e2e0: 'capture-input-tail-notification',
+    0x1022ff42: 'capture-input-tail-worker-parameter-check',
+    0x10230052: 'capture-input-tail-driver-notification',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -1593,6 +1596,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pointer = remote.get(registers, 'r1')
                         if keep and 0xb1800000 <= pointer <= 0xb5effffc:
                             record['release_count_payload'] = int.from_bytes(remote.read(pointer, 4), 'little')
+                    if pc == 0x1022e2e0:
+                        keep = keep and remote.get(registers, 'r0') in (0x041a0001, 0x041a0004)
                     if pc in (0x103b93d0, 0x103b940a, 0x103b9538, 0x103b9184,
                               0x103ba1cc, 0x103ba1d0, 0x103ba29c, 0x103b9848, 0x103b9826):
                         record['release_control_header'] = list(remote.read(0xb186935c, 16))
