@@ -57,6 +57,14 @@ IMAGE_WORK_WAIT_POINTS = {
     0x1026830e: 'image-work-second-service-wait',
     0x10268312: 'image-work-second-service-wait-return',
     0x10262e28: 'image-work-second-service-event-producer',
+    0x1026981c: 'image-work-stage1-input-wait',
+    0x10269820: 'image-work-stage1-input-wait-return',
+    0x102698a0: 'image-work-stage1-result-wait',
+    0x102698a4: 'image-work-stage1-result-wait-return',
+    0x1026306c: 'image-work-stage1-input-event-producer',
+    0x10262e40: 'image-work-bank1-transfer-callback',
+    0x102664ac: 'image-work-final-dependent-wait',
+    0x102664b0: 'image-work-final-dependent-wait-return',
     0x103699a4: 'image-device-bank0-interrupt',
     0x10369968: 'image-device-bank1-interrupt',
 }
@@ -700,12 +708,15 @@ def snapshot(remote):
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
                         ('image', 0xb238e654), ('processing', 0xb23ecc80),
                         ('input', 0xb25eeb78), ('image-stage0', 0xb1864a94),
+                        ('image-stage0-final', 0xb1864a2c), ('image-stage1', 0xb1864afc),
                         ('image-stage2', 0xb1864bb0))},
         input_context_queues=input_context_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
+        image_work_counters={hex(offset): hex(word(0xb18648b4 + offset))
+                             for offset in range(0x24, 0x50, 4)},
         processing_bank_jobs=[processing_worker_snapshot(remote, task)
                               for task in (0xb1d52600, 0xb1d52648)],
         image_service=image_service_snapshot(remote),
@@ -1440,6 +1451,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
                 if pc in IMAGE_WORK_WAIT_POINTS:
+                    if pc in (0x1026981c, 0x10269820, 0x102698a0, 0x102698a4):
+                        record['returned_or_seeded_flags'] = hex(int.from_bytes(
+                            remote.read(remote.get(registers, 'sp') + 0x430, 4), 'little'))
+                        record['parameters'] = hex(remote.get(registers, 'r4'))
+                    if pc == 0x10262e40:
+                        record['image_work_counters'] = {hex(offset): hex(int.from_bytes(
+                            remote.read(0xb18648b4 + offset, 4), 'little'))
+                            for offset in range(0x24, 0x50, 4)}
                     if pc in (0x10268c2a, 0x10268c2e):
                         record['returned_or_seeded_flags'] = hex(int.from_bytes(
                             remote.read(remote.get(registers, 'sp') + 8, 4), 'little'))

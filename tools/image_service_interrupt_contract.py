@@ -107,10 +107,28 @@ def probe(image):
                 library_mode=mode, classifications=list(native.classifications),
                 acknowledgements=list(native.acknowledgements), forwarded=list(native.forwarded),
                 events=list(native.events)))
+    stage1_cases = []
+    for skip in (0, 1):
+        native.u.mem_write(0xb18648b4, bytes(0x50))
+        native.u.mem_write(0xb1864900, struct.pack('<I', skip))
+        native.events.clear()
+        native.call(0x10262e40 - 0x10020000, 0x42193081, 1)
+        expected = [dict(api='0x103610cc', object=hex(target), bits=hex(bits))
+                    for target, bits in ((0xb1864850, 0x2000000),
+                                         (0xb1864850, 0x40000000), (0xb186487c, 2),
+                                         (0xb1864850, 0x800000))]
+        if not skip:
+            expected.append(dict(api='0x103610cc', object='0xb186487c', bits='0x20'))
+        require(native.events == expected and native.word(0xb1864900) == 0,
+                'Original stage1 input event skip differs')
+        stage1_cases.append(dict(notification='0x42193081', payload='0x1',
+            skip_before=skip, skip_after=0, events=list(native.events)))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         handlers=['0x103699a4', '0x10369968'], interrupt_ids=[99, 100],
         status_addresses=['0x20380024', '0x203c0024'], callbacks=['0x102e468a', '0x102e4608'],
         translator='0x102637c2', cases=cases,
+        stage1_input_event=dict(translator='0x10262e40', skip_address='0xb1864900',
+                               cases=stage1_cases),
         input_bindings=dict(control_setter='0x1036a62c', rectangle_setter='0x1036a642',
             addresses_setter='0x1036a672', start_setter='0x10369faa',
             interrupt_mask_setter='0x1036a246', cases=bindings,

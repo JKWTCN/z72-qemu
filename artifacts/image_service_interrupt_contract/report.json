@@ -325,6 +325,73 @@
       ]
     }
   ],
+  "stage1_input_event": {
+    "translator": "0x10262e40",
+    "skip_address": "0xb1864900",
+    "cases": [
+      {
+        "notification": "0x42193081",
+        "payload": "0x1",
+        "skip_before": 0,
+        "skip_after": 0,
+        "events": [
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x2000000"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x40000000"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb186487c",
+            "bits": "0x2"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x800000"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb186487c",
+            "bits": "0x20"
+          }
+        ]
+      },
+      {
+        "notification": "0x42193081",
+        "payload": "0x1",
+        "skip_before": 1,
+        "skip_after": 0,
+        "events": [
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x2000000"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x40000000"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb186487c",
+            "bits": "0x2"
+          },
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x800000"
+          }
+        ]
+      }
+    ]
+  },
   "input_bindings": {
     "control_setter": "0x1036a62c",
     "rectangle_setter": "0x1036a642",
