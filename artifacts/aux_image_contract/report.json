@@ -1,0 +1,288 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "base": "0x20201000",
+  "controls": [
+    {
+      "entry": "0x1029469a",
+      "argument": 0,
+      "writes": [
+        {
+          "address": "0x20201004",
+          "bytes": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "entry": "0x102946a4",
+      "argument": 0,
+      "writes": [
+        {
+          "address": "0x20201004",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "entry": "0x102946ae",
+      "argument": 0,
+      "writes": [
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x3"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x7"
+        },
+        {
+          "address": "0x20201014",
+          "bytes": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "entry": "0x102946c0",
+      "argument": 0,
+      "writes": [
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x2"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "entry": "0x102946c0",
+      "argument": 1,
+      "writes": [
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x3"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x7"
+        }
+      ]
+    },
+    {
+      "entry": "0x102946c0",
+      "argument": 2,
+      "writes": [
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x1"
+        }
+      ]
+    }
+  ],
+  "interrupt_entry": "0x10294364",
+  "interrupts": [
+    {
+      "cause": "0x0",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0x0",
+          "result": "0xabcdef01"
+        }
+      ]
+    },
+    {
+      "cause": "0x1",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0x1"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0x1",
+          "result": "0x13572468"
+        }
+      ]
+    },
+    {
+      "cause": "0x2",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0x2"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0x2",
+          "result": "0xabcdef01"
+        }
+      ]
+    },
+    {
+      "cause": "0x40",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0x40"
+        },
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x2"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20201020",
+          "bytes": 4,
+          "value": "0xc7"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0x40",
+          "result": "0xabcdef01"
+        }
+      ]
+    },
+    {
+      "cause": "0x80",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0x80"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0x80",
+          "result": "0xabcdef01"
+        }
+      ]
+    },
+    {
+      "cause": "0xc7",
+      "writes": [
+        {
+          "address": "0x2020102c",
+          "bytes": 4,
+          "value": "0xc7"
+        },
+        {
+          "address": "0x20201044",
+          "bytes": 4,
+          "value": "0x2"
+        },
+        {
+          "address": "0x20201048",
+          "bytes": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20201020",
+          "bytes": 4,
+          "value": "0xc7"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20201000",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051c01",
+          "context": "0x50000200",
+          "cause": "0xc7",
+          "result": "0x13572468"
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "record interrupt callback"
+  ],
+  "limitations": [
+    "Synthetic register storage and result value; no pixels or hardware completion.",
+    "Records the status acknowledgement write; does not emulate its hardware semantics.",
+    "Native callback delivery for a supplied cause does not prove an actual runtime request."
+  ]
+}

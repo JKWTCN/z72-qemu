@@ -505,8 +505,10 @@ def snapshot(remote):
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
-                        ('image', 0xb238e654), ('processing', 0xb23ecc80))},
+                        ('image', 0xb238e654), ('processing', 0xb23ecc80),
+                        ('input', 0xb25eeb78))},
         input_context_queues=input_context_snapshot(remote),
+        input_mask8_owner=hex(word(0xb25ef024)),
         image_work_queues=image_work_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))

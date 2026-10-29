@@ -15,7 +15,12 @@ REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
 FINISH_POINTS = {0x10321EA2, 0x10322448, 0x1032A792, 0x1032A7B4,
-                 0x103D0C72, 0x103CD46A}
+                 0x103D0C72, 0x103CD46A, 0x102315FC, 0x102359F8, 0x10235A22}
+
+INPUT_LEASE_POINTS = {0x1022D9E8: 'input-mask8-acquire',
+                      0x1022DA1C: 'input-mask8-acquired',
+                      0x1022D864: 'input-mask8-release',
+                      0x1022D890: 'input-mask8-released'}
 
 POST_SUBMIT_POINTS = {
     0x1032385A: 'capture-driver-request-consumed',
@@ -45,6 +50,9 @@ POST_SUBMIT_POINTS = {
     0x102300B0: 'capture-input-pending-clear',
     0x102300EC: 'capture-input-active-mask',
     0x102300FA: 'capture-input-active-cleared',
+    0x102315FC: 'capture-input-worker-clear',
+    0x102359F8: 'capture-input-alternate-worker-selected',
+    0x10235A22: 'capture-input-alternate-worker-clear',
     0x10321A4C: 'capture-driver-notification',
     0x103E9D24: 'capture-release-notification',
     0x102389C2: 'capture-input-boundary-wait',
@@ -155,7 +163,7 @@ class NativeCaptureCaller:
                           0x1030E3E2: 'lens-control-retry',
                           0x10311462: 'lens-control-handshake-result',
                           0x10311498: 'lens-control-response',
-                          **POST_SUBMIT_POINTS}
+                          **POST_SUBMIT_POINTS, **INPUT_LEASE_POINTS}
         self.points.update(self.ui_points)
         self.ui_hits = {}
         remote.select_thread(1)
@@ -241,6 +249,9 @@ class NativeCaptureCaller:
                     pc == 0x1042F2E8 and (nor_event is None or nor_event[0] not in (67, 68)) or
                     pc == 0x1030E3E2 and r1 != 11 or
                     pc in POST_SUBMIT_POINTS and not self.report['triggered'])
+        if keep and pc in INPUT_LEASE_POINTS:
+            mask = r1 if pc in (0x1022D9E8, 0x1022D864) else self.remote.get(registers, 'r7')
+            keep = mask == 8
         if keep and pc in FINISH_POINTS:
             keep = (self.remote.read(0xB1868AF1, 1)[0] == 14 and
                     self.word(0xB1868B58) <= 4)
@@ -272,6 +283,21 @@ class NativeCaptureCaller:
                 pointer = self.remote.get(registers, 'r5')
                 if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
                     detail['input_pending_context'] = dict(address=hex(pointer),
+                        consumers=self.remote.read(pointer + 0xC, 1)[0],
+                        parameters=hex(self.word(pointer + 0x144)),
+                        pending=hex(self.word(pointer + 0x14C)))
+            if pc in (0x102315FC, 0x102359F8, 0x10235A22):
+                pointer = self.remote.get(registers, 'r4')
+                if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
+                    detail['input_worker_context'] = dict(address=hex(pointer),
+                        consumers=self.remote.read(pointer + 0xC, 1)[0],
+                        parameters=hex(self.word(pointer + 0x144)),
+                        pending=hex(self.word(pointer + 0x14C)))
+            if pc in INPUT_LEASE_POINTS:
+                pointer = r0 if pc in (0x1022D9E8, 0x1022D864) else self.remote.get(registers, 'r4')
+                detail['mask8_owner'] = hex(self.word(0xB25EF024))
+                if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
+                    detail['input_lease_context'] = dict(address=hex(pointer),
                         consumers=self.remote.read(pointer + 0xC, 1)[0],
                         parameters=hex(self.word(pointer + 0x144)),
                         pending=hex(self.word(pointer + 0x14C)))
