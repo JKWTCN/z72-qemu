@@ -18,9 +18,17 @@ FINISH_POINTS = {0x10321EA2, 0x10322448, 0x1032A792, 0x1032A7B4,
                  0x103D0C72, 0x103CD46A, 0x102315FC, 0x102359F8, 0x10235A22}
 
 INPUT_LEASE_POINTS = {0x1022D9E8: 'input-mask8-acquire',
-                      0x1022DA1C: 'input-mask8-acquired',
+                      0x1022DA1C: 'input-mask8-acquire-store',
                       0x1022D864: 'input-mask8-release',
-                      0x1022D890: 'input-mask8-released'}
+                      0x1022D890: 'input-mask8-release-store'}
+
+AUX_IMAGE_POINTS = {0x10236150: 'aux-image-submit',
+                    0x10236198: 'aux-image-submit-return',
+                    0x10244B92: 'aux-image-job-consumed',
+                    0x10244CD0: 'aux-image-start',
+                    0x10244CEE: 'aux-image-completion-wait',
+                    0x10294364: 'aux-image-interrupt',
+                    0x10235FC0: 'aux-image-completion'}
 
 POST_SUBMIT_POINTS = {
     0x1032385A: 'capture-driver-request-consumed',
@@ -163,7 +171,7 @@ class NativeCaptureCaller:
                           0x1030E3E2: 'lens-control-retry',
                           0x10311462: 'lens-control-handshake-result',
                           0x10311498: 'lens-control-response',
-                          **POST_SUBMIT_POINTS, **INPUT_LEASE_POINTS}
+                          **POST_SUBMIT_POINTS, **INPUT_LEASE_POINTS, **AUX_IMAGE_POINTS}
         self.points.update(self.ui_points)
         self.ui_hits = {}
         remote.select_thread(1)
@@ -296,11 +304,24 @@ class NativeCaptureCaller:
             if pc in INPUT_LEASE_POINTS:
                 pointer = r0 if pc in (0x1022D9E8, 0x1022D864) else self.remote.get(registers, 'r4')
                 detail['mask8_owner'] = hex(self.word(0xB25EF024))
+                if pc in (0x1022DA1C, 0x1022D890):
+                    detail['pending_to_store'] = hex(r1)
+                    detail['pending_store_executed'] = False
                 if 0xB2C00000 <= pointer <= 0xB5EFFEAF:
                     detail['input_lease_context'] = dict(address=hex(pointer),
                         consumers=self.remote.read(pointer + 0xC, 1)[0],
                         parameters=hex(self.word(pointer + 0x144)),
                         pending=hex(self.word(pointer + 0x14C)))
+            if pc == 0x10236150 and 0xB1800000 <= r0 <= 0xB5FFFFF3:
+                detail['auxiliary_request'] = dict(mode=self.remote.read(r0, 1)[0],
+                    source=hex(self.word(r0 + 4)), target=hex(self.word(r0 + 8)))
+            if pc == 0x10236198:
+                detail['auxiliary_submit_status'] = self.remote.get(registers, 'r6')
+            if pc == 0x10244B92 and 0xB1800000 <= r0 <= 0xB5FFFFE7:
+                detail['auxiliary_job'] = dict(notification=hex(self.word(r0 + 0x10)),
+                    configuration=hex(self.word(r0 + 0x14)), callback=hex(self.word(r0 + 0xC)))
+            if pc in (0x10244CD0, 0x10244CEE):
+                detail['auxiliary_current'] = hex(self.word(0xB1809630))
             if pc in (0x103D0C72, 0x103CD46A):
                 pointer = self.remote.get(registers, 'r4')
                 if pc == 0x103CD46A:

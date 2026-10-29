@@ -345,6 +345,30 @@ def input_context_snapshot(remote):
     return result
 
 
+def auxiliary_image_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    def register(offset):
+        response = remote.command(f'm{0x20201000 + offset:x},4')
+        # Unsupported device words may be unassigned in the current profile.
+        return None if response.startswith('E') else hex(int.from_bytes(bytes.fromhex(response), 'little'))
+    current = word(0xb1809630)
+    result = dict(task=task_wait_snapshot(remote, 0xb1d52be0), current=hex(current),
+        runtime=hex(word(0xb1801ef8)),
+        registers={hex(offset): register(offset) for offset in
+            (0, 4, 0x14, 0x20, 0x2c, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x5c, 0x60,
+             0xa0, 0xa4, 0xa8, 0xac, 0xb0, 0xb4, 0xb8, 0xbc, 0xc0, 0xc4, 0xc8, 0xcc,
+             0x100, 0x104, 0x108, 0x10c, 0x110, 0x118, 0x11c, 0x120, 0x124,
+             0x128, 0x12c, 0x130, 0x140, 0x160, 0x164, 0x168, 0x16c, 0x170,
+             0x178, 0x188, 0x1a0)})
+    if 0xb1800000 <= current <= 0xb5efff27:
+        result['configuration'] = {hex(offset): hex(word(current + offset)) for offset in
+            (0, 4, 0xc, 0x10, 0x14, 0x18, 0x20, 0x24, 0x28,
+             0x2c, 0x3c, 0x4c, 0x5c, 0x6c, 0x70, 0x74, 0x78,
+             0x80, 0x88, 0x8c, 0x90, 0x94, 0xa4, 0xac, 0xb4, 0xc0, 0xcc, 0xd0)}
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -509,6 +533,7 @@ def snapshot(remote):
                         ('input', 0xb25eeb78))},
         input_context_queues=input_context_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
+        auxiliary_image=auxiliary_image_snapshot(remote),
         image_work_queues=image_work_snapshot(remote),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))

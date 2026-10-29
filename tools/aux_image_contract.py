@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Execute original auxiliary image run controls and interrupt delivery."""
+"""Execute original auxiliary image configuration, controls and interrupts."""
 import argparse
 import json
 from pathlib import Path
@@ -56,6 +56,40 @@ def probe(image):
                                        value=hex(value)) for offset, value in expected],
                 'Auxiliary image run control differs')
         controls.append(dict(entry=hex(entry), argument=argument, writes=list(native.writes)))
+    configurations = []
+    context, descriptor, shadow = native.DATA + 0x200, native.DATA + 0x800, native.DATA + 0x500
+    native.u.mem_write(context + 4, struct.pack('<I', shadow))
+    fields = ((0, 0x4c), (4, 0x50), (8, 0x54), (0xc, 0x5c), (0x10, 0x60),
+              (0x14, 0xa0), (0x18, 0xa4), (0x1c, 0xa8), (0x20, 0xac),
+              (0x24, 0xb0), (0x28, 0xb4), (0x2c, 0xb8), (0x30, 0xbc),
+              (0x34, 0xc0), (0x38, 0xc4), (0x3c, 0xc8), (0x40, 0xcc),
+              (0x4c, 0x108), (0x50, 0x10c), (0x54, 0x110),
+              (0x58, 0x124), (0x5c, 0x16c), (0x68, 0x20))
+    for pattern in (False, True):
+        data = struct.pack('<28I', *[0x80000800 + index * 0x10001 if pattern else 0
+                                    for index in range(28)])
+        native.u.mem_write(descriptor, data)
+        native.writes.clear()
+        native.call(0x2744a6, context, descriptor)
+        expected = [(0, 1), (0, 0)]
+        for offset, register in fields:
+            value = struct.unpack_from('<I', data, offset)[0]
+            if offset in (0, 0x38):
+                value = int(bool(value))
+            elif offset == 0x10:
+                value &= 0xff
+            elif offset in (0x2c, 0x30, 0x34):
+                value &= 0x7ff
+            expected.append((register, value))
+        # +0x44 contributes two bits, while +0x48 supplies an independent enable.
+        combined = (data[0x44] & 3) << 2 | int(bool(struct.unpack_from('<I', data, 0x48)[0]))
+        expected.insert(19, (0x100, combined))
+        require(native.writes == [dict(address=hex(native.BASE + offset), bytes=4,
+                                       value=hex(value)) for offset, value in expected],
+                'Auxiliary image configuration forwarding differs')
+        require(bytes(native.u.mem_read(shadow, 0x70)) == data,
+                'Native configuration shadow copy differs')
+        configurations.append(dict(pattern=pattern, writes=list(native.writes), shadow_copy_bytes=0x70))
     context = native.DATA + 0x200
     native.u.mem_write(0xb1801ef8, struct.pack('<I', context))
     native.u.mem_write(context + 0x68, struct.pack('<2I', 0xc7, native.RECORDER | 1))
@@ -81,7 +115,11 @@ def probe(image):
         interrupts.append(dict(cause=hex(cause), writes=list(native.writes),
                                events=list(native.events)))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
-        base=hex(native.BASE), controls=controls, interrupt_entry='0x10294364',
+        base=hex(native.BASE), controls=controls, configuration_entry='0x102944a6',
+        configuration_fields=[dict(source=hex(offset), register=hex(native.BASE + register))
+                              for offset, register in fields],
+        combined_control=dict(register='0x20201100', source='byte +0x44 low two bits -> bits 2..3; nonzero word +0x48 -> bit 0'),
+        configurations=configurations, interrupt_entry='0x10294364',
         interrupts=interrupts, host_boundaries=['record interrupt callback'],
         limitations=['Synthetic register storage and result value; no pixels or hardware completion.',
                      'Records the status acknowledgement write; does not emulate its hardware semantics.',
@@ -96,4 +134,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS 6 auxiliary image run controls and 6 interrupt causes')
+    print('PASS 6 auxiliary image run controls, 2 configurations and 6 interrupt causes')
