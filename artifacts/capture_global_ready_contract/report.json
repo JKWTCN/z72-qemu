@@ -1,0 +1,134 @@
+{
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "driver_flags": "0xb1868b68",
+  "driver_cases": [
+    {
+      "entry": "0x1031dd62",
+      "previous": 0,
+      "result": 1,
+      "notifications": []
+    },
+    {
+      "entry": "0x1031dd62",
+      "previous": 1,
+      "result": 1,
+      "notifications": []
+    },
+    {
+      "entry": "0x1031dd62",
+      "previous": 2,
+      "result": 3,
+      "notifications": [
+        {
+          "code": "0x4160003",
+          "payload": "0x0"
+        }
+      ]
+    },
+    {
+      "entry": "0x1031dd62",
+      "previous": 3,
+      "result": 3,
+      "notifications": [
+        {
+          "code": "0x4160003",
+          "payload": "0x0"
+        }
+      ]
+    },
+    {
+      "entry": "0x10326700",
+      "previous": 0,
+      "result": 2,
+      "notifications": []
+    },
+    {
+      "entry": "0x10326700",
+      "previous": 1,
+      "result": 3,
+      "notifications": [
+        {
+          "code": "0x4160003",
+          "payload": "0x0"
+        }
+      ]
+    },
+    {
+      "entry": "0x10326700",
+      "previous": 2,
+      "result": 2,
+      "notifications": []
+    },
+    {
+      "entry": "0x10326700",
+      "previous": 3,
+      "result": 3,
+      "notifications": [
+        {
+          "code": "0x4160003",
+          "payload": "0x0"
+        }
+      ]
+    }
+  ],
+  "router": "0x103ed470",
+  "router_input": "0x04160003",
+  "router_cases": [
+    {
+      "subscriber_registered": false,
+      "operation13_pending": 0,
+      "operation13_callback": 0,
+      "notifications": [],
+      "queued": [
+        "0x103ecf8d",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "subscriber_registered": true,
+      "operation13_pending": 0,
+      "operation13_callback": 0,
+      "notifications": [
+        {
+          "code": "0x410000d",
+          "payload": "0x0"
+        }
+      ],
+      "queued": [
+        "0x103ecf8d",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "upstream_cases": [
+    {
+      "entry": "0x10321a4c",
+      "notification": "0x4190040",
+      "queued": [
+        "0x1031dd63",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "entry": "0x10327976",
+      "notification": "0x41b0040",
+      "queued": [
+        "0x10326701",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "notification subscriber",
+    "follow-up queue",
+    "driver post-notification bookkeeping",
+    "two local control setters",
+    "upstream local control setter"
+  ],
+  "limitation": "Synthetic execution contract; does not establish native production of either readiness bit or completion of a photograph."
+}

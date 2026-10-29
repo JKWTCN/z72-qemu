@@ -201,6 +201,15 @@ CORE_WORKER_POINTS = {
 
 RECONFIGURE_POINTS = {
     **CORE_WORKER_POINTS,
+    0x1031dd62: 'reconfigure-driver-ready-bit1',
+    0x10326700: 'reconfigure-driver-ready-bit2',
+    0x10322666: 'reconfigure-backend-ready-notification',
+    0x103ed7ac: 'reconfigure-global-release-ready',
+    0x1038e7b8: 'reconfigure-backend-mode-request',
+    0x1038dfec: 'reconfigure-backend-initialize',
+    0x1038e092: 'reconfigure-backend-initialize-wait20',
+    0x1038e2d6: 'reconfigure-backend-initialize-wait40',
+    0x103191c6: 'reconfigure-driver-job-return',
     0x102290b0: 'reconfigure-readiness-state-compare',
     0x102295f6: 'reconfigure-readiness-notification',
     0x103eddb8: 'reconfigure-readiness-consumer',
@@ -286,6 +295,10 @@ def snapshot(remote):
             region=word(row + 20), notification_mask=hex(word(callbacks + 40)),
             subscriber_count=int.from_bytes(remote.read(callbacks + 44, 2), 'little'))
     readiness = dict(state=remote.read(0xb18697e0, 1)[0],
+        driver_flags=hex(word(0xb1868b68)),
+        driver_subscriber=hex(word(0xb1868b38)),
+        global_subscriber=hex(word(0xb18695ac)),
+        backend_state=list(remote.read(0xb21e26b5, 2)),
         callback=hex(word(0xb18697e4)), enabled_notifications=hex(word(0xb18697e8)),
         operation13_pending=word(0xb23f6a7c), operation13_callback=hex(word(0xb23f7018)),
         bitmaps=[])
@@ -522,7 +535,7 @@ def input_dma_snapshot(machine):
 def observe(machine, seconds, playback=False, local_stop_events=False, returning=False,
             gpio_handshake_events=False, watch_read=None, watch_write=None, frame_notify=False,
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
-            watch_bytes=4, watch_count=1, shutter_on_preview=False):
+            watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -611,6 +624,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if not shutter_on_preview:
             machine.set_key(24 if returning else 8 if playback else 25, 0)
         preview_press_sent = False
+        preview_half_tick = None
         deadline = started + seconds
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
@@ -804,9 +818,18 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         completed = machine.qmp.command('qom-get',
                             dict(path=path, property='processing-dma-count'))
                         if completed:
-                            machine.set_key(25, 0)
-                            preview_press_sent = True
-                            record['shutter_after_processing_frames'] = completed
+                            ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                            if half_before_full and preview_half_tick is None:
+                                machine.set_key(24, 0)
+                                preview_half_tick = ticks
+                                record['half_press_after_processing_frames'] = completed
+                            elif not half_before_full or ticks - preview_half_tick >= before['counter_frequency'] // 2:
+                                machine.set_key(25, 0)
+                                preview_press_sent = True
+                                record['shutter_after_processing_frames'] = completed
+                                if half_before_full:
+                                    record['half_press_counter_seconds'] = (
+                                        ticks - preview_half_tick) / before['counter_frequency']
                 if playback or returning or reconfigure:
                     record['capture_state'] = list(remote.read(0xb23f6a80, 2))
                     record['driver_state'] = remote.read(0xb1868af1, 1)[0]
@@ -929,7 +952,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         pulse_mode1()
                 if reconfigure and pc in RECONFIGURE_POINTS:
                     hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < (32 if pc == 0x103bded0 else 8)
+                    repeat = hits[pc] < (32 if pc == 0x103bded0 or
+                                        half_before_full and pc == 0x103e1dea else 8)
             remote.breakpoint(pc, False)
             if repeat:
                 remote.sock.settimeout(15)
@@ -950,6 +974,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                   if watch_address is not None else None),
                     shutter_on_preview=shutter_on_preview,
                     preview_press_sent=preview_press_sent,
+                    half_before_full=half_before_full, preview_half_sent=preview_half_tick is not None,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             (address != 0x10321a4c or callback_hits == 0)])
@@ -1017,6 +1042,8 @@ def main():
                         help='Enable the functional full-scale RAW12 to monochrome preview path')
     parser.add_argument('--shutter-on-preview', action='store_true',
                         help='Leave shutter contacts released until a display submission follows processed pixels')
+    parser.add_argument('--half-before-full', action='store_true',
+                        help='After preview starts, hold half-press for at least half a counter second before full-press')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1041,6 +1068,8 @@ def main():
     require(not args.frame_process or args.frame_generate, 'Frame processing requires generated input pixels')
     require(not args.shutter_on_preview or args.frame_process and args.reconfigure_watch and
             not args.playback, 'Preview shutter requires processing and a shooting reconfiguration observation')
+    require(not args.half_before_full or args.shutter_on_preview,
+            'Staged shutter requires preview-triggered input')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1088,14 +1117,19 @@ def main():
         if args.reconfigure_watch:
             started = time.monotonic()
             driver_state = None
+            reached = False
             while time.monotonic() - started < args.reconfigure_watch:
                 machine.heartbeat()
                 with machine.io:
                     driver_state = (machine._words(0xb1868af0, 1)[0] >> 8) & 255
-                if driver_state == 4:
+                    finite_ready = (not args.mode1_frame_events or
+                                    machine._bytes(0xb1888147, 1)[0] == 1 and
+                                    machine._words(0xb26b38cc, 1)[0] & 4)
+                if driver_state == 4 and finite_ready:
+                    reached = True
                     break
                 time.sleep(1)
-            reconfiguration = dict(driver_state=driver_state, reached=driver_state == 4,
+            reconfiguration = dict(driver_state=driver_state, reached=reached,
                                    host_seconds=round(time.monotonic() - started, 3))
             print(json.dumps(dict(reconfiguration_wait=reconfiguration)), flush=True)
         initial_lcd = lcd_snapshot(machine)
@@ -1119,6 +1153,7 @@ def main():
                                     watch_read=args.watch_read, watch_write=args.watch_write,
                                     watch_bytes=args.watch_bytes, watch_count=args.watch_count,
                                     shutter_on_preview=args.shutter_on_preview,
+                                    half_before_full=args.half_before_full,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
