@@ -1984,7 +1984,6 @@ static void boot_config_write(void *opaque, hwaddr offset,
         *stored = (uint32_t)value;
         if ((value & 0x10) && !(s->input_running & 0x10)) {
             s->input_grid_phase = 0;
-            s->input_grid_address = 0;
         }
         s->input_running |= value;
         *boot_config_value(s, 0x20068200) |= 0x79;

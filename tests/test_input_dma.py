@@ -448,6 +448,11 @@ def check(qemu):
             write(0x20068008, 0x10)
             tick()
             assert startup_grids() == 2 * int(active) and read(0x20068270) == 0
+            write(0x2006800c, 0x10)
+            write(0x20068008, 0x10)
+            tick()
+            assert startup_grids() == 2 * int(active), 'Restart accepted a second view without the first'
+            assert monitor('qom-get', dict(path=path, property='input-grid-address')) == (grid_target if active else 0)
             # A soft disable completes a real running channel once. It must
             # never reuse the hard-stop causes or claim another pixel DMA.
             previous = count()

@@ -1678,17 +1678,17 @@ def main():
                 for address in (args.watch_read, args.watch_write)), 'Memory watch range wraps')
     require(not args.frame_notify or args.frame_generate, 'Frame notification requires generated input pixels')
     require(not args.frame_process or args.frame_generate, 'Frame processing requires generated input pixels')
-    require(not args.shutter_on_preview or args.frame_process and args.reconfigure_watch and
-            not args.playback, 'Preview shutter requires processing and a shooting reconfiguration observation')
+    require(not args.shutter_on_preview or args.frame_process and
+            not args.playback, 'Preview shutter requires processing and a shooting observation')
     require(not args.half_before_full or args.shutter_on_preview or args.shutter_on_ready,
             'Staged shutter requires preview- or readiness-triggered input')
     require(not args.input_boundary_events or args.frame_generate and args.frame_notify and
             args.reconfigure_watch and not args.playback,
             'Input boundary experiment requires RAW DMA and shooting reconfiguration observation')
-    require(not args.shutter_on_ready or args.frame_process and args.reconfigure_watch and
+    require(not args.shutter_on_ready or args.frame_process and
             not args.playback and not args.shutter_on_preview,
             'Ready shutter requires processing and shooting observation without preview-triggered input')
-    require(not args.capture_submit_on_ready or args.frame_process and args.reconfigure_watch and
+    require(not args.capture_submit_on_ready or args.frame_process and
             not (args.playback or args.shutter_on_ready or args.shutter_on_preview or args.half_before_full),
             'Diagnostic capture requires processing and shooting observation without body shutter input')
     require(not args.capture_wait_idle or args.capture_submit_on_ready,
