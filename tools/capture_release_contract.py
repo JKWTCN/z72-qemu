@@ -33,12 +33,65 @@ class ReleaseProbe(RegionProbe):
             super().boundary(cpu, address, size, unused)
 
 
+class ResourceProducerProbe(ReleaseProbe):
+    def __init__(self, image):
+        super().__init__(image)
+        self.changes = []
+        interface = self.DATA + 0x800
+        self.u.mem_write(0xb1867db8, struct.pack('<I', interface))
+        self.u.mem_write(interface, struct.pack('<2I', 0x10229db1, 0x10229d49))
+
+    def boundary(self, cpu, address, size, unused):
+        if address in (0x103610cc, 0x10229db0, 0x10229d48):
+            if address != 0x103610cc:
+                self.changes.append(dict(set=address == 0x10229db0,
+                                         resource=cpu.reg_read(UC_ARM_REG_R0)))
+            cpu.reg_write(UC_ARM_REG_R0, 0)
+            cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+        else:
+            super().boundary(cpu, address, size, unused)
+
+
+def resource_producer_contract(image):
+    native = ResourceProducerProbe(image)
+    cases = []
+    for sequence in ((71,), (80,), (11,), (71, 80), (80, 71)):
+        native.u.mem_write(0xb18685b8, bytes(8))
+        native.changes.clear()
+        for resource in sequence:
+            native.call(0x24d534, 0x04400046, resource)
+        complete = 71 in sequence and 80 in sequence
+        expected = [dict(set=False, resource=44)] if complete else []
+        require(native.changes == expected, 'Original resource-44 readiness forwarding differs')
+        cases.append(dict(notification='0x04400046', resources=list(sequence),
+            flags=list(struct.unpack('<2I', native.u.mem_read(0xb18685b8, 8))),
+            forwarded=list(native.changes)))
+    native.changes.clear()
+    native.u.mem_write(0xb20a15ee, b'\0')
+    native.call(0x40f4d6, 2)
+    require(native.changes == [dict(set=True, resource=37)] and
+            native.u.mem_read(0xb20a15ee, 1) == b'\xff', 'Original UI resource-37 set differs')
+    native.call(0x40f4da, 2, 0x0f)
+    require(len(native.changes) == 1 and native.u.mem_read(0xb20a15ee, 1) == b'\xf0',
+            'Partial UI reason removal cleared resource 37')
+    native.call(0x40f4da, 2, 0xf0)
+    require(native.changes == [dict(set=True, resource=37), dict(set=False, resource=37)] and
+            native.u.mem_read(0xb20a15ee, 1) == b'\0', 'Final UI reason removal did not clear resource 37')
+    return dict(resource44=dict(callback='0x1026d534', flags=['0xb18685b8', '0xb18685bc'], cases=cases),
+        resource37=dict(set_wrapper='0x1042f4d6', clear_wrapper='0x1042f4da',
+                        index=2, reason_byte='0xb20a15ee', forwarded=native.changes,
+                        partial_clear_preserves_resource=True),
+        host_boundaries=['record native event-flag set', 'record resource set/clear forwarding'],
+        limitation='Original callbacks with synthetic inputs; does not deliver notifications to the running VM or prove the underlying resources ready.')
+
+
 def resource_query_contract(native):
     """Execute the original filtered intersection query with synthetic masks."""
+    capacity = 124
     primary, secondary, scratch = [native.DATA + offset for offset in (0x400, 0x500, 0x600)]
     for descriptor, pointer in ((0xb1869898, primary), (0xb18698a0, secondary),
                                 (0xb18698b0, scratch)):
-        native.u.mem_write(descriptor, struct.pack('<2I', 128, pointer))
+        native.u.mem_write(descriptor, struct.pack('<2I', capacity, pointer))
 
     def query(first, second):
         for pointer, mask in ((primary, first), (secondary, second), (scratch, 0)):
@@ -47,16 +100,16 @@ def resource_query_contract(native):
 
     excluded = []
     blocked = []
-    for bit in range(128):
+    for bit in range(capacity):
         result = query(1 << bit, 1 << bit)
         require(result in (0, 1), 'Unexpected original resource query result')
         (excluded if result else blocked).append(bit)
     require(len(excluded) == 40, 'Original exclusion list differs')
     require(query(0, 0) == 1 and query(1, 2) == 1, 'Empty/disjoint resource query differs')
-    require(query((1 << 128) - 1, (1 << 128) - 1) == 0, 'Intersecting resource query differs')
-    return dict(entry='0x10229fdc', capacity=128,
+    require(query((1 << capacity) - 1, (1 << capacity) - 1) == 0, 'Intersecting resource query differs')
+    return dict(entry='0x10229fdc', capacity=capacity, storage_words=4,
         descriptors=[hex(address) for address in (0xb1869898, 0xb18698a0, 0xb18698b0)],
-        excluded_bits=excluded, blocking_bits=blocked, single_bit_cases=128,
+        excluded_bits=excluded, blocking_bits=blocked, single_bit_cases=capacity,
         empty_result=1, disjoint_result=1, all_set_result=0,
         interpretation='Returns 1 when primary and filtered secondary have no common set bit; 0 otherwise.',
         host_boundaries=['successful lock acquisition and release'],
@@ -92,6 +145,7 @@ def probe(image):
                           result=result, queued=list(native.requests)))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
         resource_query=resource_query_contract(native),
+        resource_producers=resource_producer_contract(image),
         command_lookup='0x10463d70', routes=routes, operation=59,
         submit='0x103f36fa', callback_slot=hex(slot), cases=cases,
         host_boundaries=['record queue submission without executing the capture task'],
@@ -106,4 +160,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS original local routes, operation 59 callback/queue and 128-bit resource query contracts')
+    print('PASS original local routes, operation 59 callback/queue and 124-bit resource query contracts')

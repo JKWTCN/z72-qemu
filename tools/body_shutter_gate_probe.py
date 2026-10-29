@@ -1155,6 +1155,8 @@ def main():
                         help='Full-press at a processed display submission after the native release gate clears')
     parser.add_argument('--capture-submit-on-ready', action='store_true',
                         help='Diagnostic native-task capture API call after preview and release readiness')
+    parser.add_argument('--trace-capture-resource-boot', action='store_true',
+                        help='Observe capture resource bits 37/44 being written from reset')
     args = parser.parse_args()
     require(10 <= args.watch <= 300, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1198,7 +1200,11 @@ def main():
     args.realtime = args.auto_menu = False
     args.update_store = ROOT / '.local/body-shutter-gate-store'
     args.update_image = None
-    machine = Machine(args)
+    if args.trace_capture_resource_boot:
+        from tools.capture_resource_boot_trace import CaptureResourceMachine
+        machine = CaptureResourceMachine(args)
+    else:
+        machine = Machine(args)
     try:
         machine.restart()
         deadline = time.monotonic() + args.boot_watch
@@ -1282,6 +1288,8 @@ def main():
                                     tail_frame_events=args.tail_frame_events,
                                     mode1_frame_events=args.mode1_frame_events))
         report['native_lcd_before'] = initial_lcd
+        if args.trace_capture_resource_boot:
+            report['capture_resource_boot_writes'] = machine.resource_boot_writes
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
         report['final_application'] = machine.status()

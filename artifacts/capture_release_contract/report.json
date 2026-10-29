@@ -3,7 +3,8 @@
   "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
   "resource_query": {
     "entry": "0x10229fdc",
-    "capacity": 128,
+    "capacity": 124,
+    "storage_words": 4,
     "descriptors": [
       "0xb1869898",
       "0xb18698a0",
@@ -135,13 +136,9 @@
       112,
       113,
       116,
-      122,
-      124,
-      125,
-      126,
-      127
+      122
     ],
-    "single_bit_cases": 128,
+    "single_bit_cases": 124,
     "empty_result": 1,
     "disjoint_result": 1,
     "all_set_result": 0,
@@ -150,6 +147,106 @@
       "successful lock acquisition and release"
     ],
     "limitation": "Synthetic mask contract; does not identify the bits set by the running firmware or change native admission."
+  },
+  "resource_producers": {
+    "resource44": {
+      "callback": "0x1026d534",
+      "flags": [
+        "0xb18685b8",
+        "0xb18685bc"
+      ],
+      "cases": [
+        {
+          "notification": "0x04400046",
+          "resources": [
+            71
+          ],
+          "flags": [
+            1,
+            0
+          ],
+          "forwarded": []
+        },
+        {
+          "notification": "0x04400046",
+          "resources": [
+            80
+          ],
+          "flags": [
+            0,
+            1
+          ],
+          "forwarded": []
+        },
+        {
+          "notification": "0x04400046",
+          "resources": [
+            11
+          ],
+          "flags": [
+            0,
+            0
+          ],
+          "forwarded": []
+        },
+        {
+          "notification": "0x04400046",
+          "resources": [
+            71,
+            80
+          ],
+          "flags": [
+            1,
+            1
+          ],
+          "forwarded": [
+            {
+              "set": false,
+              "resource": 44
+            }
+          ]
+        },
+        {
+          "notification": "0x04400046",
+          "resources": [
+            80,
+            71
+          ],
+          "flags": [
+            1,
+            1
+          ],
+          "forwarded": [
+            {
+              "set": false,
+              "resource": 44
+            }
+          ]
+        }
+      ]
+    },
+    "resource37": {
+      "set_wrapper": "0x1042f4d6",
+      "clear_wrapper": "0x1042f4da",
+      "index": 2,
+      "reason_byte": "0xb20a15ee",
+      "forwarded": [
+        {
+          "set": true,
+          "resource": 37
+        },
+        {
+          "set": false,
+          "resource": 37
+        }
+      ],
+      "partial_clear_preserves_resource": true
+    },
+    "host_boundaries": [
+      "record native event-flag set",
+      "record resource set/clear forwarding"
+    ],
+    "limitation": "Original callbacks with synthetic inputs; does not deliver notifications to the running VM or prove the underlying resources ready."
   },
   "command_lookup": "0x10463d70",
   "routes": [

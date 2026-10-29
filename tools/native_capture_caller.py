@@ -100,9 +100,23 @@ class NativeCaptureCaller:
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         self.entry_sp = None
         self.native_return = None
+        self.report['resources_before'] = self.resource_masks()
 
     def word(self, address):
         return int.from_bytes(self.remote.read(address, 4), 'little')
+
+    def resource_masks(self):
+        masks = []
+        for descriptor in (0xB1869898, 0xB18698A0, 0xB18698B0):
+            capacity, pointer = struct.unpack('<2I', self.remote.read(descriptor, 8))
+            require(0 < capacity <= 512 and 0xB1800000 <= pointer <= 0xB5F00000 - 64,
+                    'Unexpected native resource bitmap descriptor')
+            data = self.remote.read(pointer, (capacity + 31) // 32 * 4)
+            bits = [bit for bit in range(capacity) if data[bit // 8] & 1 << (bit % 8)]
+            masks.append(dict(descriptor=hex(descriptor), capacity=capacity,
+                              pointer=hex(pointer), set_bits=bits))
+        common = sorted(set(masks[0]['set_bits']) & set(masks[2]['set_bits']))
+        return dict(masks=masks, primary_scratch_intersection=common)
 
     def trigger(self):
         require(not self.report['triggered'], 'Capture diagnostic already triggered')
@@ -122,7 +136,13 @@ class NativeCaptureCaller:
 
     def observe(self, pc, registers):
         remote = self.remote
-        if pc == CODE + 6:
+        if pc == 0x103BA8EA:
+            state = self.resource_masks()
+            state['query_result'] = remote.get(registers, 'r0')
+            self.report['resources_at_query'] = state
+            require(state['query_result'] == int(not state['primary_scratch_intersection']),
+                    'Native resource query disagrees with observed bitmap intersection')
+        elif pc == CODE + 6:
             self.report['caller_entered'] = True
             self.entry_sp = remote.get(registers, 'sp')
             self.native_return = remote.get(registers, 'lr') & ~1
