@@ -41,6 +41,14 @@ BODY_CONFIGURATION_POINTS = {
     0x104e1850: 'body-configuration-second-result',
     0x104e188e: 'body-configuration-loop-complete',
 }
+IMAGE_WORK_POINTS = {
+    0x103cc8e8: 'image-work-tracking-enqueue-mode2',
+    0x103cc960: 'image-work-tracking-enqueue-mode1',
+    0x102459fa: 'image-work-scheduler-submit',
+    0x102457ac: 'image-work-first-stage',
+    0x102456fc: 'image-work-later-stage',
+    0x103d0c3a: 'image-work-completion',
+}
 AFTER_PLAYBACK = {
     0x103f25ec: 'operation18-api',
     0x103ef386: 'operation18-task-request',
@@ -326,11 +334,32 @@ def image_work_snapshot(remote):
             if 0xb2c00000 <= request <= 0xb5effffc:
                 parameters = word(request)
                 if 0xb2c00000 <= parameters <= 0xb5efc1cf:
-                    row['jobs'].append(dict(request=hex(request), parameters=hex(parameters),
+                    job = dict(request=hex(request), parameters=hex(parameters),
                         owner=hex(word(parameters + 0xc)),
                         # 0x103d0c3a selects/removes tracking queues with these flags.
                         queue_flags=hex(word(parameters + 0x6c)),
-                        busy=remote.read(parameters + 0x3e30, 1)[0]))
+                        busy=remote.read(parameters + 0x3e30, 1)[0])
+                    if request <= 0xb5effd30:
+                        data = remote.read(request + 0x8c, 88)
+                        states = list(data[::8])
+                        indices = [struct.unpack_from('<I', data, index * 8 + 4)[0]
+                                   for index in range(11)]
+                        table = word(request + 4)
+                        job.update(stage_table=hex(table), completion=hex(word(request + 0x2c8)),
+                                   stage_states=states, stage_indices=indices, active_stages=[])
+                        if 0xb1800000 <= table <= 0xb5effd6c:
+                            entries = struct.unpack('<165I', remote.read(table, 660))
+                            for index, state in enumerate(states):
+                                column = indices[index]
+                                if state == 3 or column >= 15:
+                                    continue
+                                descriptor = entries[index * 15 + column]
+                                if 0xb1800000 <= descriptor <= 0xb5efffd8:
+                                    job['active_stages'].append(dict(stage=index, state=state,
+                                        column=column, descriptor=hex(descriptor),
+                                        fields=[hex(value) for value in struct.unpack(
+                                            '<10I', remote.read(descriptor, 40))]))
+                    row['jobs'].append(job)
             node = word(node + 4)
         result.append(row)
     return result
@@ -786,7 +815,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             reconfigure=False, tail_frame_events=False, mode1_frame_events=False,
             watch_bytes=4, watch_count=1, shutter_on_preview=False, half_before_full=False,
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
-            capture_wait_idle=False, application_only=False, shutter_click=False):
+            capture_wait_idle=False, application_only=False, shutter_click=False,
+            image_work_events=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -848,6 +878,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x104e1690: 'release-configuration-timer-callback',
                       0x1010000c: 'execution-prefetch-abort',
                       0x10100010: 'execution-data-abort'})
+    image_work_armed = False
     records = []
     hits = {}
     callback_hits = 0
@@ -1172,6 +1203,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             dict(path=path, property='processing-dma-count'))
                         gate = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
                         if completed and (not (shutter_on_ready or capture_submit_on_ready) or gate == 0):
+                            if image_work_events and not image_work_armed:
+                                for address, label in IMAGE_WORK_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                image_work_armed = True
+                                record['image_work_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -1306,7 +1343,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['switch_words'] = [hex(x) for x in struct.unpack(
                             '<III', remote.read(0xb25eaeac, 12))]
                         following = {} if playback else dict(AFTER_ACTION)
-                        if application_only:
+                        if application_only and not image_work_events:
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
                             if address not in armed:
@@ -1315,6 +1352,33 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if shutter_click:
                         hits[pc] = hits.get(pc, 0) + 1
                         repeat = hits[pc] < 64
+                if pc in IMAGE_WORK_POINTS:
+                    name = 'r4' if pc in (0x103cc8e8, 0x103cc960) else 'r1' if pc == 0x103d0c3a else 'r0'
+                    pointer = remote.get(registers, name)
+                    record['image_work_request'] = hex(pointer)
+                    if 0xb2c00000 <= pointer <= 0xb5effd30:
+                        def word(address):
+                            return int.from_bytes(remote.read(address, 4), 'little')
+                        parameters, stages = word(pointer), word(pointer + 4)
+                        record['image_work'] = dict(parameters=hex(parameters), stages=hex(stages),
+                            completion=hex(word(pointer + 0x2c8)),
+                            stage_states=[remote.read(pointer + 0x8c + index * 8, 1)[0]
+                                          for index in range(11)],
+                            stage_indices=[word(pointer + 0x90 + index * 8) for index in range(11)])
+                        if 0xb1800000 <= stages <= 0xb5effd6c:
+                            values = struct.unpack('<165I', remote.read(stages, 660))
+                            record['image_work']['active_stage_entries'] = [
+                                [hex(value) for value in values[index * 15:(index + 1) * 15] if value]
+                                for index in range(11)]
+                        if 0xb2c00000 <= parameters <= 0xb5efc1bc:
+                            record['image_work'].update(owner=hex(word(parameters + 0xc)),
+                                scheduler=hex(word(parameters + 8)),
+                                queue_flags=hex(word(parameters + 0x6c)),
+                                busy=remote.read(parameters + 0x3e30, 1)[0])
+                    if pc == 0x102456fc:
+                        record['worker_stage'] = remote.get(registers, 'r1')
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 8
                 if pc in BODY_CONFIGURATION_POINTS:
                     pointer = remote.get(registers, 'r0') if pc in (0x10635cf6, 0x104847c2) else None
                     if pointer is not None and 0xb1800000 <= pointer <= 0xb5efff38:
@@ -1380,6 +1444,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     input_boundary_events=input_boundary_events,
                     shutter_on_ready=shutter_on_ready,
                     application_only=application_only,
+                    image_work_events=image_work_events,
                     shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -1472,6 +1537,8 @@ def main():
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
                         help='Release full and half contacts after at least a quarter counter second')
+    parser.add_argument('--image-work-events', action='store_true',
+                        help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
     require(10 <= args.watch <= 900, 'Watch time out of bounds')
     require(0 <= args.reconfigure_watch <= 900, 'Reconfiguration watch time out of bounds')
@@ -1514,6 +1581,8 @@ def main():
             'Application-only observation requires a processed-preview body shutter')
     require(not args.shutter_click or args.shutter_on_ready or args.shutter_on_preview,
             'Shutter click requires a processed-preview body shutter')
+    require(not args.image_work_events or args.application_only,
+            'Image work observation requires application-only body shutter tracing')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -1609,6 +1678,7 @@ def main():
                                     capture_wait_idle=args.capture_wait_idle,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
+                                    image_work_events=args.image_work_events,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
