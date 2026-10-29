@@ -158,9 +158,9 @@ def check(qemu):
                 assert count() == 2
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
                 assert data_at(full + first_stride, 8208) == expected_row(0, 2816, 5472, 1)
-                # The native allocation and identity sections establish
-                # backing through the old initialization-record gaps.
-                native_full = 0xbad0a000
+                # Exercise the observed table across adjacent RAM regions,
+                # using synthetic image storage outside the code cache.
+                native_full = 0xbc000000
                 for slot, (target, mask, base) in enumerate((
                         (0xe0000, 0xf8000, 0), (0xe8000, 0xf8000, 0x8000),
                         (0xb8000, 0xf8000, 0x10000), (0xc0000, 0xf8000, 0x18000),
@@ -169,23 +169,32 @@ def check(qemu):
                     for address, value in ((0x2013d0b0, target),
                             (0x2013d0d0, mask), (0x2013d0f0, base)):
                         write(address + slot * 4, value)
-                write(0x20069950, 0x12d0b080)
+                write(0x20069950, 0x14001080)
                 write(0x20068210, 0xffffffff)
                 native_rows = rows + tuple((boundary - native_full) // full_stride
-                    for boundary in (0xbb300000, 0xbc0a0000, 0xbc100000, 0xbd1e0000, 0xbd200000))
+                    for boundary in (0xbc0a0000, 0xbc100000, 0xbd1e0000, 0xbd200000))
                 for y in native_rows:
                     write(native_full + y * full_stride, 0xa5a5a5a5)
                 write(native_full - 4, 0x13572468)
                 write(native_full + full_length, 0x24681357)
                 tick()
                 assert count() == 3 and read(0x20068210) == (0x41 if notifying else 0)
-                assert property_value('primary-input-second-dma-address') == 0xbad0b080
+                assert property_value('primary-input-second-dma-address') == native_full + first_stride
                 for y in native_rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 2)
                     assert data_at(native_full + y * full_stride + first_stride, 8208) == expected_row(y, 2816, 5472, 2)
                     assert read(native_full + y * full_stride) == 0xa5a5a5a5
                 assert read(native_full - 4) == 0x13572468
                 assert read(native_full + full_length) == 0x24681357
+                # A live C1.70 allocation currently names RAM holding
+                # executable code. Refuse both stripes until its ownership
+                # contract is recovered, even though the RAM is writable.
+                write(0x20069950, 0x12d0b080)
+                write(0x20068210, 0xffffffff)
+                original = (data_at(first, 256), data_at(0xbad0b080, 256))
+                tick()
+                assert count() == 3 and read(0x20068210) == 0
+                assert (data_at(first, 256), data_at(0xbad0b080, 256)) == original
             monitor('system_reset')
             assert count() == 0 and property_value('primary-input-dma-address') == 0
             assert property_value('primary-input-second-dma-address') == 0

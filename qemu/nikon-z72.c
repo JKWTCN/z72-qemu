@@ -1441,7 +1441,11 @@ static void input_generate_primary(NikonZ72BootConfig *s)
             span = length;
             region = address_space_translate(view, physical, &translated, &span,
                                              true, MEMTXATTRS_UNSPECIFIED);
-            if (!span || !memory_region_is_ram(region) || memory_region_is_rom(region)) {
+            /* The observed full allocation overlaps the boot code cache.
+             * Its ownership/eviction handshake is not recovered: ordinary
+             * writable RAM alone does not authorize a sensor overwrite. */
+            if (!span || !memory_region_is_ram(region) || memory_region_is_rom(region) ||
+                region == &s->stage_ram) {
                 return;
             }
             length = span;

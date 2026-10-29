@@ -366,6 +366,14 @@ def primary_input_snapshot(remote):
     ttbr = (remote.read_register('TTBR0_S') if all(name in remote.register_numbers
             for name in ('TTBR0_S', 'TTBCR_S')) and
             remote.read_register('TTBCR_S') == 0 else None)
+    if ttbr is not None:
+        result['execution_sections'] = []
+        for address in (0x10100000, 0x1020c334, 0x1038848a, 0x10542038, 0xb26b3924):
+            descriptor = word((ttbr & 0xffffc000) + (address >> 20) * 4)
+            row = dict(address=hex(address), descriptor=hex(descriptor))
+            if descriptor & 3 == 2:
+                row['physical_address'] = hex((descriptor & 0xfff00000) | (address & 0xfffff))
+            result['execution_sections'].append(row)
     for name, register in (('input', 0x20069850), ('output0', 0x2006a450),
                            ('output1', 0x2006a550)):
         address = word(register)
