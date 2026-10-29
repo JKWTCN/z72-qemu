@@ -7,7 +7,7 @@ import struct
 import sys
 
 from unicorn import UC_HOOK_MEM_WRITE
-from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_LR, UC_ARM_REG_PC
+from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_LR, UC_ARM_REG_PC
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import MASTER_SHA, require
@@ -21,6 +21,8 @@ class AuxProbe(RegionProbe):
     def __init__(self, image):
         super().__init__(image)
         self.writes, self.events = [], []
+        self.task_events = []
+        self.wait_flags = None
         self.u.mem_map(self.BASE, 0x1000)
         self.u.hook_add(UC_HOOK_MEM_WRITE, self.mmio_write,
                         begin=self.BASE, end=self.BASE + 0xfff)
@@ -29,7 +31,18 @@ class AuxProbe(RegionProbe):
         self.writes.append(dict(address=hex(address), bytes=size, value=hex(value)))
 
     def boundary(self, u, address, size, unused):
-        if address == self.RECORDER:
+        if address == 0x103854c4:
+            self.task_events.append(dict(task=hex(u.reg_read(UC_ARM_REG_R0)),
+                                         flags=hex(u.reg_read(UC_ARM_REG_R1))))
+            u.reg_write(UC_ARM_REG_R0, 0)
+            u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+        elif self.wait_flags is not None and address in (0x103854d4, 0x103854f4):
+            if address == 0x103854d4:
+                u.mem_write(u.reg_read(UC_ARM_REG_R2), struct.pack('<I', self.wait_flags))
+            # Supply selected event flags and no queued cancellation command.
+            u.reg_write(UC_ARM_REG_R0, int(address == 0x103854d4))
+            u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+        elif address == self.RECORDER:
             context = u.reg_read(UC_ARM_REG_R1)
             self.events.append(dict(notification=hex(u.reg_read(UC_ARM_REG_R0)),
                 context=hex(context), cause=hex(self.word(context + 0x64)),
@@ -165,16 +178,42 @@ def probe(image):
                 'Auxiliary image interrupt callback differs')
         interrupts.append(dict(cause=hex(cause), writes=list(native.writes),
                                events=list(native.events)))
+    delivery = []
+    configuration = native.DATA + 0x5000
+    native.u.mem_write(configuration, bytes(0xe0))
+    native.u.mem_write(0xb1809630, struct.pack('<I', configuration))
+    for cause, flags in ((1, [0x80]), (2, [4]), (0x40, [8]),
+                         (0x80, [0x40]), (4, [0x40]), (0xc7, [0x40, 8, 4, 0x80])):
+        native.u.mem_write(context + 0x60, struct.pack('<2I', 0x13572468, cause))
+        native.task_events.clear()
+        native.call(0x224b16, 0x41051c01, context)
+        require(native.task_events == [dict(task='0xb1d52be0', flags=hex(flag)) for flag in flags],
+                'Original auxiliary cause-to-task delivery differs')
+        require(native.word(configuration + 0xc4) == 0x13572468 and
+                native.word(configuration + 0xc8) == cause,
+                'Original auxiliary response field forwarding differs')
+        delivery.append(dict(cause=hex(cause), task_events=list(native.task_events)))
+    waits = []
+    for flags in (4, 0x80):
+        native.wait_flags = flags
+        result = native.call(0x224a62, native.DATA + 0x6000, 0x84)
+        require(result == 1, 'Original auxiliary wait did not accept its normal completion flags')
+        waits.append(dict(mask='0x84', supplied_flags=hex(flags), result=result))
+    native.wait_flags = None
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         base=hex(native.BASE), controls=controls, configuration_entry='0x102944a6',
         configuration_fields=[dict(source=hex(offset), register=hex(native.BASE + register))
                               for offset, register in fields],
         combined_control=dict(register='0x20201100', source='byte +0x44 low two bits -> bits 2..3; nonzero word +0x48 -> bit 0'),
         configurations=configurations, builder=builder_contract(native), interrupt_entry='0x10294364',
-        interrupts=interrupts, host_boundaries=['record interrupt callback'],
+        interrupts=interrupts, task_delivery=dict(entry='0x10244b16', cases=delivery),
+        completion_wait=dict(entry='0x10244a62', cases=waits),
+        host_boundaries=['record interrupt callback', 'record task event requests',
+                         'supply selected event flags and an empty cancellation queue'],
         limitations=['Synthetic register storage and result value; no pixels or hardware completion.',
                      'Records the status acknowledgement write; does not emulate its hardware semantics.',
-                     'Native callback delivery for a supplied cause does not prove an actual runtime request.'])
+                     'Native callback delivery for a supplied cause does not prove an actual runtime request.',
+                     'Completion wait cases supply synthetic event state, without executing a scheduler or image hardware.'])
 
 
 if __name__ == '__main__':
@@ -185,4 +224,4 @@ if __name__ == '__main__':
     report = probe(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('PASS 6 auxiliary image run controls, 2 configurations, 15 descriptors and 6 interrupt causes')
+    print('PASS auxiliary image controls/configuration, 15 descriptors, 6 causes/deliveries and 2 completion waits')

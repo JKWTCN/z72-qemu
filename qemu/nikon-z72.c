@@ -521,6 +521,7 @@ static const NikonZ72Completion boot_completions[] = {
 };
 
 #define BOOT_CONFIG_WORDS G_N_ELEMENTS(boot_config_addresses)
+#define AUX_IMAGE_MAX_PIXELS (390 * 32 * 32)
 
 /* Group boundaries are located at realize time by each group's unique
  * first address, so appended words can never shift an earlier gate. */
@@ -612,6 +613,12 @@ struct NikonZ72BootConfig {
     MemoryRegion aux_image_ram;
     uint32_t aux_image_registers[0x200 / 4];
     uint32_t aux_image_levels;
+    bool aux_image_process;
+    uint32_t aux_image_reference_keys[2];
+    uint32_t aux_image_reference_widths[2];
+    uint32_t aux_image_reference_heights[2];
+    uint8_t aux_image_references[2 * AUX_IMAGE_MAX_PIXELS];
+    uint64_t aux_image_process_count;
     MemoryRegion dbi_ram;
     MemoryRegion sd_config_ram;
     MemoryRegion sd_clock_status;
@@ -965,19 +972,28 @@ static uint64_t aux_image_read(void *opaque, hwaddr offset, unsigned size)
     return s->aux_image_registers[offset / 4];
 }
 
+static bool aux_image_process_frame(NikonZ72BootConfig *s);
+
 static void aux_image_write(void *opaque, hwaddr offset,
                             uint64_t value, unsigned size)
 {
     NikonZ72BootConfig *s = opaque;
 
     if (offset == 0x1a0) {
-        return; /* Result production has not been recovered. */
+        return; /* No software writes to the result register. */
     }
     if (offset == 0x2c) {
         s->aux_image_registers[offset / 4] &= ~(uint32_t)value;
     } else {
-        /* Configuration, run/reset and abort writes do not create results. */
         s->aux_image_registers[offset / 4] = value;
+    }
+    if (s->aux_image_process && offset == 0 && value == 1) {
+        s->aux_image_registers[4 / 4] = 0;
+    }
+    if (offset == 4 && value == 1 && aux_image_process_frame(s)) {
+        s->aux_image_registers[4 / 4] = 0;
+        /* Original cause 2 delivers event 4 to the native completion wait. */
+        s->aux_image_registers[0x2c / 4] |= 2;
     }
     aux_image_update_irq(s);
 }
@@ -1062,6 +1078,145 @@ static bool processing_ram_range(AddressSpace *view, uint32_t address,
                                      MEMTXATTRS_UNSPECIFIED);
     return memory_region_is_ram(region) && !memory_region_is_rom(region) &&
            span >= length;
+}
+
+static uint32_t aux_image_sad(const uint8_t *previous, const uint8_t *current,
+                              unsigned width, unsigned height, unsigned x,
+                              unsigned y, int dx, int dy, uint32_t ceiling)
+{
+    uint32_t score = 0;
+
+    for (unsigned row = 0; row < 32; row++) {
+        unsigned cy = MIN(MAX((int)(y + row) + dy, 0), (int)height - 1);
+        for (unsigned column = 0; column < 32; column++) {
+            unsigned cx = MIN(MAX((int)(x + column) + dx, 0), (int)width - 1);
+            score += abs((int)previous[(y + row) * width + x + column] -
+                         current[cy * width + cx]);
+            if (score > ceiling) {
+                return score;
+            }
+        }
+    }
+    return score;
+}
+
+/* Functional grayscale block matching, not a reconstruction of the original
+ * hardware search or metric. The recovered consumer accepts 16-byte cells
+ * with signed 1/32-coordinate components and a 16-bit metric. Here the metric
+ * is saturated 32x32 SAD; integer search is bounded to eight pixels, with
+ * replicated borders. Firmware workspace addresses identify two independent
+ * reference streams; their opaque guest storage is not rewritten. */
+static bool aux_image_process_frame(NikonZ72BootConfig *s)
+{
+    uint32_t *r = s->aux_image_registers;
+    uint32_t columns = r[0x50 / 4], rows = r[0x54 / 4];
+    uint32_t stride = r[0x12c / 4], source = r[0x130 / 4];
+    uint32_t target = r[0x178 / 4], key = r[0x5c / 4];
+    unsigned width, height, slot;
+    size_t pixels, source_span, result_bytes;
+    AddressSpace *view;
+    uint8_t *previous;
+    bool have_reference;
+    g_autofree uint8_t *current = NULL;
+    g_autofree uint8_t *result = NULL;
+
+    if (!s->aux_image_process || !s->master_role || !s->cpu ||
+        columns < 10 || columns > 48 || rows < 7 || rows > 32 ||
+        columns * rows > 390 || r[0x4c / 4] != 1 ||
+        r[0x11c / 4] != 1 || r[0x164 / 4] != 1 ||
+        r[0x104 / 4] != 0 || r[0x160 / 4] != 0 || r[0x110 / 4] != 3) {
+        return false;
+    }
+    width = columns * 32;
+    height = rows * 32;
+    if (stride < width || stride > 1536) {
+        return false;
+    }
+    pixels = (size_t)width * height;
+    source_span = (size_t)(height - 1) * stride + width;
+    result_bytes = (size_t)columns * rows * 16;
+    view = CPU(s->cpu)->as;
+    if (!processing_ram_range(view, source, source_span) ||
+        !processing_ram_range(view, target, result_bytes) ||
+        !processing_ram_range(view, key, pixels) ||
+        ((uint64_t)source < (uint64_t)target + result_bytes &&
+         (uint64_t)target < (uint64_t)source + source_span)) {
+        return false;
+    }
+    for (slot = 0; slot < 2; slot++) {
+        if (s->aux_image_reference_keys[slot] == key) {
+            break;
+        }
+    }
+    if (slot == 2) {
+        for (slot = 0; slot < 2; slot++) {
+            if (!s->aux_image_reference_keys[slot]) {
+                break;
+            }
+        }
+    }
+    if (slot == 2) {
+        return false;
+    }
+    current = g_malloc(pixels);
+    result = g_malloc0(result_bytes);
+    for (unsigned row = 0; row < height; row++) {
+        if (address_space_read(view, source + row * stride, MEMTXATTRS_UNSPECIFIED,
+                               current + row * width, width) != MEMTX_OK) {
+            return false;
+        }
+    }
+    previous = s->aux_image_references + slot * AUX_IMAGE_MAX_PIXELS;
+    have_reference = s->aux_image_reference_keys[slot] == key &&
+                     s->aux_image_reference_widths[slot] == width &&
+                     s->aux_image_reference_heights[slot] == height;
+    for (unsigned y = 0; y < height; y += 32) {
+        for (unsigned x = 0; x < width; x += 32) {
+            uint8_t *cell = result + ((y / 32) * columns + x / 32) * 16;
+            int best_x = 0, best_y = 0;
+            uint32_t best;
+
+            if (!have_reference) {
+                stw_le_p(cell, 512);
+                stw_le_p(cell + 2, 512);
+                stw_le_p(cell + 4, UINT16_MAX);
+                continue;
+            }
+            best = aux_image_sad(previous, current, width, height, x, y,
+                                 0, 0, UINT32_MAX);
+            for (int radius = 1; radius <= 8 && best; radius++) {
+                for (int dy = -radius; dy <= radius; dy++) {
+                    for (int dx = -radius; dx <= radius; dx++) {
+                        uint32_t score;
+                        if (abs(dx) != radius && abs(dy) != radius) {
+                            continue;
+                        }
+                        score = aux_image_sad(previous, current, width, height,
+                                              x, y, dx, dy, best);
+                        if (score < best || (score == best &&
+                            abs(dx) + abs(dy) < abs(best_x) + abs(best_y))) {
+                            best = score;
+                            best_x = dx;
+                            best_y = dy;
+                        }
+                    }
+                }
+            }
+            stw_le_p(cell, best_x * 32);
+            stw_le_p(cell + 2, best_y * 32);
+            stw_le_p(cell + 4, MIN(best, UINT16_MAX));
+        }
+    }
+    if (address_space_write(view, target, MEMTXATTRS_UNSPECIFIED,
+                            result, result_bytes) != MEMTX_OK) {
+        return false;
+    }
+    memcpy(previous, current, pixels);
+    s->aux_image_reference_keys[slot] = key;
+    s->aux_image_reference_widths[slot] = width;
+    s->aux_image_reference_heights[slot] = height;
+    s->aux_image_process_count++;
+    return true;
 }
 
 /* Functional monochrome preview for the observed C1.70 stream profile.
@@ -2038,6 +2193,11 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->sync_levels, 0, sizeof(s->sync_levels));
     memset(s->aux_image_registers, 0, sizeof(s->aux_image_registers));
     s->aux_image_levels = 0;
+    memset(s->aux_image_reference_keys, 0, sizeof(s->aux_image_reference_keys));
+    memset(s->aux_image_reference_widths, 0, sizeof(s->aux_image_reference_widths));
+    memset(s->aux_image_reference_heights, 0, sizeof(s->aux_image_reference_heights));
+    memset(s->aux_image_references, 0, sizeof(s->aux_image_references));
+    s->aux_image_process_count = 0;
     aux_image_update_irq(s);
     s->auto_sample_level = false;
     timer_del(s->frame_sync_timer);
@@ -2104,8 +2264,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 40,
-    .minimum_version_id = 40,
+    .version_id = 41,
+    .minimum_version_id = 41,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2121,6 +2281,11 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(sync_levels, NikonZ72BootConfig, 2),
         VMSTATE_UINT32_ARRAY(aux_image_registers, NikonZ72BootConfig, 0x200 / 4),
         VMSTATE_UINT32(aux_image_levels, NikonZ72BootConfig),
+        VMSTATE_UINT32_ARRAY(aux_image_reference_keys, NikonZ72BootConfig, 2),
+        VMSTATE_UINT32_ARRAY(aux_image_reference_widths, NikonZ72BootConfig, 2),
+        VMSTATE_UINT32_ARRAY(aux_image_reference_heights, NikonZ72BootConfig, 2),
+        VMSTATE_UINT8_ARRAY(aux_image_references, NikonZ72BootConfig, 2 * AUX_IMAGE_MAX_PIXELS),
+        VMSTATE_UINT64(aux_image_process_count, NikonZ72BootConfig),
         VMSTATE_BOOL(auto_sample_level, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_counter, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
@@ -2192,6 +2357,8 @@ static void boot_config_init(Object *obj)
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-dma-count", &s->processing_dma_count,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "aux-image-process-count", &s->aux_image_process_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "frame-count", &s->frame_count,
                                    OBJ_PROP_FLAG_READ);
@@ -2456,6 +2623,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
         DEFINE_PROP_BOOL("frame-process", NikonZ72BootConfig, frame_process, false),
+        DEFINE_PROP_BOOL("aux-image-process", NikonZ72BootConfig, aux_image_process, false),
         DEFINE_PROP_BOOL("frame-notify", NikonZ72BootConfig, frame_notify, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),

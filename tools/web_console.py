@@ -312,6 +312,8 @@ class Machine:
                       if getattr(self.args, 'frame_notify', False) else ()) +
                      (('nikon-z72-boot-config.frame-process=on',)
                       if getattr(self.args, 'frame_process', False) else ()) +
+                     (('nikon-z72-boot-config.aux-image-process=on',)
+                      if getattr(self.args, 'aux_image_process', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),

@@ -837,12 +837,101 @@
       ]
     }
   ],
+  "task_delivery": {
+    "entry": "0x10244b16",
+    "cases": [
+      {
+        "cause": "0x1",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x80"
+          }
+        ]
+      },
+      {
+        "cause": "0x2",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x4"
+          }
+        ]
+      },
+      {
+        "cause": "0x40",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x8"
+          }
+        ]
+      },
+      {
+        "cause": "0x80",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x40"
+          }
+        ]
+      },
+      {
+        "cause": "0x4",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x40"
+          }
+        ]
+      },
+      {
+        "cause": "0xc7",
+        "task_events": [
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x40"
+          },
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x8"
+          },
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x4"
+          },
+          {
+            "task": "0xb1d52be0",
+            "flags": "0x80"
+          }
+        ]
+      }
+    ]
+  },
+  "completion_wait": {
+    "entry": "0x10244a62",
+    "cases": [
+      {
+        "mask": "0x84",
+        "supplied_flags": "0x4",
+        "result": 1
+      },
+      {
+        "mask": "0x84",
+        "supplied_flags": "0x80",
+        "result": 1
+      }
+    ]
+  },
   "host_boundaries": [
-    "record interrupt callback"
+    "record interrupt callback",
+    "record task event requests",
+    "supply selected event flags and an empty cancellation queue"
   ],
   "limitations": [
     "Synthetic register storage and result value; no pixels or hardware completion.",
     "Records the status acknowledgement write; does not emulate its hardware semantics.",
-    "Native callback delivery for a supplied cause does not prove an actual runtime request."
+    "Native callback delivery for a supplied cause does not prove an actual runtime request.",
+    "Completion wait cases supply synthetic event state, without executing a scheduler or image hardware."
   ]
 }

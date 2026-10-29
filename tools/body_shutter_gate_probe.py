@@ -678,6 +678,8 @@ def input_dma_snapshot(machine):
             result = dict(frames=count, address=hex(address), stride=stride)
             result['processing_frames'] = machine.qmp.command('qom-get',
                 dict(path=path, property='processing-dma-count'))
+            result['auxiliary_jobs'] = machine.qmp.command('qom-get',
+                dict(path=path, property='aux-image-process-count'))
             if count and address and 0 < stride <= 16384:
                 data = machine._bytes(address, stride)
                 result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
@@ -1290,6 +1292,8 @@ def main():
                         help='Observe capture resource bits 37/44 being written from reset')
     parser.add_argument('--processing-resource-header', action='store_true',
                         help='Supply group 23 with a zero experimental body and native storage trailer')
+    parser.add_argument('--aux-image-process', action='store_true',
+                        help='Enable experimental grayscale block matching for auxiliary image requests')
     parser.add_argument('--capture-wait-idle', action='store_true',
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
     args = parser.parse_args()
@@ -1407,6 +1411,7 @@ def main():
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,
                       frame_process=args.frame_process,
+                      aux_image_process=args.aux_image_process,
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
