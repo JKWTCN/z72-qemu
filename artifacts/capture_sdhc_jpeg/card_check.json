@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "image_bytes": 4294967296,
+  "checker": "7-Zip 24.08 archive integrity test",
+  "exit_code": 0,
+  "filesystem_identified": true,
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "mbr_signature_valid": true,
+  "partition_boot_signature_valid": true,
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    }
+  ],
+  "created_directories": [
+    "DCIM",
+    "NIKON",
+    "NIKON/Z_7_2"
+  ],
+  "encoded_photo_verified": false,
+  "scope": "Read-only inspection after VM closure; catalog creation is not photo creation"
+}

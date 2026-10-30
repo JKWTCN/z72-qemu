@@ -6,7 +6,7 @@ from pathlib import Path
 import struct
 import sys
 
-from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_LR, UC_ARM_REG_PC
+from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_LR, UC_ARM_REG_PC
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import MASTER_SHA, require
@@ -18,9 +18,15 @@ class FrameProbe(RegionProbe):
         super().__init__(image)
         self.events = []
         self.notifications = []
+        self.rotations = []
 
     def boundary(self, u, address, size, unused):
-        if address == self.DATA + 0x28000:
+        if address == 0x102384d4:
+            self.rotations.append(tuple(u.reg_read(reg) for reg in
+                                        (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2)))
+            u.reg_write(UC_ARM_REG_R0, 0)
+            u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+        elif address == self.DATA + 0x28000:
             self.notifications.append((u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_R1)))
             u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
         elif address in (0x10360f18, 0x10360f12, 0x1034fe7e):
@@ -46,6 +52,7 @@ def probe(image):
             (3, 1, 0x20, 0x10239436, 2, [(0xb188814c, 0x1000000)]),
             (3, 0x20, 0x10, 0x10239480, 2, [(0xb188814c, 0x800000)]),
             (3, 0x40000000, 0x400, 0x1023938c, 2, [(0xb188814c, 0x2000000)]),
+            (3, 0x80000000, 0x400, 0x1023938c, 2, [(0xb26b3888, 0x2000)]),
             (4, 0x80, 0x200, 0x1023931c, 2, [(0xb188814c, 0x4000000)]),
             (4, 0x100, 0x200, 0x1023931c, 2, [(0xb26b3888, 0x4000)])):
         status = [0] * 8
@@ -89,8 +96,16 @@ def probe(image):
                     'Original finite notification to input-task translation differs')
             input_events.append(dict(code=hex(code), context=hex(pointer),
                                      task='0xb25eeb78', bits=hex(task_bits)))
+    engine.rotations.clear()
+    engine.notifications.clear()
+    engine.call(0x218d4a, 0x2000)
+    require(engine.rotations == [(0x100, 0xb26b48fc, 0xb26b39a4)] and
+            not engine.notifications, 'Original primary input address-group task route differs')
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
                 cause_decoder='0x1020ad46', cases=cases,
+                primary_rotation_task=dict(event='0x2000', entry='0x102384d4',
+                    arguments=[hex(value) for value in engine.rotations[0]],
+                    endpoint_recorded_only=True, photo_delivery_verified=False),
                 finite_task=dict(dispatcher='0x10238d4a', event='0x10',
                     consumer='0x1023c6ec', queue='0xb26b3984', cases=finite_cases,
                     upper_callback='0x1022e2e0', input_events=input_events,

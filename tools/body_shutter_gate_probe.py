@@ -681,6 +681,28 @@ def sd_trace_snapshot(machine):
         scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
 
 
+def peer_input_snapshot(remote, resume_thread=1):
+    result = dict(thread=3, controls={}, banks=[])
+    remote.select_thread(3)
+    try:
+        def word(address):
+            return int.from_bytes(remote.read(address, 4), 'little')
+        result['controls'] = {hex(offset): hex(word(0x20068000 + offset))
+                              for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18)}
+        result['banks'] = [dict(bank=bank, mask=hex(word(0x20068200 + bank * 32)),
+                               status=hex(word(0x20068210 + bank * 32))) for bank in range(8)]
+        result['geometry'] = [hex(value) for value in
+                              struct.unpack('<5I', remote.read(0x20069500, 20))]
+        result['image_banks'] = [dict(base=hex(base),
+            controls=[hex(value) for value in struct.unpack('<5I', remote.read(base, 20))])
+            for base in (0x20380000, 0x203c0000)]
+    except ValueError as error:
+        result['read_error'] = str(error)
+    finally:
+        remote.select_thread(resume_thread)
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -1144,6 +1166,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     controller_step_trigger_sent = False
     try:
         before = snapshot(remote)
+        if capture_focus:
+            before['peer_input'] = peer_input_snapshot(remote)
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
             capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure, jpeg=capture_jpeg)
@@ -1407,6 +1431,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
+                if capture_focus and pc == 0x1023938c:
+                    record['peer_input'] = peer_input_snapshot(remote, thread)
                 if capture_caller:
                     return_pc = capture_caller.observe(pc, registers)
                     if return_pc is not None:
@@ -1943,6 +1969,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             else:
                 del armed[pc]
         after = snapshot(remote)
+        if capture_focus:
+            after['peer_input'] = peer_input_snapshot(remote)
         return dict(before=before, records=records, after=after,
                     sd_host_trace=sd_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_caller else None,

@@ -126,6 +126,19 @@
       ]
     },
     {
+      "bank": 3,
+      "bits": "0x80000000",
+      "logical": "0x400",
+      "callback": "0x1023938c",
+      "group": 2,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x2000"
+        }
+      ]
+    },
+    {
       "bank": 4,
       "bits": "0x80",
       "logical": "0x200",
@@ -152,6 +165,17 @@
       ]
     }
   ],
+  "primary_rotation_task": {
+    "event": "0x2000",
+    "entry": "0x102384d4",
+    "arguments": [
+      "0x100",
+      "0xb26b48fc",
+      "0xb26b39a4"
+    ],
+    "endpoint_recorded_only": true,
+    "photo_delivery_verified": false
+  },
   "finite_task": {
     "dispatcher": "0x10238d4a",
     "event": "0x10",
