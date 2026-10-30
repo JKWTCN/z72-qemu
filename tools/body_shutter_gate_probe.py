@@ -33,6 +33,15 @@ AFTER_ACTION = {
     0x104e16b4: 'release-action-configuration-entry',
     0x104e1714: 'release-action-configuration-return',
     0x104e1910: 'release-action-configuration-timer-choice',
+    0x10542064: 'body-action-state-check',
+    0x10542070: 'body-action-mode-result',
+    0x10542076: 'body-action-condition-result',
+    0x10542368: 'body-action-fallback-check',
+    0x1054238a: 'body-action-flags-choice',
+    0x10542394: 'body-action-normal-route',
+    0x104e63ae: 'body-action-dispatch',
+    0x105af1dc: 'body-action-callback-dispatch',
+    0x104e6cb4: 'body-action-state-update',
     0x1053e598: 'event1-check-result',
     0x1053e62c: 'release-gate-clear-path',
 }
@@ -2225,6 +2234,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['action'] = hex(remote.get(registers, 'r6'))
                 if pc in (0x104e1714, 0x104e1910):
                     record['configuration_saved_registers'] = {
+                        name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
+                if pc in (0x10542064, 0x10542070, 0x10542076, 0x10542368,
+                          0x1054238a, 0x10542394):
+                    record['action_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
                     if pc in (0x10448496, 0x104484de, 0x104d7596, 0x10448e92, 0x10448e96):
