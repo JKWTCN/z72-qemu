@@ -77,6 +77,9 @@ CAPTURE_INPUT_POINTS = {
     0x103d1132: 'capture-work-request-registration-return',
     0x10262e64: 'capture-processing-result-event-producer',
     0x103bde3e: 'capture-output-status-dispatch',
+    0x10448496: 'capture-display-deferred',
+    0x104484de: 'capture-display-applied',
+    0x104d7596: 'capture-display-mode-check',
     0x10264f5c: 'capture-processing-release-entry',
     0x10265120: 'capture-processing-release-notification-condition',
     0x103cdb26: 'capture-processing-release-notification',
@@ -573,6 +576,18 @@ def image_work_snapshot(remote):
     return result
 
 
+def display_delivery_snapshot(read):
+    def word(address):
+        return int.from_bytes(read(address, 4), 'little')
+    pointer = word(0xb1808580)
+    result = dict(mode=read(0xb180854c, 1)[0], state=read(0xb1d178dc, 1)[0],
+                  submit_state=read(0xb1d17ded, 1)[0], context=hex(pointer))
+    if 0xb1800000 <= pointer <= 0xb5eff628:
+        result.update(accepting=word(pointer + 0x240), deferred=read(pointer + 0x51c, 1)[0],
+                      deferred_background=hex(word(pointer + 0x614)))
+    return result
+
+
 def image_service_snapshot(remote):
     def words(address, count):
         return struct.unpack('<' + str(count) + 'I', remote.read(address, count * 4))
@@ -985,6 +1000,7 @@ def snapshot(remote):
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
+        display_delivery=display_delivery_snapshot(remote.read),
         image_work_queues=image_work_snapshot(remote),
         image_work_counters={hex(offset): hex(word(0xb18648b4 + offset))
                              for offset in range(0x24, 0x50, 4)},
@@ -1971,6 +1987,19 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x10448496, 0x104484de, 0x104d7596):
+                        keep = keep and capture_caller is not None and capture_caller.report['triggered']
+                        if keep:
+                            record['display_delivery'] = display_delivery_snapshot(remote.read)
+                            if pc == 0x104d7596:
+                                record['display_delivery'].update(actual_mode=remote.get(registers, 'r0'),
+                                    required_mode=remote.get(registers, 'r4'))
+                            else:
+                                packet = remote.get(registers, 'r8' if pc == 0x10448496 else 'r4')
+                                offset = 0xf4 if pc == 0x10448496 else 0xf0
+                                if 0xb1800000 <= packet <= 0xb5effb48:
+                                    record['display_delivery']['submitted_background'] = hex(int.from_bytes(
+                                        remote.read(packet + offset, 4), 'little'))
                     if pc == 0x103bde3e:
                         status = remote.get(registers, 'r0')
                         keep = keep and bool(capture_work_requests) and bool(status & 0x610061)

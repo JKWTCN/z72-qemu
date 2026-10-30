@@ -1631,7 +1631,7 @@ static uint32_t image_output_results(NikonZ72BootConfig *s,
     };
     static const struct { unsigned offset; uint32_t value; } profile[] = {
         {0, 0x110a0000}, {8, 0}, {0x10, 0}, {0x14, 0}, {0x18, 0},
-        {0x1c, 0xff010200}, {0x20, 0}, {0x24, 0}, {0x28, 0x11080040},
+        {0x20, 0}, {0x24, 0}, {0x28, 0x11080040},
         {0x38, 0x20002}, {0x3c, 0}, {0x40, 0}, {0x44, 0},
         {0x48, 0x1110080}, {0x4c, 6}, {0x50, 0}, {0x54, 0},
         {0x58, 0xff}, {0x5c, 0}, {0x60, 0xff}, {0x64, 0}, {0x68, 0},
@@ -1645,8 +1645,12 @@ static uint32_t image_output_results(NikonZ72BootConfig *s,
     for (unsigned unit = 0; unit < ARRAY_SIZE(units); unit++) {
         uint32_t source;
         bool supported = true;
+        /* Native LCD preview keeps two extra rows in unit 49. The capture
+         * caller's other observed profile drops them and sets bit 9. */
+        bool lcd_rows = unit == 1 && heights[unit] == 682;
 
-        if (widths[unit] != units[unit].width || heights[unit] != units[unit].height ||
+        if (widths[unit] != units[unit].width ||
+            heights[unit] != units[unit].height + (lcd_rows ? 2 : 0) ||
             address_space_read(view, 0x20100000 + units[unit].offset,
                                MEMTXATTRS_UNSPECIFIED, registers, sizeof(registers)) != MEMTX_OK ||
             ldl_le_p(registers) || ldl_le_p(registers + 8) != 0x200087e0 ||
@@ -1659,8 +1663,9 @@ static uint32_t image_output_results(NikonZ72BootConfig *s,
                                descriptor, sizeof(descriptor)) != MEMTX_OK ||
             ldl_le_p(descriptor + 4) != units[unit].crop ||
             ldl_le_p(descriptor + 12) != (0x10003 + unit) ||
+            ldl_le_p(descriptor + 0x1c) != (lcd_rows ? 0xff010000 : 0xff010200) ||
             ldl_le_p(descriptor + 0x2c) != (units[unit].width - 1) << 16 ||
-            ldl_le_p(descriptor + 0x30) != (units[unit].rows - 1) << 16 ||
+            ldl_le_p(descriptor + 0x30) != (units[unit].rows - 1 + (lcd_rows ? 2 : 0)) << 16 ||
             ldl_le_p(descriptor + 0x34) != units[unit].scale ||
             ldl_le_p(descriptor + 0x94) != ldl_le_p(registers + 8) ||
             ldl_le_p(descriptor + 0x98) != ldl_le_p(registers + 12)) {

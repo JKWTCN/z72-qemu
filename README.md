@@ -43,14 +43,15 @@ original firmware: write-one-clear status, mask routing to interrupts
 111/112, and an optional per-frame completion source whose edges the
 original handler acknowledges — the notification counter advances and
 the channel's work buffers rotate through the frame pool. The browser
-console renders the final LCD output plane (1024×682 luminance,
-currently the cleared frame) beside the graphics surface; see
+console renders the final LCD output plane (1024×682 luminance)
+beside the graphics surface; see
 [display output research](research/z7ii/display_output.md).
-An opt-in monochrome processing model now reads completed RAW12 DMA and writes
-the firmware's preview descriptors. A C1.70 run completed 62 processing frames
-and rotated all four native LCD buffers with nonempty luminance data. Its
-initialization still uses diagnostic finite-output events; full processing
-and photography remain incomplete.
+Start the console with `--live-view` to enable the experimental moving RAW12
+source and monochrome processing. Native firmware submits the changing LCD
+background and draws the camera interface; independent paused snapshots verify
+both alternating pixel data and composed images. The current profile starts
+without diagnostic finite-output events. Color, calibration, complete capture
+processing and photo files remain incomplete.
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production

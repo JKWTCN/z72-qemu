@@ -49,6 +49,8 @@ SHOULDER_POWERED = 0x2001F5A2
 CONTROLLER_CPU = 4
 BOOT_AUXILIARY = (('group17.bin', 0x132c0000), ('group18.bin', 0x132e0000),
                   ('group32.bin', 0x13e80000))
+LIVE_VIEW_OPTIONS = ('display_complete', 'input_handshake', 'frame_phase', 'input_stop_complete',
+                     'frame_generate', 'frame_notify', 'frame_process', 'aux_image_process')
 DEFAULT_STORE = ROOT / '.local' / 'console-update-store'
 # Bounded in host time: under the default instruction-count clock the guest
 # runs slower than the wall clock, so the foreground switch can take minutes.
@@ -1051,6 +1053,9 @@ def main():
     parser.add_argument('--display-complete', action='store_true',
                         help='Pulse the recovered display completion lines '
                              'on every laboratory frame tick')
+    parser.add_argument('--live-view', action='store_true',
+                        help='Enable the experimental moving monochrome sensor source '
+                             'and native LCD preview processing')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--controller-actuator', action='store_true',
@@ -1081,6 +1086,9 @@ def main():
     args = parser.parse_args()
     require(1 <= args.port <= 65535, 'Invalid HTTP port')
     require(not args.wsl or os.name == 'nt', '--wsl requires Windows')
+    if args.live_view:
+        for name in LIVE_VIEW_OPTIONS:
+            setattr(args, name, True)
     machine = Machine(args)
     server = None
     try:

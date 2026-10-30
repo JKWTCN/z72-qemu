@@ -465,6 +465,18 @@ def check(qemu):
                     for parameters in (0xb3f00000, 0xb3f00100, 0xb3f00200):
                         assert read(parameters + 0x8c) == 0xabcd1234
                         assert read(parameters + 0x90) == 0xdeadbeef
+                    # The native LCD profile keeps 682 output / 718 internal
+                    # rows and clears bit 9 in unit 49's format word.
+                    write(0x20100520, 682 << 16 | 1024)
+                    write(0xb3f00130, 717 << 16)
+                    write(0xb3f0011c, 0xff010000)
+                    tick()
+                    assert read(0x2010001c) == 0x61
+                    write(0x2010001c, 0x61)
+                    write(0xb3f0011c, 0xff010200)
+                    tick()
+                    assert read(0x2010001c) == 0x60, 'Mismatched LCD format completed'
+                    write(0x2010001c, 0x60)
                     write(0x20100020, 12)
                     write(0x20380024, 0x1002)
                     write(0x20102100, 0x120)
