@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "program_sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
+  "source": "0x10834b54",
+  "destination": "0x80300000",
+  "length": 161792,
+  "configured_entry": "0x8030c000",
+  "repeated_program_pointers": [
+    {
+      "offset": "0x6d9c",
+      "address": "0x80306d9c",
+      "count": 32,
+      "target": "0x8032420a",
+      "target_offset": "0x2420a"
+    },
+    {
+      "offset": "0x8734",
+      "address": "0x80308734",
+      "count": 8,
+      "target": "0x80324e32",
+      "target_offset": "0x24e32"
+    }
+  ],
+  "mailbox_address_table": {
+    "offset": "0x8754",
+    "entries": [
+      {
+        "index": 0,
+        "program_address": "0x34061088",
+        "host_address": "0x24061088",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 1,
+        "program_address": "0x34061100",
+        "host_address": "0x24061100",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 2,
+        "program_address": "0x34061180",
+        "host_address": "0x24061180",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 3,
+        "program_address": "0x34061200",
+        "host_address": "0x24061200",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 4,
+        "program_address": "0x34061280",
+        "host_address": "0x24061280",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 5,
+        "program_address": "0x34061300",
+        "host_address": "0x24061300",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 6,
+        "program_address": "0x34061380",
+        "host_address": "0x24061380",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 7,
+        "program_address": "0x34061400",
+        "host_address": "0x24061400",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 8,
+        "program_address": "0x34061480",
+        "host_address": "0x24061480",
+        "difference": "0x10000000"
+      },
+      {
+        "index": 9,
+        "program_address": "0x34061900",
+        "host_address": "0x24061900",
+        "difference": "0x10000000"
+      }
+    ]
+  },
+  "literal_search": [
+    {
+      "value": "0x80306d9c",
+      "literal_offsets": []
+    },
+    {
+      "value": "0x80308734",
+      "literal_offsets": []
+    },
+    {
+      "value": "0x34061080",
+      "literal_offsets": []
+    },
+    {
+      "value": "0x34061084",
+      "literal_offsets": []
+    },
+    {
+      "value": "0x34061088",
+      "literal_offsets": [
+        "0x8754"
+      ]
+    },
+    {
+      "value": "0x34061100",
+      "literal_offsets": [
+        "0x8758"
+      ]
+    },
+    {
+      "value": "0x34061900",
+      "literal_offsets": [
+        "0x8778"
+      ]
+    }
+  ],
+  "limitations": [
+    "Table words are data observations, not decoded instructions",
+    "Equal layout and fixed address difference do not prove hardware aliases",
+    "Repeated targets are candidates; callback or interrupt roles are unproven",
+    "No processor architecture, request dispatcher or RAW calculation is identified"
+  ]
+}
