@@ -73,8 +73,8 @@ POST_SUBMIT_POINTS = {
 }
 
 
-def caller_code():
-    code, literals = bytearray(), []
+def caller_code(exposure=None):
+    code, literals, branches, labels = bytearray(), [], [], {}
 
     def emit(value):
         code.extend(struct.pack('<H', value))
@@ -83,12 +83,57 @@ def caller_code():
         literals.append((len(code), register, value))
         emit(0)
 
+    def jump(label, condition=None):
+        branches.append((len(code), label, condition))
+        emit(0)
+
+    def store(offset):
+        emit(0x6000 | (offset // 4 << 6) | (4 << 3))
+
+    def set_property(prop, payload, size, result_offset):
+        literal(0, prop)
+        literal(1, payload)
+        emit(0x2200 | size)
+        literal(3, RESULT + 0x48)
+        literal(6, 0x104C8255)    # original typed property setter and gates
+        emit(0x47B0)
+        store(result_offset)
+        literal(5, 0x2001)
+        emit(0x42A8)             # cmp r0,r5
+        jump('return', 1)
+
     emit(0x680A)                 # ldr r2,[r1]
     emit(0x2A7F)                 # diagnostic operation 127
     branch = len(code)
     emit(0)
-    emit(0xB510)                 # push r4,lr; retain stack alignment
+    emit(0xB510 if exposure is None else 0xB570)  # save r4 / r4-r6 and lr
     literal(4, RESULT)
+    if exposure is not None:
+        set_property(0x500e, OBJECT + 0x20, 2, 0x40)
+        literal(5, 1000)
+        labels['program_wait'] = len(code)
+        literal(6, 0x10779877)    # original program property readback
+        emit(0x47B0)
+        store(0x50)
+        emit(0x2801)
+        jump('program_ready', 0)
+        emit(0x3D01)
+        jump('return', 0)
+        emit(0x2001)
+        literal(3, 0x103DC539)    # original task sleep; no host state changes
+        emit(0x4798)
+        jump('program_wait')
+        labels['program_ready'] = len(code)
+        set_property(0x500d, OBJECT + 0x24, 4, 0x44)
+        literal(6, 0x104D12AB)    # original exposure property readback
+        emit(0x47B0)
+        store(0x54)
+        literal(5, exposure)
+        emit(0x42A8)
+        jump('return', 1)
+        emit(0x2001)
+        store(0x58)              # both properties accepted and read back
+        store(0x5c)              # capture API will now be invoked
     literal(0, REQUEST)
     callback_literal = len(literals)
     literal(1, 0)
@@ -97,8 +142,9 @@ def caller_code():
     emit(0x6020)                 # store return status
     emit(0x2001)
     emit(0x6060)                 # mark API returned
+    labels['return'] = len(code)
     return_pc = CODE + len(code)
-    emit(0xBD10)
+    emit(0xBD10 if exposure is None else 0xBD70)
     original = len(code)
     literal(3, ORIGINAL_CALLBACK)
     emit(0x4718)
@@ -113,6 +159,14 @@ def caller_code():
     emit(0x2000)
     emit(0xBD10)
     literals[callback_literal] = (literals[callback_literal][0], 1, completion | 1)
+    for offset, label, condition in branches:
+        displacement = (labels[label] - offset - 4) // 2
+        require(-128 <= displacement <= 127 if condition is not None else
+                -1024 <= displacement <= 1023, 'Capture settings branch out of range')
+        instruction = (0xD000 | condition << 8 | (displacement & 255)) if condition is not None else (
+            0xE000 | (displacement & 2047))
+        struct.pack_into('<H', code, offset, instruction)
+    require(-128 <= (original - branch - 4) // 2 <= 127, 'Original caller branch out of range')
     struct.pack_into('<H', code, branch, 0xD100 | ((original - branch - 4) // 2 & 255))
     while len(code) % 4:
         emit(0xBF00)
@@ -125,9 +179,10 @@ def caller_code():
 
 
 class NativeCaptureCaller:
-    def __init__(self, remote):
+    def __init__(self, remote, exposure=None):
         self.remote = remote
-        self.code, self.return_pc, completion = caller_code()
+        self.exposure = exposure
+        self.code, self.return_pc, completion = caller_code(exposure)
         self.completion_pc = completion
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
@@ -189,6 +244,8 @@ class NativeCaptureCaller:
         # Original standard-capture defaults: one image, default target/format,
         # request flag at +4 set; no writes to release gates or completion state.
         remote.write(REQUEST, struct.pack('<5I', 0, 1, 0, 0, 1))
+        if exposure is not None:
+            remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
         remote.write(CALLBACK, struct.pack('<I', CODE | 1))
         self.report = dict(caller_fixture=True, triggered=False, caller_entered=False,
                            caller_returned=False, body_shutter_used=False,
@@ -196,6 +253,10 @@ class NativeCaptureCaller:
                            finish_observation_max_contexts=4,
                            request_words=[0, 1, 0, 0, 1],
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
+        if exposure is not None:
+            self.report['settings_fixture'] = dict(program_property='0x500e', program_value=1,
+                exposure_property='0x500d', exposure_value=exposure,
+                setter='0x104c8254', readback_required=True)
         self.entry_sp = None
         self.native_return = None
         excluded = self.remote.read(0x118FA48B, 40)
@@ -435,6 +496,12 @@ class NativeCaptureCaller:
         self.report['api_returned'] = self.report['result_words'][1] == 1
         self.report['api_accepted'] = self.report['api_returned'] and self.report['result_words'][0] == 0
         self.report['completion_count'] = self.report['result_words'][8]
+        if self.exposure is not None:
+            values = struct.unpack('<8I', self.remote.read(RESULT + 0x40, 32))
+            self.report['settings_fixture'].update(program_status=hex(values[0]),
+                exposure_status=hex(values[1]), final_property_status=hex(values[2]),
+                program_readback=values[4], exposure_readback=values[5],
+                ready=bool(values[6]), capture_api_invoked=bool(values[7]))
         self.remote.write(CALLBACK, struct.pack('<I', ORIGINAL_CALLBACK))
         # Retain a potentially live caller/callback until this diagnostic VM
         # closes. Clearing code under a blocked native task would corrupt it.

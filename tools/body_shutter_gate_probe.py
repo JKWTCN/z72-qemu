@@ -1031,7 +1031,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
-            controller_step_trigger=False):
+            controller_step_trigger=False, capture_exposure=None):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1112,7 +1112,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         before = snapshot(remote)
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
-            capture_caller = NativeCaptureCaller(remote)
+            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -1965,6 +1965,8 @@ def main():
                         help='Diagnostic virtual nanoseconds per instruction as a power of two (0..6)')
     parser.add_argument('--capture-counter-seconds', type=float,
                         help='End focused capture observation after this many camera counter seconds from submission')
+    parser.add_argument('--capture-exposure', type=int,
+                        help='Set original program 1 and exposure property 0x500d; require readback before submission')
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
@@ -2059,6 +2061,9 @@ def main():
             'Diagnostic capture requires processing and shooting observation without body shutter input')
     require(not args.capture_wait_idle or args.capture_submit_on_ready,
             'Idle capture observation requires the diagnostic native capture caller')
+    require(args.capture_exposure is None or
+            args.capture_submit_on_ready and 0 < args.capture_exposure <= 0xFFFFFFFF,
+            'Exposure setting requires the diagnostic caller and a positive 32-bit property value')
     require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
             'Focused capture requires the diagnostic caller without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
@@ -2176,6 +2181,7 @@ def main():
                                     capture_wait_idle=args.capture_wait_idle,
                                     capture_focus=args.capture_focus,
                                     capture_counter_seconds=args.capture_counter_seconds,
+                                    capture_exposure=args.capture_exposure,
                                     controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
