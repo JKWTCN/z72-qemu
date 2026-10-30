@@ -597,6 +597,12 @@ struct NikonZ72BootConfig {
     bool input_handshake;
     bool input_handshake_output;
     QEMUTimer *input_handshake_timer;
+    bool sampling_output_complete;
+    uint32_t sampling_output_gates;
+    uint32_t sampling_output_active;
+    uint32_t sampling_output_fired;
+    int64_t sampling_output_epoch[2];
+    QEMUTimer *sampling_output_timers[2];
     bool controller_ack_output;
     qemu_irq controller_ack_irq;
     qemu_irq controller_step_irq;
@@ -1050,6 +1056,98 @@ static void sync_update_irqs(NikonZ72BootConfig *s)
         uint32_t pending = *boot_config_value(s, 0x2006004c) &
                            *boot_config_value(s, 0x20060050);
         qemu_set_irq(qdev_get_gpio_in(s->intc, 88 - 32), pending != 0);
+    }
+}
+
+static bool sampling_output_supported(NikonZ72BootConfig *s, unsigned index)
+{
+    hwaddr base = 0x200630d0 + index * 0x40;
+    uint32_t bit = 8u << index;
+    uint32_t control = *boot_config_value(s, base + 0x1c);
+
+    /* Narrow functional interpretation of the observed single-comparison
+     * configuration. Other periods, second comparisons and modes wait for
+     * evidence rather than generating unconditional capture notifications. */
+    return s->sampling_output_complete && s->master_role &&
+        s->sensor_sample && s->auto_complete &&
+        (s->sampling_output_active & bit) &&
+        (s->sampling_output_gates & (bit << 1)) &&
+        !(s->sampling_output_fired & bit) &&
+        *boot_config_value(s, base) == UINT32_MAX &&
+        *boot_config_value(s, base + 4) == 0xffffff &&
+        *boot_config_value(s, base + 8) == 0xffff &&
+        (*boot_config_value(s, base + 0xc) >> 16) == 0xffff &&
+        *boot_config_value(s, base + 0x14) == 0xffffff &&
+        (*boot_config_value(s, base + 0x18) >> 16) == 0xffff &&
+        (control == 0x06000004 || control == 0x06000006);
+}
+
+static void sampling_output_expire(NikonZ72BootConfig *s, unsigned index)
+{
+    if (sampling_output_supported(s, index)) {
+        uint32_t bit = 8u << index;
+        s->sampling_output_fired |= bit;
+        *boot_config_value(s, 0x20060038) |= bit;
+        sync_update_irqs(s);
+    }
+}
+
+static void sampling_output_first(void *opaque)
+{
+    sampling_output_expire(opaque, 0);
+}
+
+static void sampling_output_second(void *opaque)
+{
+    sampling_output_expire(opaque, 1);
+}
+
+static void sampling_output_write(NikonZ72BootConfig *s, hwaddr address,
+                                  uint32_t value)
+{
+    if (!s->sampling_output_complete || !s->master_role) {
+        return;
+    }
+    if (address == 0x20060008) {
+        s->sampling_output_gates &= ~value;
+    } else if (address == 0x2006000c) {
+        s->sampling_output_gates |= value & 0x30;
+    } else if (address == 0x20060024) {
+        s->sampling_output_active &= ~value;
+    }
+    for (unsigned i = 0; i < 2; i++) {
+        uint32_t bit = 8u << i;
+        hwaddr base = 0x200630d0 + i * 0x40;
+        if ((address == base + 0x20 && (value & 1)) ||
+            (address == 0x20060020 && (value & bit) &&
+             !(s->sampling_output_active & bit))) {
+            s->sampling_output_epoch[i] = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+            s->sampling_output_fired &= ~bit;
+            if (address == base + 0x20) {
+                s->sampling_output_active &= ~bit;
+            }
+        }
+    }
+    if (address == 0x20060020) {
+        s->sampling_output_active |= value & 0x18;
+    }
+    *boot_config_value(s, 0x20060020) =
+        (*boot_config_value(s, 0x20060020) & ~0x18u) | s->sampling_output_active;
+    for (unsigned i = 0; i < 2; i++) {
+        hwaddr base = 0x200630d0 + i * 0x40;
+        if (!sampling_output_supported(s, i)) {
+            timer_del(s->sampling_output_timers[i]);
+            continue;
+        }
+        uint64_t ticks = (*boot_config_value(s, base + 0xc) & 0xffffu) |
+            ((uint64_t)(*boot_config_value(s, base + 0x10) & 0xffffffu) << 16) |
+            ((uint64_t)(*boot_config_value(s, base + 0x18) & 0xffffu) << 40);
+        /* Original code multiplies microseconds by 72. The functional clock
+         * is 72 MHz; physical frequency and output transitions are unmeasured. */
+        uint64_t ns = ticks / 72 * 1000 + (ticks % 72 * 1000 + 71) / 72;
+        timer_mod(s->sampling_output_timers[i],
+            MAX(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 1,
+                s->sampling_output_epoch[i] + (int64_t)ns));
     }
 }
 
@@ -2146,6 +2244,10 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
     }
     *stored = value;
+    if ((address >= 0x20060000 && address <= 0x20060028) ||
+        (address >= 0x200630d0 && address <= 0x20063134)) {
+        sampling_output_write(s, address, value);
+    }
     if (address == 0x20068060) {
         switch (value) {
         case 3:
@@ -2659,6 +2761,13 @@ static void boot_config_reset(Object *obj, ResetType type)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
     memset(s->values, 0, sizeof(s->values));
+    s->sampling_output_gates = 0;
+    s->sampling_output_active = 0;
+    s->sampling_output_fired = 0;
+    memset(s->sampling_output_epoch, 0, sizeof(s->sampling_output_epoch));
+    for (unsigned i = 0; i < 2; i++) {
+        timer_del(s->sampling_output_timers[i]);
+    }
     memset(s->snapshot_table, 0, sizeof(s->snapshot_table));
     memset(s->mirror_table, 0, sizeof(s->mirror_table));
     memset(s->file_table, 0, sizeof(s->file_table));
@@ -2763,8 +2872,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 46,
-    .minimum_version_id = 46,
+    .version_id = 47,
+    .minimum_version_id = 47,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2773,6 +2882,12 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(input_handshake, NikonZ72BootConfig),
         VMSTATE_BOOL(input_handshake_output, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(input_handshake_timer, NikonZ72BootConfig),
+        VMSTATE_BOOL(sampling_output_complete, NikonZ72BootConfig),
+        VMSTATE_UINT32(sampling_output_gates, NikonZ72BootConfig),
+        VMSTATE_UINT32(sampling_output_active, NikonZ72BootConfig),
+        VMSTATE_UINT32(sampling_output_fired, NikonZ72BootConfig),
+        VMSTATE_INT64_ARRAY(sampling_output_epoch, NikonZ72BootConfig, 2),
+        VMSTATE_TIMER_PTR_ARRAY(sampling_output_timers, NikonZ72BootConfig, 2),
         VMSTATE_UINT32_ARRAY(dbi_table, NikonZ72BootConfig, 0x8c0 / 4),
         VMSTATE_UINT32(dbi_viewport, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(dbi_regions, NikonZ72BootConfig, 2 * 16 * 7),
@@ -2859,6 +2974,8 @@ static void boot_config_init(Object *obj)
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
     s->frame_sync_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, frame_sync_tick, s);
     s->input_handshake_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, input_handshake_complete, s);
+    s->sampling_output_timers[0] = timer_new_ns(QEMU_CLOCK_VIRTUAL, sampling_output_first, s);
+    s->sampling_output_timers[1] = timer_new_ns(QEMU_CLOCK_VIRTUAL, sampling_output_second, s);
     object_property_add_uint64_ptr(obj, "frame-sync-count", &s->frame_sync_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-running", &s->input_running,
@@ -2928,6 +3045,9 @@ static void boot_config_finalize(Object *obj)
     timer_free(s->frame_sync_timer);
     timer_del(s->input_handshake_timer);
     timer_free(s->input_handshake_timer);
+    for (unsigned i = 0; i < 2; i++) {
+        timer_free(s->sampling_output_timers[i]);
+    }
 }
 
 static void boot_config_realize(DeviceState *dev, Error **errp)
@@ -3132,6 +3252,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
     static const Property properties[] = {
         DEFINE_PROP_BOOL("auto-complete", NikonZ72BootConfig, auto_complete, true),
         DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
+        DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
         DEFINE_PROP_UINT32("blocked-control", NikonZ72BootConfig, blocked_control, 0),
         DEFINE_PROP_UINT32("clear-base", NikonZ72BootConfig, clear_base, 0),
         DEFINE_PROP_UINT32("clear-size", NikonZ72BootConfig, clear_size, 0),

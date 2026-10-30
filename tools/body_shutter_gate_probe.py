@@ -1872,6 +1872,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     capture_focus=capture_focus,
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
+                    sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
                     controller_step_trigger=dict(requested=controller_step_trigger,
                                                  supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
@@ -1953,6 +1954,8 @@ def main():
                         help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30,
                         help='Host seconds to observe the requested stage (10..1800)')
+    parser.add_argument('--icount-shift', type=int, default=0,
+                        help='Diagnostic virtual nanoseconds per instruction as a power of two (0..6)')
     parser.add_argument('--capture-counter-seconds', type=float,
                         help='End focused capture observation after this many camera counter seconds from submission')
     parser.add_argument('--boot-watch', type=int, default=240,
@@ -1995,6 +1998,8 @@ def main():
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',
                         help='Enable the experimental engine handshake to controller G8 connection')
+    parser.add_argument('--sampling-output-complete', action='store_true',
+                        help='Enable experimental single-comparison sampling output events')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
@@ -2003,6 +2008,7 @@ def main():
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
     require(10 <= args.watch <= 1800, 'Watch time out of bounds')
+    require(0 <= args.icount_shift <= 6, 'Instruction clock shift out of bounds')
     require(args.capture_counter_seconds is None or
             args.capture_focus and 0 < args.capture_counter_seconds <= 120,
             'Camera counter window requires focused capture and a duration up to 120 seconds')
@@ -2129,6 +2135,7 @@ def main():
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
+                      icount_shift=args.icount_shift,
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
                       input_stop_complete=args.input_stop_complete,
