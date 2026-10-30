@@ -27,6 +27,7 @@ struct NikonZ72DualMachine {
     MachineState parent_obj;
     char *controller_firmware;
     bool controller_link;
+    bool controller_step_link;
     char *master_boot_image;
     char *slave_boot_image;
     char *master_boot_aux;
@@ -42,6 +43,16 @@ static bool dual_controller_link_get(Object *obj, Error **errp)
 static void dual_controller_link_set(Object *obj, bool value, Error **errp)
 {
     NIKON_Z72_DUAL(obj)->controller_link = value;
+}
+
+static bool dual_controller_step_link_get(Object *obj, Error **errp)
+{
+    return NIKON_Z72_DUAL(obj)->controller_step_link;
+}
+
+static void dual_controller_step_link_set(Object *obj, bool value, Error **errp)
+{
+    NIKON_Z72_DUAL(obj)->controller_step_link = value;
 }
 
 static char *dual_controller_firmware_get(Object *obj, Error **errp)
@@ -588,6 +599,7 @@ struct NikonZ72BootConfig {
     QEMUTimer *input_handshake_timer;
     bool controller_ack_output;
     qemu_irq controller_ack_irq;
+    qemu_irq controller_step_irq;
     uint32_t timer_line, timer_tick_us;
     bool timer_tick;
     MemoryRegion gate_ram;
@@ -2074,6 +2086,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
                       qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 1000000);
         }
         s->input_handshake_output = level;
+        qemu_set_irq(s->controller_step_irq, level);
     }
     if (address == 0x0426f008) {
         *stored = (value & ~0xffffu) | (*stored & 0xffff);
@@ -2708,6 +2721,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     timer_del(s->input_handshake_timer);
     s->input_handshake_output = false;
     qemu_set_irq(s->controller_ack_irq, 0);
+    qemu_set_irq(s->controller_step_irq, 0);
     controller_update_irqs(s);
     qemu_set_irq(s->peer_ready_irq, 0);
     memset(s->transport_table, 0, sizeof(s->transport_table));
@@ -2726,6 +2740,7 @@ static int boot_config_post_load(void *opaque, int version_id)
         s->controller_ack_output = false;
     }
     qemu_set_irq(s->controller_ack_irq, s->controller_ack_output);
+    qemu_set_irq(s->controller_step_irq, s->input_handshake_output);
     controller_update_irqs(s);
     qemu_set_irq(s->peer_ready_irq, s->peer_gpio && s->peer_ready_output);
     transport_update_irq(s);
@@ -2887,6 +2902,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), sd_irq_input, "sd-irq", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
+    qdev_init_gpio_out_named(DEVICE(obj), &s->controller_step_irq, "controller-step", 1);
     /* One rising edge per frame on the two recovered display completion
      * lines; wired to the master display device when it exists. */
     qdev_init_gpio_out_named(DEVICE(obj), s->display_complete_irq,
@@ -3853,6 +3869,9 @@ static void nikon_z72_dual_init(MachineState *machine)
     if (s->controller_link && !s->controller_firmware) {
         error_setg(&error_fatal, "Controller link requires a controller firmware image");
     }
+    if (s->controller_step_link && !s->controller_link) {
+        error_setg(&error_fatal, "Controller step link requires the controller link");
+    }
     if (s->controller_inputs.flash_data && !s->controller_firmware) {
         error_setg(&error_fatal, "Controller flash data requires a controller firmware image");
     }
@@ -3963,6 +3982,12 @@ static void nikon_z72_dual_init(MachineState *machine)
             master_boot->controller_connected = true;
             qdev_connect_gpio_out_named(master_config, "controller-ack", 0,
                 qdev_get_gpio_in(s->controller_inputs.gpio[6], 6));
+            if (s->controller_step_link) {
+                /* Functional connection hypothesis: native output 0x65 to
+                 * the controller's verified G8 step input. */
+                qdev_connect_gpio_out_named(master_config, "controller-step", 0,
+                    qdev_get_gpio_in(s->controller_inputs.gpio[6], 8));
+            }
             static const unsigned ports[] = { 1, 4, 3 }, pins[] = { 14, 3, 12 };
             for (unsigned i = 0; i < 3; i++) {
                 qdev_connect_gpio_out(s->controller_inputs.gpio[ports[i]], pins[i],
@@ -4026,6 +4051,10 @@ static void dual_machine_class_init(ObjectClass *klass, const void *data)
                                   dual_controller_link_set);
     object_class_property_set_description(klass, "controller-link",
         "Experimental serial peers and controller readiness inputs");
+    object_class_property_add_bool(klass, "controller-step-link", dual_controller_step_link_get,
+                                  dual_controller_step_link_set);
+    object_class_property_set_description(klass, "controller-step-link",
+        "Experimental engine handshake output to controller G8 connection");
     object_class_property_add_bool(klass, "controller-battery-peer",
                                   dual_controller_battery_peer_get,
                                   dual_controller_battery_peer_set);

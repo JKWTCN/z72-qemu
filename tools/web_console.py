@@ -263,8 +263,9 @@ class Machine:
             auxiliary += (('group23.bin', 0x13420000),)
         devices = (
             'nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',
-            'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys,'
-            'interrupt-gpio=/machine/controller/keys-gpio,interrupt-pin=8',
+            'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys'
+            + ('' if getattr(self.args, 'controller_step_link', False) else
+               ',interrupt-gpio=/machine/controller/keys-gpio,interrupt-pin=8'),
             f'nikon-z72-controller-register-bank,bus=controller-i2c0,address=107,initial-state={work / "primary.bin"}',
             f'nikon-z72-controller-panel,bus=controller-i2c0,address=13,'
             f'id=shoulder,initial-state={work / "aux.bin"}')
@@ -294,7 +295,9 @@ class Machine:
                              # so the file list travels as one value.
                              'master-boot-aux=' + ','.join(
                                  f'{work / name}@{address:#x}'
-                                 for name, address in auxiliary).replace(',', ',,')),
+                                 for name, address in auxiliary).replace(',', ',,')) +
+                            (('controller-step-link=on',) if
+                             getattr(self.args, 'controller_step_link', False) else ()),
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
@@ -1034,6 +1037,8 @@ def main():
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--controller-actuator', action='store_true',
                         help='Enable experimental PWM-driven controller position feedback')
+    parser.add_argument('--controller-step-link', action='store_true',
+                        help='Enable the experimental engine handshake to controller G8 connection')
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')

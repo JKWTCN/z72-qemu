@@ -113,7 +113,7 @@ EXTI 路由及计时器 `pin` 输入，由 GPIO 的 AF2 选择使能该捕获路
 未选择 AF2 时仍跟踪输入电平，但不生成捕获；选择或撤销复用本身
 不制造边沿。原有 `capture` 入口继续用于直接的实验激励。
 
-这只实现已核对的两路复用；其他 GPIO 复用与 PWM 输出仍未实现。
+这只实现已核对的两路捕获复用；其他 GPIO 复用与逐边沿 PWM 波形仍未实现。
 `tests/test_controller_position.py` 验证选择、独立通道、极性、EXTI
 分路和复位。原始执行器的输入实验及其限制见
 [捕获执行记录](capture_release_submit.md)。

@@ -35,7 +35,7 @@ def check(qemu, auto_link=False):
             port = listener.getsockname()[1]
         machine = 'nikon-z72-dual-lab,controller-firmware=' + str(firmware)
         if auto_link:
-            machine += ',controller-link=on'
+            machine += ',controller-link=on,controller-step-link=on'
         command = [qemu, '-M', machine,
                    '-device', f'loader,file={engine},addr=0,cpu-num=0,force-raw=on',
                    '-global', 'nikon-z72-spi.peer-low-byte-first=' + ('on' if auto_link else 'off'),
@@ -112,6 +112,43 @@ def check(qemu, auto_link=False):
                 finally:
                     remote.breakpoint(24, False)
                 require(remote.get(remote.regs(), 'pc') == 24, 'Engine timing loop did not complete')
+
+            # The optional step wire must follow only selected output 8 writes.
+            remote.select_thread(5)
+            access(0x40013810, 6)
+            access(0x40013c00, 0x100)
+            access(0x40013c08, 0x100)
+            access(0x40013c0c, 0)
+            access(0x40013c14, 0x100)
+
+            def step_level():
+                remote.select_thread(5)
+                return bool(access(0x40021810) & 0x100)
+
+            engine_access(0x04282018, 0x01000000)
+            require(not step_level(), 'Step input was not initially low')
+            engine_access(0x04282018, 0x100)
+            require(not step_level() and not access(0x40013c14) & 0x100,
+                    'Unselected output write reached the step input')
+            engine_access(0x04282018, 0x01000100)
+            require(step_level() == auto_link and
+                    bool(access(0x40013c14) & 0x100) == auto_link,
+                    'Step connection level or controller interrupt differs')
+            access(0x40013c14, 0x100)
+            engine_access(0x04282018, 0x80008000)
+            require(step_level() == auto_link, 'Unrelated output changed the step input')
+            engine_access(0x04282018, 0x01000100)
+            require(step_level() == auto_link and not access(0x40013c14) & 0x100,
+                    'Held step input generated another edge')
+            engine_access(0x04282018, 0x01000000)
+            require(not step_level() and not access(0x40013c14) & 0x100,
+                    'Step release did not follow the selected output')
+            engine_access(0x04282018, 0x01000100)
+            require(step_level() == auto_link and
+                    bool(access(0x40013c14) & 0x100) == auto_link,
+                    'Step input did not rearm after release')
+            access(0x40013c14, 0x100)
+            access(0x40013c00, 0)
 
             # Clock actual controller requests between serial bytes, including packed halfwords.
             for bits, words, payload in ((8, (0x31, 0x62, 0x93, 0xc4), bytes((0x31, 0x62, 0x93, 0xc4))),
@@ -226,6 +263,7 @@ def check(qemu, auto_link=False):
             require(access(0x40002850) == 0x24681357 and
                     remote.read(0x20002200, 4) == b'keep',
                     'Controller system reset cleared its backup domain or SRAM')
+            require(step_level() == auto_link, 'Controller reset changed the engine step output')
             for thread in range(1, 5):
                 remote.select_thread(thread)
                 require(remote.get(remote.regs(), 'r4') == 0x13570000 + thread,
@@ -239,6 +277,7 @@ def check(qemu, auto_link=False):
             if auto_link:
                 require(not access(0x40021810) & 0x40 and engine_access(0x0426f008) & 0xc == 0,
                         'Reset retained controller acknowledgement or edge state')
+                require(not step_level(), 'Board reset retained the engine step output')
             require(firmware.read_bytes() == image, 'Embedded test modified its input image')
             print('PASS embedded controller: five cores, private DMA, paced serial bytes/halfwords, local and board reset',
                   'board-link=' + str(auto_link))

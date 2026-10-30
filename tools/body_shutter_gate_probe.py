@@ -1791,6 +1791,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     diagnostic_capture=capture_caller.report if capture_caller else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
+                    controller_step_link=getattr(machine.args, 'controller_step_link', False),
+                    controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     controller_step_trigger=dict(requested=controller_step_trigger,
                                                  supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
@@ -1910,6 +1912,10 @@ def main():
                         help='Trace diagnostic capture admission, stop and primary allocation without background input work')
     parser.add_argument('--controller-step-trigger', action='store_true',
                         help='Laboratory input: pulse and restore controller G8 after native capture preparation arms it')
+    parser.add_argument('--controller-actuator', action='store_true',
+                        help='Enable experimental PWM-driven controller position feedback')
+    parser.add_argument('--controller-step-link', action='store_true',
+                        help='Enable the experimental engine handshake to controller G8 connection')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
