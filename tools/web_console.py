@@ -277,12 +277,21 @@ class Machine:
         card_globals, card_arguments = (), ()
         if card is not None:
             require(card.is_file(), 'SD card image does not exist')
+            card_copy = getattr(self.args, 'capture_card_copy', None)
+            if card_copy is not None:
+                card_copy = card_copy.resolve()
+                card_copy.parent.mkdir(parents=True, exist_ok=True)
+                # Exclusive creation preserves both the supplied card and any
+                # earlier capture result. This copy survives VM work cleanup.
+                with card.open('rb') as source, card_copy.open('xb') as target:
+                    shutil.copyfileobj(source, target)
+                card = card_copy
             card_path = card.resolve().as_posix().replace(',', ',,')
             devices += ('sd-card,drive=console-card,bus=/z72-sd-slave/sd-bus',)
             card_globals = ('nikon-z72-boot-config.sd-host=on',
                             'nikon-z72-boot-config.pcie-link=on')
             card_arguments = ('-drive', f'if=none,id=console-card,file={card_path},'
-                              'format=raw,snapshot=on')
+                              f'format=raw,snapshot={"off" if card_copy else "on"}')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',
             icount=None if self.args.realtime else

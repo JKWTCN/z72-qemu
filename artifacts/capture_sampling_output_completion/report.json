@@ -1,0 +1,34 @@
+{
+  "observation": "shooting-startup-deadline",
+  "boot": {
+    "phase": "starting",
+    "error": null,
+    "ready": false,
+    "menu_inhibited": null,
+    "uptime": 112,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false
+  },
+  "boot_watch_seconds": 120,
+  "display_complete": true,
+  "input_handshake": true,
+  "frame_phase": true,
+  "input_stop_complete": true,
+  "frame_generate": true,
+  "frame_notify": true,
+  "shooting_foreground_ready": false,
+  "icount_shift": 4,
+  "sampling_output_complete": true,
+  "controller_step_link": true,
+  "controller_actuator": true
+}

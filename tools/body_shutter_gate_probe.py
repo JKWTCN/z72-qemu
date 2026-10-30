@@ -1953,7 +1953,9 @@ def main():
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
     parser.add_argument('--watch', type=int, default=30,
-                        help='Host seconds to observe the requested stage (10..1800)')
+                        help='Host seconds to observe the requested stage (10..3600)')
+    parser.add_argument('--capture-card-copy', type=Path,
+                        help='Create a new persistent private card copy for capture file inspection')
     parser.add_argument('--icount-shift', type=int, default=0,
                         help='Diagnostic virtual nanoseconds per instruction as a power of two (0..6)')
     parser.add_argument('--capture-counter-seconds', type=float,
@@ -2007,7 +2009,12 @@ def main():
     parser.add_argument('--image-work-events', action='store_true',
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
-    require(10 <= args.watch <= 1800, 'Watch time out of bounds')
+    require(10 <= args.watch <= 3600, 'Watch time out of bounds')
+    require(args.capture_card_copy is None or args.sd_card is not None and args.capture_focus,
+            'Persistent capture card requires a supplied card and focused capture tracing')
+    require(args.capture_card_copy is None or
+            args.capture_card_copy.resolve().is_relative_to((ROOT / '.local').resolve()),
+            'Capture card copy must remain in the private .local directory')
     require(0 <= args.icount_shift <= 6, 'Instruction clock shift out of bounds')
     require(args.capture_counter_seconds is None or
             args.capture_focus and 0 < args.capture_counter_seconds <= 120,
@@ -2089,6 +2096,9 @@ def main():
         else:
             report = dict(observation='shooting-startup-deadline', boot=state,
                           boot_watch_seconds=args.boot_watch,
+                          icount_shift=args.icount_shift,
+                          sampling_output_complete=args.sampling_output_complete,
+                          preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
                           display_complete=args.display_complete,
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,
                           input_stop_complete=args.input_stop_complete,
@@ -2136,6 +2146,8 @@ def main():
                       sd_attached=args.sd_card is not None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       icount_shift=args.icount_shift,
+                      sd_snapshot=args.capture_card_copy is None,
+                      preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
                       input_stop_complete=args.input_stop_complete,
