@@ -1,0 +1,311 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "evidence_kind": "static",
+  "program_sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
+  "decoder_version": "GNU objdump (GNU Binutils) 2.42",
+  "cases": [
+    {
+      "processor": "frv",
+      "endianness": "little",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 3,
+          "unsupported_offsets": [
+            "0xc000",
+            "0xc00c",
+            "0xc014"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 2,
+          "unsupported_offsets": [
+            "0x2421a",
+            "0x2423a"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 3,
+          "unsupported_offsets": [
+            "0x24e32",
+            "0x24e4e",
+            "0x24e56"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    },
+    {
+      "processor": "frv",
+      "endianness": "big",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 4,
+          "unsupported_offsets": [
+            "0xc010",
+            "0xc014",
+            "0xc038",
+            "0xc048"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 2,
+          "unsupported_offsets": [
+            "0x24222",
+            "0x24226"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 24,
+          "unsupported_rows": 9,
+          "unsupported_offsets": [
+            "0x24e42",
+            "0x24e46",
+            "0x24e4a",
+            "0x24e4e",
+            "0x24e56",
+            "0x24e5a",
+            "0x24e5e",
+            "0x24e76",
+            "0x24e7e"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    },
+    {
+      "processor": "d30v",
+      "endianness": "little",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 7,
+          "unsupported_offsets": [
+            "0xc000",
+            "0xc008",
+            "0xc010",
+            "0xc020",
+            "0xc030",
+            "0xc050",
+            "0xc058"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 2,
+          "unsupported_offsets": [
+            "0x2421a",
+            "0x24222"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 5,
+          "unsupported_offsets": [
+            "0x24e3a",
+            "0x24e4a",
+            "0x24e52",
+            "0x24e5a",
+            "0x24e72"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    },
+    {
+      "processor": "d30v",
+      "endianness": "big",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 7,
+          "unsupported_offsets": [
+            "0xc000",
+            "0xc008",
+            "0xc010",
+            "0xc020",
+            "0xc030",
+            "0xc050",
+            "0xc058"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 2,
+          "unsupported_offsets": [
+            "0x2421a",
+            "0x24222"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 12,
+          "unsupported_rows": 5,
+          "unsupported_offsets": [
+            "0x24e3a",
+            "0x24e4a",
+            "0x24e52",
+            "0x24e5a",
+            "0x24e72"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    },
+    {
+      "processor": "mep",
+      "endianness": "little",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 35,
+          "unsupported_rows": 7,
+          "unsupported_offsets": [
+            "0xc00a",
+            "0xc014",
+            "0xc018",
+            "0xc026",
+            "0xc036",
+            "0xc03e",
+            "0xc04c"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 42,
+          "unsupported_rows": 3,
+          "unsupported_offsets": [
+            "0x24218",
+            "0x24236",
+            "0x2424c"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 41,
+          "unsupported_rows": 13,
+          "unsupported_offsets": [
+            "0x24e34",
+            "0x24e3e",
+            "0x24e46",
+            "0x24e50",
+            "0x24e58",
+            "0x24e60",
+            "0x24e66",
+            "0x24e6c",
+            "0x24e70",
+            "0x24e76",
+            "0x24e78",
+            "0x24e82",
+            "0x24e8a"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    },
+    {
+      "processor": "mep",
+      "endianness": "big",
+      "windows": [
+        {
+          "file_offset": "0xc000",
+          "runtime_address": "0x8030c000",
+          "requested_bytes": 96,
+          "instruction_rows": 35,
+          "unsupported_rows": 7,
+          "unsupported_offsets": [
+            "0xc000",
+            "0xc004",
+            "0xc010",
+            "0xc01a",
+            "0xc020",
+            "0xc030",
+            "0xc03e"
+          ]
+        },
+        {
+          "file_offset": "0x2420a",
+          "runtime_address": "0x8032420a",
+          "requested_bytes": 96,
+          "instruction_rows": 43,
+          "unsupported_rows": 3,
+          "unsupported_offsets": [
+            "0x24238",
+            "0x2423c",
+            "0x2424e"
+          ]
+        },
+        {
+          "file_offset": "0x24e32",
+          "runtime_address": "0x80324e32",
+          "requested_bytes": 96,
+          "instruction_rows": 33,
+          "unsupported_rows": 7,
+          "unsupported_offsets": [
+            "0x24e34",
+            "0x24e50",
+            "0x24e56",
+            "0x24e7a",
+            "0x24e7e",
+            "0x24e84",
+            "0x24e88"
+          ]
+        }
+      ],
+      "all_windows_decoded": false
+    }
+  ],
+  "limitations": [
+    "Only three candidate processor families and three short windows are covered",
+    "Table targets are candidates; their roles as code entries remain unproven",
+    "An unsupported row prevents complete decoding of this window with this configuration",
+    "A complete decode alone would not establish architecture, valid control flow or execution",
+    "No RAW computation or photograph is produced"
+  ]
+}
