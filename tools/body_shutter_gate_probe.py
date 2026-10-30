@@ -1122,6 +1122,41 @@ def card_admission_snapshot(remote):
     return result
 
 
+def controller_release_irq_snapshot(remote, resume_thread=1):
+    """Read native body-contact GPIO/EXTI bindings without acknowledging IRQs."""
+    remote.select_thread(5)
+    try:
+        def word(address):
+            return int.from_bytes(remote.read(address, 4), 'little')
+        exti = [word(0x40013c00 + offset) for offset in range(0, 24, 4)]
+        routes = [word(0x40013808 + index * 4) for index in range(4)]
+        mode, levels = word(0x40021800), word(0x40021810)
+        vtor = word(0xe000ed08)
+        contacts = []
+        for name, pin, index, irq, callback in (
+                ('half', 1, 9, 7, 0x2000f384), ('full', 13, 11, 40, 0x2000f468)):
+            descriptor = word(0x200184c8 + index * 4)
+            row = dict(contact=name, pin=pin, gpio_mode=(mode >> (pin * 2)) & 3,
+                gpio_level=(levels >> pin) & 1,
+                exti_port=(routes[pin // 4] >> ((pin % 4) * 4)) & 15,
+                interrupt_enabled=bool(exti[0] & 1 << pin),
+                rising_enabled=bool(exti[2] & 1 << pin),
+                falling_enabled=bool(exti[3] & 1 << pin), pending=bool(exti[5] & 1 << pin),
+                callback_slot=hex(callback), callback=hex(word(callback)),
+                descriptor=hex(descriptor), irq=irq,
+                nvic_enabled=bool(word(0xe000e100 + (irq // 32) * 4) & 1 << (irq % 32)))
+            if 0x20000000 <= descriptor <= 0x2003fff0:
+                row['descriptor_words'] = [hex(value) for value in struct.unpack(
+                    '<4I', remote.read(descriptor, 16))]
+            if 0x20000000 <= vtor <= 0x2003ff00 and vtor % 128 == 0:
+                row['vector'] = hex(word(vtor + (16 + irq) * 4))
+            contacts.append(row)
+        return dict(vtor=hex(vtor), exti_words=[hex(value) for value in exti],
+                    route_words=[hex(value) for value in routes], contacts=contacts)
+    finally:
+        remote.select_thread(resume_thread)
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -1146,6 +1181,7 @@ def snapshot(remote):
             input_geometry=[hex(word(0x20069500 + i * 4)) for i in range(3)])
     remote.select_thread(5)
     controller_capture = dict(header=list(remote.read(0x2001359c, 6)),
+        release_input_irq=controller_release_irq_snapshot(remote, 5),
         words={hex(offset): hex(word(0x2001359c + offset)) for offset in range(0x14, 0x3c, 4)},
         backend_header=list(remote.read(0x2001756c, 24)),
         backend_words={hex(offset): hex(word(0x2001756c + offset)) for offset in range(0x18, 0x2c, 4)},
@@ -2259,6 +2295,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
                     full = bool(remote.get(registers, 'r5') & 0x40000000)
                     record.update(action=hex(action), full_press=full)
+                    if action in (0x13, 0x14):
+                        record['controller_release_irq'] = controller_release_irq_snapshot(remote, thread)
                     repeat = action != 0x1a if playback else not (full and action == 0x14)
                     if not repeat:
                         record['switch_words'] = [hex(x) for x in struct.unpack(
