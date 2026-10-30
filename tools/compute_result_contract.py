@@ -7,7 +7,7 @@ import struct
 import sys
 
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_HOOK_CODE
-from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_SP,
+from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_SP,
                               UC_ARM_REG_LR, UC_ARM_REG_PC)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -93,12 +93,45 @@ def check(image):
                           supplied_configuration=configuration, filtered=actual,
                           categories_by_metadata_mode=categories))
     require(len(config_calls) == len(fixtures), 'Configuration boundary count differs')
+    # Execute request preparation through the native table copy, before the
+    # geometry/configuration helpers. The native row selector runs unhooked.
+    descriptor = 0x50009000
+    put(context, descriptor)
+    cpu.mem_write(descriptor + 0x24, b'\x02')
+    cpu.mem_write(descriptor + 0x26, struct.pack('<H', 12432))
+    cpu.mem_write(descriptor + 0x2a, struct.pack('<H', 5520))
+    put(descriptor + 0x34, 0xbad0a000)
+    preparations = []
+    for alternate in (0, 1):
+        cpu.mem_write(nested + 0x2b79, bytes([alternate]))
+        for pass_index in (0, 1):
+            cpu.mem_write(parameters, bytes(0x600))
+            cpu.reg_write(UC_ARM_REG_R0, context)
+            cpu.reg_write(UC_ARM_REG_R1, pass_index)
+            cpu.reg_write(UC_ARM_REG_R2, parameters)
+            cpu.reg_write(UC_ARM_REG_SP, 0x5000e000)
+            cpu.emu_start(0x1011ecd7, 0x1011edb8, count=1000)
+            require(cpu.reg_read(UC_ARM_REG_PC) == 0x1011edb8,
+                    'Original parameter preparation did not reach geometry boundary')
+            fields = {hex(offset): words(parameters + offset, 1)[0]
+                      for offset in range(0x484, 0x4d4, 4)}
+            require([fields[hex(offset)] for offset in (0x494, 0x498, 0x49c, 0x4a4)] ==
+                    [12432, 2, 0xbad0a000, 5520], 'RAW descriptor changed between passes')
+            expected = ([33, 24, 24, 24, 33792, 24576] if pass_index else
+                        [181, 12, 12, 12, 185344, 12288] if alternate else
+                        [29, 12, 12, 12, 29696, 12288])
+            require([fields[hex(offset)] for offset in
+                     (0x484, 0x488, 0x48c, 0x490, 0x4ac, 0x4b0)] == expected,
+                    'Original per-pass parameter table differs')
+            preparations.append(dict(alternate=alternate, pass_index=pass_index, fields=fields))
     return dict(format=1, result='passed', firmware_included=False,
         slave_sha256=structure['sha256'], thresholds=thresholds, cases=cases,
+        request_preparations=preparations,
         entries=dict(filter='0x1011e75a', selector='0x10148ff2'),
-        host_boundaries=['Synthetic contexts, result triples and nine configuration words',
+        host_boundaries=['Synthetic contexts, RAW descriptor, result triples and nine configuration words',
                          'Configuration lookup 0x10161e5a returns supplied words'],
         limitations=['No compute program or RAW input algorithm is executed',
+                     'Request preparation stops at 0x1011edb8 before geometry/configuration helpers',
                      'Synthetic result triples do not establish physical units or their producer',
                      'No whole-machine reply, encoding or photograph is produced'])
 
@@ -111,4 +144,4 @@ if __name__ == '__main__':
     result = check(args.slave.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8', newline='\n')
-    print('PASS original two-pass result filtering and downstream category selection')
+    print('PASS original per-pass parameter preparation, result filtering and category selection')

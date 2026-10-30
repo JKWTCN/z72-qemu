@@ -465,16 +465,123 @@
       ]
     }
   ],
+  "request_preparations": [
+    {
+      "alternate": 0,
+      "pass_index": 0,
+      "fields": {
+        "0x484": 29,
+        "0x488": 12,
+        "0x48c": 12,
+        "0x490": 12,
+        "0x494": 12432,
+        "0x498": 2,
+        "0x49c": 3134234624,
+        "0x4a0": 8280,
+        "0x4a4": 5520,
+        "0x4a8": 4,
+        "0x4ac": 29696,
+        "0x4b0": 12288,
+        "0x4b4": 12288,
+        "0x4b8": 12288,
+        "0x4bc": 3,
+        "0x4c0": 19,
+        "0x4c4": 0,
+        "0x4c8": 7,
+        "0x4cc": 0,
+        "0x4d0": 2
+      }
+    },
+    {
+      "alternate": 0,
+      "pass_index": 1,
+      "fields": {
+        "0x484": 33,
+        "0x488": 24,
+        "0x48c": 24,
+        "0x490": 24,
+        "0x494": 12432,
+        "0x498": 2,
+        "0x49c": 3134234624,
+        "0x4a0": 8280,
+        "0x4a4": 5520,
+        "0x4a8": 4,
+        "0x4ac": 33792,
+        "0x4b0": 24576,
+        "0x4b4": 24576,
+        "0x4b8": 24576,
+        "0x4bc": 3,
+        "0x4c0": 10,
+        "0x4c4": 0,
+        "0x4c8": 3,
+        "0x4cc": 0,
+        "0x4d0": 1
+      }
+    },
+    {
+      "alternate": 1,
+      "pass_index": 0,
+      "fields": {
+        "0x484": 181,
+        "0x488": 12,
+        "0x48c": 12,
+        "0x490": 12,
+        "0x494": 12432,
+        "0x498": 2,
+        "0x49c": 3134234624,
+        "0x4a0": 8280,
+        "0x4a4": 5520,
+        "0x4a8": 60,
+        "0x4ac": 185344,
+        "0x4b0": 12288,
+        "0x4b4": 12288,
+        "0x4b8": 12288,
+        "0x4bc": 3,
+        "0x4c0": 19,
+        "0x4c4": 0,
+        "0x4c8": 7,
+        "0x4cc": 0,
+        "0x4d0": 2
+      }
+    },
+    {
+      "alternate": 1,
+      "pass_index": 1,
+      "fields": {
+        "0x484": 33,
+        "0x488": 24,
+        "0x48c": 24,
+        "0x490": 24,
+        "0x494": 12432,
+        "0x498": 2,
+        "0x49c": 3134234624,
+        "0x4a0": 8280,
+        "0x4a4": 5520,
+        "0x4a8": 4,
+        "0x4ac": 33792,
+        "0x4b0": 24576,
+        "0x4b4": 24576,
+        "0x4b8": 24576,
+        "0x4bc": 3,
+        "0x4c0": 10,
+        "0x4c4": 0,
+        "0x4c8": 3,
+        "0x4cc": 0,
+        "0x4d0": 1
+      }
+    }
+  ],
   "entries": {
     "filter": "0x1011e75a",
     "selector": "0x10148ff2"
   },
   "host_boundaries": [
-    "Synthetic contexts, result triples and nine configuration words",
+    "Synthetic contexts, RAW descriptor, result triples and nine configuration words",
     "Configuration lookup 0x10161e5a returns supplied words"
   ],
   "limitations": [
     "No compute program or RAW input algorithm is executed",
+    "Request preparation stops at 0x1011edb8 before geometry/configuration helpers",
     "Synthetic result triples do not establish physical units or their producer",
     "No whole-machine reply, encoding or photograph is produced"
   ]
