@@ -1,0 +1,146 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "program_sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
+  "program_bytes": 161792,
+  "versions": [
+    {
+      "package": "Z7_2_0101.bin",
+      "package_sha256": "6e06b6ef9f0b86f9c20a6cb1a2a86b719674ae4cc9416e4d65430b9413f43099",
+      "member": "eg1840_sla_01010",
+      "slave_sha256": "def08adcb490acb30f83706bb035b7a92fa28732c361c130f8886673290a2d86",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8080cc",
+      "program_source_address": "0x108280cc",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0110_01.bin",
+      "package_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "member": "eg1840_sla_0110e",
+      "slave_sha256": "6e577407ac8f01ab50c0c7b3c11f902ba3a57e4622647bd504f0fc4b9325f85f",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x80814c",
+      "program_source_address": "0x1082814c",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0120.bin",
+      "package_sha256": "78d2b91abbb9cca6c438538bc2d4a59cb604187296dfe8d7ed75f6853a53beb9",
+      "member": "eg1840_sla_0120c",
+      "slave_sha256": "b4d5ffa0d9d7bb885acf07172af4b33ae2eb5ef175b569a504895ae1218d332a",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x80814c",
+      "program_source_address": "0x1082814c",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0121.bin",
+      "package_sha256": "cd70fe4acf53bc56c9b8380b6368d3ed40b25fd4f17dbd3c21f9e0a2ea6789c7",
+      "member": "eg1840_sla_01210",
+      "slave_sha256": "e43e50cb86aa669f79ef7fdf0b82af6da8c04b8ca568ce5843c59af6744d4de9",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x80834c",
+      "program_source_address": "0x1082834c",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0130.bin",
+      "package_sha256": "ed096994c005fff0692255d93fba2917f823f1e982ea541655f8631aedff910a",
+      "member": "eg1840_sla_0130f",
+      "slave_sha256": "edb66b15e2304e4e822fb2feda96327119ba6d73b6b81760ab40a4ad6ce5d1dd",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8149d4",
+      "program_source_address": "0x108349d4",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0131.bin",
+      "package_sha256": "17b424a2d3f0de715be013ff88699623ed14786adac381144f0656c2fc7d1cb3",
+      "member": "eg1840_sla_0131a",
+      "slave_sha256": "3a93fa113dab1c76e1c3fcc3f72c78c6346db4bc42fa8fad1d0737ea88d2e6fb",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8149d4",
+      "program_source_address": "0x108349d4",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0140.bin",
+      "package_sha256": "fe52d3135c01a91bd88ccb923390de05e73e8231a818d560a3aa9022a057e58e",
+      "member": "eg1840_sla_0140d",
+      "slave_sha256": "f461186a03d4605cb72d6bec8dbb59300530dc6759cb582867795dfcf11fa686",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8149d4",
+      "program_source_address": "0x108349d4",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0150.bin",
+      "package_sha256": "5ed3dd815e95061d2daabef4ffb69a2a401e00e1624180ba5ea420d0547ff2b1",
+      "member": "eg1840_sla_0150c",
+      "slave_sha256": "c46a32c6de8db8c13e2122a4dcf2d622bf9cbaf17e479f39313d5440fed073f6",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x814b14",
+      "program_source_address": "0x10834b14",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0160.bin",
+      "package_sha256": "921a9f92cfc394300fc9c26a92d9e3fa15c2be37ca3eb01862711c4609799904",
+      "member": "eg1840_sla_0160b",
+      "slave_sha256": "315e959cb5eb21d43588a96c523f2f99cbe1bb1548d15b3f827501403cdcc8bb",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8149d4",
+      "program_source_address": "0x108349d4",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0161.bin",
+      "package_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "member": "eg1840_sla_01610",
+      "slave_sha256": "8e4bf306f7fba697426f9625d2771272d61575e9502d4ace205263fef50fa028",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x8149d4",
+      "program_source_address": "0x108349d4",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0162.bin",
+      "package_sha256": "4e1b865bda9a3fda1cbce09be4cae3b67d5a05551f44720306c6f426aad7941c",
+      "member": "eg1840_sla_0162a",
+      "slave_sha256": "26a2ad1381cf07c710faf25620972946370da1af895531fad45d4093ea942f3b",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x814b54",
+      "program_source_address": "0x10834b54",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    },
+    {
+      "package": "Z7_2_0170.bin",
+      "package_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "member": "eg1840_sla_01700",
+      "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+      "slave_crc_valid": true,
+      "program_file_offset": "0x814b54",
+      "program_source_address": "0x10834b54",
+      "program_bytes": 161792,
+      "complete_payload_equal": true
+    }
+  ],
+  "limitations": [
+    "Complete byte equality establishes payload presence, not historical loader execution",
+    "Host-side request preparation, configuration and memory placement may differ",
+    "No processor instruction set, calculation or photograph is established"
+  ]
+}
