@@ -2733,6 +2733,8 @@ def main():
                         help='Diagnostic native-task capture API call after preview and release readiness')
     parser.add_argument('--trace-capture-resource-boot', action='store_true',
                         help='Observe capture resource bits 37/44 being written from reset')
+    parser.add_argument('--trace-capture-compute-boot', action='store_true',
+                        help='Observe the slave compute program loader from reset')
     parser.add_argument('--trace-primary-allocation-boot', action='store_true',
                         help='Observe the C 1.70 primary allocation source and constructor arguments from reset')
     parser.add_argument('--processing-resource-header', action='store_true',
@@ -2821,7 +2823,8 @@ def main():
             'Focused capture requires the diagnostic caller without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
             'Controller step input experiment requires focused capture tracing')
-    require(not (args.trace_primary_allocation_boot and args.trace_capture_resource_boot),
+    require(sum((args.trace_primary_allocation_boot, args.trace_capture_resource_boot,
+                 args.trace_capture_compute_boot)) <= 1,
             'Select one boot observation')
     require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
             not (args.playback or args.capture_submit_on_ready or args.input_boundary_events),
@@ -2844,6 +2847,9 @@ def main():
     elif args.trace_capture_resource_boot:
         from tools.capture_resource_boot_trace import CaptureResourceMachine
         machine = CaptureResourceMachine(args)
+    elif args.trace_capture_compute_boot:
+        from tools.capture_compute_boot_trace import CaptureComputeMachine
+        machine = CaptureComputeMachine(args)
     else:
         machine = Machine(args)
     try:
@@ -2950,6 +2956,8 @@ def main():
         report['processing_resource_header'] = args.processing_resource_header
         if args.trace_capture_resource_boot:
             report['capture_resource_boot_writes'] = machine.resource_boot_writes
+        if args.trace_capture_compute_boot:
+            report['capture_compute_boot'] = machine.compute_boot
         if args.trace_primary_allocation_boot:
             report['primary_allocation_boot_writes'] = machine.allocation_boot_writes
         if initial_dma is not None:

@@ -92,6 +92,9 @@ static const NikonZ72Window nikon_z72_windows[] = {
 /* Isolated slave context: the code base matches master, so these are separate
  * machines. Message windows are plain RAM, without a transport device. */
 static const NikonZ72Window nikon_z72_slave_windows[] = {
+    /* Native 0x10054A56 uploads this C1.70 compute program span. Its
+     * configuration block at 0x8030C000 is inside the same storage. */
+    {0x80300000, 0x00027800, "z72-slave-compute-program-lab"},
     /* Original slave zero-initialization record and pool profile 0x101F1660.
      * The master's matching pool 0x11983578 describes this peer storage;
      * its numeric addresses must not name the master's execution cache. */

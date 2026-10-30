@@ -86,6 +86,23 @@ def run(qemu):
             require(remote.read(0x04251030, 4) == struct.pack('<I', 1) and
                     remote.read(target, len(data)) == data,
                     'Slave sequencer accepted an unmapped target or changed the cache')
+            for address in (0x80300000, 0x803277f8):
+                remote.write(address, master_guard)
+                require(remote.read(address, 8) == master_guard,
+                        'Slave compute program storage boundary differs')
+            require(remote.command('m802ffffc,4').startswith('E') and
+                    remote.command('m80327800,4').startswith('E'),
+                    'Slave compute program storage exceeds the observed upload span')
+            target = 0x80301000
+            remote.write(target - 4, b'HEAD' + bytes(len(data)) + b'TAIL')
+            sequencer_word(32, 0)
+            sequencer_word(8, target)
+            sequencer_word(24, 0x11109003)
+            require(remote.read(target, len(data)) == data and
+                    remote.read(target - 4, 4) == b'HEAD' and
+                    remote.read(target + len(data), 4) == b'TAIL' and
+                    remote.read(0x04251030, 4) == struct.pack('<I', 8),
+                    'Slave compute program upload or guards differ')
             remote.select_thread(1)
             remote.set(pc=0x40100000, cpsr=0xd3, r2=0x40800000)
             remote.command('vCont;s:1')
@@ -126,7 +143,7 @@ def run(qemu):
             require(remote.get(regs, 'pc') == 0x10 and
                     remote.get(regs, 'cpsr') & 0x1f == 0x17,
                     'Peer alias filled an unmapped RAM gap')
-            print('PASS peer ownership, RAM gaps and slave code-cache DMA with guarded outputs')
+            print('PASS peer ownership, RAM gaps, slave code-cache and compute program uploads')
         finally:
             if remote is not None:
                 remote.sock.close()
