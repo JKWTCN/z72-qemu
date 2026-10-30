@@ -620,7 +620,7 @@
     "tools/aux_image_contract.py": "91ba957666c9a0c55ea6fb9943952a4d6728ea68f10be6a802fd2716456f6cd1",
     "tools/aux_vector_contract.py": "fe80433061bc5da37cc91c3f28e80b009753df458948f0bfd4ddf40e42e63846",
     "tools/battery_boot_probe.py": "1c5429257309c3c08dd2f9fc0a1b34117b2333dbfaddfc17c3b5f80f63ebf2f8",
-    "tools/body_shutter_gate_probe.py": "117e6961928a5085e6c4f26c63e8aa750e34f3cd9fedb1ab8cc1760279a3f4f4",
+    "tools/body_shutter_gate_probe.py": "761cf9d89e63c7c986d7216184363cfba74d0cf191fc5ead4e0bef2c0929cb10",
     "tools/boot_material_access_probe.py": "d004e91b21327d418fb528f5fec7be4b722fe569468931269c15517047562b95",
     "tools/boot_probe.py": "fa08814d22ffaccb1b7b89fedc805017ef7d223799f8436e1b0afa47acafe6dc",
     "tools/boot_region_probe.py": "7e29d711199386d170e7ae4337d7e0591451e72181f7cb9f1cf83b0ab49e2ce5",

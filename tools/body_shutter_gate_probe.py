@@ -1774,8 +1774,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         keep = keep and code in (0x04200185, 0x03030001, 0x03030002)
                     if pc == 0x1026d16e:
                         keep = keep and 0x04200281 <= remote.get(registers, 'r0') <= 0x04200288
-                    if pc in (0x102dc83c, 0x102dc808):
+                    if pc == 0x102dc83c:
                         keep = keep and bool(remote.get(registers, 'r1') & 0x18)
+                    if pc == 0x102dc808:
+                        keep = keep and bool(remote.get(registers, 'r1') & 0x30)
                     if pc == 0x10297710:
                         keep = keep and remote.get(registers, 'r0') in (8, 16)
                     if keep and pc in (0x10394710, 0x10395a70, 0x10394d06, 0x10397260,
