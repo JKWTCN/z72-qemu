@@ -228,6 +228,11 @@ CAPTURE_SLAVE_INIT_POINTS = {
     0x100593a0: 'capture-slave-compute-init-configure',
     0x10054a80: 'capture-slave-compute-init-configure-return',
     0x10065c22: 'capture-slave-compute-init-memory-switch',
+    0x100593f4: 'capture-slave-compute-control-one-entry',
+    0x1005941c: 'capture-slave-compute-control-one-written',
+    0x10059434: 'capture-slave-compute-status-check',
+    0x1005944c: 'capture-slave-compute-state-request',
+    0x1005947c: 'capture-slave-compute-flush-request',
 }
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
@@ -943,6 +948,11 @@ def peer_input_snapshot(remote, resume_thread=1):
                 (0, 4, 8, 0xc, 0x4c, 0x50, *range(0x484, 0x5ac, 4))},
             output_words=[hex(value) for value in struct.unpack(
                 '<3I', remote.read(0xc500c4e0, 12))])
+        compute['core_words'] = {hex(offset): hex(word(0x24060000 + offset))
+                                 for offset in range(0, 0x40, 4)}
+        compute['clock_words'] = {hex(offset): hex(word(0x04281000 + offset))
+                                  for offset in (0x20, 0x28, 0x30, 0x34, 0x58, 0x5c)}
+        compute['gate_125_word'] = hex(word(0x04280084))
         engine = word(0xc1006408)
         compute['engine'] = hex(engine)
         if 0xc1000000 <= engine <= 0xc81fffec:
@@ -953,7 +963,9 @@ def peer_input_snapshot(remote, resume_thread=1):
                 base = (0x04250000, 0x24061000)[bank]
                 registers = base + 0x100 + channel * 0x80
                 compute.update(bank=bank, channel=channel, registers=hex(registers),
-                    pending=hex(word(base + 0x900)),
+                    busy_channels=hex(word(base + 0x900)),
+                    request_irq_head=hex(word(base + 0x80)),
+                    result_irq_head=hex(word(base + 0x84)),
                     channel_words=[hex(value) for value in struct.unpack(
                         '<32I', remote.read(registers, 128))])
         result['compute'] = compute

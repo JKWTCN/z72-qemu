@@ -63,7 +63,9 @@ class CaptureComputeMachine(Machine):
                             registers={name: hex(remote.get(registers, name)) for name in
                                 ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'sp', 'lr')},
                             memory_channels=[[hex(value) for value in struct.unpack('<11I',
-                                remote.read(0x04251010 + channel * 0x30, 44))] for channel in range(4)])
+                                remote.read(0x04251010 + channel * 0x30, 44))] for channel in range(4)],
+                            core_words=[hex(value) for value in struct.unpack('<16I',
+                                remote.read(0x24060000, 64))])
                         if pc == 0x10054a56:
                             source, length = remote.get(registers, 'r2'), remote.get(registers, 'r3')
                             require(source == 0x10834b54 and length == 0x27800,

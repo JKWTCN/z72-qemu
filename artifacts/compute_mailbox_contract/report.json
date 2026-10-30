@@ -1,0 +1,203 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "outgoing": {
+    "accepted": 1,
+    "registers": {
+      "0x0": "0x0",
+      "0x4": "0x3",
+      "0x8": "0x1",
+      "0x10": "0x4",
+      "0x40": "0x0",
+      "0x44": "0xc1690a8c"
+    },
+    "events": [
+      {
+        "entry": "0x100f978c",
+        "object": "0xc1006418",
+        "mask": "0x1"
+      },
+      {
+        "entry": "0x100f9794",
+        "object": "0xc1006418",
+        "mask": "0x1"
+      }
+    ]
+  },
+  "acknowledgement": {
+    "interrupt": 227,
+    "queue_head": "0x24061080",
+    "head_value": "0x100",
+    "response_mask": "0x1",
+    "clear": "0x1",
+    "events": [
+      {
+        "entry": "0x100f9786",
+        "object": "0xc1006418",
+        "mask": "0x1"
+      }
+    ]
+  },
+  "replies": [
+    {
+      "interrupt": 228,
+      "queue_head": "0x24061084",
+      "head_value": "0x100",
+      "slot": 0,
+      "words": [
+        "0x0",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "copied_words": [
+        "0x0",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "result": "0x0",
+      "request_clear": "0x2",
+      "events": [
+        {
+          "entry": "0x100f9786",
+          "object": "0xc1007170",
+          "mask": "0x1"
+        }
+      ]
+    },
+    {
+      "interrupt": 228,
+      "queue_head": "0x24061084",
+      "head_value": "0x180",
+      "slot": 1,
+      "words": [
+        "0x1",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "copied_words": [
+        "0x1",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "result": "0x1",
+      "request_clear": "0x2",
+      "events": [
+        {
+          "entry": "0x100f9786",
+          "object": "0xc1007170",
+          "mask": "0x1"
+        }
+      ]
+    },
+    {
+      "interrupt": 228,
+      "queue_head": "0x24061084",
+      "head_value": "0x300",
+      "slot": 4,
+      "words": [
+        "0x2",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "copied_words": [
+        "0x2",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "result": "0x2",
+      "request_clear": "0x2",
+      "events": [
+        {
+          "entry": "0x100f9786",
+          "object": "0xc1007170",
+          "mask": "0x1"
+        }
+      ]
+    },
+    {
+      "interrupt": 228,
+      "queue_head": "0x24061084",
+      "head_value": "0x480",
+      "slot": 7,
+      "words": [
+        "0xffffffff",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "copied_words": [
+        "0xffffffff",
+        "0x21",
+        "0x22",
+        "0x23",
+        "0x24",
+        "0x25",
+        "0x26",
+        "0x27",
+        "0x28"
+      ],
+      "result": "0xffffffff",
+      "request_clear": "0x2",
+      "events": [
+        {
+          "entry": "0x100f9786",
+          "object": "0xc1007170",
+          "mask": "0x1"
+        }
+      ]
+    }
+  ],
+  "missing_callback_events": [],
+  "host_boundaries": [
+    "Synthetic engine, packet, MMIO words and reply payloads",
+    "Accept uncontended locks; record event operations and return immediately from waits"
+  ],
+  "limitations": [
+    "No hardware interrupt is raised and no processor program is executed",
+    "Acceptance and synthetic replies do not prove calculation or an encoded photograph",
+    "Four synthetic result values are forwarded verbatim; their application meaning is not established"
+  ]
+}
