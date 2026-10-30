@@ -1000,13 +1000,84 @@
       }
     ]
   },
+  "kind_selection": {
+    "entry": "0x10319560",
+    "property_id": "0x1676",
+    "descriptor": "0x11901dc4",
+    "scalar_address": "0xb2551954",
+    "bulk_getter": "0x101004a0",
+    "property_array": "0x118e60b4",
+    "property_index": 133,
+    "scalar_offset": "0x214",
+    "parameter_builder": "0x103581fa",
+    "copy_block": [
+      "0x103585be",
+      "0x103585c6"
+    ],
+    "output_base_offset": "0x2c90",
+    "output_field_offset": "0x13d",
+    "parameter_offset": "0x2dcd",
+    "cases": [
+      {
+        "parameter_mode": 0,
+        "property_value": 0,
+        "parameter_2dcd": 0,
+        "context_kind": 1
+      },
+      {
+        "parameter_mode": 0,
+        "property_value": 1,
+        "parameter_2dcd": 1,
+        "context_kind": 2
+      },
+      {
+        "parameter_mode": 0,
+        "property_value": 2,
+        "parameter_2dcd": 2,
+        "context_kind": 1
+      },
+      {
+        "parameter_mode": 0,
+        "property_value": 255,
+        "parameter_2dcd": 255,
+        "context_kind": 1
+      },
+      {
+        "parameter_mode": 2,
+        "property_value": 0,
+        "parameter_2dcd": 0,
+        "context_kind": 1
+      },
+      {
+        "parameter_mode": 2,
+        "property_value": 1,
+        "parameter_2dcd": 1,
+        "context_kind": 2
+      },
+      {
+        "parameter_mode": 2,
+        "property_value": 2,
+        "parameter_2dcd": 2,
+        "context_kind": 1
+      },
+      {
+        "parameter_mode": 2,
+        "property_value": 255,
+        "parameter_2dcd": 255,
+        "context_kind": 1
+      }
+    ]
+  },
   "host_boundaries": [
     "Seed synthetic state and qualifier; record deferred submission without executing it",
     "Supply uncontended locks and event clear for the submission mode check",
-    "Stop an admitted submission before allocation; no image job is created"
+    "Stop an admitted submission before allocation; no image job is created",
+    "Seed a synthetic scalar, run the original bulk getter, copy block and kind selector"
   ],
   "limitations": [
     "Notification and initial submission gates only; no native event delivery or image processing is supplied",
+    "The kind check excludes the full parameter builder and other selector branches",
+    "Property meaning and whether a context represents a photo remain unverified",
     "No conclusion about other producers or the required hardware timing"
   ]
 }

@@ -1055,6 +1055,7 @@ def snapshot(remote):
         capture_driver_context_count=word(0xb1868b58),
         capture_driver_finish_comparison_word=hex(word(0xb1868c34)),
         capture_driver_input_flags=hex(word(0xb1868ca0)),
+        context_kind_property_1676=word(0xb2551954),
         capture_stop_ready_flags=hex(word(0xb1868b64)),
         stop_queue_count=word(0xb23ef3d0),
         processing_command=remote.read(0xb1868310, 1)[0],
@@ -2100,6 +2101,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 for offset, size in ((0, 1), (1, 1), (4, 4), (8, 4), (0xc, 1),
                                                      (0x10, 4), (0x14, 4), (0x18, 4), (0x20, 4),
                                                      (0x38, 4), (0xac, 1), (0x107, 1), (0x4d4, 1))}
+                        if 0xb1800000 <= parameters <= 0xb5efd232:
+                            record['staged_work']['parameter_2dcd'] = remote.read(parameters + 0x2dcd, 1)[0]
                         if pc == 0x10326624:
                             record['staged_work']['submit_result'] = hex(remote.get(registers, 'r0'))
                     if pc in (0x10321d80, 0x10321d94, 0x10321dbe, 0x10325304,
@@ -2125,6 +2128,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 record['pending_context_parameters'] = hex(parameters)
                                 if 0xb1800000 <= parameters <= 0xb5efff53:
                                     record['context_parameter_ac'] = hex(remote.read(parameters + 0xac, 1)[0])
+                                if 0xb1800000 <= parameters <= 0xb5efd232:
+                                    record['context_parameter_2dcd'] = remote.read(parameters + 0x2dcd, 1)[0]
                                 if pc == 0x10325304:
                                     record['context_creation_kind'] = hex(remote.get(registers, 'r8'))
                     if pc in (0x1026a312, 0x1026a448):
