@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Read a synthetic sector through the optional SDHCI window, without firmware."""
+"""Read and write synthetic sectors through the optional SDHCI window."""
 import argparse
 import json
 from pathlib import Path
@@ -81,11 +81,11 @@ def run(qemu):
             def write(offset, value, width='l'):
                 command(f'write{width} {0x2A810000 + offset:#x} {value:#x}')
 
-            def sd_command(index, argument=0, flags=0, block=False):
+            def sd_command(index, argument=0, flags=0, block=False, writing=False, dma=False):
                 write(4, 512 if block else 0, 'w')
                 write(6, 1 if block else 0, 'w')
                 write(8, argument)
-                write(0xC, 0x12 if block else 0, 'w')
+                write(0xC, ((0x02 if writing else 0x12) | int(dma)) if block else 0, 'w')
                 write(0xE, index << 8 | flags, 'w')
 
             assert command('readl 0x2b200058') & 0x3F0000 == 0x110000
@@ -134,6 +134,41 @@ def run(qemu):
             assert not irq_levels[243 - 32], 'IRQ 243 remained high after source acknowledgement'
             sector = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
             assert sector == marker, 'SDHCI sector differs from the backing image'
+            for block, prefix in ((1, 0), (2, 33)):
+                payload = bytes((index * 73 + block * 19) & 255 for index in range(512))
+                write(0x30, 0xffffffff)
+                sd_command(24, block * 512, flags=0x20, block=True, writing=True)
+                assert read(0x24) & 0x400, 'The host has no writable block'
+                cursor = 0
+                while cursor < len(payload):
+                    size = 1 if cursor < prefix or cursor & 3 or len(payload) - cursor < 4 else 4
+                    write(0x20 + (cursor & 3), int.from_bytes(payload[cursor:cursor + size], 'little'),
+                          'b' if size == 1 else 'l')
+                    cursor += size
+                status = read(0x30)
+                assert status & 2, ('SDHCI write did not finish its transfer', block,
+                                    hex(status), hex(read(0x24)), hex(read(4)), hex(read(0xc)))
+                write(0x30, 0xffffffff)
+                sd_command(17, block * 512, flags=0x20, block=True)
+                actual = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
+                assert actual == payload, 'SDHCI write/read differs across the FIFO boundary'
+            payload = bytes((index * 29 + 7) & 255 for index in range(512))
+            command('write 0xb1901000 512 0x' + payload.hex())
+            command('write 0xb1900000 8 0x' + struct.pack('<HHI', 0x23, 512, 0xb1901000).hex())
+            write(0x28, 0x10, 'b')  # ADMA2, 32-bit descriptor addresses.
+            write(0x58, 0xb1900000)
+            write(0x30, 0xffffffff)
+            sd_command(24, 3 * 512, flags=0x20, block=True, writing=True, dma=True)
+            command('clock_step 1000000')
+            assert read(0x30) & 2, 'ADMA write did not complete'
+            write(0x30, 0xffffffff)
+            sd_command(17, 3 * 512, flags=0x20, block=True)
+            sector = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
+            assert sector == payload, 'ADMA sector write changed source bytes'
+            write(0x30, 0xffffffff)
+            sd_command(17, flags=0x20, block=True)
+            sector = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
+            assert sector == marker, 'Writes to other blocks changed the original sector'
             write(0x2F, 1, 'b')
             assert read(0x2F, 'b') == 0
             assert command('readl 0x2a800064') & 4 == 0
@@ -156,7 +191,7 @@ def run(qemu):
             process.stderr.close()
             process.stdin.close()
             process.stdout.close()
-    print('PASS SD host clock gate, reset, card commands, IRQ 243 and sector read')
+    print('PASS SD host: clock gate, reset, IRQ 243, reads, aligned/mixed-width PIO and ADMA writes')
 
 
 if __name__ == '__main__':
