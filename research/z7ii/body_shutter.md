@@ -7,6 +7,9 @@
 实际照片生成和写入尚未验证。模式 1 启动已可由实验源实际写入网格
 后通知，不再需要两次独立诊断事件，见
 [无模式 1 事件的启动观察](../../artifacts/body_automatic_preview_startup/report.json)。
+机身拍摄的介质基线现改用已检查文件系统的 4 GiB SDHC 镜像。
+原厂卡槽 2 参数为 1、卡信息有效为 1时，全按仍未进入所观察的拍摄 API，
+见[原厂卡参数与介质对照](capture_release_submit.md#原厂卡参数与有效-sdhc-介质的机身对照)。
 最新边界与对照条件见[驱动双位就绪与全局通知](capture_global_ready.md)。
 补齐预览逐单元结果后的[机身快门复测](../../artifacts/body_shutter_preview_results/report.json)
 覆盖 240.734 宿主秒、12.787020 个计数器秒。半按及全按动作均

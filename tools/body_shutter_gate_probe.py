@@ -1100,6 +1100,28 @@ def master_compute_snapshot(remote):
                 program_sha256=hashlib.sha256(remote.read(0x50200000, 0x27800)).hexdigest())
 
 
+def card_admission_snapshot(remote):
+    # C 1.70 scalar descriptors selected by the original 0x10101f52 lookup.
+    parameters = (
+        (0x127a, 'slot_empty_release_lock', 0x118ff2f4, 0xb258700c),
+        (0x2f00, 'card_slot1', 0x11905534, 0xb258bfa8),
+        (0x2f01, 'card_slot2', 0x11905544, 0xb258bfac),
+        (0x2f0e, 'card_information_valid', 0x11905614, 0xb258c0d0),
+        (0x1b04, 'image_save_media', 0x11903654, 0xb255211c),
+        (0x2600, 'usb_connection', 0x11904eb4, 0xb25526ac),
+        (0x3600, 'derived_parameter_3600', 0x11905974, 0xb257533c),
+        (0x1916, 'derived_parameter_1916', 0x11903484, 0xb2551f94),
+    )
+    result = {}
+    for identifier, name, descriptor, address in parameters:
+        kind, size, actual, _ = struct.unpack('<4I', remote.read(descriptor, 16))
+        require(kind in (0, 7) and size == 4 and actual == address,
+                'Original card admission scalar descriptor differs')
+        result[name] = dict(identifier=hex(identifier), descriptor=hex(descriptor),
+                            address=hex(address), value=int.from_bytes(remote.read(address, 4), 'little'))
+    return result
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -1253,6 +1275,7 @@ def snapshot(remote):
                     item['value'] = hex(word(address))
                 output_registers[hex(offset)] = item
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        card_admission=card_admission_snapshot(remote),
         processing_controller={hex(index * 4): hex(value) for index, value in enumerate(
             struct.unpack('<17I', remote.read(0x20100000, 68)))},
         processing_address_table={hex(index * 4): hex(value) for index, value in enumerate(
@@ -3174,6 +3197,7 @@ def main():
         report = dict(observation=('native-playback-capture-stop' if args.playback else
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
+                      sd_image_bytes=args.sd_card.stat().st_size if args.sd_card else None,
                       display_complete=args.display_complete, watch_seconds=args.watch,
                       icount_shift=args.icount_shift,
                       sd_snapshot=args.capture_card_copy is None,
