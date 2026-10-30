@@ -329,6 +329,369 @@
       ]
     }
   ],
+  "second_step_action": {
+    "action": 3,
+    "start_header": [
+      1,
+      1,
+      0,
+      2,
+      1,
+      4,
+      0,
+      0,
+      5,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "feedback_steps": [
+      {
+        "pin": 6,
+        "value": 0,
+        "callback": "0x803c22d",
+        "header": [
+          1,
+          2,
+          0,
+          0,
+          1,
+          5,
+          0,
+          1,
+          5,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "pin": 7,
+        "value": 0,
+        "callback": "0x803c2a9",
+        "header": [
+          1,
+          3,
+          0,
+          1,
+          1,
+          6,
+          0,
+          2,
+          5,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "pin": 6,
+        "value": 1,
+        "callback": "0x803c22d",
+        "header": [
+          1,
+          4,
+          0,
+          3,
+          1,
+          7,
+          0,
+          3,
+          5,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "pin": 7,
+        "value": 1,
+        "callback": "0x803c2a9",
+        "header": [
+          1,
+          5,
+          0,
+          3,
+          1,
+          0,
+          0,
+          4,
+          5,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "notifications": [
+      {
+        "entry": "0x803c5b8",
+        "code": "0x2060021",
+        "payload": [
+          0,
+          1,
+          3,
+          2,
+          4,
+          0,
+          88,
+          2,
+          32,
+          3,
+          232,
+          3,
+          20,
+          5,
+          64,
+          6,
+          44,
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "entry": "0x803c5a8",
+        "code": "0x2060015",
+        "payload": null
+      },
+      {
+        "entry": "0x803c5b8",
+        "code": "0x2060020",
+        "payload": null
+      }
+    ],
+    "hardware_calls": [
+      {
+        "entry": "0x8035ad4",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x80359c4",
+        "pin": 6,
+        "callback": "0x803c22d",
+        "control": "0x20"
+      },
+      {
+        "entry": "0x8035eec",
+        "args": [
+          "0x7",
+          "0x0",
+          "0x2001887c"
+        ]
+      },
+      {
+        "entry": "0x8035c44",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x80359c4",
+        "pin": 6,
+        "callback": "0x0",
+        "control": "0x60"
+      },
+      {
+        "entry": "0x8035d70",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035eec",
+        "args": [
+          "0x0",
+          "0x0",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035a4c",
+        "pin": 7,
+        "callback": "0x803c2a9",
+        "control": "0x20"
+      },
+      {
+        "entry": "0x8035c44",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035a4c",
+        "pin": 7,
+        "callback": "0x0",
+        "control": "0x60"
+      },
+      {
+        "entry": "0x80359c4",
+        "pin": 6,
+        "callback": "0x803c22d",
+        "control": "0x21"
+      },
+      {
+        "entry": "0x8035c44",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x80359c4",
+        "pin": 6,
+        "callback": "0x0",
+        "control": "0x60"
+      },
+      {
+        "entry": "0x8035ad4",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035a4c",
+        "pin": 7,
+        "callback": "0x803c2a9",
+        "control": "0x21"
+      },
+      {
+        "entry": "0x8035eec",
+        "args": [
+          "0x0",
+          "0x0",
+          "0x0"
+        ]
+      },
+      {
+        "entry": "0x8035c44",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035a4c",
+        "pin": 7,
+        "callback": "0x0",
+        "control": "0x60"
+      },
+      {
+        "entry": "0x8035d70",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035ad4",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035ad4",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035ad4",
+        "args": [
+          "0x0",
+          "0x60",
+          "0xdead"
+        ]
+      },
+      {
+        "entry": "0x8035eec",
+        "args": [
+          "0x6",
+          "0x0",
+          "0xdead"
+        ]
+      }
+    ]
+  },
   "missing_feedback": {
     "host_supplied_timeout_event": "0x80",
     "final_header": [

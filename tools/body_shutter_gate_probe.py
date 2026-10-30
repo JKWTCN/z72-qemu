@@ -1173,10 +1173,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
             if capture_focus and time.monotonic() - checkpointed >= 15:
+                remote.select_thread(1)
+                checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                 checkpoint = machine.work / 'capture-focus-checkpoint.json'
                 temporary = checkpoint.with_suffix('.tmp')
                 temporary.write_text(json.dumps(dict(incomplete=True, before=before,
-                    records=records, diagnostic_capture=capture_caller.report), indent=2),
+                    records=records, diagnostic_capture=capture_caller.report,
+                    counter_ticks=checkpoint_ticks), indent=2),
                     encoding='utf-8')
                 temporary.replace(checkpoint)
                 checkpointed = time.monotonic()

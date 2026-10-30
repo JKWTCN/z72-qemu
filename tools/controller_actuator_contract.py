@@ -130,6 +130,29 @@ def probe(image):
             'Feedback case emitted the position failure notification')
     require(native.header()[0] == 1 and native.header()[5:7] == [4, 4],
             'Feedback case did not reach the original final position')
+    opening_notifications, opening_hardware = list(native.notifications), list(native.hardware)
+    native.notifications.clear()
+    native.hardware.clear()
+    native.call(0x0803c070, 3)
+    native.drain()
+    closing_start = native.header()
+    require(closing_start[5:7] == [4, 0], 'Second-step actuator target differs')
+    closing_steps = []
+    for pin, value, position in ((6, 0, 5), (7, 0, 6), (6, 1, 7), (7, 1, 0)):
+        require(pin in native.armed, 'Second-step feedback line was not armed')
+        callback, control = native.armed[pin]
+        require(control == (0x21 if value else 0x20), 'Second-step feedback polarity differs')
+        native.inputs[pin - 6] = value
+        native.call(callback)
+        native.drain()
+        require(native.header()[5] == position, 'Second-step position sequence differs')
+        closing_steps.append(dict(pin=pin, value=value, callback=hex(callback),
+                                  header=native.header()))
+    require(native.header()[0] == 1 and native.header()[5:7] == [0, 0] and
+            any(row['code'] == '0x2060021' and row['payload'][0] == 0
+                for row in native.notifications), 'Second-step actuator result differs')
+    closing = dict(action=3, start_header=closing_start, feedback_steps=closing_steps,
+                   notifications=list(native.notifications), hardware_calls=list(native.hardware))
 
     stalled = ActuatorProbe(image)
     stalled.call(0x0803c070, 0xa)
@@ -155,8 +178,8 @@ def probe(image):
         scope='bounded original actuator; synthetic zero configuration and explicit GPIO samples',
         position_predicate='0x0803c324', position_cases=predicates,
         action=hex(0xa), action_entry='0x0803c070', task='0x0803c5c8',
-        start_header=start, feedback_steps=steps, notifications=native.notifications,
-        hardware_calls=native.hardware,
+        start_header=start, feedback_steps=steps, notifications=opening_notifications,
+        hardware_calls=opening_hardware, second_step_action=closing,
         missing_feedback=dict(host_supplied_timeout_event='0x80',
             final_header=stalled.header(), notifications=stalled.notifications,
             original_failure_route=['0x08035480', '0x08034edc', '0x08034de0', '0x080369a0'],
