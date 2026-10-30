@@ -44,6 +44,36 @@ def compare(master, slave):
     require(left[0x8754:0x877c] == right[0x8754:0x877c], 'Message address tables differ')
     require(normalized[0xc000:0xc040] == right[0xc000:0xc040],
             'Address-difference candidates do not account for the first 64 entry bytes')
+    # A split 31-bit even value spans these two fields. Rebase correlation
+    # qualifies five occurrences; the same bit masks also match unrelated
+    # values, so this is not an instruction or branch decoder.
+    def split_values(payload):
+        values = {}
+        for offset in range(0, len(payload) - 5, 2):
+            first, second = struct.unpack_from('<IH', payload, offset)
+            if first & 0xffe00000 == 0xf0000000 and second & 0xf003 == 0xb001:
+                value = ((first & 0x1fffff) << 11) | (((second >> 2) & 0x3ff) << 1)
+                require(first == 0xf0000000 | (value >> 11) and
+                        second == 0xb001 | (((value & 0x7ff) >> 1) << 2),
+                        'Split value did not round-trip')
+                values[offset] = value
+        return values
+
+    master_values, slave_values = split_values(left), split_values(right)
+    require(master_values.keys() == slave_values.keys(), 'Split-pattern positions differ')
+    split_fields = []
+    for offset, master_value in master_values.items():
+        slave_value = slave_values[offset]
+        correlated = (destination <= master_value < destination + length and
+                      slave_base <= slave_value < slave_base + length and
+                      slave_value - master_value == delta)
+        split_fields.append(dict(offset=hex(offset), master_value=hex(master_value),
+            slave_value=hex(slave_value), rebase_correlated=correlated,
+            target_offset=hex(master_value - destination) if correlated else None))
+    require(master_values[8] == entry and slave_values[8] == slave_base + 0xc000,
+            'Split field does not reproduce native configured entries')
+    require([int(field['offset'], 0) for field in split_fields if field['rebase_correlated']] ==
+            [0x8, 0x48, 0xc04a, 0xc0d6, 0xc0f8], 'Correlated split-value sites differ')
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=master_info['sha256'], slave_sha256=slave_layout['slave_sha256'],
         master_load=dict(initializer='0x1024493a', copy_call='0x10244966',
@@ -56,10 +86,12 @@ def compare(master, slave):
         differences_after_candidate_replacement=sum(a != b for a, b in zip(normalized, right)),
         first_64_entry_bytes_equal_after_replacement=True, repeated_address_tables=tables,
         message_address_table_equal=True,
+        split_value_candidates=split_fields,
         limitations=['Static load literals and payloads are checked; no master initializer is executed',
                      'Candidate four-byte spans in code may mix opcode and immediate bits',
                      'Candidate replacement is an offline comparison, not a firmware relocation rule',
                      'Other differences remain; the complete programs are not equivalent',
+                     'Split-pattern masks also match unrelated values; instruction and branch roles remain unproven',
                      'No instruction semantics, RAW calculation or photograph is established'])
 
 

@@ -278,11 +278,98 @@
     }
   ],
   "message_address_table_equal": true,
+  "split_value_candidates": [
+    {
+      "offset": "0x8",
+      "master_value": "0x5020c000",
+      "slave_value": "0x8030c000",
+      "rebase_correlated": true,
+      "target_offset": "0xc000"
+    },
+    {
+      "offset": "0x48",
+      "master_value": "0x50226b84",
+      "slave_value": "0x80326b84",
+      "rebase_correlated": true,
+      "target_offset": "0x26b84"
+    },
+    {
+      "offset": "0x32c2",
+      "master_value": "0x16e4",
+      "slave_value": "0x16e4",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0xc04a",
+      "master_value": "0x50226d80",
+      "slave_value": "0x80326d80",
+      "rebase_correlated": true,
+      "target_offset": "0x26d80"
+    },
+    {
+      "offset": "0xc0d6",
+      "master_value": "0x5020c0ae",
+      "slave_value": "0x8030c0ae",
+      "rebase_correlated": true,
+      "target_offset": "0xc0ae"
+    },
+    {
+      "offset": "0xc0f8",
+      "master_value": "0x5020c0de",
+      "slave_value": "0x8030c0de",
+      "rebase_correlated": true,
+      "target_offset": "0xc0de"
+    },
+    {
+      "offset": "0x15e7e",
+      "master_value": "0x787096c",
+      "slave_value": "0x787096c",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0x1647e",
+      "master_value": "0x6d5f4",
+      "slave_value": "0x6d5f4",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0x18d7e",
+      "master_value": "0x1900164",
+      "slave_value": "0x1900164",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0x1a25a",
+      "master_value": "0xa0c",
+      "slave_value": "0xa0c",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0x1b162",
+      "master_value": "0x2b997652",
+      "slave_value": "0x2b997652",
+      "rebase_correlated": false,
+      "target_offset": null
+    },
+    {
+      "offset": "0x1d01e",
+      "master_value": "0x71268210",
+      "slave_value": "0x71268210",
+      "rebase_correlated": false,
+      "target_offset": null
+    }
+  ],
   "limitations": [
     "Static load literals and payloads are checked; no master initializer is executed",
     "Candidate four-byte spans in code may mix opcode and immediate bits",
     "Candidate replacement is an offline comparison, not a firmware relocation rule",
     "Other differences remain; the complete programs are not equivalent",
+    "Split-pattern masks also match unrelated values; instruction and branch roles remain unproven",
     "No instruction semantics, RAW calculation or photograph is established"
   ]
 }
