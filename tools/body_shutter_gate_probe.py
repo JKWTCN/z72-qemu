@@ -132,6 +132,36 @@ CAPTURE_INPUT_POINTS = {
     0x1031ead8: 'capture-driver-input-flags-stored',
     0x1031cb20: 'capture-driver-stop-flags-entry',
     0x1032ae3c: 'capture-driver-input-mask-release',
+    0x1031e83e: 'capture-input-aggregate-task',
+    0x1031e602: 'capture-input-selection-return',
+    0x1031e778: 'capture-input-selected-prepare',
+    0x1031e77e: 'capture-input-selected-submit',
+    0x1031e782: 'capture-input-selected-submit-return',
+    0x1031e80a: 'capture-input-selection-empty',
+    0x103ce6ac: 'capture-still-input-entry',
+    0x103ce318: 'capture-still-job-build',
+    0x103ce528: 'capture-still-job-submit',
+    0x103ce434: 'capture-still-job-queue',
+    0x103ce574: 'capture-still-job-build-finish',
+    0x102c8f4e: 'capture-still-stage1-method',
+    0x102c2f62: 'capture-still-stage1-part1',
+    0x102c8f56: 'capture-still-stage1-part1-return',
+    0x102c312a: 'capture-still-stage1-part2',
+    0x102c8f5c: 'capture-still-stage1-part2-return',
+    0x102c3212: 'capture-still-stage1-part3',
+    0x102c8f62: 'capture-still-stage1-part3-return',
+    0x102c32a6: 'capture-still-stage1-part4',
+    0x102c8f68: 'capture-still-stage1-part4-return',
+    0x102c3358: 'capture-still-stage1-part5',
+    0x102c8f6e: 'capture-still-stage1-part5-return',
+    0x102c34f2: 'capture-still-stage1-part6',
+    0x102c8f74: 'capture-still-stage1-part6-return',
+    0x102c8d72: 'capture-still-stage1-part7',
+    0x102c8f7a: 'capture-still-stage1-part7-return',
+    0x102c900c: 'capture-still-peer-wait',
+    0x102c9010: 'capture-still-peer-wait-return',
+    0x102c9020: 'capture-still-peer-ready',
+    0x103ce51e: 'capture-still-peer-request',
     0x10328d36: 'capture-driver-image-request',
     0x10323b44: 'capture-driver-image-request-consumed',
     0x10321224: 'capture-driver-image-launch',
@@ -190,6 +220,41 @@ CAPTURE_CONTROLLER_POINTS = {
     0x08036986: 'capture-controller-step-input-rearmed',
     0x08036830: 'capture-controller-step-input-callback',
 }
+CAPTURE_SLAVE_POINTS = {
+    0x10129faa: 'capture-slave-image-service',
+    0x10129e12: 'capture-slave-still-request',
+    0x10129e54: 'capture-slave-request-copy-return',
+    0x10129e74: 'capture-slave-initial-reply-return',
+    0x10129ece: 'capture-slave-context-copy-return',
+    0x10129f28: 'capture-slave-parameters-copy-return',
+    0x10129f88: 'capture-slave-stages-selected',
+    0x10129f9a: 'capture-slave-work-submit',
+    0x10129f9e: 'capture-slave-work-submit-return',
+    0x1012bbfa: 'capture-slave-stage0-precondition',
+    0x1012bc12: 'capture-slave-stage0-token-return',
+    0x1012c45c: 'capture-slave-stage0-prepare',
+    0x1012c51c: 'capture-slave-stage0-prepare-return',
+    0x1012c520: 'capture-slave-stage0-transform',
+    0x1012c5ea: 'capture-slave-stage0-transform-return',
+    0x1012c630: 'capture-slave-stage0-statistics',
+    0x1012c66c: 'capture-slave-stage0-statistics-return',
+    0x1012bba6: 'capture-slave-stage0-token-wait',
+    0x1012c334: 'capture-slave-stage0-finish',
+    0x1012c3e6: 'capture-slave-stage1-prepare',
+    0x1012eae4: 'capture-slave-stage1-input-wait',
+    0x1012eb0a: 'capture-slave-stage1-input-wait-return',
+    0x1012eb1a: 'capture-slave-stage1-input-ready',
+    0x1012bc26: 'capture-slave-stage1-buffers',
+    0x1012c2de: 'capture-slave-stage1-process',
+    0x1011ef16: 'capture-slave-compute-entry',
+    0x1011ef70: 'capture-slave-compute-first-return',
+    0x1011efba: 'capture-slave-compute-second-return',
+    0x10054a90: 'capture-slave-compute-driver',
+    0x10054ab4: 'capture-slave-compute-initialized',
+    0x10054aca: 'capture-slave-compute-submit-return',
+    0x10054adc: 'capture-slave-compute-wait-return',
+    0x10060b50: 'capture-slave-compute-channel-start',
+}
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
     0x103cc960: 'image-work-tracking-enqueue-mode1',
@@ -197,6 +262,7 @@ IMAGE_WORK_POINTS = {
     0x102457ac: 'image-work-first-stage',
     0x102456fc: 'image-work-later-stage',
     0x103d0c3a: 'image-work-completion',
+    0x103ce236: 'image-still-work-completion',
 }
 CAPTURE_WORK_POINTS = {
     address: 'capture-' + label for address, label in IMAGE_WORK_POINTS.items()
@@ -502,11 +568,11 @@ def task_wait_snapshot(remote, task):
     return result
 
 
-def image_work_snapshot(remote):
+def image_work_snapshot(remote, still=False):
     def word(address):
         return int.from_bytes(remote.read(address, 4), 'little')
     result = []
-    for address in (0xb238e774, 0xb238e794, 0xb238e7b4):
+    for address in ((0xb238e694,) if still else (0xb238e774, 0xb238e794, 0xb238e7b4)):
         node, count = word(address), word(address + 8)
         row = dict(address=hex(address), count=count, jobs=[])
         for unused in range(min(count, 8)):
@@ -515,14 +581,18 @@ def image_work_snapshot(remote):
             request = word(node + 8)
             if 0xb2c00000 <= request <= 0xb5effffc:
                 parameters = word(request)
-                if 0xb2c00000 <= parameters <= 0xb5efc1cf:
+                if 0xb2c00000 <= parameters <= (0xb5efb42b if still else 0xb5efc1cf):
                     job = dict(request=hex(request), parameters=hex(parameters),
-                        owner=hex(word(parameters + 0xc)),
+                        owner=hex(word(parameters + 0xc)))
+                    if still:
+                        job.update(queue_flags=hex(word(parameters + 0x74)),
+                                   control_flags=remote.read(parameters + 0x4bd4, 1)[0])
+                    else:
                         # 0x103d0c3a selects/removes tracking queues with these flags.
-                        queue_flags=hex(word(parameters + 0x6c)),
-                        busy=remote.read(parameters + 0x3e30, 1)[0])
+                        job.update(queue_flags=hex(word(parameters + 0x6c)),
+                                   busy=remote.read(parameters + 0x3e30, 1)[0])
                     owner = word(parameters + 0xc)
-                    if unused < 4 and 0xb2c00000 <= owner <= 0xb5effd40:
+                    if not still and unused < 4 and 0xb2c00000 <= owner <= 0xb5effd40:
                         data = remote.read(owner, 0x2c0)
                         job['owner_output_words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
                                                      for offset in range(0x60, 0x84, 4)}
@@ -568,10 +638,16 @@ def image_work_snapshot(remote):
                                     continue
                                 descriptor = entries[index * 15 + column]
                                 if 0xb1800000 <= descriptor <= 0xb5efffd8:
-                                    job['active_stages'].append(dict(stage=index, state=state,
+                                    active = dict(stage=index, state=state,
                                         column=column, descriptor=hex(descriptor),
                                         fields=[hex(value) for value in struct.unpack(
-                                            '<10I', remote.read(descriptor, 40))]))
+                                            '<10I', remote.read(descriptor, 40))])
+                                    methods = int(active['fields'][5], 16)
+                                    if still and 0xb1800000 <= methods <= 0xb5efff10:
+                                        values = struct.unpack('<60I', remote.read(methods, 240))
+                                        active['methods'] = [dict(index=i, fields=[hex(v) for v in values[i*3:i*3+3]])
+                                            for i in range(20) if any(values[i*3:i*3+3])]
+                                    job['active_stages'].append(active)
                     row['jobs'].append(job)
             node = word(node + 4)
         result.append(row)
@@ -636,6 +712,30 @@ def capture_request_variant_slots_snapshot(remote):
             row['field_42'] = remote.read(address + 0x42, 1)[0]
         result.append(row)
     return result
+
+
+def still_input_snapshot(remote, pointer):
+    """Read the selected full-input context and its original dispatch conditions."""
+    result = input_tail_parameter_snapshot(remote, pointer)
+    if not 0xb2c00000 <= pointer <= 0xb5effb08:
+        return result
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result['fields'] = {hex(offset): hex(word(pointer + offset)) for offset in
+                        (0, 8, 0x2b0, 0x2b4, 0x2bc, 0x2c0, 0x30c, 0x314, 0x43c)}
+    nested = int(result['nested'], 16)
+    if 0xb2c00000 <= nested <= 0xb5efe1c4:
+        result['nested_fields'] = {hex(offset): hex(int.from_bytes(
+            remote.read(nested + offset, size), 'little')) for offset, size in
+            ((0x98, 1), (0x9c, 4), (0xc0, 1), (0xc4, 4), (0xc8, 1),
+             (0x54e, 1), (0x1df0, 4), (0x1e38, 4))}
+    return result
+
+
+def still_queue_snapshot(remote):
+    return [dict(address=hex(address), words=[hex(value) for value in struct.unpack(
+        '<8I', remote.read(address, 32))]) for address in
+        (0xb238e694, 0xb238e6b4, 0xb238e754)]
 
 
 def input_context_snapshot(remote):
@@ -809,6 +909,68 @@ def peer_input_snapshot(remote, resume_thread=1):
         result['image_banks'] = [dict(base=hex(base),
             controls=[hex(value) for value in struct.unpack('<5I', remote.read(base, 20))])
             for base in (0x20380000, 0x203c0000)]
+        context = word(0xc144f584 + 3 * 4)
+        result['image_service'] = dict(context=hex(context))
+        if 0xc1000000 <= context <= 0xc81f39c0:
+            result['image_service']['tail'] = [hex(value) for value in struct.unpack(
+                '<16I', remote.read(context + 0xc600, 64))]
+        compute = dict(service_words=[hex(value) for value in struct.unpack(
+            '<4I', remote.read(0xc1007168, 16))],
+            request_words=[hex(value) for value in struct.unpack(
+                '<3I', remote.read(0xc1690a80, 12))],
+            parameter_words={hex(offset): hex(word(0xc1690a8c + offset)) for offset in
+                (0, 4, 8, 0xc, 0x4c, 0x50, *range(0x484, 0x5ac, 4))},
+            output_words=[hex(value) for value in struct.unpack(
+                '<3I', remote.read(0xc500c4e0, 12))])
+        engine = word(0xc1006408)
+        compute['engine'] = hex(engine)
+        if 0xc1000000 <= engine <= 0xc81fffec:
+            data = remote.read(engine, 20)
+            compute['engine_words'] = [hex(value) for value in struct.unpack('<5I', data)]
+            bank, channel = data[4], data[5]
+            if bank < 2 and channel < 8:
+                base = (0x04250000, 0x24061000)[bank]
+                registers = base + 0x100 + channel * 0x80
+                compute.update(bank=bank, channel=channel, registers=hex(registers),
+                    pending=hex(word(base + 0x900)),
+                    channel_words=[hex(value) for value in struct.unpack(
+                        '<32I', remote.read(registers, 128))])
+        result['compute'] = compute
+        queue = 0xc16a58a8
+        node, count = word(queue), word(queue + 8)
+        result['still_work'] = dict(queue=hex(queue), count=count, jobs=[])
+        for unused in range(min(count, 4)):
+            if not 0xc1000000 <= node <= 0xc81ffff4:
+                break
+            request = word(node + 8)
+            if not 0xc1000000 <= request <= 0xc81ffd30:
+                break
+            parameters, table = word(request), word(request + 4)
+            data = remote.read(request + 0x8c, 88)
+            states = list(data[::8])
+            indices = [struct.unpack_from('<I', data, index * 8 + 4)[0] for index in range(11)]
+            job = dict(request=hex(request), parameters=hex(parameters), table=hex(table),
+                       completion=hex(word(request + 0x2c8)), stage_states=states,
+                       stage_indices=indices, active_stages=[])
+            if 0xc1000000 <= table <= 0xc81ffd6c:
+                entries = struct.unpack('<165I', remote.read(table, 660))
+                for stage, state in enumerate(states):
+                    column = indices[stage]
+                    if state == 3 or column >= 15:
+                        continue
+                    descriptor = entries[stage * 15 + column]
+                    if 0xc1000000 <= descriptor <= 0xc81fffd8:
+                        active = dict(stage=stage, state=state, column=column,
+                            descriptor=hex(descriptor), fields=[hex(value) for value in
+                                struct.unpack('<10I', remote.read(descriptor, 40))])
+                        methods = int(active['fields'][5], 16)
+                        if 0xc1000000 <= methods <= 0xc81fff10:
+                            values = struct.unpack('<60I', remote.read(methods, 240))
+                            active['methods'] = [dict(index=i, fields=[hex(v) for v in values[i*3:i*3+3]])
+                                for i in range(20) if any(values[i*3:i*3+3])]
+                        job['active_stages'].append(active)
+            result['still_work']['jobs'].append(job)
+            node = word(node + 4)
     except ValueError as error:
         result['read_error'] = str(error)
     finally:
@@ -997,13 +1159,16 @@ def snapshot(remote):
                         ('image-bank1-control', 0xb1d52a8c),
                         ('input', 0xb25eeb78), ('image-stage0', 0xb1864a94),
                         ('image-stage0-final', 0xb1864a2c), ('image-stage1', 0xb1864afc),
-                        ('image-stage2', 0xb1864bb0))},
+                        ('image-stage2', 0xb1864bb0),
+                        ('still-stage0', 0xb1864e64), ('still-stage1', 0xb1864e98))},
         input_context_queues=input_context_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
         display_delivery=display_delivery_snapshot(remote.read),
         image_work_queues=image_work_snapshot(remote),
+        still_image_work=image_work_snapshot(remote, still=True),
+        still_input_queues=still_queue_snapshot(remote),
         image_work_counters={hex(offset): hex(word(0xb18648b4 + offset))
                              for offset in range(0x24, 0x50, 4)},
         processing_bank_jobs=[processing_worker_snapshot(remote, task)
@@ -1462,7 +1627,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 memory_watch_armed = True
                 continue
             require(pc in armed, f'Unexpected stop at {pc:#x}')
-            repeat = thread > 2
+            repeat = thread > 2 or pc in CAPTURE_SLAVE_POINTS
             if pc in ENGINE_ABORT_POINTS and thread <= 4:
                 prefetch = pc in (0x1010000c, 0x1003410c)
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
@@ -1551,7 +1716,27 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 records.append(record)
                 hits[pc] = hits.get(pc, 0) + 1
                 repeat = hits[pc] < (32 if pc == 0x08034de0 else 8)
-            if thread <= 2:
+            if thread in (3, 4) and pc in CAPTURE_SLAVE_POINTS:
+                record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
+                    registers={name: hex(remote.get(registers, name)) for name in
+                        ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
+                         'r8', 'r9', 'r10', 'r11', 'lr')})
+                keep = True
+                if pc == 0x10129faa:
+                    pointer = remote.get(registers, 'r1')
+                    keep = remote.get(registers, 'r0') == 0x42070001 and 0xc1000000 <= pointer <= 0xc81fffe0
+                    if keep:
+                        words = struct.unpack('<8I', remote.read(pointer, 32))
+                        record['message_words'] = [hex(value) for value in words]
+                        keep = words[0] in (5, 10)
+                if keep:
+                    remote.select_thread(1)
+                    record['counter_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                    remote.select_thread(thread)
+                    records.append(record)
+                    hits[pc] = hits.get(pc, 0) + 1
+                repeat = not keep or hits[pc] < 8
+            if thread <= 2 and pc not in CAPTURE_SLAVE_POINTS:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
@@ -1567,7 +1752,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         paths = ['/machine/unattached/' + name for name in machine.config_names]
                         capture_input_path = next(path for path in paths if machine.qmp.command(
                             'qom-get', dict(path=path, property='master-role')))
-                        for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS).items():
+                        for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
+                                               CAPTURE_SLAVE_POINTS).items():
                             require(address not in armed, 'Capture input observation overlaps a breakpoint')
                             armed[address] = label
                             remote.breakpoint(address)
@@ -1888,9 +2074,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if shutter_click:
                         hits[pc] = hits.get(pc, 0) + 1
                         repeat = hits[pc] < 64
-                if pc in IMAGE_WORK_POINTS or pc == 0x103d1132:
-                    name = ('r7' if pc == 0x103d1132 else 'r4' if pc in (0x103cc8e8, 0x103cc960)
-                            else 'r1' if pc == 0x103d0c3a else 'r0')
+                if pc in IMAGE_WORK_POINTS or pc in (0x103d1132, 0x103ce528):
+                    name = ('r7' if pc == 0x103d1132 else 'r6' if pc == 0x103ce528
+                            else 'r4' if pc in (0x103cc8e8, 0x103cc960)
+                            else 'r1' if pc in (0x103d0c3a, 0x103ce236) else 'r0')
                     pointer = remote.get(registers, name)
                     if capture_focus and pc in CAPTURE_WORK_POINTS:
                         keep = keep and pointer in capture_work_requests
@@ -1911,12 +2098,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 for index in range(11)]
                         if 0xb2c00000 <= parameters <= 0xb5efc1bc:
                             record['image_work'].update(owner=hex(word(parameters + 0xc)),
-                                scheduler=hex(word(parameters + 8)),
-                                queue_flags=hex(word(parameters + 0x6c)),
-                                busy=remote.read(parameters + 0x3e30, 1)[0])
+                                scheduler=hex(word(parameters + 8)))
+                            if word(pointer + 0x2c8) == 0x103ce237:
+                                if parameters <= 0xb5efb42b:
+                                    record['image_work'].update(queue_flags=hex(word(parameters + 0x74)),
+                                        control_flags=remote.read(parameters + 0x4bd4, 1)[0])
+                            else:
+                                record['image_work'].update(queue_flags=hex(word(parameters + 0x6c)),
+                                    busy=remote.read(parameters + 0x3e30, 1)[0])
                     if pc == 0x102456fc:
                         record['worker_stage'] = remote.get(registers, 'r1')
-                    if capture_focus and pc == 0x103d0c3a:
+                    if capture_focus and pc in (0x103d0c3a, 0x103ce236):
                         capture_work_requests.discard(pointer)
                         if 'image_work' in record:
                             capture_work_parameters.pop(int(record['image_work']['parameters'], 0), None)
@@ -2023,11 +2215,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             record['processing_result_event'] = dict(
                                 mask=hex(remote.get(registers, 'r5')),
                                 count_before=int.from_bytes(remote.read(0xb18648f0, 4), 'little'))
-                    if pc == 0x103d1132:
+                    if pc in (0x103d1132, 0x103ce528):
                         keep = keep and record['capture_state'][0] >= 8
                         if keep:
-                            request = remote.get(registers, 'r7')
-                            record['work_registration_result'] = remote.get(registers, 'r0')
+                            request = remote.get(registers, 'r7' if pc == 0x103d1132 else 'r6')
+                            if pc == 0x103d1132:
+                                record['work_registration_result'] = remote.get(registers, 'r0')
+                            record['work_origin'] = 'staged-context' if pc == 0x103d1132 else 'still-input'
                             capture_work_requests.add(request)
                             if 'image_work' in record:
                                 capture_work_parameters[int(record['image_work']['parameters'], 0)] = request
@@ -2207,6 +2401,30 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['metadata_parameters'] = input_tail_parameter_snapshot(remote, pointer)
                         if pc == 0x1032729a:
                             record['stage_descriptor'] = hex(remote.get(registers, 'r0'))
+                    if pc == 0x103ce51e:
+                        packet, length = remote.get(registers, 'r3'), remote.get(registers, 'r2')
+                        if length == 20 and 0xb1800000 <= packet <= 0xb5efffec:
+                            record['still_peer_request_words'] = [hex(value) for value in
+                                struct.unpack('<5I', remote.read(packet, 20))]
+                    if pc in (0x1031e83e, 0x1031e602, 0x1031e778, 0x1031e77e,
+                              0x1031e782, 0x1031e80a, 0x103ce6ac, 0x103ce318,
+                              0x103ce434, 0x103ce574):
+                        keep = keep and record['capture_state'][0] >= 6
+                        if keep:
+                            if pc == 0x1031e83e:
+                                pointer = int.from_bytes(remote.read(0xb23f0468, 4), 'little')
+                            elif pc in (0x1031e602, 0x1031e782, 0x1031e80a):
+                                stack = remote.get(registers, 'sp')
+                                pointer = int.from_bytes(remote.read(stack + 4, 4), 'little')
+                                record['selection_auxiliary'] = int.from_bytes(remote.read(stack + 8, 4), 'little')
+                            elif pc in (0x103ce434, 0x103ce574):
+                                pointer = remote.get(registers, 'r4')
+                                record['still_request'] = hex(remote.get(registers, 'r6'))
+                                record['still_parameters'] = hex(remote.get(registers, 'r5'))
+                            else:
+                                pointer = remote.get(registers, 'r0')
+                            record['still_input'] = still_input_snapshot(remote, pointer)
+                            record['still_input_queues'] = still_queue_snapshot(remote)
                     if pc == 0x103604ca:
                         record['tail_configuration_result'] = dict(
                             destination=hex(remote.get(registers, 'r4')),
