@@ -614,6 +614,9 @@ struct NikonZ72BootConfig {
     bool gate_pending;
     MemoryRegion transfer_ram;
     uint8_t transfer_table[0x100];
+    MemoryRegion compute_ownership[9];
+    NikonZ72ConfigWord compute_ownership_words[9];
+    uint32_t compute_owners[8];
     bool transfer_reset_completion;
     MemoryRegion *root;
     bool own_file;
@@ -2966,6 +2969,44 @@ static const MemoryRegionOps transport_ops = {
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
+/* The original allocator checks the occupied bitmap, claims a channel with
+ * a 16-bit owner mask and verifies ownership by reading the same register.
+ * This models arbitration only; accepting ownership does not consume a
+ * request, raise an acknowledgement or manufacture a calculation result. */
+static uint64_t compute_ownership_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+    NikonZ72BootConfig *s = word->device;
+    uint32_t occupied = 0;
+
+    if (word->index < 8) {
+        return s->compute_owners[word->index];
+    }
+    for (unsigned channel = 0; channel < 8; channel++) {
+        occupied |= (s->compute_owners[channel] != 0) << channel;
+    }
+    return occupied;
+}
+
+static void compute_ownership_write(void *opaque, hwaddr offset, uint64_t value,
+                                    unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+    NikonZ72BootConfig *s = word->device;
+
+    if (word->index < 8 && (!s->compute_owners[word->index] || !(value & 0xffff))) {
+        s->compute_owners[word->index] = value & 0xffff;
+    }
+}
+
+static const MemoryRegionOps compute_ownership_ops = {
+    .read = compute_ownership_read,
+    .write = compute_ownership_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
 static void boot_config_reset(Object *obj, ResetType type)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
@@ -2984,6 +3025,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->gate_table, 0, sizeof(s->gate_table));
     s->gate_pending = false;
     memset(s->transfer_table, 0, sizeof(s->transfer_table));
+    memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
     memset(s->dbi_regions, 0, sizeof(s->dbi_regions));
     s->dbi_viewport = 0;
@@ -3085,11 +3127,12 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 49,
-    .minimum_version_id = 49,
+    .version_id = 50,
+    .minimum_version_id = 50,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
+        VMSTATE_UINT32_ARRAY(compute_owners, NikonZ72BootConfig, 8),
         VMSTATE_UINT32(gpio_input_levels, NikonZ72BootConfig),
         VMSTATE_UINT32(gpio_input_driven, NikonZ72BootConfig),
         VMSTATE_BOOL(input_handshake, NikonZ72BootConfig),
@@ -3276,6 +3319,15 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
      * machine; the role suffix keeps the dual machine's blocks apart. */
     const char *tag = s->master_role ? "master" : "slave";
     if (s->release_config) {
+        for (unsigned index = 0; index < 9; index++) {
+            s->compute_ownership_words[index] = (NikonZ72ConfigWord) { s, index };
+            memory_region_init_io(&s->compute_ownership[index], OBJECT(dev),
+                &compute_ownership_ops, &s->compute_ownership_words[index],
+                "z72-compute-ownership", 4);
+            memory_region_add_subregion_overlap(root,
+                index < 8 ? 0x24061100 + index * 0x80 : 0x24061900,
+                &s->compute_ownership[index], 1);
+        }
         memory_region_init_io(&s->aux_image_ram, OBJECT(dev), &aux_image_ops, s,
                               "z72-auxiliary-image", 0x200);
         memory_region_add_subregion_overlap(root, 0x20201000,
