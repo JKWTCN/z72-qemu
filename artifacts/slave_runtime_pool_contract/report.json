@@ -60,6 +60,60 @@
     }
   ],
   "reported_remaining": 33923521,
+  "code_cache": {
+    "switch": "0x10065c22",
+    "start": "0xc8200000",
+    "end": "0xc8900000",
+    "bytes": 7340032,
+    "conversions": [
+      {
+        "address": "0xc8200000",
+        "converted": "0xc8200000"
+      },
+      {
+        "address": "0xc88fffff",
+        "converted": "0xc88fffff"
+      },
+      {
+        "address": "0xc8900000",
+        "converted": "0x33500000"
+      }
+    ],
+    "transfers": [
+      {
+        "destination": "0xc8200000",
+        "source": "0x10000000",
+        "bytes": 3145728
+      },
+      {
+        "destination": "0xc8500000",
+        "source": "0x10300000",
+        "bytes": 4194304
+      }
+    ],
+    "protection_calls": [
+      [
+        "0x10000000",
+        "0xc8200000",
+        "0x300000"
+      ],
+      [
+        "0x10300000",
+        "0xc8500000",
+        "0x400000"
+      ]
+    ],
+    "event_calls": [
+      {
+        "object": "0xc1016668",
+        "mask": "0x10000"
+      },
+      {
+        "object": "0xc1016668",
+        "mask": "0x2"
+      }
+    ]
+  },
   "lock_calls": [
     {
       "entry": "0x100f96b8",
@@ -112,10 +166,15 @@
     {
       "entry": "0x100f970e",
       "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc101666c"
     }
   ],
   "host_boundaries": [
-    "Supply synthetic initialized state and stack; accept uncontended lock operations"
+    "Supply synthetic initialized state and stack; accept uncontended lock operations",
+    "Record code-save DMA, protection, cache-maintenance and event calls without executing them"
   ],
   "limitations": [
     "The original allocator has no observed bounds check and reports end minus current plus one",

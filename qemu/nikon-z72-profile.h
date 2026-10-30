@@ -110,6 +110,10 @@ static const NikonZ72Window nikon_z72_slave_windows[] = {
     /* Runtime bump arena initialized by 0x10065A38; the classifier ends
      * this interval at C8200000 and translates it to bus 15100000. */
     {0xC6100000, 0x02100000, "z72-slave-runtime-arena-lab"},
+    /* 0x10065C22 saves the two code spans (3 MiB and 4 MiB) here before
+     * initializing the compute service. This is separate from the arena
+     * and is not translated to its 0x15100000 bus-address family. */
+    {0xC8200000, 0x00700000, "z72-slave-code-cache-lab"},
     /* Companion serial-adjacent block beside the console interface; the
      * kernel writes it (observed at +0x560) once the handoff completes. */
     {0x2C0A0000, 0x00001000, "z72-slave-console-companion-lab"},

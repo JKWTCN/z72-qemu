@@ -220,7 +220,17 @@ CAPTURE_CONTROLLER_POINTS = {
     0x08036986: 'capture-controller-step-input-rearmed',
     0x08036830: 'capture-controller-step-input-callback',
 }
+CAPTURE_SLAVE_INIT_POINTS = {
+    0x100535e0: 'capture-slave-compute-init-task',
+    0x100535f8: 'capture-slave-compute-init-memory-ready',
+    0x10054a2a: 'capture-slave-compute-init-program',
+    0x10054a5a: 'capture-slave-compute-init-program-copy-return',
+    0x100593a0: 'capture-slave-compute-init-configure',
+    0x10054a80: 'capture-slave-compute-init-configure-return',
+    0x10065c22: 'capture-slave-compute-init-memory-switch',
+}
 CAPTURE_SLAVE_POINTS = {
+    **CAPTURE_SLAVE_INIT_POINTS,
     0x10129faa: 'capture-slave-image-service',
     0x10129e12: 'capture-slave-still-request',
     0x10129e54: 'capture-slave-request-copy-return',
@@ -546,13 +556,20 @@ def processing_worker_snapshot(remote, task):
     return result
 
 
-def task_wait_snapshot(remote, task):
+def task_wait_snapshot(remote, task, slave=False):
     handle = int.from_bytes(remote.read(task, 4), 'little')
     kernel_id = handle & 0xffff
     result = dict(object=hex(task), handle=hex(handle), kernel_id=hex(kernel_id))
     if not 0 < kernel_id < 512:
         return result
-    tcb = 0xb2c32f30 + kernel_id * 0xd8
+    if slave:
+        # 0x1003445c..70 allocates the pool; 0x10034518..60 assigns IDs from 1.
+        pool = int.from_bytes(remote.read(0xc10167e8, 4), 'little')
+        if not 0xc1000000 <= pool <= 0xc81e5000:
+            return result
+        tcb = pool + (kernel_id - 1) * 0xd8
+    else:
+        tcb = 0xb2c32f30 + kernel_id * 0xd8
     fields = struct.unpack('<48I', remote.read(tcb, 192))
     if fields[2] & 0xffff != kernel_id:
         return result
@@ -560,9 +577,13 @@ def task_wait_snapshot(remote, task):
     # +0x40 is the syscall wait stack; +0x44 holds a wait argument.
     stack = fields[47]
     result.update(tcb=hex(tcb), flags=hex(fields[2]), entry=hex(fields[5]),
-                  saved_sp=hex(stack), syscall_sp=hex(fields[16]), stack_code_candidates=[])
-    if 0xb5000000 <= stack <= 0xb5effc00:
+                  saved_sp=hex(stack), syscall_sp=hex(fields[16]),
+                  wait_argument=hex(fields[17]), stack_code_candidates=[])
+    if ((0xc1000000 <= stack <= 0xc81ffc00) if slave else
+            (0xb5000000 <= stack <= 0xb5effc00)):
         values = struct.unpack('<256I', remote.read(stack, 1024))
+        if slave:
+            result['saved_frame_words'] = [hex(value) for value in values[:96]]
         result['stack_code_candidates'] = [dict(offset=hex(index * 4), value=hex(value))
             for index, value in enumerate(values) if 0x10020000 <= value < 0x107a0000]
     return result
@@ -936,6 +957,14 @@ def peer_input_snapshot(remote, resume_thread=1):
                     channel_words=[hex(value) for value in struct.unpack(
                         '<32I', remote.read(registers, 128))])
         result['compute'] = compute
+        compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
+            struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
+            for channel in range(4)]
+        compute['tasks'] = {name: task_wait_snapshot(remote, task, slave=True)
+            for name, task in (('initialization', 0xc167b798),
+                               ('stage0', 0xc1008d88), ('stage1', 0xc1008dbc))}
+        compute['initialization_object_words'] = [hex(value) for value in struct.unpack(
+            '<8I', remote.read(0xc167b798, 32))]
         queue = 0xc16a58a8
         node, count = word(queue), word(queue + 8)
         result['still_work'] = dict(queue=hex(queue), count=count, jobs=[])
@@ -1433,6 +1462,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x103f19c0: 'body-operation59-task',
                       0x104e1690: 'release-configuration-timer-callback',
                       **ENGINE_ABORT_POINTS})
+    if capture_focus:
+        armed.update(CAPTURE_SLAVE_INIT_POINTS)
     image_work_armed = False
     records = []
     hits = {}
@@ -1754,6 +1785,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             'qom-get', dict(path=path, property='master-role')))
                         for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
                                                CAPTURE_SLAVE_POINTS).items():
+                            if address in CAPTURE_SLAVE_INIT_POINTS:
+                                continue
                             require(address not in armed, 'Capture input observation overlaps a breakpoint')
                             armed[address] = label
                             remote.breakpoint(address)

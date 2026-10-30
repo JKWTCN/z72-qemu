@@ -2762,7 +2762,7 @@ static void seq_write(void *opaque, hwaddr offset, uint64_t value, unsigned size
 {
     NikonZ72BootConfig *s = opaque;
     memcpy(s->seq_table + offset, &value, size);
-    if (s->master_role && s->sequencer_completion && size == 4) {
+    if (s->sequencer_completion && size == 4) {
         for (unsigned channel = 0; channel < 4; channel++) {
             hwaddr command = 0x1028 + channel * 0x30;
             if (offset == command && (value & 0x10000003) == 0x10000003) {
@@ -3034,7 +3034,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     }
     memset(s->pair_table, 0, sizeof(s->pair_table));
     memset(s->seq_table, 0, sizeof(s->seq_table));
-    if (s->intc && s->master_role && s->release_config) {
+    if (s->intc && s->release_config) {
         seq_update_irqs(s);
     }
     s->peer_ready_input = false;
@@ -3076,7 +3076,7 @@ static int boot_config_post_load(void *opaque, int version_id)
         if (s->release_config) {
             transfer_update_irq(s);
         }
-        if (s->master_role && s->release_config) {
+        if (s->release_config) {
             seq_update_irqs(s);
         }
     }
@@ -3365,8 +3365,8 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         if (s->own_file) {
             memory_region_add_subregion(&s->banks[0], 0x081200, &s->pair_ram);
         }
-        /* Sequencer register file (0x04251000..0x042510BC descriptor series
-         * plus the 0x04250080 banks) driven after the release; passive. */
+        /* Sequencer register file and incrementing memory channels shared
+         * by both roles; peripheral transfer modes remain unimplemented. */
         memory_region_init_io(&s->seq_ram, OBJECT(dev), &seq_ops, s,
                               TYPE_NIKON_Z72_BOOT_CONFIG "-sequencer", 0x2000);
         memory_region_add_subregion(&s->banks[0], 0x050000, &s->seq_ram);
