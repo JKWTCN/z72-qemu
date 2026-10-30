@@ -13,6 +13,7 @@
 #include "hw/qdev-clock.h"
 #include "hw/resettable.h"
 #include "hw/core/resetcontainer.h"
+#include "hw/core/split-irq.h"
 #include "qemu/main-loop.h"
 #include "hw/arm/armv7m.h"
 #include "hw/arm/boot.h"
@@ -531,6 +532,7 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
         sysbus_realize_and_unref(SYS_BUS_DEVICE(gpio), &error_fatal);
         controller_map(domain, root, gpio, 0, 0x40020000 + port * 0x400);
         if (port == 2) {
+            object_property_add_const_link(owner, "position-gpio", OBJECT(gpio));
             s->battery_signal = qdev_get_gpio_in(gpio, 5);
             qemu_set_irq(s->battery_signal, s->battery_contact);
         }
@@ -543,6 +545,9 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
             qemu_set_irq(s->auxiliary_signal, s->auxiliary_input);
         }
         for (unsigned pin = 0; pin < 16; pin++) {
+            if (port == 2 && (pin == 6 || pin == 7)) {
+                continue; /* These pads also feed TIM3 below. */
+            }
             qdev_connect_gpio_out_named(gpio, "pad", pin,
                                        qdev_get_gpio_in(config, port * 16 + pin));
         }
@@ -742,6 +747,21 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
         controller_map(domain, root, counter_timer, 0, 0x40000400 + port * 0x400);
         sysbus_connect_irq(SYS_BUS_DEVICE(counter_timer), 0, qdev_get_gpio_in(counter_irq, 0));
         sysbus_connect_irq(SYS_BUS_DEVICE(counter_timer), 1, qdev_get_gpio_in(counter_irq, 1));
+        if (port == 0) {
+            for (unsigned line = 0; line < 2; line++) {
+                unsigned pin = 6 + line;
+                DeviceState *split = qdev_new(TYPE_SPLIT_IRQ);
+                qdev_prop_set_uint16(split, "num-lines", 2);
+                qdev_realize_and_unref(split, NULL, &error_fatal);
+                qdev_connect_gpio_out_named(s->gpio[2], "pad", pin,
+                                           qdev_get_gpio_in(split, 0));
+                qdev_connect_gpio_out(split, 0, qdev_get_gpio_in(config, 2 * 16 + pin));
+                qdev_connect_gpio_out(split, 1,
+                                     qdev_get_gpio_in_named(counter_timer, "pin", line));
+                qdev_connect_gpio_out_named(s->gpio[2], "alternate-2-enable", pin,
+                    qdev_get_gpio_in_named(counter_timer, "pin-enable", line));
+            }
+        }
     }
     DeviceState *wide_irq = qdev_new(TYPE_OR_IRQ);
     qdev_prop_set_uint16(wide_irq, "num-lines", 2);

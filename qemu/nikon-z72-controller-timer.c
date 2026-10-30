@@ -23,6 +23,7 @@ struct Z72ControllerTimer {
     bool advanced;
     bool completion;
     uint8_t input_levels;
+    uint8_t pin_enables;
     QEMUTimer *timer;
     qemu_irq irqs[4];
 };
@@ -159,6 +160,24 @@ static void timer_capture(void *opaque, int line, int level)
     timer_schedule(s);
 }
 
+static void timer_pin_enable(void *opaque, int line, int level)
+{
+    Z72ControllerTimer *s = opaque;
+    s->pin_enables = (s->pin_enables & ~(1u << line)) | (level ? 1u << line : 0);
+}
+
+static void timer_pin(void *opaque, int line, int level)
+{
+    Z72ControllerTimer *s = opaque;
+    if (s->pin_enables & (1u << line)) {
+        timer_capture(opaque, line, level);
+    } else {
+        /* Track the pad while disconnected so selecting an alternate
+         * function does not itself fabricate an input edge. */
+        s->input_levels = (s->input_levels & ~(1u << line)) | (level ? 1u << line : 0);
+    }
+}
+
 static bool timer_register(hwaddr offset, unsigned size)
 {
     return size == 4 && !(offset & 3) && offset <= 0x4c;
@@ -252,9 +271,6 @@ static void timer_reset(Object *obj, ResetType type)
 static int timer_post_load(void *opaque, int version)
 {
     Z72ControllerTimer *s = opaque;
-    if (version < 2) {
-        s->input_levels = 0;
-    }
     if (s->registers[10] > 0xffff || s->registers[11] > timer_counter_mask(s) ||
         s->count > s->registers[11] || (s->registers[0] & 0x70) ||
         (s->registers[2] & 7) || s->registers[12]) {
@@ -270,14 +286,15 @@ static int timer_post_load(void *opaque, int version)
 }
 
 static const VMStateDescription timer_state = {
-    .name = TYPE_Z72_CONTROLLER_TIMER, .version_id = 2, .minimum_version_id = 1,
+    .name = TYPE_Z72_CONTROLLER_TIMER, .version_id = 3, .minimum_version_id = 3,
     .post_load = timer_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(registers, Z72ControllerTimer, 20),
         VMSTATE_UINT32(count, Z72ControllerTimer),
         VMSTATE_INT64(base_ns, Z72ControllerTimer),
         VMSTATE_TIMER_PTR(timer, Z72ControllerTimer),
-        VMSTATE_UINT8_V(input_levels, Z72ControllerTimer, 2),
+        VMSTATE_UINT8(input_levels, Z72ControllerTimer),
+        VMSTATE_UINT8(pin_enables, Z72ControllerTimer),
         VMSTATE_END_OF_LIST()
     },
 };
@@ -310,6 +327,8 @@ static void controller_timer_init(Object *obj)
     }
     s->timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, timer_event, s);
     qdev_init_gpio_in_named(DEVICE(obj), timer_capture, "capture", 4);
+    qdev_init_gpio_in_named(DEVICE(obj), timer_pin, "pin", 4);
+    qdev_init_gpio_in_named(DEVICE(obj), timer_pin_enable, "pin-enable", 4);
 }
 
 static void timer_finalize(Object *obj)
