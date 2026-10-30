@@ -164,10 +164,13 @@ def main():
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--step-input', action='store_true')
     parser.add_argument('--position-inputs', action='store_true')
+    parser.add_argument('--controller-actuator', action='store_true')
     parser.add_argument('--watch', type=int, default=120)
     args = parser.parse_args()
     require(10 <= args.watch <= 600, 'Watch time out of bounds')
     require(not args.position_inputs or args.step_input, 'Position experiment requires the step input')
+    require(not (args.position_inputs and args.controller_actuator),
+            'Select host position edges or the PWM actuator model')
     args.realtime = args.auto_menu = False
     args.update_store, args.update_image = ROOT / '.local/controller-actuator-store', None
     for name in ('display_complete', 'input_handshake', 'frame_phase', 'input_stop_complete',
@@ -191,6 +194,7 @@ def main():
             boot=state, trace=observe(machine, args.watch, args.step_input, args.position_inputs),
             input_dma_before=dma_before, input_dma_after=input_dma_snapshot(machine),
             native_lcd=lcd_snapshot(machine), firmware_included=False,
+            controller_actuator=args.controller_actuator,
             limitations=['Host input experiment, not a physical motor model',
                          'Does not establish natural startup or photo completion'])
         args.out.parent.mkdir(parents=True, exist_ok=True)

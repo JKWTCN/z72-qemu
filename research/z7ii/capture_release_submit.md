@@ -1432,3 +1432,28 @@ C6、C7 两路 GPIO 上升沿。两路位置记录均标记 `gpio_only=true`。
 拍摄完成。新增路由及既有计时器的定向检查均通过；计时器检查包含
 启用/禁用硬件完成两种场景。原始双路重复供给实验与本次新路由
 实验应分别解读，不能把旧报告误认为 GPIO 路由的验证。
+
+### PWM 输出驱动位置，宿主不再供给位置边沿
+
+`--controller-actuator` 开启默认关闭的功能执行器模型，接线与限制见
+[控制器计时器](controller_timer.md)。原厂仍负责 PWM 配置、位置捕获、
+去抖、任务调度和结果通知，模型只根据驱动输出改变两路位置电平。
+
+```sh
+python tools/controller_actuator_live_probe.py --qemu qemu-system-arm \
+  --master master.bin --slave slave.bin --controller controller.bin \
+  --sd-card card.raw --step-input --controller-actuator --watch 150 \
+  --out artifacts/controller_actuator_pwm/report.json
+```
+
+[PWM 执行器整机记录](../../artifacts/controller_actuator_pwm/report.json)
+观察 150.750 宿主秒、4.039543750 计数器秒。`supplied_inputs` 只有
+一次 G8 触发，没有宿主 C6/C7 边沿。原始执行器最终状态 1、位置
+和目标均为 4，通道 9 头部 `[9,1,0,0,0,0]`，仍产生
+`0x02060021` 的 `[0,2,4,255,255]` 前缀并经过原厂完成通知。
+输入帧最终为 110、处理帧 97，四核及控制器异常字段均为零。
+
+这验证了 PWM 驱动到原厂动作结果的功能链，不证明实机物理参数。
+宿主启动触发仍存在，实际拍摄、编码和写卡也未在本记录中验证。
+定向检查覆盖默认关闭、双向运动、引脚与通道门控、停机、制动、
+重新启动和整机复位；既有位置路由及计时器检查也通过。

@@ -26,6 +26,7 @@ struct Z72ControllerTimer {
     uint8_t pin_enables;
     QEMUTimer *timer;
     qemu_irq irqs[4];
+    qemu_irq pwm[4];
 };
 
 static uint32_t timer_counter_mask(Z72ControllerTimer *s)
@@ -50,6 +51,25 @@ static void timer_irq(Z72ControllerTimer *s)
     static const unsigned masks[] = { 1, 0x1e, 0x60, 0x80 };
     for (unsigned i = 0; i < 4; i++) {
         qemu_set_irq(s->irqs[i], !!(pending & masks[i]));
+    }
+    for (unsigned channel = 0; channel < 4; channel++) {
+        unsigned mode = (s->registers[6 + channel / 2] >> ((channel % 2) * 8)) & 0xff;
+        unsigned control = (s->registers[8] >> (channel * 4)) & 15;
+        unsigned duty = 0;
+        if (channel < s->channels && (s->registers[0] & 1) &&
+            (!s->advanced || (s->registers[17] & 0x8000)) &&
+            (control & 1) && !(mode & 3) && ((mode >> 4) & 7) >= 6) {
+            uint64_t period = (uint64_t)s->registers[11] + 1;
+            duty = MIN(UINT64_C(1000), (uint64_t)s->registers[13 + channel] * 1000 / period);
+            if (((mode >> 4) & 7) == 7) {
+                duty = 1000 - duty;
+            }
+            if (control & 2) {
+                duty = 1000 - duty;
+            }
+        }
+        /* Effective PWM duty, in thousandths, for functional external peers. */
+        qemu_set_irq(s->pwm[channel], duty);
     }
 }
 
@@ -329,6 +349,7 @@ static void controller_timer_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), timer_capture, "capture", 4);
     qdev_init_gpio_in_named(DEVICE(obj), timer_pin, "pin", 4);
     qdev_init_gpio_in_named(DEVICE(obj), timer_pin_enable, "pin-enable", 4);
+    qdev_init_gpio_out_named(DEVICE(obj), s->pwm, "pwm-duty", 4);
 }
 
 static void timer_finalize(Object *obj)

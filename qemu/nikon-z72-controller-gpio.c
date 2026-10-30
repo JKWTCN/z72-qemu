@@ -17,6 +17,7 @@ struct Z72ControllerGPIO {
     qemu_irq outputs[16];
     qemu_irq pads[16];
     qemu_irq alternate2[16];
+    qemu_irq alternate1[16];
 };
 
 static uint16_t gpio_output_mask(Z72ControllerGPIO *s)
@@ -51,6 +52,7 @@ static void gpio_update(Z72ControllerGPIO *s)
         unsigned mode = (s->registers[0] >> (2 * pin)) & 3;
         unsigned function = (s->registers[8 + pin / 8] >> (4 * (pin % 8))) & 15;
         qemu_set_irq(s->alternate2[pin], mode == 2 && function == 2);
+        qemu_set_irq(s->alternate1[pin], mode == 2 && function == 1);
         qemu_set_irq(s->outputs[pin], !!(levels & (1u << pin)));
         qemu_set_irq(s->pads[pin], !!(pads & (1u << pin)));
     }
@@ -147,6 +149,7 @@ static void gpio_init(Object *obj)
     qdev_init_gpio_out(DEVICE(s), s->outputs, 16);
     qdev_init_gpio_out_named(DEVICE(s), s->pads, "pad", 16);
     qdev_init_gpio_out_named(DEVICE(s), s->alternate2, "alternate-2-enable", 16);
+    qdev_init_gpio_out_named(DEVICE(s), s->alternate1, "alternate-1-enable", 16);
 }
 
 static void gpio_class_init(ObjectClass *klass, const void *data)

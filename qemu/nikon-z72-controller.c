@@ -15,6 +15,7 @@
 #include "hw/core/resetcontainer.h"
 #include "hw/core/split-irq.h"
 #include "qemu/main-loop.h"
+#include "qemu/timer.h"
 #include "hw/arm/armv7m.h"
 #include "hw/arm/boot.h"
 #include "target/arm/cpu-features.h"
@@ -30,6 +31,145 @@ struct Z72ControllerMachine {
     MachineState parent_obj;
     Z72ControllerInputs inputs;
 };
+
+#define TYPE_Z72_ACTUATOR "nikon-z72-controller-actuator"
+OBJECT_DECLARE_SIMPLE_TYPE(Z72Actuator, Z72_ACTUATOR)
+
+struct Z72Actuator {
+    SysBusDevice parent_obj;
+    bool enabled;
+    uint16_t duty[2];
+    uint8_t pin_enables, phase;
+    int32_t drive;
+    QEMUTimer *timer;
+    qemu_irq position[2];
+};
+
+static void actuator_outputs(Z72Actuator *s)
+{
+    static const unsigned gray[] = { 0, 1, 3, 2 };
+    if (s->enabled) {
+        qemu_set_irq(s->position[0], gray[s->phase] & 1);
+        qemu_set_irq(s->position[1], (gray[s->phase] >> 1) & 1);
+    }
+}
+
+static void actuator_schedule(Z72Actuator *s)
+{
+    if (s->drive) {
+        /* Functional speed: one encoder edge/ms at full differential duty.
+         * This is not a camera calibration or an inertia model. */
+        timer_mod(s->timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
+                  INT64_C(1000000000) / ABS(s->drive));
+    } else {
+        timer_del(s->timer);
+    }
+}
+
+static void actuator_step(void *opaque)
+{
+    Z72Actuator *s = opaque;
+    if (!s->drive) {
+        return;
+    }
+    s->phase = (s->phase + (s->drive > 0 ? 1 : 3)) & 3;
+    actuator_outputs(s);
+    actuator_schedule(s);
+}
+
+static void actuator_input(void *opaque, int line, int level)
+{
+    Z72Actuator *s = opaque;
+    if (line < 2) {
+        s->duty[line] = MIN(1000, MAX(0, level));
+    } else {
+        unsigned bit = 1u << (line - 2);
+        s->pin_enables = (s->pin_enables & ~bit) | (level ? bit : 0);
+    }
+    int32_t drive = s->enabled ?
+        ((s->pin_enables & 1) ? s->duty[0] : 0) -
+        ((s->pin_enables & 2) ? s->duty[1] : 0) : 0;
+    if (drive != s->drive) {
+        s->drive = drive;
+        actuator_schedule(s);
+    }
+}
+
+static void actuator_reset(Object *obj, ResetType type)
+{
+    Z72Actuator *s = Z72_ACTUATOR(obj);
+    timer_del(s->timer);
+    memset(s->duty, 0, sizeof(s->duty));
+    s->pin_enables = s->phase = 0;
+    s->drive = 0;
+    actuator_outputs(s);
+}
+
+static int actuator_post_load(void *opaque, int version)
+{
+    Z72Actuator *s = opaque;
+    if (s->phase > 3 || s->pin_enables > 3 || s->duty[0] > 1000 ||
+        s->duty[1] > 1000 || ABS((int64_t)s->drive) > 1000) {
+        return -EINVAL;
+    }
+    actuator_outputs(s);
+    return 0;
+}
+
+static const VMStateDescription actuator_state = {
+    .name = TYPE_Z72_ACTUATOR, .version_id = 1, .minimum_version_id = 1,
+    .post_load = actuator_post_load,
+    .fields = (const VMStateField[]) {
+        VMSTATE_UINT16_ARRAY(duty, Z72Actuator, 2),
+        VMSTATE_UINT8(pin_enables, Z72Actuator),
+        VMSTATE_UINT8(phase, Z72Actuator),
+        VMSTATE_INT32(drive, Z72Actuator),
+        VMSTATE_TIMER_PTR(timer, Z72Actuator),
+        VMSTATE_END_OF_LIST()
+    },
+};
+
+static void actuator_init(Object *obj)
+{
+    Z72Actuator *s = Z72_ACTUATOR(obj);
+    s->timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, actuator_step, s);
+    qdev_init_gpio_in(DEVICE(obj), actuator_input, 4);
+    qdev_init_gpio_out(DEVICE(obj), s->position, 2);
+}
+
+static void actuator_finalize(Object *obj)
+{
+    timer_free(Z72_ACTUATOR(obj)->timer);
+}
+
+static void actuator_unrealize(DeviceState *dev)
+{
+    timer_del(Z72_ACTUATOR(dev)->timer);
+}
+
+static void actuator_class_init(ObjectClass *klass, const void *data)
+{
+    static const Property properties[] = {
+        DEFINE_PROP_BOOL("enabled", Z72Actuator, enabled, false),
+    };
+    DeviceClass *dc = DEVICE_CLASS(klass);
+    dc->vmsd = &actuator_state;
+    dc->unrealize = actuator_unrealize;
+    dc->user_creatable = false;
+    device_class_set_props(dc, properties);
+    RESETTABLE_CLASS(klass)->phases.hold = actuator_reset;
+}
+
+static void actuator_register(void)
+{
+    static const TypeInfo info = {
+        .name = TYPE_Z72_ACTUATOR, .parent = TYPE_SYS_BUS_DEVICE,
+        .instance_size = sizeof(Z72Actuator), .instance_init = actuator_init,
+        .instance_finalize = actuator_finalize, .class_init = actuator_class_init,
+    };
+    type_register_static(&info);
+}
+type_init(actuator_register)
 
 static char *controller_flash_data_get(Object *obj, Error **errp)
 {
@@ -774,6 +914,17 @@ DeviceState *nikon_z72_controller_create(Object *owner, MemoryRegion *root,
     controller_map(domain, root, wide_timer, 0, 0x40000000);
     sysbus_connect_irq(SYS_BUS_DEVICE(wide_timer), 0, qdev_get_gpio_in(wide_irq, 0));
     sysbus_connect_irq(SYS_BUS_DEVICE(wide_timer), 1, qdev_get_gpio_in(wide_irq, 1));
+    DeviceState *actuator = qdev_new(TYPE_Z72_ACTUATOR);
+    object_property_add_child(owner, "actuator-peer", OBJECT(actuator));
+    sysbus_realize_and_unref(SYS_BUS_DEVICE(actuator), &error_fatal);
+    qdev_connect_gpio_out_named(wide_timer, "pwm-duty", 0, qdev_get_gpio_in(actuator, 0));
+    qdev_connect_gpio_out_named(wide_timer, "pwm-duty", 2, qdev_get_gpio_in(actuator, 1));
+    qdev_connect_gpio_out_named(s->gpio[0], "alternate-1-enable", 15,
+                               qdev_get_gpio_in(actuator, 2));
+    qdev_connect_gpio_out_named(s->gpio[1], "alternate-1-enable", 10,
+                               qdev_get_gpio_in(actuator, 3));
+    qdev_connect_gpio_out(actuator, 0, qdev_get_gpio_in(s->gpio[2], 6));
+    qdev_connect_gpio_out(actuator, 1, qdev_get_gpio_in(s->gpio[2], 7));
     controller_load_firmware(s, ARMV7M(core)->cpu, firmware, load_base);
     return core;
 }

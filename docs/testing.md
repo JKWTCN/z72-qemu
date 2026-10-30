@@ -350,6 +350,7 @@ python tests/test_controller_routing.py --qemu .build/build/qemu-system-arm
 python tests/test_controller_dma.py --qemu .build/build/qemu-system-arm
 python tests/test_controller_timer.py --qemu .build/build/qemu-system-arm
 python tests/test_controller_position.py --qemu .build/build/qemu-system-arm
+python tests/test_controller_actuator.py --qemu .build/build/qemu-system-arm
 python tests/test_controller_switch.py --qemu .build/build/qemu-system-arm
 python tests/test_controller_flash.py --qemu .build/build/qemu-system-arm
 python tools/controller_flash_probe.py --qemu .build/build/qemu-system-arm --firmware /path/to/ex1840_013000.bin --destination .local/controller-flash-check
@@ -386,6 +387,13 @@ The position check exercises C6/C7 routing to TIM3 only with alternate function 
 selected, independent channels, edge polarity, captured-value acknowledgement,
 simultaneous EXTI delivery, unchanged-level suppression and reset. It supplies
 external pin levels; it does not model a motor or prove photo completion.
+
+The actuator check separately exercises the optional PWM-driven peer with one
+nanosecond instruction counting. It checks default-disabled behavior, AF1 pin
+selection, both directions, captured position edges, disabled counter/channel,
+equal-drive braking, restart and whole-board reset. The peer uses a functional
+speed rather than measured camera calibration; controller-local reset leaves its
+physical position intact while the reset PWM and GPIO configuration stop drive.
 
 The switch check exercises external levels, pull override, reset retention and
 output isolation. The routing check covers all sixteen pins, all eight ports,

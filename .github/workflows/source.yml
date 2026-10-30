@@ -44,6 +44,7 @@ jobs:
           python tests/test_controller_uart.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_timer.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_position.py --qemu .build/build/qemu-system-arm
+          python tests/test_controller_actuator.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_switch.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_flash.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_adc.py --qemu .build/build/qemu-system-arm

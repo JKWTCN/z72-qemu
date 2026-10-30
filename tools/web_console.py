@@ -314,6 +314,8 @@ class Machine:
                       if getattr(self.args, 'frame_process', False) else ()) +
                      (('nikon-z72-boot-config.aux-image-process=on',)
                       if getattr(self.args, 'aux_image_process', False) else ()) +
+                     (('nikon-z72-controller-actuator.enabled=on',)
+                      if getattr(self.args, 'controller_actuator', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),
@@ -1030,6 +1032,8 @@ def main():
                              'on every laboratory frame tick')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
+    parser.add_argument('--controller-actuator', action='store_true',
+                        help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')
