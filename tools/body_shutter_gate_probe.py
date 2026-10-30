@@ -87,6 +87,11 @@ BODY_CAPTURE_POINTS = {
     0x1022827c: 'body-capture-operation-registration',
     0x103e7312: 'body-capture-state-request',
 }
+BODY_CAPTURE_CONFIGURATION_POINTS = {
+    address: BODY_CONFIGURATION_POINTS[address] for address in
+    (0x1052273e, 0x10635cf6, 0x104847c2, 0x10484800,
+     0x104e1824, 0x104e1850, 0x104e188e)
+} | {0x1048481e: 'body-configuration-list-result'}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -2169,6 +2174,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         following = {} if playback else dict(AFTER_ACTION)
                         if body_state_events:
                             following.update(BODY_STATE_POINTS)
+                        elif body_capture_events:
+                            following.update(BODY_CAPTURE_CONFIGURATION_POINTS)
                         elif application_only and not (image_work_events or body_capture_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
@@ -2276,7 +2283,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if 0xb1800000 <= pointer <= 0xb5efffb0:
                             record['configuration_node'] = dict(address=hex(pointer),
                                 fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
-                                        for offset in (0, 4, 0x34, 0x40, 0x44, 0x48, 0x4c)})
+                                        for offset in (0, 4, 0x10, 0x14, 0x28, 0x2c,
+                                                       0x30, 0x34, 0x40, 0x44, 0x48, 0x4c)})
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < (512 if body_capture_events and pc == 0x10484800 else 64)
+                if body_capture_events and pc == 0x1048481e:
+                    record['configuration_result'] = remote.get(registers, 'r6')
+                    record['visited_nodes'] = remote.get(registers, 'r5')
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 64
                 if body_state_events and pc in BODY_STATE_POINTS:
