@@ -114,6 +114,19 @@
     },
     {
       "bank": 3,
+      "bits": "0x80",
+      "logical": "0x10",
+      "callback": "0x10239480",
+      "group": 2,
+      "events": [
+        {
+          "object": "0xb26b3888",
+          "bits": "0x80"
+        }
+      ]
+    },
+    {
+      "bank": 3,
       "bits": "0x40000000",
       "logical": "0x400",
       "callback": "0x1023938c",
@@ -175,6 +188,84 @@
     ],
     "endpoint_recorded_only": true,
     "photo_delivery_verified": false
+  },
+  "alternate_output_task": {
+    "event": "0x80",
+    "entry": "0x1023c57a",
+    "arguments": [
+      "0x1",
+      "0xb26b44cc"
+    ],
+    "cases": [
+      {
+        "flags": "0x0",
+        "state": 0,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x0",
+        "state": 1,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x0",
+        "state": 2,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x1",
+        "state": 0,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x1",
+        "state": 1,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x1",
+        "state": 2,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x4",
+        "state": 0,
+        "stops": [],
+        "notifications": []
+      },
+      {
+        "flags": "0x4",
+        "state": 1,
+        "stops": [
+          "0x1234"
+        ],
+        "notifications": [
+          [
+            "0x41a0003",
+            "0x0"
+          ]
+        ]
+      },
+      {
+        "flags": "0x4",
+        "state": 2,
+        "stops": [],
+        "notifications": []
+      }
+    ],
+    "host_boundaries": [
+      "record stop request 0x10238680"
+    ],
+    "limitations": [
+      "Pre-existing output latch is set in synthetic memory.",
+      "Does not execute the alternate output rearm path."
+    ]
   },
   "finite_task": {
     "dispatcher": "0x10238d4a",

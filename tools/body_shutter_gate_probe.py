@@ -77,6 +77,9 @@ CAPTURE_INPUT_POINTS = {
     0x1022e2e0: 'capture-input-tail-notification',
     0x1022ff42: 'capture-input-tail-worker-parameter-check',
     0x10230052: 'capture-input-tail-driver-notification',
+    0x1032ac52: 'capture-input-parameter-clone',
+    0x1032ac9a: 'capture-input-parameter-clone-ready',
+    0x1031a690: 'capture-input-parameter-copy',
     0x1031eabe: 'capture-driver-input-flags-entry',
     0x1031ead8: 'capture-driver-input-flags-stored',
     0x1031cb20: 'capture-driver-stop-flags-entry',
@@ -523,6 +526,21 @@ def image_service_snapshot(remote):
         banks=[dict(base=hex(base), registers={hex(index * 4): hex(value)
                     for index, value in enumerate(words(base, 256))})
                for base in (0x20380000, 0x203c0000)])
+
+
+def input_tail_parameter_snapshot(remote, pointer):
+    """Read the two original tail-worker conditions without changing them."""
+    result = dict(address=hex(pointer))
+    if not 0xb2c00000 <= pointer <= 0xb5effb08:
+        return result
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    nested = word(pointer + 0x4f4)
+    result.update(parameter_2b4=hex(word(pointer + 0x2b4)), nested=hex(nested))
+    if 0xb2c00000 <= nested <= 0xb5efd7b4:
+        result.update(nested_2844=hex(word(nested + 0x2844)),
+                      nested_2848=hex(word(nested + 0x2848)))
+    return result
 
 
 def input_context_snapshot(remote):
@@ -1836,6 +1854,25 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x1022ff42, 0x10230052):
+                        record['tail_parameters'] = input_tail_parameter_snapshot(
+                            remote, remote.get(registers, 'r5'))
+                    if pc in (0x1032ac52, 0x1032ac9a):
+                        keep = keep and capture_caller is not None and capture_caller.report['triggered']
+                        if keep:
+                            record['clone_mode'] = remote.get(registers, 'r0' if pc == 0x1032ac52 else 'r6')
+                            record['clone_destination'] = input_tail_parameter_snapshot(
+                                remote, remote.get(registers, 'r3' if pc == 0x1032ac52 else 'r4'))
+                            if pc == 0x1032ac52:
+                                record['clone_source'] = input_tail_parameter_snapshot(
+                                    remote, remote.get(registers, 'r2'))
+                    if pc == 0x1031a690:
+                        keep = keep and capture_caller is not None and capture_caller.report['triggered']
+                        if keep:
+                            record['copy_source'] = input_tail_parameter_snapshot(
+                                remote, remote.get(registers, 'r0'))
+                            record['copy_destination'] = hex(remote.get(registers, 'r2'))
+                            record['copy_nested_destination'] = hex(remote.get(registers, 'r3'))
                     if pc in (0x1020aafc, 0x1020ab00, 0x1020a830, 0x1020a834):
                         keep = keep and bool(remote.get(registers, 'r1') & 0x600)
                         if keep:
@@ -1943,7 +1980,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             record['input_cause_words'] = [hex(value) for value in
                                 struct.unpack('<8I', remote.read(pointer, 32))]
                     hits[pc] = hits.get(pc, 0) + int(keep)
-                    repeat = not keep or hits[pc] < 8
+                    repeat = not keep or hits[pc] < (32 if pc in (
+                        0x1031a690, 0x1032ac52, 0x1032ac9a) else 8)
                 if keep:
                     records.append(record)
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:

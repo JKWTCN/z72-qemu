@@ -1,0 +1,265 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "predicate": "0x1031dd92",
+  "clone": "0x1032ac52",
+  "nested_copy": "0x10307bf0",
+  "selectors": [
+    {
+      "override": 0,
+      "mode": 0,
+      "result": 0
+    },
+    {
+      "override": 0,
+      "mode": 1,
+      "result": 0
+    },
+    {
+      "override": 0,
+      "mode": 2,
+      "result": 1
+    },
+    {
+      "override": 0,
+      "mode": 3,
+      "result": 0
+    },
+    {
+      "override": 0,
+      "mode": 4,
+      "result": 0
+    },
+    {
+      "override": 1,
+      "mode": 0,
+      "result": 1
+    },
+    {
+      "override": 1,
+      "mode": 1,
+      "result": 1
+    },
+    {
+      "override": 1,
+      "mode": 2,
+      "result": 1
+    },
+    {
+      "override": 1,
+      "mode": 3,
+      "result": 1
+    },
+    {
+      "override": 1,
+      "mode": 4,
+      "result": 1
+    },
+    {
+      "override": 2,
+      "mode": 0,
+      "result": 1
+    },
+    {
+      "override": 2,
+      "mode": 1,
+      "result": 1
+    },
+    {
+      "override": 2,
+      "mode": 2,
+      "result": 1
+    },
+    {
+      "override": 2,
+      "mode": 3,
+      "result": 1
+    },
+    {
+      "override": 2,
+      "mode": 4,
+      "result": 1
+    }
+  ],
+  "cases": [
+    {
+      "mode": 0,
+      "source_tail_flag": 0,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "source_tail_flag": 1,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 1,
+      "source_tail_flag": 0,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 1,
+      "source_tail_flag": 1,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 2,
+      "source_tail_flag": 0,
+      "source_other_flag": 23,
+      "parameter_2b4": 1,
+      "nested_2844": 0,
+      "nested_2848": 23
+    },
+    {
+      "mode": 2,
+      "source_tail_flag": 1,
+      "source_other_flag": 23,
+      "parameter_2b4": 1,
+      "nested_2844": 1,
+      "nested_2848": 23
+    },
+    {
+      "mode": 3,
+      "source_tail_flag": 0,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 3,
+      "source_tail_flag": 1,
+      "source_other_flag": 23,
+      "parameter_2b4": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    }
+  ],
+  "tail_entry": "0x1022ff20",
+  "tail_cases": [
+    {
+      "nested_2844": 0,
+      "parameter_2b4": 0,
+      "queued": 0,
+      "parameter_masks": [
+        0,
+        8
+      ],
+      "frame_submissions": [],
+      "notifications": [
+        [
+          "0x41a000f",
+          "0x0",
+          "0x50010000"
+        ]
+      ]
+    },
+    {
+      "nested_2844": 0,
+      "parameter_2b4": 0,
+      "queued": 1,
+      "parameter_masks": [
+        0,
+        8
+      ],
+      "frame_submissions": [],
+      "notifications": [
+        [
+          "0x41a000f",
+          "0x0",
+          "0x50010000"
+        ]
+      ]
+    },
+    {
+      "nested_2844": 0,
+      "parameter_2b4": 1,
+      "queued": 0,
+      "parameter_masks": [
+        0,
+        8
+      ],
+      "frame_submissions": [],
+      "notifications": [
+        [
+          "0x41a000f",
+          "0x0",
+          "0x50010000"
+        ]
+      ]
+    },
+    {
+      "nested_2844": 0,
+      "parameter_2b4": 1,
+      "queued": 1,
+      "parameter_masks": [
+        0,
+        8
+      ],
+      "frame_submissions": [],
+      "notifications": [
+        [
+          "0x41a000f",
+          "0x0",
+          "0x50010000"
+        ]
+      ]
+    },
+    {
+      "nested_2844": 1,
+      "parameter_2b4": 0,
+      "queued": 0,
+      "parameter_masks": [
+        0
+      ],
+      "frame_submissions": [],
+      "notifications": []
+    },
+    {
+      "nested_2844": 1,
+      "parameter_2b4": 0,
+      "queued": 1,
+      "parameter_masks": [
+        0,
+        8
+      ],
+      "frame_submissions": [
+        [
+          "0x5000b000",
+          "0x50010000"
+        ]
+      ],
+      "notifications": [
+        [
+          "0x41a000f",
+          "0x0",
+          "0x50010000"
+        ]
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "synthetic property 17 and identity conversion for mode 2",
+    "tail parameter selection, pointer validation, uncontended lock/unlock",
+    "record tail frame submission and callback; bookkeeping endpoints return zero"
+  ],
+  "limitations": [
+    "Synthetic parameter storage; original initialization, copies and mode decisions execute.",
+    "Does not establish runtime mode selection or supply parameters to the running firmware.",
+    "Tail queues are synthetic; the original peek and routing execute.",
+    "The positive tail case disables metadata generation; no pixels or photo work execute."
+  ]
+}
