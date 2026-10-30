@@ -98,6 +98,14 @@ BODY_INPUT_POINTS = {
     0x102a47c4: 'body-input-enqueue-result',
     0x1029ee9c: 'body-input-worker-dequeue-result',
 }
+BODY_COMPUTE_POINTS = {
+    0x102449a0: 'body-master-compute-entry',
+    0x102449c4: 'body-master-compute-initialized',
+    0x10243bf8: 'body-master-compute-request-ack-wait',
+    0x102449da: 'body-master-compute-submit-return',
+    0x102449ec: 'body-master-compute-result-wait-return',
+    0x10244910: 'body-master-compute-result-callback',
+}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -1070,6 +1078,19 @@ def peer_input_snapshot(remote, resume_thread=1):
     return result
 
 
+def master_compute_snapshot(remote):
+    remote.select_thread(1)
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    return dict(service_words=[hex(value) for value in struct.unpack(
+                    '<4I', remote.read(0xb1808d14, 16))],
+                channel_owners=[hex(word(0x24061100 + index * 0x80)) for index in range(8)],
+                busy_bitmap=hex(word(0x24061900)),
+                request_ack_head=hex(word(0x24061080)),
+                result_head=hex(word(0x24061084)),
+                program_sha256=hashlib.sha256(remote.read(0x50200000, 0x27800)).hexdigest())
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -1463,7 +1484,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
             body_state_events=False,
-            body_capture_events=False, body_input_events=False,
+            body_capture_events=False, body_input_events=False, body_compute_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
     with machine.io:
         machine.qmp.command('stop')
@@ -1536,6 +1557,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     body_input_armed = False
     body_input_seen = {}
     body_input_samples = {}
+    body_compute_armed = False
     records = []
     hits = {}
     callback_hits = 0
@@ -1552,6 +1574,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     controller_step_trigger_sent = False
     try:
         before = snapshot(remote)
+        if body_compute_events:
+            before['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:
             before['peer_input'] = peer_input_snapshot(remote)
         if capture_submit_on_ready:
@@ -2053,6 +2077,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     armed[address] = label
                                 body_input_armed = True
                                 record['body_input_observation_after_processing_frames'] = completed
+                            if body_compute_events and not body_compute_armed:
+                                for address, label in BODY_COMPUTE_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                body_compute_armed = True
+                                record['body_compute_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -2191,7 +2221,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             following.update(BODY_STATE_POINTS)
                         elif body_capture_events:
                             following.update(BODY_CAPTURE_CONFIGURATION_POINTS)
-                        elif application_only and not (image_work_events or body_capture_events or body_input_events):
+                        elif application_only and not (image_work_events or body_capture_events or
+                                                        body_input_events or body_compute_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
                             if address not in armed:
@@ -2363,6 +2394,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         keep = False
                     hits[pc] = hits.get(pc, 0) + int(keep)
                     repeat = hits[pc] < 32
+                if body_compute_events and pc in BODY_COMPUTE_POINTS:
+                    record['master_compute'] = master_compute_snapshot(remote)
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 8
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
@@ -2762,6 +2797,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             else:
                 del armed[pc]
         after = snapshot(remote)
+        if body_compute_events:
+            after['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:
             after['peer_input'] = peer_input_snapshot(remote)
         return dict(before=before, records=records, after=after,
@@ -2801,6 +2838,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_periodic_operations=body_periodic_operations,
                     body_input_events=body_input_events,
                     body_input_samples=body_input_samples,
+                    body_compute_events=body_compute_events,
                     shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -2931,6 +2969,8 @@ def main():
                         help='Trace capture operation registration and state requests after preview readiness')
     parser.add_argument('--body-input-events', action='store_true',
                         help='Trace release-contact changes through background input queuing before foreground dispatch')
+    parser.add_argument('--body-compute-events', action='store_true',
+                        help='Observe master compute requests during body input and compare the loaded program digest')
     args = parser.parse_args()
     require(not args.primary_exposure_sync or
             args.sampling_output_complete and args.frame_generate and args.frame_notify,
@@ -3011,6 +3051,9 @@ def main():
     require(not args.body_input_events or (args.application_only and
             not (args.body_capture_events or args.body_state_events or args.image_work_events)),
             'Body input observation requires application-only tracing without other work events')
+    require(not args.body_compute_events or (args.application_only and
+            not (args.body_capture_events or args.body_state_events or args.body_input_events or args.image_work_events)),
+            'Body compute observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -3129,6 +3172,7 @@ def main():
                                     body_state_events=args.body_state_events,
                                     body_capture_events=args.body_capture_events,
                                     body_input_events=args.body_input_events,
+                                    body_compute_events=args.body_compute_events,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
