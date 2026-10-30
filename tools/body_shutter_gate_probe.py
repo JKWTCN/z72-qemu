@@ -92,6 +92,20 @@ CAPTURE_INPUT_POINTS = {
     0x102421aa: 'capture-input-adapter-response',
     0x10394762: 'capture-processing-adapter-notification',
     0x1026ec26: 'capture-delegate-ready-notification-route',
+    0x10394710: 'capture-processing-second-handshake-request',
+    0x10395a70: 'capture-processing-first-handshake-request',
+    0x10394d06: 'capture-processing-device-notification',
+    0x10397260: 'capture-processing-stage18-entry',
+    0x1024229c: 'capture-gpio-first-handshake',
+    0x102422c4: 'capture-gpio-second-handshake',
+    0x102422ec: 'capture-gpio-input-callback',
+    0x10242124: 'capture-gpio-timer-callback',
+    0x1026d16e: 'capture-sampling-delegate-notification',
+    0x102e9482: 'capture-sampling-stage-handler',
+    0x102e958a: 'capture-sampling-task',
+    0x102e94fa: 'capture-sampling-second-step-producer',
+    0x102eb93e: 'capture-sampling-stage5-wait',
+    0x102eb778: 'capture-sampling-counter-callback',
 }
 CAPTURE_CONTROLLER_POINTS = {
     0x080369d0: 'capture-controller-channel9-request',
@@ -109,6 +123,8 @@ CAPTURE_CONTROLLER_POINTS = {
     0x080368ce: 'capture-controller-step-input-armed',
     0x0803661c: 'capture-controller-step-trigger',
     0x08034ff0: 'capture-controller-step-request',
+    0x08036986: 'capture-controller-step-input-rearmed',
+    0x08036830: 'capture-controller-step-input-callback',
 }
 IMAGE_WORK_POINTS = {
     0x103cc8e8: 'image-work-tracking-enqueue-mode2',
@@ -1134,8 +1150,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             boundary_frame = machine.qmp.command('qom-get',
                 dict(path=boundary_path, property='input-dma-count'))
         deadline = started + seconds
+        checkpointed = started
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if capture_focus and time.monotonic() - checkpointed >= 15:
+                checkpoint = machine.work / 'capture-focus-checkpoint.json'
+                temporary = checkpoint.with_suffix('.tmp')
+                temporary.write_text(json.dumps(dict(incomplete=True, before=before,
+                    records=records, diagnostic_capture=capture_caller.report), indent=2),
+                    encoding='utf-8')
+                temporary.replace(checkpoint)
+                checkpointed = time.monotonic()
             if capture_counter_seconds is not None and capture_caller.report['triggered']:
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
@@ -1241,7 +1266,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     backend_words=[hex(value) for value in
                         struct.unpack('<5I', remote.read(0x20017584, 20))],
                     backend_request=list(remote.read(0x2000e8c0, 6)))
-                if pc == 0x080368ce:
+                if pc in (0x080368ce, 0x08036986):
                     def controller_word(address):
                         return int.from_bytes(remote.read(address, 4), 'little')
                     record['step_input'] = dict(
@@ -1251,7 +1276,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         falling=hex(controller_word(0x40013c0c)),
                         pending=hex(controller_word(0x40013c14)),
                         original_level=(controller_word(0x40021810) >> 8) & 1)
-                    if controller_step_trigger and not controller_step_trigger_sent:
+                    if pc == 0x080368ce and controller_step_trigger and not controller_step_trigger_sent:
                         source = record['step_input']
                         require(source['port'] == 6 and int(source['mask'], 16) & 0x100 and
                                 (int(source['rising'], 16) | int(source['falling'], 16)) & 0x100 and
@@ -1722,6 +1747,28 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if pc == 0x10394762:
                         code = remote.get(registers, 'r0')
                         keep = keep and (0x03030001 <= code <= 0x03030005 or code == 0x0420010b)
+                    if pc == 0x10394d06:
+                        code = remote.get(registers, 'r0')
+                        keep = keep and code in (0x04200185, 0x03030001, 0x03030002)
+                    if pc == 0x1026d16e:
+                        keep = keep and 0x04200281 <= remote.get(registers, 'r0') <= 0x04200288
+                    if keep and pc in (0x10394710, 0x10395a70, 0x10394d06, 0x10397260,
+                              0x1024229c, 0x102422c4, 0x102422ec, 0x10242124):
+                        record['handshake'] = dict(
+                            mode=remote.read(0xb18a7920, 1)[0],
+                            timer_active=int.from_bytes(remote.read(0xb18a7924, 4), 'little'),
+                            processing_active=int.from_bytes(remote.read(0xb1868334, 4), 'little'),
+                            processing_parameters=list(remote.read(0xb23ed1a0, 4)),
+                            device_qualifiers=list(remote.read(0xb23ecdd0, 3)),
+                            processing_qualifiers=[remote.read(0xb1868315, 1)[0],
+                                                   remote.read(0xb1868322, 1)[0]])
+                    if keep and pc in (0x1026d16e, 0x102e9482, 0x102e958a,
+                                      0x102e94fa, 0x102eb93e, 0x102eb778):
+                        record['sampling_stage'] = dict(
+                            header=list(remote.read(0xb1868628, 0x24)),
+                            words=[hex(x) for x in struct.unpack('<20I', remote.read(0xb1868670, 80))],
+                            delegate_header=list(remote.read(0xb1868510, 0x20)),
+                            counter_context=list(remote.read(0xb1868880, 0x48)))
                     if pc in (0x1024220a, 0x102421aa):
                         record['adapter_dispatch'] = [hex(value) for value in
                             struct.unpack('<2I', remote.read(0xb18a7930, 8))]

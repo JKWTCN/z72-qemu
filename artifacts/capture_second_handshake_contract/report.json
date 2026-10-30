@@ -1,0 +1,186 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "device_callback": "0x10394d06",
+  "device_notification": "0x04200185",
+  "producer": "0x10394710",
+  "producer_argument": 4,
+  "gate_cases": [
+    {
+      "device_20": 0,
+      "device_22": 0,
+      "processing_05": 0,
+      "processing_12": 0,
+      "second_handshake": 4
+    },
+    {
+      "device_20": 0,
+      "device_22": 0,
+      "processing_05": 0,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 0,
+      "processing_05": 1,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 0,
+      "processing_05": 1,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 2,
+      "processing_05": 0,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 2,
+      "processing_05": 0,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 2,
+      "processing_05": 1,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 0,
+      "device_22": 2,
+      "processing_05": 1,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 0,
+      "processing_05": 0,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 0,
+      "processing_05": 0,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 0,
+      "processing_05": 1,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 0,
+      "processing_05": 1,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 2,
+      "processing_05": 0,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 2,
+      "processing_05": 0,
+      "processing_12": 1,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 2,
+      "processing_05": 1,
+      "processing_12": 0,
+      "second_handshake": null
+    },
+    {
+      "device_20": 1,
+      "device_22": 2,
+      "processing_05": 1,
+      "processing_12": 1,
+      "second_handshake": null
+    }
+  ],
+  "gpio_routes": [
+    {
+      "mode": 1,
+      "entry": "0x1024229c",
+      "armed_hardware": [
+        {
+          "entry": "0x10385f5e",
+          "object": "0x50000120",
+          "argument": 1
+        },
+        {
+          "entry": "0x10385d50",
+          "object": "0x50000100",
+          "argument": 1
+        },
+        {
+          "entry": "0x103bf214",
+          "object": "0xb2b3a250",
+          "argument": 1
+        }
+      ],
+      "gpio_notification": "0x3030024",
+      "task_event": "0x10",
+      "processing_notification": "0x3030004"
+    },
+    {
+      "mode": 2,
+      "entry": "0x102422c4",
+      "armed_hardware": [
+        {
+          "entry": "0x10385f5e",
+          "object": "0x50000120",
+          "argument": 1
+        },
+        {
+          "entry": "0x10385d50",
+          "object": "0x50000100",
+          "argument": 1
+        },
+        {
+          "entry": "0x103bf214",
+          "object": "0xb2b3a250",
+          "argument": 1
+        }
+      ],
+      "gpio_notification": "0x3030025",
+      "task_event": "0x20",
+      "processing_notification": "0x3030005"
+    }
+  ],
+  "timer_callback": "0x10242124",
+  "input_callback": "0x102422ec",
+  "host_boundaries": [
+    "supply synthetic parameters and timestamps",
+    "stop at the second-handshake request entry",
+    "record GPIO and timer requests",
+    "explicitly invoke the input callback in the isolated GPIO case",
+    "record notifications and deferred task posts, then run their original forwarding"
+  ],
+  "limitations": [
+    "Does not prove native production of the device notification",
+    "Does not supply a completion to a running camera or prove photo completion"
+  ]
+}
