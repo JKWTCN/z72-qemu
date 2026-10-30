@@ -657,11 +657,356 @@
       "jobs": []
     }
   ],
+  "work_submission": {
+    "entry": "0x103d0db0",
+    "manager": "0xb1864d48",
+    "allocation_boundary": "0x103d0eae",
+    "cases": [
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 0,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 1,
+        "reached_allocation": true
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 2,
+        "reached_allocation": true
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 1,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 2,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 1,
+        "manager_kind": 3,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 0,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 1,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 1,
+        "reached_allocation": true
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 2,
+        "reached_allocation": true
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 2,
+        "phase": 6,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 0,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 1,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 2,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 3,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 4,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 5,
+        "reached_allocation": false
+      },
+      {
+        "context_kind": 2,
+        "manager_kind": 3,
+        "phase": 6,
+        "reached_allocation": false
+      }
+    ]
+  },
   "host_boundaries": [
-    "Seed synthetic state and qualifier; record deferred submission without executing it"
+    "Seed synthetic state and qualifier; record deferred submission without executing it",
+    "Supply uncontended locks and event clear for the submission mode check",
+    "Stop an admitted submission before allocation; no image job is created"
   ],
   "limitations": [
-    "Only this notification branch; no native event delivery or image processing is supplied",
+    "Notification and initial submission gates only; no native event delivery or image processing is supplied",
     "No conclusion about other producers or the required hardware timing"
   ]
 }

@@ -68,6 +68,15 @@ CAPTURE_INPUT_POINTS = {
     0x10326476: 'capture-staged-context-parameter-check-return',
     0x10326486: 'capture-staged-context-mode-check-return',
     0x10326546: 'capture-staged-context-ready',
+    0x10326608: 'capture-staged-work-condition',
+    0x10326620: 'capture-staged-work-submit',
+    0x10326624: 'capture-staged-work-submit-return',
+    0x103d0df0: 'capture-work-mode-condition',
+    0x103d0e00: 'capture-work-mode-rejected',
+    0x103d0eae: 'capture-work-request-allocation-entry',
+    0x10264f5c: 'capture-processing-release-entry',
+    0x10265120: 'capture-processing-release-notification-condition',
+    0x103cdb26: 'capture-processing-release-notification',
     0x103231b2: 'capture-driver-state-update',
     0x103e6e94: 'capture-state-update',
     0x103b93d0: 'capture-release-stop-entry',
@@ -1349,7 +1358,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['stack_words'] = [hex(value) for value in struct.unpack(
                         '<32I', remote.read(remote.get(registers, 'sp'), 128))]
                 read_watched_word = watch_type == 2 and (
-                    0xb2c00000 <= watched_address <= 0xb5effffc or
+                    0xb1800000 <= watched_address <= 0xb5effffc or
                     0x20100000 <= watched_address <= 0x2010fffc)
                 if read_watched_word:
                     record['previous_window_word' if watch_bytes > 4 else 'previous_word'] = hex(
@@ -1894,6 +1903,39 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x103d0df0, 0x103d0e00, 0x103d0eae):
+                        keep = keep and record['capture_state'][0] >= 8
+                    if pc == 0x103cdb26:
+                        keep = keep and remote.get(registers, 'r0') == 0x041b0042
+                    if pc in (0x10264f5c, 0x10265120):
+                        keep = keep and record['capture_state'][0] >= 6
+                    if keep and pc in (0x103d0df0, 0x103d0e00, 0x103d0eae,
+                                       0x10264f5c, 0x10265120, 0x103cdb26):
+                        record['processing_release'] = {
+                            hex(offset): hex(int.from_bytes(remote.read(0xb1864834 + offset, 4), 'little'))
+                            for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x20, 0x50, 0x54, 0x60)}
+                    if pc in (0x103d0df0, 0x103d0e00, 0x103d0eae):
+                        if keep:
+                            pointer = remote.get(registers, 'r4')
+                            record['work_mode'] = dict(context=hex(pointer),
+                                manager_header=list(remote.read(0xb1864d48, 8)),
+                                parameter_backend_header=list(remote.read(0xb1866d4c, 8)),
+                                output_flags=hex(int.from_bytes(remote.read(0xb23ccd94, 4), 'little')))
+                            if 0xb1800000 <= pointer <= 0xb5effff2:
+                                record['work_mode']['context_kind'] = remote.read(pointer + 0xd, 1)[0]
+                    if pc in (0x10326608, 0x10326620, 0x10326624):
+                        context = int.from_bytes(remote.read(remote.get(registers, 'r5') + 0x14, 4), 'little')
+                        parameters = remote.get(registers, 'r6')
+                        record['staged_work'] = dict(context=hex(context), parameters=hex(parameters),
+                            driver_2e=remote.read(0xb1868b1e, 1)[0])
+                        if 0xb1800000 <= parameters <= 0xb5effb2b:
+                            record['staged_work']['fields'] = {
+                                hex(offset): hex(int.from_bytes(remote.read(parameters + offset, size), 'little'))
+                                for offset, size in ((0, 1), (1, 1), (4, 4), (8, 4), (0xc, 1),
+                                                     (0x10, 4), (0x14, 4), (0x18, 4), (0x20, 4),
+                                                     (0x38, 4), (0xac, 1), (0x107, 1), (0x4d4, 1))}
+                        if pc == 0x10326624:
+                            record['staged_work']['submit_result'] = hex(remote.get(registers, 'r0'))
                     if pc in (0x10321d80, 0x10321d94, 0x10321dbe, 0x10325304,
                               0x103262e8, 0x10326546):
                         # Preview notifications otherwise consume the hit limit before release.

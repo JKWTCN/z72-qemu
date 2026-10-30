@@ -392,6 +392,34 @@
       }
     ]
   },
+  "processing_stop_events": {
+    "wait_mask": "0xb1864854",
+    "cases": [
+      {
+        "translator": "0x102637c2",
+        "notification": "0x42190806",
+        "events": [
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x10000"
+          }
+        ]
+      },
+      {
+        "translator": "0x10264282",
+        "notification": "0x42193084",
+        "events": [
+          {
+            "api": "0x103610cc",
+            "object": "0xb1864850",
+            "bits": "0x2000"
+          }
+        ]
+      }
+    ],
+    "limitation": "Synthetic messages with wait mask zero; no aggregate completion or native delivery is supplied"
+  },
   "input_bindings": {
     "control_setter": "0x1036a62c",
     "rectangle_setter": "0x1036a642",

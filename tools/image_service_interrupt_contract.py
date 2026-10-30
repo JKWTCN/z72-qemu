@@ -123,12 +123,26 @@ def probe(image):
                 'Original stage1 input event skip differs')
         stage1_cases.append(dict(notification='0x42193081', payload='0x1',
             skip_before=skip, skip_after=0, events=list(native.events)))
+    stop_cases = []
+    for entry, code, bits in ((0x102637c2, 0x42190806, 0x10000),
+                              (0x10264282, 0x42193084, 0x2000)):
+        # No aggregate wait is requested here: recover each message's event
+        # translation independently, without claiming that both arrived natively.
+        native.u.mem_write(0xb1864854, bytes(4))
+        native.events.clear()
+        native.call(entry - 0x10020000, code)
+        require(native.events == [dict(api='0x103610cc', object='0xb1864850', bits=hex(bits))],
+                'Original processing-stop event translation differs')
+        stop_cases.append(dict(translator=hex(entry), notification=hex(code),
+                               events=list(native.events)))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         handlers=['0x103699a4', '0x10369968'], interrupt_ids=[99, 100],
         status_addresses=['0x20380024', '0x203c0024'], callbacks=['0x102e468a', '0x102e4608'],
         translator='0x102637c2', cases=cases,
         stage1_input_event=dict(translator='0x10262e40', skip_address='0xb1864900',
                                cases=stage1_cases),
+        processing_stop_events=dict(wait_mask='0xb1864854', cases=stop_cases,
+            limitation='Synthetic messages with wait mask zero; no aggregate completion or native delivery is supplied'),
         input_bindings=dict(control_setter='0x1036a62c', rectangle_setter='0x1036a642',
             addresses_setter='0x1036a672', start_setter='0x10369faa',
             interrupt_mask_setter='0x1036a246', cases=bindings,
