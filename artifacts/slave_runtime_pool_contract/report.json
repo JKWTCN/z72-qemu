@@ -1,0 +1,126 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "initialize": "0x10065a38",
+  "allocate": "0x10065a4e",
+  "remaining": "0x10065a6e",
+  "current_pointer": "0xc1015b98",
+  "base": "0xc6100000",
+  "classification_end": "0xc8200000",
+  "classification_kind": "0x1",
+  "bus_base": "0x15100000",
+  "conversions": [
+    {
+      "address": "0xc6100000",
+      "converted": "0x15100000"
+    },
+    {
+      "address": "0xc6313cc0",
+      "converted": "0x15313cc0"
+    },
+    {
+      "address": "0xc81fffff",
+      "converted": "0x171fffff"
+    }
+  ],
+  "bytes": 34603008,
+  "alignment": 64,
+  "cases": [
+    {
+      "requested": 0,
+      "address": "0xc6100000",
+      "next": "0xc6100000"
+    },
+    {
+      "requested": 1,
+      "address": "0xc6100000",
+      "next": "0xc6100040"
+    },
+    {
+      "requested": 63,
+      "address": "0xc6100040",
+      "next": "0xc6100080"
+    },
+    {
+      "requested": 64,
+      "address": "0xc6100080",
+      "next": "0xc61000c0"
+    },
+    {
+      "requested": 65,
+      "address": "0xc61000c0",
+      "next": "0xc6100140"
+    },
+    {
+      "requested": 679106,
+      "address": "0xc6100140",
+      "next": "0xc61a5e40"
+    }
+  ],
+  "reported_remaining": 33923521,
+  "lock_calls": [
+    {
+      "entry": "0x100f96b8",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f9714",
+      "object": "0xc1015b94"
+    },
+    {
+      "entry": "0x100f970e",
+      "object": "0xc1015b94"
+    }
+  ],
+  "host_boundaries": [
+    "Supply synthetic initialized state and stack; accept uncontended lock operations"
+  ],
+  "limitations": [
+    "The original allocator has no observed bounds check and reports end minus current plus one",
+    "Classification end is treated as the next interval boundary, not a valid last byte",
+    "No memory is mapped or written at the returned allocation addresses",
+    "No processing completion, encoded photo or file is produced"
+  ]
+}

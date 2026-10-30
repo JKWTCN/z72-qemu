@@ -107,6 +107,9 @@ static const NikonZ72Window nikon_z72_slave_windows[] = {
     /* Peer-alias physical span mirroring the master role. */
     {0xB6F00000, 0x00D00000, "z72-slave-peer-alias-lab"},
     {0xC6000000, 0x00100000, "z72-slave-message-ram-lab"},
+    /* Runtime bump arena initialized by 0x10065A38; the classifier ends
+     * this interval at C8200000 and translates it to bus 15100000. */
+    {0xC6100000, 0x02100000, "z72-slave-runtime-arena-lab"},
     /* Companion serial-adjacent block beside the console interface; the
      * kernel writes it (observed at +0x560) once the handoff completes. */
     {0x2C0A0000, 0x00001000, "z72-slave-console-companion-lab"},

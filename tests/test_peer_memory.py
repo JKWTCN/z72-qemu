@@ -24,8 +24,10 @@ def run(qemu):
             remote.write(0x40100000, struct.pack('<2I', 0xe1c200d0, 0xe1c200f0))
             master_guard = b'ownerRAM'
             remote.write(0xc5b9f300, master_guard)
+            remote.write(0xc6313cc0, master_guard)
             for source in (0xc1000010, 0xc144d5c0, 0xc3f00000,
-                           0xc5b9f300, 0xc60f0000):
+                           0xc5b9f300, 0xc60f0000, 0xc6100000,
+                           0xc6313cc0, 0xc81ffff8):
                 bus = source - 0x80000000
                 words = (source ^ 0x12345678, source ^ 0x87654321)
                 remote.select_thread(3)
@@ -41,9 +43,21 @@ def run(qemu):
                 remote.command('vCont;s:1')
                 require(remote.read(0xc5b9f300, 8) == master_guard,
                         'Slave bus alias replaced the master local frame pool')
+                require(remote.read(0xc6313cc0, 8) == master_guard,
+                        'Slave runtime arena replaced the master local frame pool')
                 remote.select_thread(3)
                 require(remote.read(source, 8) == struct.pack('<2I', *replacement),
                         'Master peer store did not update the slave backing')
+                if source >= 0xc6100000:
+                    uncached = source - 0xb1000000
+                    require(remote.read(uncached, 8) == struct.pack('<2I', *replacement),
+                            'Slave runtime arena bus window has independent storage')
+                    remote.write(uncached, master_guard)
+                    require(remote.read(source, 8) == master_guard,
+                            'Slave runtime arena bus store did not update local storage')
+            require(remote.command('m17200000,4').startswith('E') and
+                    remote.command('mc8200000,4').startswith('E'),
+                    'Slave runtime arena extends beyond its classifier boundary')
             remote.select_thread(1)
             remote.set(pc=0x40100000, cpsr=0xd3, r2=0x40800000)
             remote.command('vCont;s:1')

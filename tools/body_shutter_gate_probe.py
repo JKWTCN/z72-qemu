@@ -16,6 +16,12 @@ from analyze.qemu_display import Remote
 from tools.web_console import Machine
 
 ACTION = 0x1053ba0e
+ENGINE_ABORT_POINTS = {
+    0x1010000c: 'execution-prefetch-abort',
+    0x10100010: 'execution-data-abort',
+    0x1003410c: 'slave-execution-prefetch-abort',
+    0x10034110: 'slave-execution-data-abort',
+}
 AFTER_ACTION = {
     0x10542038: 'action-check-result',
     0x104e6c28: 'release-gate-result',
@@ -1093,8 +1099,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x103f36fa: 'body-operation59-api',
                       0x103f19c0: 'body-operation59-task',
                       0x104e1690: 'release-configuration-timer-callback',
-                      0x1010000c: 'execution-prefetch-abort',
-                      0x10100010: 'execution-data-abort'})
+                      **ENGINE_ABORT_POINTS})
     image_work_armed = False
     records = []
     hits = {}
@@ -1281,6 +1286,46 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 continue
             require(pc in armed, f'Unexpected stop at {pc:#x}')
             repeat = thread > 2
+            if pc in ENGINE_ABORT_POINTS and thread <= 4:
+                prefetch = pc in (0x1010000c, 0x1003410c)
+                record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
+                    engine='master' if thread <= 2 else 'slave',
+                    registers={name: hex(remote.get(registers, name)) for name in
+                        ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
+                         'r8', 'r9', 'r10', 'r11', 'r12', 'sp', 'lr', 'cpsr')},
+                    faults={name: hex(remote.read_register(name)) for name in
+                            ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')},
+                    translation={name: hex(remote.read_register(name)) for name in
+                        ('TTBR0_S', 'TTBR1_S', 'TTBCR_S') if name in remote.register_numbers},
+                    faulting_pc=hex((remote.get(registers, 'lr') - (4 if prefetch else 8)) & 0xffffffff))
+                translation = record['translation']
+                if translation.get('TTBCR_S') == '0x0' and 'TTBR0_S' in translation:
+                    address = int(record['faults']['IFAR_S' if prefetch else 'DFAR_S'], 16)
+                    l1_address = (int(translation['TTBR0_S'], 16) & 0xffffc000) + (address >> 20) * 4
+                    try:
+                        l1 = int.from_bytes(remote.read(l1_address, 4), 'little')
+                        translation.update(l1_address=hex(l1_address), l1=hex(l1))
+                        if l1 & 3 == 2:
+                            translation['physical_address'] = hex((l1 & 0xfff00000) | (address & 0xfffff))
+                        elif l1 & 3 == 1:
+                            l2_address = (l1 & 0xfffffc00) + ((address >> 12) & 255) * 4
+                            l2 = int.from_bytes(remote.read(l2_address, 4), 'little')
+                            translation.update(l2_address=hex(l2_address), l2=hex(l2))
+                            if l2 & 2:
+                                translation['physical_address'] = hex((l2 & 0xfffff000) | (address & 0xfff))
+                            elif l2 & 3 == 1:
+                                translation['physical_address'] = hex((l2 & 0xffff0000) | (address & 0xffff))
+                    except ValueError as error:
+                        translation['read_error'] = str(error)
+                if thread in (3, 4):
+                    pointer = remote.get(registers, 'r4')
+                    if 0xc1000000 <= pointer <= 0xc5ffffc0:
+                        record['r4_object'] = dict(address=hex(pointer), words=[hex(value) for value in
+                            struct.unpack('<16I', remote.read(pointer, 64))])
+                remote.select_thread(1)
+                record['counter_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                records.append(record)
+                break
             if thread == 5 and pc in CAPTURE_CONTROLLER_POINTS:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
@@ -1846,12 +1891,6 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     repeat = not keep or hits[pc] < 8
                 if keep:
                     records.append(record)
-                if (application_only or capture_focus) and pc in (0x1010000c, 0x10100010):
-                    record['faults'] = {name: hex(remote.read_register(name)) for name in
-                                       ('DFAR_S', 'IFAR_S', 'DFSR_S', 'IFSR_S')}
-                    record['faulting_pc'] = hex((remote.get(registers, 'lr') -
-                        (4 if pc == 0x1010000c else 8)) & 0xffffffff)
-                    break
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
                     latch = int.from_bytes(remote.read(0xb26b38dc, 4), 'little')
                     record['mode1_output_latch'] = latch

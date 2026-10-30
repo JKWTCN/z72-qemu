@@ -3836,6 +3836,9 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         case 0x5f900000:
             bus_base = 0x34600000;
             break;
+        case 0xc6100000:
+            bus_base = 0x15100000;
+            break;
         default:
             continue;
         }
