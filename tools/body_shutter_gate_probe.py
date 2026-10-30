@@ -83,6 +83,10 @@ BODY_STATUS_POINTS = {
     0x106d2122: 'body-status-property-set',
     0x106d2126: 'body-status-property-set-return',
 }
+BODY_CAPTURE_POINTS = {
+    0x1022827c: 'body-capture-operation-registration',
+    0x103e7312: 'body-capture-state-request',
+}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -1448,6 +1452,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
             body_state_events=False,
+            body_capture_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
     with machine.io:
         machine.qmp.command('stop')
@@ -1515,6 +1520,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         armed.update(CAPTURE_SLAVE_INIT_POINTS)
     image_work_armed = False
     body_status_armed = False
+    body_capture_armed = False
+    body_periodic_operations = {}
     records = []
     hits = {}
     callback_hits = 0
@@ -2020,6 +2027,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     armed[address] = label
                                 body_status_armed = True
                                 record['body_status_observation_after_processing_frames'] = completed
+                            if body_capture_events and not body_capture_armed:
+                                for address, label in BODY_CAPTURE_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                body_capture_armed = True
+                                record['body_capture_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -2156,7 +2169,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         following = {} if playback else dict(AFTER_ACTION)
                         if body_state_events:
                             following.update(BODY_STATE_POINTS)
-                        elif application_only and not image_work_events:
+                        elif application_only and not (image_work_events or body_capture_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
                             if address not in armed:
@@ -2286,6 +2299,22 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                     notify=remote.get(registers, 'r5'))
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 32
+                if body_capture_events and pc in BODY_CAPTURE_POINTS:
+                    operation = remote.get(registers, 'r0')
+                    if pc == 0x1022827c and operation in (7, 9):
+                        key = str(operation)
+                        body_periodic_operations[key] = body_periodic_operations.get(key, 0) + 1
+                        keep = False
+                        repeat = True
+                    else:
+                        if pc == 0x1022827c:
+                            record['operation'] = operation
+                            record['callback'] = hex(remote.get(registers, 'r1'))
+                            if operation < 124:
+                                record['existing_callback'] = hex(int.from_bytes(
+                                    remote.read(0xb23f6fe4 + operation * 4, 4), 'little'))
+                        hits[pc] = hits.get(pc, 0) + 1
+                        repeat = hits[pc] < 32
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
@@ -2720,6 +2749,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     application_only=application_only,
                     image_work_events=image_work_events,
                     body_state_events=body_state_events,
+                    body_capture_events=body_capture_events,
+                    body_periodic_operations=body_periodic_operations,
                     shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -2846,6 +2877,8 @@ def main():
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     parser.add_argument('--body-state-events', action='store_true',
                         help='Trace eight body state-update conditions per point instead of configuration nodes')
+    parser.add_argument('--body-capture-events', action='store_true',
+                        help='Trace capture operation registration and state requests after preview readiness')
     args = parser.parse_args()
     require(not args.primary_exposure_sync or
             args.sampling_output_complete and args.frame_generate and args.frame_notify,
@@ -2920,6 +2953,9 @@ def main():
             'Image work observation requires application-only body shutter tracing')
     require(not args.body_state_events or (args.application_only and not args.image_work_events),
             'Body state observation requires application-only tracing without image work events')
+    require(not args.body_capture_events or (args.application_only and
+            not (args.body_state_events or args.image_work_events)),
+            'Body capture observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -3036,6 +3072,7 @@ def main():
                                     shutter_click=args.shutter_click,
                                     image_work_events=args.image_work_events,
                                     body_state_events=args.body_state_events,
+                                    body_capture_events=args.body_capture_events,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
