@@ -246,6 +246,7 @@ class NativeCaptureCaller:
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
                        completion: 'diagnostic-capture-completion',
+                       0x103BA6EA: 'body-native-capture-api',
                        0x103BA7B2: 'capture-busy-release-byte',
                        0x103BA7BE: 'capture-busy-first-word',
                        0x103BA7C4: 'capture-busy-second-word',
@@ -531,7 +532,10 @@ class NativeCaptureCaller:
 
     def observe(self, pc, registers):
         remote = self.remote
-        if pc == 0x103BA8EA:
+        if pc == 0x103BA6EA and self.report['triggered'] and self.exposure is not None:
+            self.report['control_properties_before_submit'] = {
+                '0x1b0c': self.word(0xb255213c), '0x2400': self.word(0xb2552694)}
+        elif pc == 0x103BA8EA:
             state = self.resource_masks()
             state['query_result'] = remote.get(registers, 'r0')
             self.report['resources_at_query'] = state

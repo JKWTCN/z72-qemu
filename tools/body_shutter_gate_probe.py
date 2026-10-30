@@ -80,6 +80,8 @@ CAPTURE_INPUT_POINTS = {
     0x10448496: 'capture-display-deferred',
     0x104484de: 'capture-display-applied',
     0x104d7596: 'capture-display-mode-check',
+    0x10448e92: 'capture-display-reset-before',
+    0x10448e96: 'capture-display-reset-after',
     0x10264f5c: 'capture-processing-release-entry',
     0x10265120: 'capture-processing-release-notification-condition',
     0x103cdb26: 'capture-processing-release-notification',
@@ -1987,11 +1989,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
-                    if pc in (0x10448496, 0x104484de, 0x104d7596):
+                    if pc in (0x10448496, 0x104484de, 0x104d7596, 0x10448e92, 0x10448e96):
                         keep = keep and capture_caller is not None and capture_caller.report['triggered']
                         if keep:
                             record['display_delivery'] = display_delivery_snapshot(remote.read)
-                            if pc == 0x104d7596:
+                            if pc in (0x10448e92, 0x10448e96):
+                                stack = remote.get(registers, 'sp')
+                                record['display_delivery'].update(
+                                    reset_mode=remote.get(registers, 'r6'),
+                                    reset_caller=hex(int.from_bytes(remote.read(stack + 0x9c, 4), 'little')))
+                            elif pc == 0x104d7596:
                                 record['display_delivery'].update(actual_mode=remote.get(registers, 'r0'),
                                     required_mode=remote.get(registers, 'r4'))
                             else:

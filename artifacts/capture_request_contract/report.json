@@ -107,6 +107,24 @@
     }
   ],
   "diagnostic_caller_comparisons": 6,
+  "control_properties": [
+    {
+      "id": "0x1b0c",
+      "descriptor": "0x119036d4",
+      "address": "0xb255213c",
+      "getter": "0x101017d8",
+      "synthetic_value": 1,
+      "readback": 1
+    },
+    {
+      "id": "0x2400",
+      "descriptor": "0x11904e04",
+      "address": "0xb2552694",
+      "getter": "0x101017d8",
+      "synthetic_value": 1,
+      "readback": 1
+    }
+  ],
   "format_property": {
     "id": "0x161a",
     "descriptor": "0x11901804",
