@@ -106,6 +106,7 @@
       ]
     }
   ],
+  "diagnostic_caller_comparisons": 6,
   "host_boundaries": [
     "Supply synthetic packet/output and a single-capture mode getter"
   ],

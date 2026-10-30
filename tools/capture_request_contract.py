@@ -11,6 +11,7 @@ from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_LR, UC_ARM_REG_PC
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import MASTER_SHA, require
 from tools.boot_region_probe import RegionProbe
+from tools.native_capture_caller import capture_request_words
 
 
 class RequestProbe(RegionProbe):
@@ -37,9 +38,13 @@ def check(image):
             words = list(struct.unpack('<5I', native.u.mem_read(output, 20)))
             expected = [format_byte << 8 | storage_byte << 16, 1, 0, 0, 1]
             require(words == expected, 'Original capture format/storage request differs')
+            if format_code in (0, 0x3801):
+                require(capture_request_words(format_code == 0x3801, storage >> 16) == words,
+                        'Diagnostic caller request differs from the original builder')
             cases.append(dict(storage=hex(storage), format=hex(format_code), words=words))
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=MASTER_SHA, builder='0x10490872', operation='0x100e', cases=cases,
+        diagnostic_caller_comparisons=6,
         host_boundaries=['Supply synthetic packet/output and a single-capture mode getter'],
         limitations=['Request construction only; no admission, image encoding or file writing'])
 

@@ -251,6 +251,273 @@
       ]
     }
   ],
+  "configuration_entry": "0x10360468",
+  "predicate_entry": "0x1035aaf2",
+  "configurations": [
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 0,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 1,
+      "config_48": 0,
+      "nested_2844": 1,
+      "nested_2848": 1
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 11,
+      "request_18": 0,
+      "request_1c": 0,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 1,
+      "nested_2848": 1
+    },
+    {
+      "mode": 12,
+      "request_18": 0,
+      "request_1c": 0,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 1,
+      "nested_2848": 1
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 0,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 11,
+      "request_18": 0,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 1,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 1,
+      "config_48": 0,
+      "nested_2844": 1,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 2,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 1,
+      "config_48": 0,
+      "nested_2844": 2,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 1,
+      "request_b0": 1,
+      "config_44": 1,
+      "config_48": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 1,
+      "request_b0": 0,
+      "config_44": 2,
+      "config_48": 0,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 11,
+      "request_18": 0,
+      "request_1c": 0,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 2,
+      "nested_2844": 0,
+      "nested_2848": 0
+    },
+    {
+      "mode": 0,
+      "request_18": 0,
+      "request_1c": 2,
+      "request_b0": 0,
+      "config_44": 1,
+      "config_48": 0,
+      "nested_2844": 1,
+      "nested_2848": 1
+    },
+    {
+      "mode": 12,
+      "request_18": 0,
+      "request_1c": 2,
+      "request_b0": 0,
+      "config_44": 0,
+      "config_48": 1,
+      "nested_2844": 0,
+      "nested_2848": 0
+    }
+  ],
+  "request_variant_entry": "0x103eb2e4",
+  "request_variants": [
+    {
+      "states": [
+        0,
+        0,
+        0
+      ],
+      "first_option": 0,
+      "sequence": "0x7",
+      "selected": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "states": [
+        2,
+        1,
+        0
+      ],
+      "first_option": 0,
+      "sequence": "0x7",
+      "selected": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "states": [
+        3,
+        3,
+        3
+      ],
+      "first_option": 0,
+      "sequence": "0x7",
+      "selected": [
+        "0x1",
+        "0x12340000",
+        "0x56780000",
+        "0x8"
+      ]
+    },
+    {
+      "states": [
+        3,
+        3,
+        3
+      ],
+      "first_option": 1,
+      "sequence": "0x7",
+      "selected": [
+        "0x3",
+        "0x12340000",
+        "0x56780000",
+        "0x8"
+      ]
+    },
+    {
+      "states": [
+        2,
+        3,
+        3
+      ],
+      "first_option": 0,
+      "sequence": "0x7",
+      "selected": [
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "states": [
+        2,
+        2,
+        3
+      ],
+      "first_option": 0,
+      "sequence": "0x7",
+      "selected": [
+        "0x4",
+        "0x23450000",
+        "0x1",
+        "0x8"
+      ]
+    },
+    {
+      "states": [
+        3,
+        0,
+        0
+      ],
+      "first_option": 2,
+      "sequence": "0x7",
+      "selected": [
+        "0x1",
+        "0x12340000",
+        "0x56780000",
+        "0x8"
+      ]
+    },
+    {
+      "states": [
+        3,
+        0,
+        0
+      ],
+      "first_option": 0,
+      "sequence": "0xffffffff",
+      "selected": [
+        "0x1",
+        "0x12340000",
+        "0x56780000",
+        "0x0"
+      ]
+    }
+  ],
   "host_boundaries": [
     "synthetic property 17 and identity conversion for mode 2",
     "tail parameter selection, pointer validation, uncontended lock/unlock",

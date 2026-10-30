@@ -14,6 +14,11 @@ from tools.sdk_file_probe import CALLBACK, CODE, OBJECT, ORIGINAL_CALLBACK
 REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
+
+def capture_request_words(jpeg=False, storage=0):
+    require(storage in (0, 1, 2), 'Capture storage must be default, slot 1 or slot 2')
+    return [(0x200 if jpeg else 0) | ((storage + 2) << 16 if storage else 0), 1, 0, 0, 1]
+
 FINISH_POINTS = {0x10321EA2, 0x10322448, 0x1032A792, 0x1032A7B4,
                  0x103D0C72, 0x103CD46A, 0x102315FC, 0x102359F8, 0x10235A22}
 
@@ -232,7 +237,8 @@ def caller_code(exposure=None):
 
 
 class NativeCaptureCaller:
-    def __init__(self, remote, exposure=None, jpeg=False):
+    def __init__(self, remote, exposure=None, jpeg=False, storage=0):
+        request_words = capture_request_words(jpeg, storage)
         self.remote = remote
         self.exposure = exposure
         self.code, self.return_pc, completion = caller_code(exposure)
@@ -300,8 +306,8 @@ class NativeCaptureCaller:
         require(not any(self.saved + self.saved_code), 'Capture diagnostic memory is occupied')
         remote.write(CODE, self.code)
         # Original single-capture request; byte 1 selects format 0x3801 when
-        # requested. Target remains default; no writes to release gates/state.
-        request_words = [0x200 if jpeg else 0, 1, 0, 0, 1]
+        # requested. Byte 2 selects the original slot code, without changing
+        # release gates or state.
         remote.write(REQUEST, struct.pack('<5I', *request_words))
         if exposure is not None:
             remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
@@ -313,6 +319,7 @@ class NativeCaptureCaller:
                            finish_observation_max_contexts=4,
                            request_words=request_words,
                            format_request='jpeg' if jpeg else 'default',
+                           storage_request=storage,
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         if exposure is not None:
             self.report['settings_fixture'] = dict(program_property='0x500e', program_value=1,

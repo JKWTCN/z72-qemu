@@ -80,6 +80,13 @@ CAPTURE_INPUT_POINTS = {
     0x1032ac52: 'capture-input-parameter-clone',
     0x1032ac9a: 'capture-input-parameter-clone-ready',
     0x1031a690: 'capture-input-parameter-copy',
+    0x1031a638: 'capture-input-parameter-initialize',
+    0x10360468: 'capture-input-tail-configuration-build',
+    0x103604ca: 'capture-input-tail-configuration-result',
+    0x103eb2e4: 'capture-request-variant-selection',
+    0x10326eee: 'capture-metadata-condition',
+    0x10326ff0: 'capture-metadata-skip-body',
+    0x1032729a: 'capture-metadata-stage-submit',
     0x1031eabe: 'capture-driver-input-flags-entry',
     0x1031ead8: 'capture-driver-input-flags-stored',
     0x1031cb20: 'capture-driver-stop-flags-entry',
@@ -540,6 +547,19 @@ def input_tail_parameter_snapshot(remote, pointer):
     if 0xb2c00000 <= nested <= 0xb5efd7b4:
         result.update(nested_2844=hex(word(nested + 0x2844)),
                       nested_2848=hex(word(nested + 0x2848)))
+    return result
+
+
+def capture_request_variant_slots_snapshot(remote):
+    result = []
+    for address, offsets in ((0xb23f6c30, (8, 0x34, 0x38)),
+                              (0xb23f6ca0, (8,)), (0xb23f6ce8, (8, 0x24))):
+        row = dict(address=hex(address), state=remote.read(address + 5, 1)[0],
+            words={hex(offset): hex(int.from_bytes(remote.read(address + offset, 4), 'little'))
+                   for offset in offsets})
+        if address == 0xb23f6c30:
+            row['field_42'] = remote.read(address + 0x42, 1)[0]
+        result.append(row)
     return result
 
 
@@ -1106,7 +1126,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
-            controller_step_trigger=False, capture_exposure=None, capture_jpeg=False):
+            controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1188,7 +1208,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             before['peer_input'] = peer_input_snapshot(remote)
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
-            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure, jpeg=capture_jpeg)
+            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure,
+                                                 jpeg=capture_jpeg, storage=capture_storage)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -1873,6 +1894,42 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 remote, remote.get(registers, 'r0'))
                             record['copy_destination'] = hex(remote.get(registers, 'r2'))
                             record['copy_nested_destination'] = hex(remote.get(registers, 'r3'))
+                    if pc == 0x1031a638:
+                        keep = keep and capture_caller is not None and capture_caller.report['triggered']
+                        if keep:
+                            record['initialized_parameter'] = hex(remote.get(registers, 'r1'))
+                            record['initialized_nested'] = hex(remote.get(registers, 'r0'))
+                    if pc == 0x10360468:
+                        request, config = (remote.get(registers, name) for name in ('r0', 'r1'))
+                        record['tail_configuration'] = dict(request=hex(request), config=hex(config))
+                        if 0xb1800000 <= request <= 0xb5efff4f:
+                            record['tail_configuration']['request_fields'] = {
+                                hex(offset): hex(int.from_bytes(remote.read(request + offset, size), 'little'))
+                                for offset, size in ((8, 1), (0x18, 4), (0x1c, 4), (0xb0, 1))}
+                        if 0xb1800000 <= config <= 0xb5effea6:
+                            record['tail_configuration']['config_fields'] = {
+                                hex(offset): hex(int.from_bytes(remote.read(config + offset, size), 'little'))
+                                for offset, size in ((0x44, 1), (0x48, 1), (0x148, 1),
+                                                     (0x14c, 1), (0x150, 1), (0x154, 4), (0x158, 2))}
+                        record['tail_configuration']['destination'] = hex(int.from_bytes(
+                            remote.read(remote.get(registers, 'sp'), 4), 'little'))
+                    if pc == 0x103eb2e4:
+                        record['capture_request_variant_slots'] = capture_request_variant_slots_snapshot(remote)
+                        record['transport_completion_callback'] = hex(int.from_bytes(
+                            remote.read(0xb188b8dc, 4), 'little'))
+                    if pc in (0x10326eee, 0x10326ff0, 0x1032729a):
+                        record['metadata_condition_word'] = hex(int.from_bytes(
+                            remote.read(0xb1868ca4, 4), 'little'))
+                        pointer = int.from_bytes(remote.read(remote.get(registers, 'r5') + 0x20, 4), 'little')
+                        record['metadata_parameters'] = input_tail_parameter_snapshot(remote, pointer)
+                        if pc == 0x1032729a:
+                            record['stage_descriptor'] = hex(remote.get(registers, 'r0'))
+                    if pc == 0x103604ca:
+                        record['tail_configuration_result'] = dict(
+                            destination=hex(remote.get(registers, 'r4')),
+                            nested_2844=hex(remote.get(registers, 'r5')),
+                            nested_2848=hex(remote.get(registers, 'r0')),
+                            pending_store=True)
                     if pc in (0x1020aafc, 0x1020ab00, 0x1020a830, 0x1020a834):
                         keep = keep and bool(remote.get(registers, 'r1') & 0x600)
                         if keep:
@@ -1981,7 +2038,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 struct.unpack('<8I', remote.read(pointer, 32))]
                     hits[pc] = hits.get(pc, 0) + int(keep)
                     repeat = not keep or hits[pc] < (32 if pc in (
-                        0x1031a690, 0x1032ac52, 0x1032ac9a) else 8)
+                        0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
+                        0x10360468, 0x103604ca, 0x103eb2e4) else 8)
                 if keep:
                     records.append(record)
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
@@ -2111,6 +2169,8 @@ def main():
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
     parser.add_argument('--capture-jpeg', action='store_true',
                         help='Use the original single-capture format 0x3801 request field')
+    parser.add_argument('--capture-storage', type=int, choices=(0, 1, 2), default=0,
+                        help='Original capture target: 0 default, 1 slot 1, 2 slot 2')
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
@@ -2217,6 +2277,8 @@ def main():
             'Exposure setting requires the diagnostic caller and a positive 32-bit property value')
     require(not args.capture_jpeg or args.capture_submit_on_ready,
             'Explicit JPEG format requires the diagnostic capture caller')
+    require(not args.capture_storage or args.capture_submit_on_ready,
+            'Explicit capture storage requires the diagnostic capture caller')
     require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
             'Focused capture requires the diagnostic caller without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
@@ -2337,6 +2399,7 @@ def main():
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
                                     capture_jpeg=args.capture_jpeg,
+                                    capture_storage=args.capture_storage,
                                     controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,

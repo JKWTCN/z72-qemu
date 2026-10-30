@@ -111,9 +111,80 @@ def probe(image):
             queued=queued, parameter_masks=native.selected_masks.copy(),
             frame_submissions=[[hex(a), hex(b)] for a, b in native.frame_submissions],
             notifications=[[hex(a), hex(b), hex(c)] for a, b, c in native.notifications]))
+    native.tail = False
+    request, config, auxiliary, context, output = [native.DATA + offset for offset in
+                                                 (0x8000, 0x9000, 0xa000, 0xb000, 0xc000)]
+    configurations = []
+    inputs = ((0, 0, 0, 0, 0, 0), (0, 0, 1, 0, 1, 0), (0, 0, 1, 0, 0, 1),
+              (11, 0, 0, 0, 0, 1), (12, 0, 0, 0, 0, 1), (0, 0, 0, 0, 0, 1),
+              (11, 0, 1, 0, 0, 1), (0, 1, 1, 0, 1, 0), (0, 2, 1, 0, 1, 0),
+              (0, 0, 1, 1, 1, 0), (0, 0, 1, 0, 2, 0), (11, 0, 0, 0, 0, 2),
+              (0, 0, 2, 0, 1, 0), (12, 0, 2, 0, 0, 1))
+    for mode, first_request, second_request, special, primary_option, alternate_option in inputs:
+        native.u.mem_write(request, bytes(0xc0))
+        native.u.mem_write(config, bytes(0x160))
+        native.u.mem_write(request + 8, bytes([mode]))
+        native.u.mem_write(request + 0x18, struct.pack('<2I', first_request, second_request))
+        native.u.mem_write(request + 0xb0, bytes([special]))
+        for offset, value in ((0x44, primary_option), (0x48, alternate_option),
+                              (0x148, 0x12), (0x14c, 0x34), (0x150, 0x56)):
+            native.u.mem_write(config + offset, bytes([value]))
+        native.u.mem_write(config + 0x154, struct.pack('<IH', 0x12345678, 0x3456))
+        native.u.mem_write(auxiliary + 4, bytes([0x78]))
+        native.u.mem_write(context + 0xd, bytes([0x9a]))
+        native.u.mem_write(output - 4, bytes([0xa5]) * 0x58)
+        native.u.mem_write(native.DATA + 0x18000, struct.pack('<I', output))
+        native.u.reg_write(UC_ARM_REG_R3, context)
+        returned = native.call(0x340468, request, config, auxiliary)
+        derived = int(not special and not first_request and
+            (bool(second_request) and primary_option == 1 or
+             not second_request and mode in (11, 12) and alternate_option == 1))
+        actual = list(struct.unpack('<2I', native.u.mem_read(output + 0x48, 8)))
+        require(returned == 1 and actual == [1 if derived else first_request, derived],
+                'Original tail configuration predicates differ')
+        expected = bytearray([0xa5] * 0x58)
+        expected[4:7] = bytes.fromhex('123456')
+        struct.pack_into('<IH', expected, 8, 0x12345678, 0x3456)
+        expected[14:17] = bytes([0x9a, 0x78, special])
+        struct.pack_into('<2I', expected, 0x4c, *actual)
+        require(bytes(native.u.mem_read(output - 4, 0x58)) == bytes(expected),
+                'Original configuration copy changed padding or guards')
+        configurations.append(dict(mode=mode, request_18=first_request, request_1c=second_request,
+            request_b0=special, config_44=primary_option, config_48=alternate_option,
+            nested_2844=actual[0], nested_2848=actual[1]))
+    request_variants = []
+    for states, option, sequence in (((0, 0, 0), 0, 7), ((2, 1, 0), 0, 7),
+            ((3, 3, 3), 0, 7), ((3, 3, 3), 1, 7), ((2, 3, 3), 0, 7),
+            ((2, 2, 3), 0, 7), ((3, 0, 0), 2, 7), ((3, 0, 0), 0, 0xffffffff)):
+        for address, state in zip((0xb23f6c30, 0xb23f6ca0, 0xb23f6ce8), states):
+            native.u.mem_write(address, bytes(0x48))
+            native.u.mem_write(address + 5, bytes([state]))
+            native.u.mem_write(address + 8, struct.pack('<I', sequence))
+        native.u.mem_write(0xb23f6c64, struct.pack('<2I', 0x12340000, 0x56780000))
+        native.u.mem_write(0xb23f6c72, bytes([option]))
+        native.u.mem_write(0xb23f6d0c, struct.pack('<I', 0x23450000))
+        native.u.mem_write(output - 4, bytes(0x18))
+        native.u.mem_write(output - 4, struct.pack('<I', 0x11223344))
+        native.u.mem_write(output + 16, struct.pack('<I', 0x55667788))
+        native.call(0x3cb2e4, output)
+        if states[0] == 3:
+            expected = [3 if option == 1 else 1, 0x12340000, 0x56780000, (sequence + 1) & 0xffffffff]
+        elif states[1] == 3:
+            expected = [2, 0, 0, 0]
+        elif states[2] == 3:
+            expected = [4, 0x23450000, 1, (sequence + 1) & 0xffffffff]
+        else:
+            expected = [0, 0, 0, 0]
+        actual = list(struct.unpack('<4I', native.u.mem_read(output, 16)))
+        require(actual == expected and native.word(output - 4) == 0x11223344 and
+                native.word(output + 16) == 0x55667788, 'Original output selection differs')
+        request_variants.append(dict(states=list(states), first_option=option,
+            sequence=hex(sequence), selected=[hex(value) for value in actual]))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         predicate='0x1031dd92', clone='0x1032ac52', nested_copy='0x10307bf0',
         selectors=selectors, cases=cases, tail_entry='0x1022ff20', tail_cases=tail_cases,
+        configuration_entry='0x10360468', predicate_entry='0x1035aaf2', configurations=configurations,
+        request_variant_entry='0x103eb2e4', request_variants=request_variants,
         host_boundaries=['synthetic property 17 and identity conversion for mode 2',
             'tail parameter selection, pointer validation, uncontended lock/unlock',
             'record tail frame submission and callback; bookkeeping endpoints return zero'],
@@ -132,7 +203,8 @@ def main():
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(dict(selectors=len(report['selectors']), clones=len(report['cases']),
-                          tail_cases=len(report['tail_cases']))))
+                          tail_cases=len(report['tail_cases']), configurations=len(report['configurations']),
+                          request_variants=len(report['request_variants']))))
 
 
 if __name__ == '__main__':
