@@ -186,12 +186,24 @@ def probe(image):
             require(native.word(0x20380048) == 0x14000e and native.word(0x20380300) == 2 and
                     native.word(0x2038030c) == 0x20 and native.word(0x20380310) == scratch,
                     'Original drain scratch profile differs')
+            scratch_profile = {hex(offset): hex(native.word(0x20380000 + offset))
+                for offset in (0, 4, 0x10, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x84,
+                               0xbc, 0xc0, 0xc4, 0xc8, 0xcc,
+                               0x120, 0x124, 0x128, 0x12c, 0x130,
+                               0x300, 0x30c, 0x310, 0x3e8, 0x3ec, 0x3f0,
+                               0x410, 0x420, 0x580, 0x67c)}
+            require(native.word(0x203800bc) == 1 and native.word(0x203800c4) == 20 and
+                    native.word(0x203800cc) == 0 and
+                    native.word(0x203803ec) == scratch and native.word(0x203803f0) == 32,
+                    'Original single-bank scratch bounds or second descriptor differs')
             native.u.mem_write(0x20380024, struct.pack('<I', 2))
             native.call(0x103699a4 - 0x10020000)
         require(native.events == [dict(api='0x103854c4', object='0xb1d52938', bits='0x80')],
                 'Original drain acknowledgement differs')
         drain_cases.append(dict(scratch=hex(scratch), partial_statuses=rows,
                                 result_events=list(native.events)))
+        if scratch:
+            drain_cases[-1]['scratch_profile'] = scratch_profile
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         handlers=['0x103699a4', '0x10369968'], interrupt_ids=[99, 100],
         status_addresses=['0x20380024', '0x203c0024'], callbacks=['0x102e468a', '0x102e4608'],

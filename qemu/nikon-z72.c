@@ -678,6 +678,11 @@ struct NikonZ72BootConfig {
     NikonZ72ConfigWord image_interrupt_words[2];
     uint32_t image_interrupt_masks[2];
     uint32_t image_interrupt_status[2];
+    MemoryRegion image_controls[5];
+    NikonZ72ConfigWord image_control_words[5];
+    uint32_t image_control_values[5];
+    uint32_t image_drain_requests;
+    bool image_draining;
     uint64_t frame_count;
     uint32_t input_last_read;
     bool pcie_link;
@@ -1392,15 +1397,17 @@ static const MemoryRegionOps image_interrupt_ops = {
 /* C1.70's active bank0 input: the same four RAW buffers as sensor DMA,
  * with the native list rotated by two slots. Membership is checked here;
  * the physical ring phase remains an experimental timing assumption. */
-static bool image_preview_input(AddressSpace *view, uint32_t source,
+static bool image_preview_input(NikonZ72BootConfig *s, uint32_t source,
                                 uint32_t width, uint32_t height, uint32_t stride)
 {
-    uint8_t run[12], geometry[8], bindings[0x50];
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t run[4], geometry[8], bindings[0x50];
     bool bound = false;
 
-    if (address_space_read(view, 0x20380008, MEMTXATTRS_UNSPECIFIED,
+    if (!(s->image_control_values[0] & 1) ||
+        address_space_read(view, 0x20380010, MEMTXATTRS_UNSPECIFIED,
                            run, sizeof(run)) != MEMTX_OK ||
-        !(ldl_le_p(run) & 1) || !(ldl_le_p(run + 8) & 1) ||
+        !(ldl_le_p(run) & 1) ||
         address_space_read(view, 0x20380044, MEMTXATTRS_UNSPECIFIED,
                            geometry, sizeof(geometry)) != MEMTX_OK ||
         ldl_le_p(geometry) != 0 || ldl_le_p(geometry + 4) != (width << 16 | height) ||
@@ -1420,6 +1427,113 @@ static bool image_preview_input(AddressSpace *view, uint32_t source,
     }
     return bound;
 }
+
+static const unsigned image_control_offsets[] = {8, 0x54, 0x60, 0x6c, 0x78};
+
+/* The native cancellation path requests four drains, then optionally runs
+ * this bank0 scratch input. All raster writes are synchronous in this model,
+ * so the four channels have no outstanding writes after the request batch.
+ * The small input has no enabled output: read it without producing a raster.
+ * Paired scratch input and other processor recipes remain unsupported. */
+static bool image_drain_input(AddressSpace *view)
+{
+    static const struct { unsigned offset; uint32_t value; } profile[] = {
+        {0, 3}, {4, 3}, {0x10, 1}, {0x44, 0}, {0x48, 0x0014000e},
+        {0x4c, 0}, {0x50, 0}, {0x84, 0}, {0xbc, 1}, {0xc0, 0},
+        {0xc4, 20}, {0xc8, 0}, {0xcc, 0},
+        {0x120, 0}, {0x124, 0}, {0x128, 0}, {0x12c, 0}, {0x130, 0},
+        {0x300, 2}, {0x30c, 32}, {0x3e8, 2}, {0x3f0, 32},
+        {0x410, 0}, {0x420, 0}, {0x580, 1}, {0x67c, 0x200},
+    };
+    uint8_t word[4], input[32 * 20];
+    uint32_t source;
+
+    for (unsigned index = 0; index < ARRAY_SIZE(profile); index++) {
+        if (address_space_read(view, 0x20380000 + profile[index].offset,
+                               MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK ||
+            ldl_le_p(word) != profile[index].value) {
+            return false;
+        }
+    }
+    if (address_space_read(view, 0x20380310, MEMTXATTRS_UNSPECIFIED,
+                           word, 4) != MEMTX_OK) {
+        return false;
+    }
+    source = ldl_le_p(word);
+    if (address_space_read(view, 0x203803ec, MEMTXATTRS_UNSPECIFIED,
+                           word, 4) != MEMTX_OK || ldl_le_p(word) != source ||
+        !processing_ram_range(view, source, sizeof(input))) {
+        return false;
+    }
+    return address_space_read(view, source, MEMTXATTRS_UNSPECIFIED,
+                              input, sizeof(input)) == MEMTX_OK;
+}
+
+static uint64_t image_control_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+
+    return word->device->image_control_values[word->index];
+}
+
+static void image_control_write(void *opaque, hwaddr offset,
+                                uint64_t value, unsigned size)
+{
+    NikonZ72ConfigWord *word = opaque;
+    NikonZ72BootConfig *s = word->device;
+    uint8_t prefix[4], source[4];
+    AddressSpace *view;
+
+    s->image_control_values[word->index] = value;
+    if (!s->frame_process || !s->master_role || !s->cpu || value != 1) {
+        return;
+    }
+    view = CPU(s->cpu)->as;
+    if (word->index == 0) {
+        if (!s->image_draining) {
+            return;
+        }
+        if (s->image_drain_requests == 0xf && image_drain_input(view)) {
+            s->image_drain_requests = 0;
+            s->image_interrupt_status[0] |= 2;
+            image_update_irqs(s);
+        } else if (address_space_read(view, 0x20380310, MEMTXATTRS_UNSPECIFIED,
+                                      source, 4) == MEMTX_OK &&
+                   image_preview_input(s, ldl_le_p(source), 1380, 918, 2080)) {
+            s->image_draining = false;
+            s->image_drain_requests = 0;
+        }
+        return;
+    }
+    if (address_space_read(view, 0x20380084, MEMTXATTRS_UNSPECIFIED,
+                           prefix, 4) != MEMTX_OK || ldl_le_p(prefix) != 0 ||
+        address_space_read(view, 0x203800f0, MEMTXATTRS_UNSPECIFIED,
+                           prefix, 4) != MEMTX_OK || ldl_le_p(prefix) != 0xfc400) {
+        return;
+    }
+    if (word->index == 1) {
+        s->image_drain_requests = 0;
+        s->image_draining = true;
+    } else if (!s->image_draining || !(s->image_drain_requests & 1)) {
+        return;
+    }
+    if (s->image_drain_requests & (1u << (word->index - 1))) {
+        return;
+    }
+    s->image_drain_requests |= 1u << (word->index - 1);
+    if (s->image_drain_requests == 0xf) {
+        s->image_interrupt_status[0] |= 0x14a0000;
+        image_update_irqs(s);
+    }
+}
+
+static const MemoryRegionOps image_control_ops = {
+    .read = image_control_read,
+    .write = image_control_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
 
 /* Functional scalar grids for the observed bank0 recipe. The three
  * 16-bit views and pitches are native descriptors. Nearest sampling of
@@ -1515,8 +1629,9 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     size_t raw_length = (size_t)stride * height;
     g_autofree uint8_t *raw = NULL;
 
-    if (!s->frame_process || width != 1380 || height != 918 || stride != 2080 ||
-        !image_preview_input(view, source, width, height, stride) ||
+    if (!s->frame_process || s->image_draining ||
+        width != 1380 || height != 918 || stride != 2080 ||
+        !image_preview_input(s, source, width, height, stride) ||
         address_space_read(view, 0x20102100, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
         (ldl_le_p(control) & 0xf) != 1 ||
         address_space_read(view, 0x20102608, MEMTXATTRS_UNSPECIFIED, control, 4) != MEMTX_OK ||
@@ -2833,6 +2948,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->processing_grid_count = 0;
     memset(s->image_interrupt_masks, 0, sizeof(s->image_interrupt_masks));
     memset(s->image_interrupt_status, 0, sizeof(s->image_interrupt_status));
+    memset(s->image_control_values, 0, sizeof(s->image_control_values));
+    s->image_drain_requests = 0;
+    s->image_draining = false;
     image_update_irqs(s);
     input_update_irqs(s);
     sync_update_irqs(s);
@@ -2895,8 +3013,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 48,
-    .minimum_version_id = 48,
+    .version_id = 49,
+    .minimum_version_id = 49,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2948,6 +3066,9 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT64(processing_grid_count, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(image_interrupt_masks, NikonZ72BootConfig, 2),
         VMSTATE_UINT32_ARRAY(image_interrupt_status, NikonZ72BootConfig, 2),
+        VMSTATE_UINT32_ARRAY(image_control_values, NikonZ72BootConfig, 5),
+        VMSTATE_UINT32(image_drain_requests, NikonZ72BootConfig),
+        VMSTATE_BOOL(image_draining, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(mirror_table, NikonZ72BootConfig, 0x800),
         VMSTATE_UINT8_ARRAY(file_table, NikonZ72BootConfig, 0x100),
@@ -3135,6 +3256,14 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
     const unsigned parameter_first = boot_config_index_of(0x20013000);
     const unsigned release_first = boot_config_index_of(0x04281034);
     if (s->release_config) {
+        for (unsigned index = 0; index < ARRAY_SIZE(image_control_offsets); index++) {
+            s->image_control_words[index] = (NikonZ72ConfigWord) { s, index };
+            memory_region_init_io(&s->image_controls[index], OBJECT(dev),
+                &image_control_ops, &s->image_control_words[index],
+                "z72-image-control-bank0", 4);
+            memory_region_add_subregion_overlap(root,
+                0x20380000 + image_control_offsets[index], &s->image_controls[index], 1);
+        }
         for (unsigned bank = 0; bank < 2; bank++) {
             s->image_interrupt_words[bank] = (NikonZ72ConfigWord) { s, bank };
             memory_region_init_io(&s->image_interrupts[bank], OBJECT(dev),

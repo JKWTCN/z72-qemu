@@ -342,6 +342,80 @@ def check(qemu):
                             assert read(target + stride * 40) == 0x55667788
                         write(0x20100020, 12)
                         write(0x20380024, 0x1002)
+                    # Native cancellation drains all four channels before
+                    # optionally reading a small, output-free scratch input.
+                    before_drain, before_grids = processed(), grids()
+                    write(0x20380084, 0)
+                    write(0x203800f0, 0)
+                    for offset in (0x54, 0x60, 0x6c, 0x78):
+                        write(0x20380000 + offset, 1)
+                    assert read(0x20380024) == 0, 'Unsupported drain prefix completed'
+                    write(0x203800f0, 0xfc400)
+                    write(0x20380020, 0)
+                    for offset in (0x54, 0x60, 0x6c):
+                        write(0x20380000 + offset, 1)
+                        assert read(0x20380024) == 0, 'Partial drain completed'
+                    tick()
+                    assert processed() == before_drain and grids() == before_grids
+                    write(0x20380078, 1)
+                    assert read(0x20380024) == 0x14a0000
+                    assert not irq_levels.get(99 - 32, False)
+                    write(0x20380020, 0x14a0002)
+                    assert irq_levels.get(99 - 32, False)
+                    write(0x20380024, 0x20000)
+                    assert read(0x20380024) == 0x1480000
+                    write(0x20380024, 0x1480000)
+                    write(0x20380078, 1)
+                    assert read(0x20380024) == 0, 'Repeated drain word completed twice'
+                    scratch = 0xb4001000
+                    command(f'memset {scratch:#x} 0x280 0x5a')
+                    write(scratch - 4, 0x11223344)
+                    write(scratch + 0x280, 0x55667788)
+                    for offset, value in ((0, 3), (4, 3), (0x10, 1),
+                            (0x44, 0), (0x48, 0x14000e), (0x4c, 0), (0x50, 0),
+                            (0xbc, 1), (0xc0, 0), (0xc4, 20), (0xc8, 0), (0xcc, 0),
+                            (0x120, 0), (0x124, 0), (0x128, 0), (0x12c, 0), (0x130, 0),
+                            (0x300, 2), (0x30c, 32), (0x310, scratch),
+                            (0x3e8, 2), (0x3ec, scratch), (0x3f0, 32),
+                            (0x410, 0), (0x420, 0), (0x580, 1), (0x67c, 0x200)):
+                        write(0x20380000 + offset, value)
+                    for address, invalid, valid in ((0x20380048, 0x28000e, 0x14000e),
+                            (0x2038030c, 64, 32), (0x20380120, 1, 0),
+                            (0x203803ec, scratch + 32, scratch)):
+                        write(address, invalid)
+                        write(0x20380008, 1)
+                        assert read(0x20380024) == 0, 'Unsupported scratch profile completed'
+                        write(address, valid)
+                    for invalid in (0, 0x20068500, 0xb08fff00, 0xfffffff0):
+                        write(0x20380310, invalid)
+                        write(0x203803ec, invalid)
+                        write(0x20380008, 1)
+                        assert read(0x20380024) == 0, 'Invalid scratch source completed'
+                    write(0x20380310, scratch)
+                    write(0x203803ec, scratch)
+                    assert read(0x20380024) == 0, 'Scratch completed without a start'
+                    write(0x20380008, 1)
+                    assert read(0x20380024) == 2 and irq_levels.get(99 - 32, False)
+                    write(0x20380024, 2)
+                    write(0x20380008, 1)
+                    tick()
+                    assert read(0x20380024) == 0, 'Scratch input completed twice'
+                    assert processed() == before_drain and grids() == before_grids
+                    assert read(scratch - 4) == 0x11223344 and read(scratch + 0x280) == 0x55667788
+                    assert all(read(scratch + offset) == 0x5a5a5a5a for offset in range(0, 0x280, 4))
+                    # Restoring registers alone does not release the drain;
+                    # the normal profile needs a fresh input start request.
+                    for offset, value in ((0x48, 0x05640396), (0x300, 0),
+                                          (0x30c, 2080), (0x310, 0xb0101000)):
+                        write(0x20380000 + offset, value)
+                    tick()
+                    assert processed() == before_drain
+                    write(0x20380008, 1)
+                    tick()
+                    assert processed() == before_drain + 1 and grids() == before_grids + 1, (
+                        processed(), before_drain, grids(), before_grids, hex(read(0x20380024)))
+                    write(0x20380024, 0x1002)
+                    write(0x20100020, 12)
                     write(0x20102100, 0x120)
                     # Boundary causes obey their masks and require successful RAW DMA.
                     def clear_input_causes():
@@ -483,6 +557,16 @@ def check(qemu):
                 write(0x2006800c, operand)
                 assert read(0x20068210) == read(0x20068230) == read(0x200682f0) == 0, 'Repeated disable completed twice'
                 assert count() == previous, 'Disable fabricated a pixel transfer'
+            # Bank1 remains passive. Default-off and slave configurations
+            # retain register storage without manufacturing drain causes.
+            for bank in (0x203c0000, 0x20380000):
+                write(bank + 0x84, 0)
+                write(bank + 0xf0, 0xfc400)
+                for offset in (0x54, 0x60, 0x6c, 0x78):
+                    write(bank + offset, 1)
+                    assert read(bank + offset) == 1
+                expected = 0x14a0000 if bank == 0x20380000 and active and notifying else 0
+                assert read(bank + 0x24) == expected
             write(0x20380020, 0xffffffff)
             write(0x203c0020, 0xffffffff)
             monitor('system_reset')
@@ -492,6 +576,7 @@ def check(qemu):
             assert monitor('qom-get', dict(path=path, property='processing-dma-count')) == 0
             assert monitor('qom-get', dict(path=path, property='processing-grid-count')) == 0
             assert all(read(address) == 0 for address in (0x20380020, 0x20380024, 0x203c0020, 0x203c0024))
+            assert all(read(0x20380000 + offset) == 0 for offset in (8, 0x54, 0x60, 0x6c, 0x78))
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             tick()
             assert count() == 0, 'Reset retained an enabled DMA channel'
