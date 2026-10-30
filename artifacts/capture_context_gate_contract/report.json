@@ -1,0 +1,667 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "notification": "0x041a0010",
+  "callback": "0x10327976",
+  "condition": "0x10328190",
+  "driver_state": "0xb1868af1",
+  "qualifier": "0xb1868b02",
+  "deferred_entry": "0x10326675",
+  "construction": "0x1032642e",
+  "cases": [
+    {
+      "driver_state": 0,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 0,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 0,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 0,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 1,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 1,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 1,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 1,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 2,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 2,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 2,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 2,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 3,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 3,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 3,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 3,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 4,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 4,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 4,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 4,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 5,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 5,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 5,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 5,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 6,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 6,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 6,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 6,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 7,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 7,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 7,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 7,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 8,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 8,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 8,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 8,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 9,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 9,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 9,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 9,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 10,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 10,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 10,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 10,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 11,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 11,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 11,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 11,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 12,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 12,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 12,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 12,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 13,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 13,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 13,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 13,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 14,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 14,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 14,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 14,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 15,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 15,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 15,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 15,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 16,
+      "qualifier": 0,
+      "jobs": [
+        {
+          "entry": "0x10326675",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "driver_state": 16,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 16,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 16,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 17,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 17,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 17,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 17,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 18,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 18,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 18,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 18,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 19,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 19,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 19,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 19,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 20,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 20,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 20,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 20,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 21,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 21,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 21,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 21,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 22,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 22,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 22,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 22,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 23,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 23,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 23,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 23,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 24,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 24,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 24,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 24,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 25,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 25,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 25,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 25,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 26,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 26,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 26,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 26,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 27,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 27,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 27,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 27,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 28,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 28,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 28,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 28,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 29,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 29,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 29,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 29,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 30,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 30,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 30,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 30,
+      "qualifier": 255,
+      "jobs": []
+    },
+    {
+      "driver_state": 31,
+      "qualifier": 0,
+      "jobs": []
+    },
+    {
+      "driver_state": 31,
+      "qualifier": 1,
+      "jobs": []
+    },
+    {
+      "driver_state": 31,
+      "qualifier": 2,
+      "jobs": []
+    },
+    {
+      "driver_state": 31,
+      "qualifier": 255,
+      "jobs": []
+    }
+  ],
+  "host_boundaries": [
+    "Seed synthetic state and qualifier; record deferred submission without executing it"
+  ],
+  "limitations": [
+    "Only this notification branch; no native event delivery or image processing is supplied",
+    "No conclusion about other producers or the required hardware timing"
+  ]
+}

@@ -58,6 +58,16 @@ CAPTURE_INPUT_POINTS = {
     0x10238d4a: 'capture-input-task-event',
     0x10238c40: 'capture-input-completed-dequeue',
     0x10321d80: 'capture-input-driver-complete',
+    0x10321d94: 'capture-input-driver-output-check',
+    0x10321dbe: 'capture-input-driver-output-enqueue',
+    0x10325304: 'capture-image-context-initialize',
+    0x10326280: 'capture-alternate-context-entry',
+    0x103262e8: 'capture-alternate-context-ready',
+    0x1032642e: 'capture-staged-context-entry',
+    0x10326468: 'capture-staged-context-allocation-return',
+    0x10326476: 'capture-staged-context-parameter-check-return',
+    0x10326486: 'capture-staged-context-mode-check-return',
+    0x10326546: 'capture-staged-context-ready',
     0x103231b2: 'capture-driver-state-update',
     0x103e6e94: 'capture-state-update',
     0x103b93d0: 'capture-release-stop-entry',
@@ -87,6 +97,11 @@ CAPTURE_INPUT_POINTS = {
     0x10326eee: 'capture-metadata-condition',
     0x10326ff0: 'capture-metadata-skip-body',
     0x1032729a: 'capture-metadata-stage-submit',
+    0x102b3362: 'capture-jpeg-job-build',
+    0x1026a312: 'capture-jpeg-worker-entry',
+    0x1026a448: 'capture-jpeg-worker-output-allocation-return',
+    0x1026a4ba: 'capture-jpeg-worker-first-submit',
+    0x1026a5f8: 'capture-jpeg-worker-second-submit',
     0x1031eabe: 'capture-driver-input-flags-entry',
     0x1031ead8: 'capture-driver-input-flags-stored',
     0x1031cb20: 'capture-driver-stop-flags-entry',
@@ -1269,6 +1284,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         checkpointed = started
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if (capture_caller and capture_caller.report['caller_returned'] and
+                    capture_caller.report.get('api_status') not in (None, 0)):
+                capture_caller.report['observation_ended_for_rejection'] = True
+                break
             if (capture_caller and capture_exposure is not None and
                     capture_caller.report['caller_returned'] and
                     not capture_caller.report['settings_fixture']['ready']):
@@ -1875,6 +1894,55 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x10321d80, 0x10321d94, 0x10321dbe, 0x10325304,
+                              0x103262e8, 0x10326546):
+                        # Preview notifications otherwise consume the hit limit before release.
+                        keep = keep and (pc in (0x10325304, 0x103262e8, 0x10326546) or
+                                         record['capture_state'][0] >= 6)
+                        if keep:
+                            name = ('r0' if pc == 0x10326546 else 'r4' if pc in
+                                    (0x10325304, 0x103262e8) else 'r5')
+                            pointer = remote.get(registers, name)
+                            if pc == 0x10321d80:
+                                packet = remote.get(registers, 'r4')
+                                pointer = int.from_bytes(remote.read(packet + 8, 4), 'little')
+                            if 0xb1800000 <= pointer <= 0xb5effd8c:
+                                record['image_context'] = dict(address=hex(pointer),
+                                    kind=remote.read(pointer + 0xd, 1)[0],
+                                    consumers=remote.read(pointer + 0xc, 1)[0],
+                                    fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
+                                            for offset in (0x10, 0x20, 0x40, 0x68, 0x144, 0x14c, 0x270)})
+                            if pc in (0x10325304, 0x103262e8, 0x10326546):
+                                parameters = remote.get(registers, 'r6')
+                                record['pending_context_parameters'] = hex(parameters)
+                                if 0xb1800000 <= parameters <= 0xb5efff53:
+                                    record['context_parameter_ac'] = hex(remote.read(parameters + 0xac, 1)[0])
+                                if pc == 0x10325304:
+                                    record['context_creation_kind'] = hex(remote.get(registers, 'r8'))
+                    if pc in (0x1026a312, 0x1026a448):
+                        descriptor = remote.get(registers, 'r0' if pc == 0x1026a312 else 'r6')
+                        if 0xb1800000 <= descriptor <= 0xb5efff88:
+                            context = int.from_bytes(remote.read(descriptor + 0xc, 4), 'little')
+                            record['jpeg_worker'] = dict(descriptor=hex(descriptor), context=hex(context),
+                                second_path=int.from_bytes(remote.read(descriptor + 4, 4), 'little'),
+                                descriptor_74=remote.read(descriptor + 0x74, 1)[0])
+                            if 0xb1800000 <= context <= 0xb5effd8c:
+                                parameters = int.from_bytes(remote.read(context + 0x144, 4), 'little')
+                                record['jpeg_worker'].update(kind=remote.read(context + 0xd, 1)[0],
+                                    context_10=hex(int.from_bytes(remote.read(context + 0x10, 4), 'little')),
+                                    context_270=hex(int.from_bytes(remote.read(context + 0x270, 4), 'little')),
+                                    parameters=hex(parameters))
+                                if 0xb1800000 <= parameters <= 0xb5efe940:
+                                    record['jpeg_worker'].update(parameter_ac=hex(remote.read(parameters + 0xac, 1)[0]),
+                                        parameter_16bc=hex(int.from_bytes(remote.read(parameters + 0x16bc, 4), 'little')))
+                        if pc == 0x1026a448:
+                            record['jpeg_output_allocation'] = hex(remote.get(registers, 'r0'))
+                    if pc in (0x102b3362, 0x1026a4ba, 0x1026a5f8):
+                        pointer = remote.get(registers, 'r0')
+                        if 0xb1800000 <= pointer <= 0xb5efffd0:
+                            record['jpeg_job_request'] = dict(address=hex(pointer),
+                                fields={hex(offset): hex(int.from_bytes(remote.read(pointer + offset, 4), 'little'))
+                                        for offset in (0, 4, 8, 0xc, 0x28, 0x2c)})
                     if pc in (0x1022ff42, 0x10230052):
                         record['tail_parameters'] = input_tail_parameter_snapshot(
                             remote, remote.get(registers, 'r5'))
@@ -1913,6 +1981,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                      (0x14c, 1), (0x150, 1), (0x154, 4), (0x158, 2))}
                         record['tail_configuration']['destination'] = hex(int.from_bytes(
                             remote.read(remote.get(registers, 'sp'), 4), 'little'))
+                        record['effective_format_property_161a'] = hex(int.from_bytes(
+                            remote.read(0xb25517d0, 4), 'little'))
                     if pc == 0x103eb2e4:
                         record['capture_request_variant_slots'] = capture_request_variant_slots_snapshot(remote)
                         record['transport_completion_callback'] = hex(int.from_bytes(
@@ -1939,6 +2009,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         dict(path=capture_input_path, property=property_name)) for name, property_name in
                         (('running_mask', 'input-running'), ('frame_ticks', 'frame-sync-count'),
                          ('primary_frames', 'primary-input-dma-count'))}
+                    if pc == 0x1026a312:
+                        keep = keep and (record['capture_state'][0] >= 6 or
+                                         record['input_source']['primary_frames'] > 0)
                     if pc == 0x103b9848:
                         keep = keep and remote.get(registers, 'r0') == 0x04100074
                         pointer = remote.get(registers, 'r1')
@@ -2039,7 +2112,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     hits[pc] = hits.get(pc, 0) + int(keep)
                     repeat = not keep or hits[pc] < (32 if pc in (
                         0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
-                        0x10360468, 0x103604ca, 0x103eb2e4) else 8)
+                        0x10360468, 0x103604ca, 0x103eb2e4,
+                        0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else 8)
                 if keep:
                     records.append(record)
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:

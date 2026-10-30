@@ -107,8 +107,17 @@
     }
   ],
   "diagnostic_caller_comparisons": 6,
+  "format_property": {
+    "id": "0x161a",
+    "descriptor": "0x11901804",
+    "address": "0xb25517d0",
+    "getter": "0x101017d8",
+    "synthetic_value": 3,
+    "readback": 3
+  },
   "host_boundaries": [
-    "Supply synthetic packet/output and a single-capture mode getter"
+    "Supply synthetic packet/output and a single-capture mode getter",
+    "Seed a synthetic scalar to check the original property getter"
   ],
   "limitations": [
     "Request construction only; no admission, image encoding or file writing"
