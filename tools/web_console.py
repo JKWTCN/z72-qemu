@@ -335,6 +335,8 @@ class Machine:
                       if getattr(self.args, 'controller_actuator', False) else ()) +
                      (('nikon-z72-boot-config.sampling-output-complete=on',)
                       if getattr(self.args, 'sampling_output_complete', False) else ()) +
+                     (('nikon-z72-boot-config.primary-exposure-sync=on',)
+                      if getattr(self.args, 'primary_exposure_sync', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
                            for c, v in ((0, 1800), (1, 3001), (3, 3001))),

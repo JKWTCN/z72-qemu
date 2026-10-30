@@ -18,11 +18,13 @@ def check(qemu):
         for y in rows:
             peer_guards[full + y * full_stride] = 0xa5a5a5a5
             peer_guards[full + y * full_stride + first_stride - 4] = 0x5a5a5a5a
-    for role, enabled, sampling, notifying, paired, linked in (
+    for case, (role, enabled, sampling, notifying, paired, linked) in enumerate((
             ('master', True, True, True, True, True), ('master', True, True, False, True, True),
             ('master', False, True, True, True, True), ('master', True, False, True, True, True),
             ('master', True, True, True, True, False), ('master', True, True, True, False, True),
-            ('slave', True, True, True, False, True)):
+            ('slave', True, True, True, False, True),
+            ('master', True, True, True, True, True))):
+        synchronized = case == 7
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -38,6 +40,8 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.sensor-sample={"on" if sampling else "off"}',
             '-global', 'nikon-z72-boot-config.frame-sync=on',
             '-global', 'nikon-z72-boot-config.input-stop-complete=on',
+            '-global', f'nikon-z72-boot-config.primary-exposure-sync={"on" if synchronized else "off"}',
+            '-global', f'nikon-z72-boot-config.sampling-output-complete={"on" if synchronized else "off"}',
             '-global', f'nikon-z72-boot-config.transport-link={"on" if linked else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -110,6 +114,11 @@ def check(qemu):
             def tick():
                 command('clock_step 33333333')
 
+            def exposure():
+                write(0x20063130, 1)
+                write(0x20060020, 16)
+                command('clock_step 1000000')
+
             # Equal numeric addresses in two engines must remain independent.
             first, full, aperture = 0x88000000, 0x88000000, 0x18000000
             for address, value in ((0x20069500, 2), (0x20069504, 2816 << 16),
@@ -135,6 +144,36 @@ def check(qemu):
             assert property_value('input-running') == 0x400
             assert read(0x20068200) == 0x98, 'Input enable changed the interrupt mask'
             tick()
+            if synchronized:
+                # Only configuration boundaries precede the real comparison.
+                assert count() == 0 and read(0x20068210) == 0x18
+                assert read(0x20068270) == 0x40000021
+                assert data_at(first, 256) == bytes(256)
+                assert data_at(full + first_stride, 256, True) == bytes(256)
+                write(0x20068210, 0xffffffff)
+                write(0x20068270, 0xffffffff)
+                write(0x2006800c, 0x400)
+                assert read(0x20068210) == 0, 'A boundary-only run emitted a frame tail'
+                write(0x20068008, 0x400)
+                # A 1 ms output-16 deadline, using the recovered 72 MHz format.
+                for offset, value in enumerate((0xffffffff, 0xffffff, 0xffff,
+                        0xffff1940, 1, 0xffffff, 0xffff0000, 0x06000006)):
+                    write(0x20063110 + offset * 4, value)
+                write(0x20063130, 1)
+                write(0x20060020, 16)
+                command('clock_step 1000000')
+                assert read(0x20060038) == 0, 'Closed output gate fired'
+                write(0x2006000c, 32)
+                write(0x20063130, 1)
+                write(0x20060020, 16)
+                command('clock_step 999999')
+                assert count() == 0 and read(0x20060038) == 0
+                command('clock_step 1')
+                assert read(0x20060038) == 16 and count() == 0
+                # Native output reconfiguration must not lose a comparison
+                # already observed during this primary input run.
+                write(0x20063130, 1)
+                tick()
             assert count() == int(active)
             assert read(0x20068210) == (0x59 if active and notifying else 0)
             assert read(0x20068270) == (0x40000021 if active and notifying else 0)
@@ -194,6 +233,10 @@ def check(qemu):
                 assert count() == 1 and read(0x20068210) == 0
                 write(0x20069850, first)
                 write(0x20068008, 0x400)
+                if synchronized:
+                    tick()
+                    assert count() == 1, 'A new input run reused the old exposure comparison'
+                    exposure()
                 tick()
                 assert count() == 2
                 assert read(0x20068210) == (0x59 if notifying else 0)

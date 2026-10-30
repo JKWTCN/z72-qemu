@@ -1979,6 +1979,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
+                    primary_exposure_sync=getattr(machine.args, 'primary_exposure_sync', False),
                     controller_step_trigger=dict(requested=controller_step_trigger,
                                                  supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
@@ -2114,6 +2115,8 @@ def main():
                         help='Enable the experimental engine handshake to controller G8 connection')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental single-comparison sampling output events')
+    parser.add_argument('--primary-exposure-sync', action='store_true',
+                        help='Experimentally defer primary pixels until the output-16 comparison')
     parser.add_argument('--application-only', action='store_true',
                         help='Limit body-shutter tracing to application, timer and capture entries')
     parser.add_argument('--shutter-click', action='store_true',
@@ -2121,6 +2124,9 @@ def main():
     parser.add_argument('--image-work-events', action='store_true',
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
+    require(not args.primary_exposure_sync or
+            args.sampling_output_complete and args.frame_generate and args.frame_notify,
+            'Primary exposure synchronization requires sampling output, pixel generation and notification')
     require(10 <= args.watch <= 3600, 'Watch time out of bounds')
     require(not args.trace_sd_host or args.sd_card is not None,
             'SD tracing requires an attached card')
@@ -2217,6 +2223,7 @@ def main():
                           boot_watch_seconds=args.boot_watch,
                           icount_shift=args.icount_shift,
                           sampling_output_complete=args.sampling_output_complete,
+                          primary_exposure_sync=args.primary_exposure_sync,
                           preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
                           display_complete=args.display_complete,
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,

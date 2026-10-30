@@ -670,6 +670,8 @@ struct NikonZ72BootConfig {
     uint32_t primary_dma_address;
     uint32_t primary_second_address;
     bool primary_frame_written;
+    bool primary_exposure_sync;
+    bool primary_exposure_ready;
     uint64_t processing_dma_count;
     uint64_t processing_grid_count;
     MemoryRegion image_interrupts[2];
@@ -1087,6 +1089,10 @@ static void sampling_output_expire(NikonZ72BootConfig *s, unsigned index)
     if (sampling_output_supported(s, index)) {
         uint32_t bit = 8u << index;
         s->sampling_output_fired |= bit;
+        if (index == 1 && s->primary_exposure_sync &&
+            (s->input_running & 0x400)) {
+            s->primary_exposure_ready = true;
+        }
         *boot_config_value(s, 0x20060038) |= bit;
         sync_update_irqs(s);
     }
@@ -1748,6 +1754,19 @@ static void input_generate_primary(NikonZ72BootConfig *s)
             offset += length;
         }
     }
+    if (s->primary_exposure_sync && !s->primary_exposure_ready) {
+        /* Experimental timing: configuration boundaries can precede pixels.
+         * Wait for the observed output-16 compare, not a host delay or a
+         * firmware state write. Physical sensor wiring is still unverified. */
+        if (s->frame_notify) {
+            *boot_config_value(s, 0x20068210) |=
+                *boot_config_value(s, 0x20068200) & 0x18;
+            *boot_config_value(s, 0x20068270) |=
+                *boot_config_value(s, 0x20068260) & 0x40000021;
+            input_update_irqs(s);
+        }
+        return;
+    }
     for (unsigned y = 0; y < height; y++) {
         input_raw12_row(first_row, 2816, 0, y, s->primary_dma_count);
         input_raw12_row(second_row, 5472, 2816, y, s->primary_dma_count);
@@ -2106,6 +2125,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
         if ((value & 0x400) && !(s->input_running & 0x400)) {
             s->primary_frame_written = false;
+            s->primary_exposure_ready = false;
         }
         s->input_running |= value;
         input_update_irqs(s);
@@ -2150,6 +2170,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
         }
         if (value & 0x400) {
             s->primary_frame_written = false;
+            s->primary_exposure_ready = false;
         }
         return;
     }
@@ -2253,6 +2274,7 @@ static void boot_config_write(void *opaque, hwaddr offset,
         case 3:
             s->input_running &= ~0x600u;
             s->primary_frame_written = false;
+            s->primary_exposure_ready = false;
             break;
         case 4: s->input_running &= ~0x10u; break;
         case 8: s->input_running &= ~0x20u; break;
@@ -2806,6 +2828,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->primary_dma_address = 0;
     s->primary_second_address = 0;
     s->primary_frame_written = false;
+    s->primary_exposure_ready = false;
     s->processing_dma_count = 0;
     s->processing_grid_count = 0;
     memset(s->image_interrupt_masks, 0, sizeof(s->image_interrupt_masks));
@@ -2872,8 +2895,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 47,
-    .minimum_version_id = 47,
+    .version_id = 48,
+    .minimum_version_id = 48,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -2919,6 +2942,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(primary_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT32(primary_second_address, NikonZ72BootConfig),
         VMSTATE_BOOL(primary_frame_written, NikonZ72BootConfig),
+        VMSTATE_BOOL(primary_exposure_sync, NikonZ72BootConfig),
+        VMSTATE_BOOL(primary_exposure_ready, NikonZ72BootConfig),
         VMSTATE_UINT64_V(processing_dma_count, NikonZ72BootConfig, 39),
         VMSTATE_UINT64(processing_grid_count, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(image_interrupt_masks, NikonZ72BootConfig, 2),
@@ -3253,6 +3278,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("auto-complete", NikonZ72BootConfig, auto_complete, true),
         DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
         DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
+        DEFINE_PROP_BOOL("primary-exposure-sync", NikonZ72BootConfig, primary_exposure_sync, false),
         DEFINE_PROP_UINT32("blocked-control", NikonZ72BootConfig, blocked_control, 0),
         DEFINE_PROP_UINT32("clear-base", NikonZ72BootConfig, clear_base, 0),
         DEFINE_PROP_UINT32("clear-size", NikonZ72BootConfig, clear_size, 0),
