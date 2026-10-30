@@ -72,6 +72,17 @@ BODY_STATE_POINTS = {
     0x10551cf2: 'body-state-input-handler',
     0x1055363e: 'body-state-context-handler',
 }
+BODY_STATUS_POINTS = {
+    0x10299c18: 'body-status-core-conversion',
+    0x102a4b26: 'body-status-core-forward',
+    0x106d1e30: 'body-status-request',
+    0x106d1ed2: 'body-status-store',
+    0x106d0a52: 'body-status-worker-flags',
+    0x106d13de: 'body-status-event',
+    0x106d2104: 'body-status-property-update',
+    0x106d2122: 'body-status-property-set',
+    0x106d2126: 'body-status-property-set-return',
+}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -1503,6 +1514,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if capture_focus:
         armed.update(CAPTURE_SLAVE_INIT_POINTS)
     image_work_armed = False
+    body_status_armed = False
     records = []
     hits = {}
     callback_hits = 0
@@ -2002,6 +2014,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     armed[address] = label
                                 image_work_armed = True
                                 record['image_work_observation_after_processing_frames'] = completed
+                            if body_state_events and not body_status_armed:
+                                for address, label in BODY_STATUS_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                body_status_armed = True
+                                record['body_status_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -2258,6 +2276,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         }
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
+                if body_state_events and pc in BODY_STATUS_POINTS:
+                    record['body_status'] = {
+                        'state_bytes': list(remote.read(0xb25d8974, 3)),
+                        'property180b': hex(int.from_bytes(remote.read(0xb2551b54, 4), 'little')),
+                    }
+                    if pc == 0x106d1ed2:
+                        record['body_status'].update(new_state=remote.get(registers, 'r4'),
+                                                    notify=remote.get(registers, 'r5'))
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 32
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
