@@ -1,0 +1,481 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "thresholds": [
+    5,
+    5
+  ],
+  "cases": [
+    {
+      "name": "all-below",
+      "first_pass": [
+        5,
+        5,
+        5
+      ],
+      "second_pass": [
+        0,
+        0,
+        0
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        5,
+        5,
+        5
+      ],
+      "categories_by_metadata_mode": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "first",
+      "first_pass": [
+        6,
+        5,
+        5
+      ],
+      "second_pass": [
+        0,
+        0,
+        0
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        6,
+        5,
+        5
+      ],
+      "categories_by_metadata_mode": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "second",
+      "first_pass": [
+        9,
+        6,
+        5
+      ],
+      "second_pass": [
+        0,
+        0,
+        0
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        9,
+        6,
+        5
+      ],
+      "categories_by_metadata_mode": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "third",
+      "first_pass": [
+        9,
+        6,
+        6
+      ],
+      "second_pass": [
+        0,
+        0,
+        0
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        9,
+        6,
+        6
+      ],
+      "categories_by_metadata_mode": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "third-alone",
+      "first_pass": [
+        0,
+        0,
+        6
+      ],
+      "second_pass": [
+        0,
+        0,
+        0
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        0,
+        0,
+        6
+      ],
+      "categories_by_metadata_mode": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "third-rule-filters-both",
+      "first_pass": [
+        9,
+        10,
+        10
+      ],
+      "second_pass": [
+        10,
+        10,
+        10
+      ],
+      "supplied_configuration": [
+        1,
+        1000,
+        1024,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "filtered": [
+        9,
+        0,
+        0
+      ],
+      "categories_by_metadata_mode": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "filter-second",
+      "first_pass": [
+        9,
+        10,
+        5
+      ],
+      "second_pass": [
+        10,
+        10,
+        5
+      ],
+      "supplied_configuration": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1000,
+        1024,
+        2,
+        2
+      ],
+      "filtered": [
+        9,
+        0,
+        5
+      ],
+      "categories_by_metadata_mode": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "filter-both",
+      "first_pass": [
+        9,
+        10,
+        10
+      ],
+      "second_pass": [
+        10,
+        10,
+        10
+      ],
+      "supplied_configuration": [
+        1,
+        1000,
+        1024,
+        2,
+        1,
+        1000,
+        1024,
+        2,
+        2
+      ],
+      "filtered": [
+        9,
+        0,
+        0
+      ],
+      "categories_by_metadata_mode": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "entries": {
+    "filter": "0x1011e75a",
+    "selector": "0x10148ff2"
+  },
+  "host_boundaries": [
+    "Synthetic contexts, result triples and nine configuration words",
+    "Configuration lookup 0x10161e5a returns supplied words"
+  ],
+  "limitations": [
+    "No compute program or RAW input algorithm is executed",
+    "Synthetic result triples do not establish physical units or their producer",
+    "No whole-machine reply, encoding or photograph is produced"
+  ]
+}
