@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Experimental internal delay mode of the twelve-channel block.
- * The byte divider scales the internal clock; capture/compare modes retain
- * register storage without external events. See research/z7ii/delay_counter.md. */
+/* Experimental delay and explicit capture events of the twelve-channel block.
+ * See research/z7ii/delay_counter.md for recovered contracts and limitations. */
 #include "qemu/osdep.h"
 #include "qemu/timer.h"
 #include "hw/sysbus.h"
@@ -33,6 +32,7 @@ struct NikonZ72Delay {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
     uint32_t regs[WORDS];
+    uint8_t capture_levels[4];
     Z72DelayChannel channels[CHANNELS];
 };
 
@@ -60,7 +60,7 @@ static void delay_irq(Z72DelayChannel *ch)
     unsigned i = ch->index;
 
     qemu_set_irq(ch->irq, !(REG(s, 0x100c) & (1u << i)) &&
-                 (REG(s, A(i) + 0x10) & REG(s, A(i)) & 9) != 0);
+                 (REG(s, A(i) + 0x10) & REG(s, A(i)) & 15) != 0);
 }
 
 static uint32_t delay_count(Z72DelayChannel *ch)
@@ -79,6 +79,25 @@ static void delay_stop(Z72DelayChannel *ch)
     ch->counter = delay_count(ch);
     ch->clocked = false;
     timer_del(ch->timer);
+}
+
+static void delay_capture(void *opaque, int line, int level)
+{
+    NikonZ72Delay *s = opaque;
+    unsigned channel = 5 + line / 2;
+    unsigned latch = line % 2;
+    bool rising = level && !s->capture_levels[line];
+    Z72DelayChannel *ch = &s->channels[channel];
+
+    s->capture_levels[line] = !!level;
+    /* Explicit event inputs, not recovered physical pins or polarity. The
+     * alternate mode selected by A+8 bit 5 has no established semantics. */
+    if (rising && ch->clocked && (REG(s, B(channel) + 0x10) & 1) &&
+        !(REG(s, A(channel) + 8) & 0x20)) {
+        REG(s, B(channel) + 0x14 + latch * 4) = delay_count(ch);
+        REG(s, A(channel) + 0x10) |= 2u << latch;
+        delay_irq(ch);
+    }
 }
 
 static void delay_schedule(Z72DelayChannel *ch)
@@ -151,6 +170,10 @@ static void delay_clear_channel(Z72DelayChannel *ch)
     ch->epoch = 0;
     REG(s, A(ch->index) + 0x10) = 0;
     REG(s, B(ch->index) + 0xc) = 0;
+    if (ch->index == 5 || ch->index == 6) {
+        REG(s, B(ch->index) + 0x14) = 0;
+        REG(s, B(ch->index) + 0x18) = 0;
+    }
     if (ch->index < LIMITED_CHANNELS) {
         REG(s, B(ch->index) + 0x40) = 0;
     }
@@ -165,7 +188,8 @@ static void delay_write(void *opaque, hwaddr offset, uint64_t value,
     unsigned reg = offset & 0xff;
 
     if (offset >= 0x1100 && slot >= 1 && slot <= CHANNELS) {
-        if (reg == 0xc || (reg == 0x40 && slot <= LIMITED_CHANNELS)) {
+        if (reg == 0xc || (reg == 0x40 && slot <= LIMITED_CHANNELS) ||
+            ((slot == 6 || slot == 7) && (reg == 0x14 || reg == 0x18))) {
             return;
         }
         if (reg == 4 || reg == 8) {
@@ -214,6 +238,7 @@ static void delay_reset(Object *obj, ResetType type)
     NikonZ72Delay *s = NIKON_Z72_DELAY(obj);
 
     memset(s->regs, 0, sizeof(s->regs));
+    memset(s->capture_levels, 0, sizeof(s->capture_levels));
     for (unsigned i = 0; i < CHANNELS; i++) {
         delay_clear_channel(&s->channels[i]);
     }
@@ -244,11 +269,12 @@ static const VMStateDescription delay_channel_vmstate = {
 
 static const VMStateDescription delay_vmstate = {
     .name = TYPE_NIKON_Z72_DELAY,
-    .version_id = 1,
-    .minimum_version_id = 1,
+    .version_id = 2,
+    .minimum_version_id = 2,
     .post_load = delay_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(regs, NikonZ72Delay, WORDS),
+        VMSTATE_UINT8_ARRAY(capture_levels, NikonZ72Delay, 4),
         VMSTATE_STRUCT_ARRAY(channels, NikonZ72Delay, CHANNELS, 1,
                              delay_channel_vmstate, Z72DelayChannel),
         VMSTATE_END_OF_LIST()
@@ -262,6 +288,7 @@ static void delay_init(Object *obj)
     memory_region_init_io(&s->iomem, obj, &delay_ops, s,
                           TYPE_NIKON_Z72_DELAY, 0x2000);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
+    qdev_init_gpio_in_named(DEVICE(s), delay_capture, "capture-event", 4);
     for (unsigned i = 0; i < CHANNELS; i++) {
         Z72DelayChannel *ch = &s->channels[i];
         ch->owner = s;

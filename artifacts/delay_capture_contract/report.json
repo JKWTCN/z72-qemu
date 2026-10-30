@@ -1,0 +1,696 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "configure": "0x1036e8ea",
+  "read": "0x1036e930",
+  "interrupt": "0x1036ea8a",
+  "capabilities": [
+    {
+      "channel": 0,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 1,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 2,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 3,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 4,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 5,
+      "registers": [
+        "0x2c011610",
+        "0x2c011614",
+        "0x2c011618"
+      ]
+    },
+    {
+      "channel": 6,
+      "registers": [
+        "0x2c011710",
+        "0x2c011714",
+        "0x2c011718"
+      ]
+    },
+    {
+      "channel": 7,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 8,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 9,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 10,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "channel": 11,
+      "registers": [
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "channel": 0,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 0,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 0,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 1,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 1,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 1,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 2,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 2,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 2,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 3,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 3,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 3,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 4,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 4,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 4,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 5,
+      "enable": 0,
+      "mode": 0,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011610",
+          "size": 4,
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "enable": 1,
+      "mode": 0,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011610",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x2c010608",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2c010600",
+          "size": 4,
+          "value": "0x7"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "enable": 1,
+      "mode": 1,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011610",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x2c010608",
+          "size": 4,
+          "value": "0x20"
+        },
+        {
+          "address": "0x2c010600",
+          "size": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "enable": 0,
+      "mode": 0,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011710",
+          "size": 4,
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "enable": 1,
+      "mode": 0,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011710",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x2c010708",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2c010700",
+          "size": 4,
+          "value": "0x7"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "enable": 1,
+      "mode": 1,
+      "result": 0,
+      "writes": [
+        {
+          "address": "0x2c011710",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x2c010708",
+          "size": 4,
+          "value": "0x20"
+        },
+        {
+          "address": "0x2c010700",
+          "size": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "channel": 7,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 7,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 7,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 8,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 8,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 8,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 9,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 9,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 9,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 10,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 10,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 10,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 11,
+      "enable": 0,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 11,
+      "enable": 1,
+      "mode": 0,
+      "result": 2,
+      "writes": []
+    },
+    {
+      "channel": 11,
+      "enable": 1,
+      "mode": 1,
+      "result": 2,
+      "writes": []
+    }
+  ],
+  "reads": [
+    {
+      "channel": 5,
+      "values": [
+        "0x12345678",
+        "0x9abcdef0"
+      ]
+    },
+    {
+      "channel": 6,
+      "values": [
+        "0x12345678",
+        "0x9abcdef0"
+      ]
+    }
+  ],
+  "interrupts": [
+    {
+      "channel": 5,
+      "callback": {
+        "notification": "0x410a1806",
+        "status": "0x1"
+      },
+      "writes": [
+        {
+          "address": "0x2c010610",
+          "size": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "callback": {
+        "notification": "0x410a1806",
+        "status": "0x2"
+      },
+      "writes": [
+        {
+          "address": "0x2c010610",
+          "size": 4,
+          "value": "0x2"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "callback": {
+        "notification": "0x410a1806",
+        "status": "0x4"
+      },
+      "writes": [
+        {
+          "address": "0x2c010610",
+          "size": 4,
+          "value": "0x4"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "callback": {
+        "notification": "0x410a1806",
+        "status": "0x6"
+      },
+      "writes": [
+        {
+          "address": "0x2c010610",
+          "size": 4,
+          "value": "0x6"
+        }
+      ]
+    },
+    {
+      "channel": 5,
+      "callback": {
+        "notification": "0x410a1806",
+        "status": "0x7"
+      },
+      "writes": [
+        {
+          "address": "0x2c010610",
+          "size": 4,
+          "value": "0x7"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "callback": {
+        "notification": "0x410a1807",
+        "status": "0x1"
+      },
+      "writes": [
+        {
+          "address": "0x2c010710",
+          "size": 4,
+          "value": "0x1"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "callback": {
+        "notification": "0x410a1807",
+        "status": "0x2"
+      },
+      "writes": [
+        {
+          "address": "0x2c010710",
+          "size": 4,
+          "value": "0x2"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "callback": {
+        "notification": "0x410a1807",
+        "status": "0x4"
+      },
+      "writes": [
+        {
+          "address": "0x2c010710",
+          "size": 4,
+          "value": "0x4"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "callback": {
+        "notification": "0x410a1807",
+        "status": "0x6"
+      },
+      "writes": [
+        {
+          "address": "0x2c010710",
+          "size": 4,
+          "value": "0x6"
+        }
+      ]
+    },
+    {
+      "channel": 6,
+      "callback": {
+        "notification": "0x410a1807",
+        "status": "0x7"
+      },
+      "writes": [
+        {
+          "address": "0x2c010710",
+          "size": 4,
+          "value": "0x7"
+        }
+      ]
+    }
+  ],
+  "sampling_callback": "0x102eb778",
+  "sampling": [
+    {
+      "state": 7,
+      "status": "0x1",
+      "inhibited": false,
+      "events": [],
+      "tasks": []
+    },
+    {
+      "state": 7,
+      "status": "0x2",
+      "inhibited": false,
+      "events": [
+        [
+          "0xb1868718",
+          "0x2"
+        ]
+      ],
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x1000"
+        ]
+      ]
+    },
+    {
+      "state": 7,
+      "status": "0x4",
+      "inhibited": false,
+      "events": [
+        [
+          "0xb1868718",
+          "0x1"
+        ]
+      ],
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x100"
+        ]
+      ]
+    },
+    {
+      "state": 7,
+      "status": "0x6",
+      "inhibited": false,
+      "events": [
+        [
+          "0xb1868718",
+          "0x1"
+        ],
+        [
+          "0xb1868718",
+          "0x2"
+        ]
+      ],
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x100"
+        ],
+        [
+          "0xb23ed8d8",
+          "0x1000"
+        ]
+      ]
+    },
+    {
+      "state": 6,
+      "status": "0x6",
+      "inhibited": false,
+      "events": [
+        [
+          "0xb1868718",
+          "0x1"
+        ],
+        [
+          "0xb1868718",
+          "0x2"
+        ]
+      ],
+      "tasks": []
+    },
+    {
+      "state": 7,
+      "status": "0x6",
+      "inhibited": true,
+      "events": [],
+      "tasks": []
+    }
+  ],
+  "host_boundaries": [
+    "synthetic MMIO storage",
+    "record callback arguments and register writes",
+    "supply synthetic sampling state and timestamp; record event and task posts"
+  ],
+  "limitations": [
+    "Does not prove external input routing, polarity, physical timing or capture generation",
+    "Acknowledgement writes are observed; synthetic storage does not implement W1C"
+  ]
+}

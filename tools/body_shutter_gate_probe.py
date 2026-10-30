@@ -106,6 +106,8 @@ CAPTURE_INPUT_POINTS = {
     0x102e94fa: 'capture-sampling-second-step-producer',
     0x102eb93e: 'capture-sampling-stage5-wait',
     0x102eb778: 'capture-sampling-counter-callback',
+    0x102e8630: 'capture-sampling-counter-configure',
+    0x102e8684: 'capture-sampling-hardware-operation',
 }
 CAPTURE_CONTROLLER_POINTS = {
     0x080369d0: 'capture-controller-channel9-request',
@@ -713,9 +715,15 @@ def snapshot(remote):
         if channel < 5:
             enable, target, observed = struct.unpack('<3I', remote.read(base + 0x1038, 12))
             limit = dict(enabled=enable, target=target, observed=observed)
+        capture = None
+        if channel in (5, 6):
+            values = struct.unpack('<5I', remote.read(base + 0x1010, 20))
+            capture = dict(enabled=values[0], latches=[hex(x) for x in values[1:3]],
+                           routing_enabled=values[3], source=values[4],
+                           alternate_mode=hex(word(base + 8)))
         delay_channels.append(dict(channel=channel, events=hex(word(base)),
             pending=hex(word(base + 16)), divider=divider,
-            terminal=hex(terminal), count=hex(count), repetition_limit=limit))
+            terminal=hex(terminal), count=hex(count), repetition_limit=limit, capture=capture))
     cores = []
     for thread in (1, 2, 3, 4):
         remote.select_thread(thread)
@@ -885,6 +893,8 @@ def snapshot(remote):
         delegate_state=remote.read(0xb1868510, 1)[0],
         delegate_kind=remote.read(0xb1868511, 1)[0],
         sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
+        sampling_header=list(remote.read(0xb1868628, 0x100)),
+        sampling_counter_context=list(remote.read(0xb1868880, 0x50)),
         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'),
         counter_frequency=word(0x04266010),
         input_format=hex(word(0x20068500)),
@@ -1763,7 +1773,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             processing_qualifiers=[remote.read(0xb1868315, 1)[0],
                                                    remote.read(0xb1868322, 1)[0]])
                     if keep and pc in (0x1026d16e, 0x102e9482, 0x102e958a,
-                                      0x102e94fa, 0x102eb93e, 0x102eb778):
+                                      0x102e94fa, 0x102eb93e, 0x102eb778,
+                                      0x102e8630, 0x102e8684):
                         record['sampling_stage'] = dict(
                             header=list(remote.read(0xb1868628, 0x24)),
                             words=[hex(x) for x in struct.unpack('<20I', remote.read(0xb1868670, 80))],
