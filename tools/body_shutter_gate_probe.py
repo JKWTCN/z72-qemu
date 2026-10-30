@@ -108,6 +108,11 @@ CAPTURE_INPUT_POINTS = {
     0x102eb778: 'capture-sampling-counter-callback',
     0x102e8630: 'capture-sampling-counter-configure',
     0x102e8684: 'capture-sampling-hardware-operation',
+    0x102dc83c: 'capture-sampling-output-control',
+    0x102dc808: 'capture-sampling-output-gate',
+    0x10297710: 'capture-sampling-output-configure',
+    0x102e9b08: 'capture-sampling-first-output-callback',
+    0x102e9af6: 'capture-sampling-second-output-callback',
 }
 CAPTURE_CONTROLLER_POINTS = {
     0x080369d0: 'capture-controller-channel9-request',
@@ -895,6 +900,10 @@ def snapshot(remote):
         sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
         sampling_header=list(remote.read(0xb1868628, 0x100)),
         sampling_counter_context=list(remote.read(0xb1868880, 0x50)),
+        sampling_registers=dict(control={hex(offset): hex(word(0x20060000 + offset))
+            for offset in (*range(0, 0x3c, 4), 0x40, 0x44, 0x4c, 0x50)},
+            outputs=[[hex(x) for x in struct.unpack('<10I', remote.read(address, 40))]
+                     for address in (0x200630d0, 0x20063110)]),
         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'),
         counter_frequency=word(0x04266010),
         input_format=hex(word(0x20068500)),
@@ -1762,6 +1771,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         keep = keep and code in (0x04200185, 0x03030001, 0x03030002)
                     if pc == 0x1026d16e:
                         keep = keep and 0x04200281 <= remote.get(registers, 'r0') <= 0x04200288
+                    if pc in (0x102dc83c, 0x102dc808):
+                        keep = keep and bool(remote.get(registers, 'r1') & 0x18)
+                    if pc == 0x10297710:
+                        keep = keep and remote.get(registers, 'r0') in (8, 16)
                     if keep and pc in (0x10394710, 0x10395a70, 0x10394d06, 0x10397260,
                               0x1024229c, 0x102422c4, 0x102422ec, 0x10242124):
                         record['handshake'] = dict(
@@ -1774,12 +1787,20 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                    remote.read(0xb1868322, 1)[0]])
                     if keep and pc in (0x1026d16e, 0x102e9482, 0x102e958a,
                                       0x102e94fa, 0x102eb93e, 0x102eb778,
-                                      0x102e8630, 0x102e8684):
+                                      0x102e8630, 0x102e8684, 0x102dc83c, 0x102dc808,
+                                      0x10297710, 0x102e9b08, 0x102e9af6):
                         record['sampling_stage'] = dict(
                             header=list(remote.read(0xb1868628, 0x24)),
                             words=[hex(x) for x in struct.unpack('<20I', remote.read(0xb1868670, 80))],
                             delegate_header=list(remote.read(0xb1868510, 0x20)),
                             counter_context=list(remote.read(0xb1868880, 0x48)))
+                        if pc == 0x10297710:
+                            pointer = remote.get(registers, 'r1')
+                            if 0xb1800000 <= pointer <= 0xb5efffd0:
+                                record['sampling_output_parameters'] = [hex(x) for x in
+                                    struct.unpack('<12I', remote.read(pointer, 48))]
+                        record['sampling_output_control'] = [hex(x) for x in
+                            struct.unpack('<10I', remote.read(0x20060000, 40))]
                     if pc in (0x1024220a, 0x102421aa):
                         record['adapter_dispatch'] = [hex(value) for value in
                             struct.unpack('<2I', remote.read(0xb18a7930, 8))]

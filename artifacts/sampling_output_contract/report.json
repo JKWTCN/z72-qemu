@@ -1,0 +1,428 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "register_callbacks": "0x102dcc20",
+  "interrupt": "0x102dc5ea",
+  "callbacks": [
+    "0x102e9b09",
+    "0x102e9af7"
+  ],
+  "routes": [
+    {
+      "state": 6,
+      "status": "0x8",
+      "tasks": [],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x8"
+        }
+      ]
+    },
+    {
+      "state": 6,
+      "status": "0x10",
+      "tasks": [],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    },
+    {
+      "state": 6,
+      "status": "0x18",
+      "tasks": [],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x8"
+        },
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    },
+    {
+      "state": 7,
+      "status": "0x8",
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x40"
+        ]
+      ],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x8"
+        }
+      ]
+    },
+    {
+      "state": 7,
+      "status": "0x10",
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x400"
+        ]
+      ],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    },
+    {
+      "state": 7,
+      "status": "0x18",
+      "tasks": [
+        [
+          "0xb23ed8d8",
+          "0x40"
+        ],
+        [
+          "0xb23ed8d8",
+          "0x400"
+        ]
+      ],
+      "writes": [
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x8"
+        },
+        {
+          "address": "0x20060038",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "entry": "0x102962ea",
+      "mask": "0x8",
+      "mode": 0,
+      "writes": [
+        {
+          "address": "0x200630f0",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20060010",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060018",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060020",
+          "size": 4,
+          "value": "0x8"
+        }
+      ]
+    },
+    {
+      "entry": "0x10296324",
+      "mask": "0x8",
+      "mode": 1,
+      "writes": [
+        {
+          "address": "0x20060014",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2006001c",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060024",
+          "size": 4,
+          "value": "0x8"
+        }
+      ]
+    },
+    {
+      "entry": "0x102962ea",
+      "mask": "0x10",
+      "mode": 0,
+      "writes": [
+        {
+          "address": "0x20063130",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20060010",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060018",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060020",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    },
+    {
+      "entry": "0x10296324",
+      "mask": "0x10",
+      "mode": 1,
+      "writes": [
+        {
+          "address": "0x20060014",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2006001c",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060024",
+          "size": 4,
+          "value": "0x10"
+        }
+      ]
+    },
+    {
+      "entry": "0x102962ea",
+      "mask": "0x18",
+      "mode": 0,
+      "writes": [
+        {
+          "address": "0x200630f0",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20063130",
+          "size": 4,
+          "value": "0x1"
+        },
+        {
+          "address": "0x20060010",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060018",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060020",
+          "size": 4,
+          "value": "0x18"
+        }
+      ]
+    },
+    {
+      "entry": "0x10296324",
+      "mask": "0x18",
+      "mode": 1,
+      "writes": [
+        {
+          "address": "0x20060014",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2006001c",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060024",
+          "size": 4,
+          "value": "0x18"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "mask": "0x30",
+      "mode": 0,
+      "writes": [
+        {
+          "address": "0x20060000",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x20060008",
+          "size": 4,
+          "value": "0x30"
+        }
+      ]
+    },
+    {
+      "mask": "0x30",
+      "mode": 1,
+      "writes": [
+        {
+          "address": "0x20060004",
+          "size": 4,
+          "value": "0x0"
+        },
+        {
+          "address": "0x2006000c",
+          "size": 4,
+          "value": "0x30"
+        }
+      ]
+    }
+  ],
+  "deadline_encoder": "0x102e8262",
+  "deadline_writer": "0x1029642a",
+  "deadlines": [
+    {
+      "mask": "0x8",
+      "start": 0,
+      "width": -1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xffff0000",
+        "0x0",
+        "0xffffff",
+        "0xffff0000"
+      ]
+    },
+    {
+      "mask": "0x8",
+      "start": 10,
+      "width": -1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xffff02d0",
+        "0x0",
+        "0xffffff",
+        "0xffff0000"
+      ]
+    },
+    {
+      "mask": "0x8",
+      "start": 10,
+      "width": 5,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x43802d0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x8",
+      "start": 1000000,
+      "width": 1000,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xbb40a200",
+        "0x44a",
+        "0x44b",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x10",
+      "start": 0,
+      "width": -1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xffff0000",
+        "0x0",
+        "0xffffff",
+        "0xffff0000"
+      ]
+    },
+    {
+      "mask": "0x10",
+      "start": 10,
+      "width": -1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xffff02d0",
+        "0x0",
+        "0xffffff",
+        "0xffff0000"
+      ]
+    },
+    {
+      "mask": "0x10",
+      "start": 10,
+      "width": 5,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x43802d0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x10",
+      "start": 1000000,
+      "width": 1000,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xbb40a200",
+        "0x44a",
+        "0x44b",
+        "0x0"
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "synthetic callback descriptors, sampling state and MMIO storage",
+    "synthetic timestamp; record task posts and hardware writes",
+    "replace resource lookup and lock/unlock with inert return values"
+  ],
+  "limitations": [
+    "Does not prove physical output timing, event generation or photo completion",
+    "Synthetic status storage records acknowledgement but does not implement W1C"
+  ]
+}
