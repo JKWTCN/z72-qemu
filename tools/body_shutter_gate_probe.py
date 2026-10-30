@@ -74,6 +74,7 @@ CAPTURE_INPUT_POINTS = {
     0x103d0df0: 'capture-work-mode-condition',
     0x103d0e00: 'capture-work-mode-rejected',
     0x103d0eae: 'capture-work-request-allocation-entry',
+    0x103d1132: 'capture-work-request-registration-return',
     0x10264f5c: 'capture-processing-release-entry',
     0x10265120: 'capture-processing-release-notification-condition',
     0x103cdb26: 'capture-processing-release-notification',
@@ -189,6 +190,9 @@ IMAGE_WORK_POINTS = {
     0x102457ac: 'image-work-first-stage',
     0x102456fc: 'image-work-later-stage',
     0x103d0c3a: 'image-work-completion',
+}
+CAPTURE_WORK_POINTS = {
+    address: 'capture-' + label for address, label in IMAGE_WORK_POINTS.items()
 }
 IMAGE_WORK_WAIT_POINTS = {
     0x10268c2a: 'image-work-service-wait',
@@ -1236,6 +1240,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     breakpoints_installed = False
     capture_caller = None
     capture_input_path = None
+    capture_work_requests = set()
     controller_step_trigger_sent = False
     try:
         before = snapshot(remote)
@@ -1842,9 +1847,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if shutter_click:
                         hits[pc] = hits.get(pc, 0) + 1
                         repeat = hits[pc] < 64
-                if pc in IMAGE_WORK_POINTS:
-                    name = 'r4' if pc in (0x103cc8e8, 0x103cc960) else 'r1' if pc == 0x103d0c3a else 'r0'
+                if pc in IMAGE_WORK_POINTS or pc == 0x103d1132:
+                    name = ('r7' if pc == 0x103d1132 else 'r4' if pc in (0x103cc8e8, 0x103cc960)
+                            else 'r1' if pc == 0x103d0c3a else 'r0')
                     pointer = remote.get(registers, name)
+                    if capture_focus and pc in CAPTURE_WORK_POINTS:
+                        keep = keep and pointer in capture_work_requests
                     record['image_work_request'] = hex(pointer)
                     if 0xb2c00000 <= pointer <= 0xb5effd30:
                         def word(address):
@@ -1867,8 +1875,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 busy=remote.read(parameters + 0x3e30, 1)[0])
                     if pc == 0x102456fc:
                         record['worker_stage'] = remote.get(registers, 'r1')
-                    hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < 8
+                    if capture_focus and pc == 0x103d0c3a:
+                        capture_work_requests.discard(pointer)
+                    if not (capture_focus and pc in CAPTURE_INPUT_POINTS):
+                        hits[pc] = hits.get(pc, 0) + int(keep)
+                        repeat = not keep or hits[pc] < 8
                 if pc in IMAGE_WORK_WAIT_POINTS:
                     if pc in (0x1026981c, 0x10269820, 0x102698a0, 0x102698a4):
                         record['returned_or_seeded_flags'] = hex(int.from_bytes(
@@ -1914,6 +1925,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc == 0x103d1132:
+                        keep = keep and record['capture_state'][0] >= 8
+                        if keep:
+                            request = remote.get(registers, 'r7')
+                            record['work_registration_result'] = remote.get(registers, 'r0')
+                            capture_work_requests.add(request)
+                            for address, label in CAPTURE_WORK_POINTS.items():
+                                if address not in armed and hits.get(address, 0) < 8:
+                                    armed[address] = label
+                                    remote.breakpoint(address)
                     if pc in (0x102e4548, 0x102e455c, 0x102e4570, 0x102e4574):
                         keep = keep and record['capture_state'][0] >= 6
                         if keep:
