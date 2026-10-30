@@ -92,6 +92,12 @@ BODY_CAPTURE_CONFIGURATION_POINTS = {
     (0x1052273e, 0x10635cf6, 0x104847c2, 0x10484800,
      0x104e1824, 0x104e1850, 0x104e188e)
 } | {0x1048481e: 'body-configuration-list-result'}
+BODY_INPUT_POINTS = {
+    0x102a4794: 'body-input-before-foreground-dispatch',
+    0x102a47ba: 'body-input-change-result',
+    0x102a47c4: 'body-input-enqueue-result',
+    0x1029ee9c: 'body-input-worker-dequeue-result',
+}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -1457,7 +1463,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
             body_state_events=False,
-            body_capture_events=False,
+            body_capture_events=False, body_input_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
     with machine.io:
         machine.qmp.command('stop')
@@ -1527,6 +1533,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     body_status_armed = False
     body_capture_armed = False
     body_periodic_operations = {}
+    body_input_armed = False
+    body_input_seen = {}
+    body_input_samples = {}
     records = []
     hits = {}
     callback_hits = 0
@@ -2038,6 +2047,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     armed[address] = label
                                 body_capture_armed = True
                                 record['body_capture_observation_after_processing_frames'] = completed
+                            if body_input_events and not body_input_armed:
+                                for address, label in BODY_INPUT_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                body_input_armed = True
+                                record['body_input_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -2176,7 +2191,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             following.update(BODY_STATE_POINTS)
                         elif body_capture_events:
                             following.update(BODY_CAPTURE_CONFIGURATION_POINTS)
-                        elif application_only and not (image_work_events or body_capture_events):
+                        elif application_only and not (image_work_events or body_capture_events or body_input_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
                             if address not in armed:
@@ -2328,6 +2343,26 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     remote.read(0xb23f6fe4 + operation * 4, 4), 'little'))
                         hits[pc] = hits.get(pc, 0) + 1
                         repeat = hits[pc] < 32
+                if body_input_events and pc in BODY_INPUT_POINTS:
+                    body_input_samples[hex(pc)] = body_input_samples.get(hex(pc), 0) + 1
+                    pointer = remote.get(registers, 'r0' if pc == 0x102a4794 else
+                                         'sp' if pc == 0x1029ee9c else 'r4')
+                    result = None if pc == 0x102a4794 else remote.get(registers, 'r0')
+                    keep = keep and (pc != 0x1029ee9c or result != 2)
+                    if keep and 0xb0000000 <= pointer <= 0xb5efffe8:
+                        words = struct.unpack('<6I', remote.read(pointer, 24))
+                        # Compare only release contacts, retaining all six original words.
+                        signature = tuple(value & 0xc0000000 for value in words[1:])
+                        keep = body_input_seen.get(pc) != signature
+                        body_input_seen[pc] = signature
+                        if keep:
+                            record['body_input'] = dict(address=hex(pointer),
+                                words={hex(index * 4): hex(value) for index, value in enumerate(words)},
+                                result=result)
+                    else:
+                        keep = False
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = hits[pc] < 32
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
@@ -2764,6 +2799,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_state_events=body_state_events,
                     body_capture_events=body_capture_events,
                     body_periodic_operations=body_periodic_operations,
+                    body_input_events=body_input_events,
+                    body_input_samples=body_input_samples,
                     shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -2892,6 +2929,8 @@ def main():
                         help='Trace eight body state-update conditions per point instead of configuration nodes')
     parser.add_argument('--body-capture-events', action='store_true',
                         help='Trace capture operation registration and state requests after preview readiness')
+    parser.add_argument('--body-input-events', action='store_true',
+                        help='Trace release-contact changes through background input queuing before foreground dispatch')
     args = parser.parse_args()
     require(not args.primary_exposure_sync or
             args.sampling_output_complete and args.frame_generate and args.frame_notify,
@@ -2969,6 +3008,9 @@ def main():
     require(not args.body_capture_events or (args.application_only and
             not (args.body_state_events or args.image_work_events)),
             'Body capture observation requires application-only tracing without other work events')
+    require(not args.body_input_events or (args.application_only and
+            not (args.body_capture_events or args.body_state_events or args.image_work_events)),
+            'Body input observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -3086,6 +3128,7 @@ def main():
                                     image_work_events=args.image_work_events,
                                     body_state_events=args.body_state_events,
                                     body_capture_events=args.body_capture_events,
+                                    body_input_events=args.body_input_events,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
