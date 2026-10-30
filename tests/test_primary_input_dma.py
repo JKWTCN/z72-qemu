@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Check split RAW12 DMA, peer ownership and device-local address remapping."""
+"""Check split RAW12/RAW14 DMA, peer ownership and device-local remapping."""
 import argparse
 import json
 import re
@@ -9,21 +9,30 @@ import time
 
 
 def check(qemu):
-    height, first_stride, full_stride = 5520, 4224, 12432
-    first_length, full_length = first_stride * height, full_stride * height
-    rows = (0, 63, 64, 0x2000000 // full_stride, height - 1)
-    peer_guards = {0x88000000 - 4: 0x11223344, 0x88000000 + full_length: 0x55667788,
-                   0xbad0a000 - 4: 0x13572468, 0xbad0a000 + full_length: 0x24681357}
-    for full in (0x88000000, 0xbad0a000):
-        for y in rows:
-            peer_guards[full + y * full_stride] = 0xa5a5a5a5
-            peer_guards[full + y * full_stride + first_stride - 4] = 0x5a5a5a5a
+    height = 5520
     for case, (role, enabled, sampling, notifying, paired, linked) in enumerate((
             ('master', True, True, True, True, True), ('master', True, True, False, True, True),
             ('master', False, True, True, True, True), ('master', True, False, True, True, True),
             ('master', True, True, True, True, False), ('master', True, True, True, False, True),
             ('slave', True, True, True, False, True),
+            ('master', True, True, True, True, True),
             ('master', True, True, True, True, True))):
+        bits = 14 if case == 8 else 12
+        geometry_mode = 1 if bits == 14 else 2
+        first_stride = 2816 * bits // 8
+        full_stride = (8288 * bits // 8 + 15) & ~15
+        second_length = 5472 * bits // 8
+        first_length, full_length = first_stride * height, full_stride * height
+        native_full = 0xba220000 if bits == 14 else 0xbad0a000
+        rows = (0, 63, 64, 0x2000000 // full_stride, height - 1)
+        peer_guards = {0x88000000 - 4: 0x11223344, 0x88000000 + full_length: 0x55667788,
+                       native_full - 4: 0x13572468, native_full + full_length: 0x24681357}
+        for full in (0x88000000, native_full):
+            for y in rows:
+                peer_guards[full + y * full_stride] = 0xa5a5a5a5
+                peer_guards[full + y * full_stride + first_stride - 4] = 0x5a5a5a5a
+                if bits == 14:
+                    peer_guards[full + (y + 1) * full_stride - 4] = 0xfaceb00c
         synchronized = case == 7
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
@@ -121,7 +130,7 @@ def check(qemu):
 
             # Equal numeric addresses in two engines must remain independent.
             first, full, aperture = 0x88000000, 0x88000000, 0x18000000
-            for address, value in ((0x20069500, 2), (0x20069504, 2816 << 16),
+            for address, value in ((0x20069500, geometry_mode), (0x20069504, 2816 << 16),
                     (0x20069508, height << 16), (0x2006950c, 1), (0x20069510, 5472),
                     (0x20069808, first_stride), (0x20069814, 1), (0x20069818, 1),
                     (0x20069840, 1), (0x20069848, 3), (0x20069850, first),
@@ -174,7 +183,7 @@ def check(qemu):
                 # already observed during this primary input run.
                 write(0x20063130, 1)
                 tick()
-            assert count() == int(active)
+            assert count() == int(active), (case, bits, count(), active)
             assert read(0x20068210) == (0x59 if active and notifying else 0)
             assert read(0x20068270) == (0x40000021 if active and notifying else 0)
             assert property_value('input-dma-count') == 0, 'Primary DMA changed the other input counter'
@@ -183,14 +192,17 @@ def check(qemu):
                 assert property_value('primary-input-second-dma-address') == full + first_stride
 
                 def expected_row(y, start, width, phase):
+                    group, size = (4, 7) if bits == 14 else (2, 3)
                     return bytes(255 if ((start + x) // 64 + y // 64 + phase) & 1 else 0
-                                 for x in range(0, width, 2) for _ in range(3))
+                                 for x in range(0, width, group) for _ in range(size))
 
                 for y in rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 0)
-                    assert data_at(full + y * full_stride + first_stride, 8208, True) == expected_row(y, 2816, 5472, 0)
+                    assert data_at(full + y * full_stride + first_stride, second_length, True) == expected_row(y, 2816, 5472, 0)
                     assert read(full + y * full_stride, True) == 0xa5a5a5a5, 'Second stripe overwrote the left columns'
                     assert read(full + y * full_stride + first_stride - 4, True) == 0x5a5a5a5a
+                    if bits == 14:
+                        assert read(full + (y + 1) * full_stride - 4, True) == 0xfaceb00c
                 assert read(first - 4) == 0x12345678 and read(first + first_length) == 0x87654321
                 assert read(full - 4, True) == 0x11223344 and read(full + full_length, True) == 0x55667788
                 write(0x20068210, 0xffffffff)
@@ -202,7 +214,8 @@ def check(qemu):
                         (0x20069850, 0xbaa00000, first), (0x20069850, 0x20068500, first),
                         (0x20069850, 0xac1c4ff0, first),
                         (0x20069950, 0x10020000, aperture + first_stride),
-                        (0x20069854, first, 0), (0x20069500, 6, 2),
+                        (0x20069854, first, 0), (0x20069500, 6, geometry_mode),
+                        (0x20069500, 3 - geometry_mode, geometry_mode),
                         (0x20069510, 5471, 5472), (0x20069808, 4220, first_stride),
                         (0x20069908, 12416, full_stride), (0x20069818, 0, 1)):
                     write(address, invalid)
@@ -242,10 +255,9 @@ def check(qemu):
                 assert read(0x20068210) == (0x59 if notifying else 0)
                 assert read(0x20068270) == (0x40000021 if notifying else 0)
                 assert data_at(first, first_stride) == expected_row(0, 0, 2816, 1)
-                assert data_at(full + first_stride, 8208, True) == expected_row(0, 2816, 5472, 1)
+                assert data_at(full + first_stride, second_length, True) == expected_row(0, 2816, 5472, 1)
                 # Actual full-frame address belongs to peer storage, while
                 # the same numeric address holds the sender's execution RAM.
-                native_full = 0xbad0a000
                 first = 0x62700000
                 write(0x20069850, first)
                 cache_guard = bytes(range(256))
@@ -258,7 +270,7 @@ def check(qemu):
                     for address, value in ((0x2013d0b0, target),
                             (0x2013d0d0, mask), (0x2013d0f0, base)):
                         write(address + slot * 4, value)
-                write(0x20069950, 0x12d0b080)
+                write(0x20069950, 0x10000000 + native_full - 0xb8000000 + first_stride)
                 write(0x20068200, 0)
                 write(0x20068260, 0)
                 write(0x20068210, 0xffffffff)
@@ -270,8 +282,10 @@ def check(qemu):
                 assert property_value('primary-input-second-dma-address') == native_full + first_stride
                 for y in native_rows:
                     assert data_at(first + y * first_stride, first_stride) == expected_row(y, 0, 2816, 2)
-                    assert data_at(native_full + y * full_stride + first_stride, 8208, True) == expected_row(y, 2816, 5472, 2)
+                    assert data_at(native_full + y * full_stride + first_stride, second_length, True) == expected_row(y, 2816, 5472, 2)
                     assert read(native_full + y * full_stride, True) == 0xa5a5a5a5
+                    if bits == 14:
+                        assert read(native_full + (y + 1) * full_stride - 4, True) == 0xfaceb00c
                 assert read(native_full - 4, True) == 0x13572468
                 assert read(native_full + full_length, True) == 0x24681357
                 assert data_at(native_full, 256) == cache_guard, 'Peer DMA overwrote master execution RAM'
@@ -307,7 +321,7 @@ def check(qemu):
                 process.wait(timeout=5)
             for pipe in (process.stdin, process.stdout, process.stderr):
                 pipe.close()
-    print('PASS primary split DMA, peer ownership, sender code isolation, validation and lifecycle')
+    print('PASS RAW12/RAW14 split DMA, peer ownership, sender code isolation, validation and lifecycle')
 
 
 if __name__ == '__main__':

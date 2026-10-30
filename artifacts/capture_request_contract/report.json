@@ -15,7 +15,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     },
     {
       "storage": "0x0",
@@ -26,7 +27,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 1
     },
     {
       "storage": "0x0",
@@ -37,7 +39,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     },
     {
       "storage": "0x10001",
@@ -48,7 +51,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     },
     {
       "storage": "0x10001",
@@ -59,7 +63,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 1
     },
     {
       "storage": "0x10001",
@@ -70,7 +75,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     },
     {
       "storage": "0x20001",
@@ -81,7 +87,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     },
     {
       "storage": "0x20001",
@@ -92,7 +99,8 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 1
     },
     {
       "storage": "0x20001",
@@ -103,10 +111,16 @@
         0,
         0,
         1
-      ]
+      ],
+      "selected_internal_format": 3
     }
   ],
-  "diagnostic_caller_comparisons": 6,
+  "diagnostic_caller_comparisons": 9,
+  "format_selection": {
+    "entry": "0x103ba934",
+    "stop": "0x103ba94a",
+    "supplied_current_format": 3
+  },
   "control_properties": [
     {
       "id": "0x1b0c",
@@ -135,9 +149,10 @@
   },
   "host_boundaries": [
     "Supply synthetic packet/output and a single-capture mode getter",
+    "Supply the scalar getter return before native format-byte selection",
     "Seed a synthetic scalar to check the original property getter"
   ],
   "limitations": [
-    "Request construction only; no admission, image encoding or file writing"
+    "Request construction and bounded format selection only; no admission, encoding or file writing"
   ]
 }

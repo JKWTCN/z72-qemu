@@ -15,9 +15,11 @@ REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
 
-def capture_request_words(jpeg=False, storage=0):
+def capture_request_words(jpeg=False, storage=0, format_3800=False):
     require(storage in (0, 1, 2), 'Capture storage must be default, slot 1 or slot 2')
-    return [(0x200 if jpeg else 0) | ((storage + 2) << 16 if storage else 0), 1, 0, 0, 1]
+    require(not (jpeg and format_3800), 'Choose one explicit capture format')
+    format_byte = 1 if format_3800 else 2 if jpeg else 0
+    return [format_byte << 8 | ((storage + 2) << 16 if storage else 0), 1, 0, 0, 1]
 
 FINISH_POINTS = {0x10321EA2, 0x10322448, 0x1032A792, 0x1032A7B4,
                  0x103D0C72, 0x103CD46A, 0x102315FC, 0x102359F8, 0x10235A22}
@@ -237,8 +239,8 @@ def caller_code(exposure=None):
 
 
 class NativeCaptureCaller:
-    def __init__(self, remote, exposure=None, jpeg=False, storage=0):
-        request_words = capture_request_words(jpeg, storage)
+    def __init__(self, remote, exposure=None, jpeg=False, storage=0, format_3800=False):
+        request_words = capture_request_words(jpeg, storage, format_3800)
         self.remote = remote
         self.exposure = exposure
         self.code, self.return_pc, completion = caller_code(exposure)
@@ -306,8 +308,8 @@ class NativeCaptureCaller:
         self.saved_code = remote.read(CODE, len(self.code))
         require(not any(self.saved + self.saved_code), 'Capture diagnostic memory is occupied')
         remote.write(CODE, self.code)
-        # Original single-capture request; byte 1 selects format 0x3801 when
-        # requested. Byte 2 selects the original slot code, without changing
+        # Original single-capture request; byte 1 selects the requested image
+        # format. Byte 2 selects the original slot code, without changing
         # release gates or state.
         remote.write(REQUEST, struct.pack('<5I', *request_words))
         if exposure is not None:
@@ -319,7 +321,7 @@ class NativeCaptureCaller:
                            hardware_completion_host_supplied=False,
                            finish_observation_max_contexts=4,
                            request_words=request_words,
-                           format_request='jpeg' if jpeg else 'default',
+                           format_request='0x3800' if format_3800 else 'jpeg' if jpeg else 'default',
                            storage_request=storage,
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         if exposure is not None:

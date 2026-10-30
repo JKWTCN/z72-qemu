@@ -1804,6 +1804,17 @@ static void input_raw12_row(uint8_t *row, unsigned width, unsigned start_x,
     }
 }
 
+static void input_raw14_row(uint8_t *row, unsigned width, unsigned start_x,
+                            unsigned y, uint64_t phase)
+{
+    /* Four identical extreme samples fill seven bytes regardless of the
+     * unrecovered bit ordering within a packed RAW14 group. */
+    for (unsigned x = 0; x < width; x += 4) {
+        uint8_t level = (((start_x + x) / 64 + y / 64 + phase) & 1) ? 0xff : 0;
+        memset(row + x * 7 / 4, level, 7);
+    }
+}
+
 /* Domain 2 names the peer image pool. Decode the aperture locally, then
  * access the receiving engine's RAM rather than the sender's CPU view. */
 static bool input_primary_remap(NikonZ72BootConfig *s, uint32_t bus,
@@ -1848,12 +1859,13 @@ typedef struct NikonZ72PrimaryWrite {
 static void input_generate_primary(NikonZ72BootConfig *s)
 {
     uint8_t geometry[20], first[0x70] = { 0 }, second[0x70] = { 0 };
-    uint8_t first_row[4224], second_row[8208];
+    uint8_t first_row[4928], second_row[9576];
     AddressSpace *view, *peer_view;
     uint32_t first_address, second_bus;
     unsigned index = 0;
+    unsigned first_stride, full_stride, second_length, first_size;
     g_autoptr(GArray) writes = NULL;
-    const unsigned height = 5520, first_size = 4224 * height;
+    const unsigned height = 5520;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
         !(s->input_running & 0x400) || !s->peer || s->peer->master_role ||
@@ -1878,13 +1890,28 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                            second + 0x50, 32) != MEMTX_OK) {
         return;
     }
-    /* C1.70's observed 8288 x 5520 RAW12 split: the first 2816 columns
-     * have a separate buffer, the remaining 5472 keep the full row stride.
+    /* C1.70's observed RAW12/RAW14 splits: the first 2816 columns have a
+     * separate buffer, the remaining 5472 keep the full row stride.
      * Other profiles and address-group rotation remain unsupported. */
-    if (ldl_le_p(geometry) != 2 || ldl_le_p(geometry + 4) != (2816u << 16) ||
+    switch (ldl_le_p(geometry)) {
+    case 1:
+        first_stride = 4928;
+        full_stride = 14512;
+        second_length = 9576;
+        break;
+    case 2:
+        first_stride = 4224;
+        full_stride = 12432;
+        second_length = 8208;
+        break;
+    default:
+        return;
+    }
+    first_size = first_stride * height;
+    if (ldl_le_p(geometry + 4) != (2816u << 16) ||
         ldl_le_p(geometry + 8) != (height << 16) ||
         ldl_le_p(geometry + 12) != 1 || ldl_le_p(geometry + 16) != 5472 ||
-        ldl_le_p(first + 8) != 4224 || ldl_le_p(second + 8) != 12432 ||
+        ldl_le_p(first + 8) != first_stride || ldl_le_p(second + 8) != full_stride ||
         ldl_le_p(first + 0x14) != 1 || ldl_le_p(first + 0x18) != 1 ||
         ldl_le_p(first + 0x3c) != 0 || ldl_le_p(first + 0x40) != 1 ||
         ldl_le_p(first + 0x44) != 0 || ldl_le_p(first + 0x48) != 3 ||
@@ -1907,10 +1934,10 @@ static void input_generate_primary(NikonZ72BootConfig *s)
      * buffer. Its row gaps belong to the complete-frame buffer's left part. */
     writes = g_array_sized_new(false, false, sizeof(NikonZ72PrimaryWrite), height + 8);
     for (unsigned y = 0; y < height; y++) {
-        uint64_t bus = (uint64_t)second_bus + y * 12432;
+        uint64_t bus = (uint64_t)second_bus + y * full_stride;
         unsigned offset = 0;
 
-        while (offset < sizeof(second_row)) {
+        while (offset < second_length) {
             uint32_t physical;
             uint64_t available;
             hwaddr translated, span;
@@ -1921,7 +1948,7 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                 !input_primary_remap(s, bus, &physical, &available)) {
                 return;
             }
-            length = MIN(available, sizeof(second_row) - offset);
+            length = MIN(available, second_length - offset);
             /* The matching slave initialization record bounds this pool.
              * Equal numeric addresses in the two engines are independent. */
             if (physical < 0x83900000 ||
@@ -1958,11 +1985,16 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         return;
     }
     for (unsigned y = 0; y < height; y++) {
-        input_raw12_row(first_row, 2816, 0, y, s->primary_dma_count);
-        input_raw12_row(second_row, 5472, 2816, y, s->primary_dma_count);
-        if (address_space_write(view, (hwaddr)first_address + y * 4224,
+        if (ldl_le_p(geometry) == 1) {
+            input_raw14_row(first_row, 2816, 0, y, s->primary_dma_count);
+            input_raw14_row(second_row, 5472, 2816, y, s->primary_dma_count);
+        } else {
+            input_raw12_row(first_row, 2816, 0, y, s->primary_dma_count);
+            input_raw12_row(second_row, 5472, 2816, y, s->primary_dma_count);
+        }
+        if (address_space_write(view, (hwaddr)first_address + y * first_stride,
                                 MEMTXATTRS_UNSPECIFIED, first_row,
-                                sizeof(first_row)) != MEMTX_OK) {
+                                first_stride) != MEMTX_OK) {
             return;
         }
         while (index < writes->len &&

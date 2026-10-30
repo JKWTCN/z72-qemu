@@ -1469,9 +1469,14 @@ def input_dma_snapshot(machine):
             if result['primary_frames']:
                 primary = int(result['primary_address'], 16)
                 peer = int(result['primary_second_address'], 16)
+                first_stride = int.from_bytes(machine._bytes(0x20069808, 4), 'little')
+                full_stride = int.from_bytes(machine._bytes(0x20069908, 4), 'little')
+                require((first_stride, full_stride) in ((4224, 12432), (4928, 14512)),
+                        'Unexpected completed primary input strides')
+                result['primary_row_strides'] = dict(first=first_stride, full=full_stride)
                 result['primary_samples'] = []
-                for owner, cpu, target, length in (('master', 0, primary, 4224),
-                                                  ('slave', 2, peer, 8208)):
+                for owner, cpu, target, length in (('master', 0, primary, first_stride),
+                                                  ('slave', 2, peer, 5472 * first_stride // 2816)):
                     data = machine._bytes(target, length, cpu=cpu)
                     result['primary_samples'].append(dict(owner=owner, cpu=cpu,
                         address=hex(target), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
@@ -1518,7 +1523,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_state_events=False,
             body_capture_events=False, body_input_events=False, body_compute_events=False,
             body_system_events=False,
-            controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
+            controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
+            capture_format_3800=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1615,7 +1621,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
             capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure,
-                                                 jpeg=capture_jpeg, storage=capture_storage)
+                                                 jpeg=capture_jpeg, storage=capture_storage,
+                                                 format_3800=capture_format_3800)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -2963,8 +2970,11 @@ def main():
                         help='End focused capture observation after this many camera counter seconds from submission')
     parser.add_argument('--capture-exposure', type=int,
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
-    parser.add_argument('--capture-jpeg', action='store_true',
+    capture_formats = parser.add_mutually_exclusive_group()
+    capture_formats.add_argument('--capture-jpeg', action='store_true',
                         help='Use the original single-capture format 0x3801 request field')
+    capture_formats.add_argument('--capture-format-3800', action='store_true',
+                        help='Use the original format 0x3800 request field; does not establish a saved RAW image')
     parser.add_argument('--capture-storage', type=int, choices=(0, 1, 2), default=0,
                         help='Original capture target: 0 default, 1 slot 1, 2 slot 2')
     parser.add_argument('--boot-watch', type=int, default=240,
@@ -3085,6 +3095,8 @@ def main():
             'Exposure setting requires the diagnostic caller and a positive 32-bit property value')
     require(not args.capture_jpeg or args.capture_submit_on_ready,
             'Explicit JPEG format requires the diagnostic capture caller')
+    require(not args.capture_format_3800 or args.capture_submit_on_ready,
+            'Explicit format 0x3800 requires the diagnostic capture caller')
     require(not args.capture_storage or args.capture_submit_on_ready,
             'Explicit capture storage requires the diagnostic capture caller')
     require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
@@ -3227,6 +3239,7 @@ def main():
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
                                     capture_jpeg=args.capture_jpeg,
+                                    capture_format_3800=args.capture_format_3800,
                                     capture_storage=args.capture_storage,
                                     controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
