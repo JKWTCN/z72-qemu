@@ -106,6 +106,15 @@ BODY_COMPUTE_POINTS = {
     0x102449ec: 'body-master-compute-result-wait-return',
     0x10244910: 'body-master-compute-result-callback',
 }
+BODY_SYSTEM_POINTS = {
+    0x1029993e: 'body-system-foreground-input',
+    0x102a6984: 'body-system-base-mode-input',
+    0x10245f5e: 'body-system-policy-mode-input',
+    0x10247ad0: 'body-system-forward-mode-input',
+    0x102a6970: 'body-system-notification',
+    0x1020dad2: 'body-system-base-notification',
+    0x1020d384: 'body-system-mode-request',
+}
 CAPTURE_INPUT_POINTS = {
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
@@ -1485,6 +1494,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
             body_state_events=False,
             body_capture_events=False, body_input_events=False, body_compute_events=False,
+            body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0):
     with machine.io:
         machine.qmp.command('stop')
@@ -1558,6 +1568,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     body_input_seen = {}
     body_input_samples = {}
     body_compute_armed = False
+    body_system_armed = False
     records = []
     hits = {}
     callback_hits = 0
@@ -2083,6 +2094,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     armed[address] = label
                                 body_compute_armed = True
                                 record['body_compute_observation_after_processing_frames'] = completed
+                            if body_system_events and not body_system_armed:
+                                for address, label in BODY_SYSTEM_POINTS.items():
+                                    remote.breakpoint(address)
+                                    armed[address] = label
+                                body_system_armed = True
+                                record['body_system_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                             if capture_submit_on_ready:
                                 idle_preview_seen = True
@@ -2222,7 +2239,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         elif body_capture_events:
                             following.update(BODY_CAPTURE_CONFIGURATION_POINTS)
                         elif application_only and not (image_work_events or body_capture_events or
-                                                        body_input_events or body_compute_events):
+                                                        body_input_events or body_compute_events or body_system_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
                             if address not in armed:
@@ -2398,6 +2415,21 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['master_compute'] = master_compute_snapshot(remote)
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 8
+                if body_system_events and pc in BODY_SYSTEM_POINTS:
+                    root = 0xb1818bd0
+                    word = lambda address: int.from_bytes(remote.read(address, 4), 'little')
+                    mode = word(root + 0x154)
+                    record['body_system'] = dict(mode_object=hex(mode),
+                        mode_bytes=list(remote.read(root + 0x158, 2)),
+                        blocked=[hex(word(root + offset)) for offset in (0x320, 0x324, 0x328)],
+                        pending=hex(word(root + 0x32c)))
+                    if 0xb1800000 <= mode <= 0xb5effeb0:
+                        record['body_system']['mode_fields'] = {
+                            hex(offset): hex(word(mode + offset)) for offset in
+                            (0, 0x3c, 0x44, 0x64, 0xa4, 0xa8, 0x108, 0x110,
+                             0x114, 0x118, 0x11c, 0x120, 0x124, 0x128, 0x12c)}
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 32
                 if pc == 0x104e6c28:
                     record['release_gate'] = remote.get(registers, 'r0')
                     record['action'] = hex(remote.get(registers, 'r6'))
@@ -2839,6 +2871,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_input_events=body_input_events,
                     body_input_samples=body_input_samples,
                     body_compute_events=body_compute_events,
+                    body_system_events=body_system_events,
                     shutter_click=click,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -2971,6 +3004,8 @@ def main():
                         help='Trace release-contact changes through background input queuing before foreground dispatch')
     parser.add_argument('--body-compute-events', action='store_true',
                         help='Observe master compute requests during body input and compare the loaded program digest')
+    parser.add_argument('--body-system-events', action='store_true',
+                        help='Observe system mode input callbacks, notifications and mode requests after preview readiness')
     args = parser.parse_args()
     require(not args.primary_exposure_sync or
             args.sampling_output_complete and args.frame_generate and args.frame_notify,
@@ -3054,6 +3089,10 @@ def main():
     require(not args.body_compute_events or (args.application_only and
             not (args.body_capture_events or args.body_state_events or args.body_input_events or args.image_work_events)),
             'Body compute observation requires application-only tracing without other work events')
+    require(not args.body_system_events or (args.application_only and
+            not (args.body_compute_events or args.body_capture_events or args.body_state_events or
+                 args.body_input_events or args.image_work_events)),
+            'Body system observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -3173,6 +3212,7 @@ def main():
                                     body_capture_events=args.body_capture_events,
                                     body_input_events=args.body_input_events,
                                     body_compute_events=args.body_compute_events,
+                                    body_system_events=args.body_system_events,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
