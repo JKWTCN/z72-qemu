@@ -416,6 +416,57 @@ def check(qemu):
                         processed(), before_drain, grids(), before_grids, hex(read(0x20380024)))
                     write(0x20380024, 0x1002)
                     write(0x20100020, 12)
+                    # Native output-unit recipes accompany the three actual
+                    # NV12 rasters. Their result causes are distinct from
+                    # bank completion and ignore software callback fields.
+                    common = {0: 0x110a0000, 0x1c: 0xff010200, 0x28: 0x11080040,
+                              0x38: 0x20002, 0x48: 0x1110080, 0x4c: 6,
+                              0x58: 0xff, 0x60: 0xff, 0x74: 0xff, 0x7c: 0xff,
+                              0x8c: 0xabcd1234, 0x90: 0xdeadbeef,
+                              0x94: 0x200087e0, 0x98: 0x88000}
+                    for index, (offset, width, height, crop, rows, scale, target, uv) in enumerate((
+                            (0x9e0, 1920, 1080, 0x400000, 1136, 0x1000100, 0xb4000000, 0x226500),
+                            (0x940, 1024, 680, 0x70000, 716, 0x1000100, 0xb4400000, 0x12d400),
+                            (0xba0, 1024, 680, 0x460000, 716, 0x400040, 0xb4600000, 0xc1000))):
+                        base = 0x20100400 + (index + 3) * 0x40
+                        for at, value in ((0x10, width), (0x14, width),
+                                          (0x20, height << 16 | width), (0x28, uv)):
+                            write(base + at, value)
+                        for slot in range(4):
+                            write(0x20102200 + (slot * 16 + index + 3) * 4, target)
+                        parameters = 0xb3f00000 + index * 0x100
+                        command(f'memset {parameters:#x} 0xa0 0')
+                        for at, value in (common | {4: crop, 0xc: 0x10003 + index,
+                                0x2c: (width - 1) << 16, 0x30: (rows - 1) << 16,
+                                0x34: scale}).items():
+                            write(parameters + at, value)
+                        for at, value in ((8, 0x200087e0), (0xc, 0x88000), (0x10, parameters)):
+                            write(0x20100000 + offset + at, value)
+                        write(target, 0x12345678)
+                    tick()
+                    assert read(0x2010001c) == 0x61
+                    assert all(read(target) != 0x12345678 for target in (0xb4000000, 0xb4400000, 0xb4600000))
+                    write(0x20100020, 12)
+                    assert irq_levels.get(102 - 32, False)
+                    write(0x2010001c, 1)
+                    assert read(0x2010001c) == 0x60
+                    write(0x2010001c, 0x60)
+                    assert read(0x2010001c) == 0 and not irq_levels.get(102 - 32, False)
+                    for address, invalid, valid in ((0x20100940, 1, 0),
+                            (0x20100954, 1, 0), (0x20100950, 0x20068500, 0xb3f00100),
+                            (0x20100950, 0xb08fff80, 0xb3f00100),
+                            (0xb3f0010c, 0x10003, 0x10004),
+                            (0xb3f00198, 0, 0x88000)):
+                        write(address, invalid)
+                        tick()
+                        assert read(0x2010001c) == 0x60, 'Unsupported output unit completed'
+                        write(0x2010001c, 0x60)
+                        write(address, valid)
+                    for parameters in (0xb3f00000, 0xb3f00100, 0xb3f00200):
+                        assert read(parameters + 0x8c) == 0xabcd1234
+                        assert read(parameters + 0x90) == 0xdeadbeef
+                    write(0x20100020, 12)
+                    write(0x20380024, 0x1002)
                     write(0x20102100, 0x120)
                     # Boundary causes obey their masks and require successful RAW DMA.
                     def clear_input_causes():

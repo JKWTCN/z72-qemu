@@ -132,6 +132,20 @@ def probe(image):
         stage1_cases.append(dict(notification='0x42193081', payload='0x1',
             skip_before=skip, skip_after=0, events=list(native.events)))
     stop_cases = []
+    result_cases = []
+    for masks in ((1,), (2,), (4,), (7,), (1, 2, 4)):
+        native.u.mem_write(0xb18648f0, bytes(4))
+        rows = []
+        for mask in masks:
+            native.events.clear()
+            native.call(0x10262e40 - 0x10020000, 0x42193082, mask)
+            require(native.events == [dict(api='0x103610cc', object='0xb1864864', bits=hex(mask))],
+                    'Original per-module result event differs')
+            rows.append(dict(payload=hex(mask), count=native.word(0xb18648f0),
+                             events=list(native.events)))
+        require(native.word(0xb18648f0) == len(masks),
+                'Original result counter does not count callbacks')
+        result_cases.append(dict(notifications=len(masks), rows=rows))
     for entry, code, bits in ((0x102637c2, 0x42190806, 0x10000),
                               (0x10264282, 0x42193084, 0x2000)):
         # No aggregate wait is requested here: recover each message's event
@@ -210,6 +224,9 @@ def probe(image):
         translator='0x102637c2', cases=cases,
         stage1_input_event=dict(translator='0x10262e40', skip_address='0xb1864900',
                                cases=stage1_cases),
+        stage1_result_event=dict(translator='0x10262e40', notification='0x42193082',
+            count_address='0xb18648f0', object='0xb1864864', cases=result_cases,
+            limitation='Synthetic notification payloads; no processing unit or IRQ delivery is supplied'),
         processing_stop_events=dict(wait_mask='0xb1864854', cases=stop_cases,
             limitation='Synthetic messages with wait mask zero; no aggregate completion or native delivery is supplied'),
         processor_stop_ack=dict(command='0x10369fc4', address='0x2038000c', value=1,

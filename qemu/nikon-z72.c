@@ -1614,6 +1614,71 @@ static bool image_generate_grids(NikonZ72BootConfig *s, const uint8_t *raw,
     return true;
 }
 
+/* The three observed output units feed DMA channels 3..5. The bounded
+ * monochrome raster substitutes for their color/resize operators; report
+ * each unit only after that raster has actually reached RAM. This accepts
+ * the recovered recipe, not arbitrary processing descriptors or software
+ * callback/event fields in the descriptor's final words. */
+static uint32_t image_output_results(NikonZ72BootConfig *s,
+                                     const uint32_t *widths, const uint32_t *heights)
+{
+    static const struct {
+        unsigned offset, bit, width, height, crop, rows, scale;
+    } units[] = {
+        {0x9e0, 5, 1920, 1080, 0x400000, 1136, 0x1000100},
+        {0x940, 0, 1024, 680, 0x70000, 716, 0x1000100},
+        {0xba0, 6, 1024, 680, 0x460000, 716, 0x400040},
+    };
+    static const struct { unsigned offset; uint32_t value; } profile[] = {
+        {0, 0x110a0000}, {8, 0}, {0x10, 0}, {0x14, 0}, {0x18, 0},
+        {0x1c, 0xff010200}, {0x20, 0}, {0x24, 0}, {0x28, 0x11080040},
+        {0x38, 0x20002}, {0x3c, 0}, {0x40, 0}, {0x44, 0},
+        {0x48, 0x1110080}, {0x4c, 6}, {0x50, 0}, {0x54, 0},
+        {0x58, 0xff}, {0x5c, 0}, {0x60, 0xff}, {0x64, 0}, {0x68, 0},
+        {0x6c, 0}, {0x70, 0}, {0x74, 0xff}, {0x78, 0}, {0x7c, 0xff},
+        {0x80, 0}, {0x84, 0}, {0x88, 0},
+    };
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t registers[24], descriptor[0xa0];
+    uint32_t results = 0;
+
+    for (unsigned unit = 0; unit < ARRAY_SIZE(units); unit++) {
+        uint32_t source;
+        bool supported = true;
+
+        if (widths[unit] != units[unit].width || heights[unit] != units[unit].height ||
+            address_space_read(view, 0x20100000 + units[unit].offset,
+                               MEMTXATTRS_UNSPECIFIED, registers, sizeof(registers)) != MEMTX_OK ||
+            ldl_le_p(registers) || ldl_le_p(registers + 8) != 0x200087e0 ||
+            ldl_le_p(registers + 12) != 0x88000 || ldl_le_p(registers + 20)) {
+            continue;
+        }
+        source = ldl_le_p(registers + 16);
+        if (!processing_ram_range(view, source, sizeof(descriptor)) ||
+            address_space_read(view, source, MEMTXATTRS_UNSPECIFIED,
+                               descriptor, sizeof(descriptor)) != MEMTX_OK ||
+            ldl_le_p(descriptor + 4) != units[unit].crop ||
+            ldl_le_p(descriptor + 12) != (0x10003 + unit) ||
+            ldl_le_p(descriptor + 0x2c) != (units[unit].width - 1) << 16 ||
+            ldl_le_p(descriptor + 0x30) != (units[unit].rows - 1) << 16 ||
+            ldl_le_p(descriptor + 0x34) != units[unit].scale ||
+            ldl_le_p(descriptor + 0x94) != ldl_le_p(registers + 8) ||
+            ldl_le_p(descriptor + 0x98) != ldl_le_p(registers + 12)) {
+            continue;
+        }
+        for (unsigned index = 0; index < ARRAY_SIZE(profile); index++) {
+            if (ldl_le_p(descriptor + profile[index].offset) != profile[index].value) {
+                supported = false;
+                break;
+            }
+        }
+        if (supported) {
+            results |= 1u << units[unit].bit;
+        }
+    }
+    return results;
+}
+
 /* Functional monochrome preview for the observed C1.70 stream profile.
  * The 40000000 DMA operand is treated as an internal input stream here;
  * it is not read as a guest RAM pointer. Crop/nearest scaling and NV12 are
@@ -1705,6 +1770,8 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
         }
     }
     s->processing_dma_count++;
+    stl_le_p(s->transfer_table + 0x1c, ldl_le_p(s->transfer_table + 0x1c) |
+             image_output_results(s, widths, heights));
     /* Each bank completes only after its own output writes. A rejected grid
      * recipe retains bank0's wait while the independent NV12 bank advances. */
     uint32_t complete = 8;

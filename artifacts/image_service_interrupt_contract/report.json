@@ -392,6 +392,117 @@
       }
     ]
   },
+  "stage1_result_event": {
+    "translator": "0x10262e40",
+    "notification": "0x42193082",
+    "count_address": "0xb18648f0",
+    "object": "0xb1864864",
+    "cases": [
+      {
+        "notifications": 1,
+        "rows": [
+          {
+            "payload": "0x1",
+            "count": 1,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "notifications": 1,
+        "rows": [
+          {
+            "payload": "0x2",
+            "count": 1,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "notifications": 1,
+        "rows": [
+          {
+            "payload": "0x4",
+            "count": 1,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "notifications": 1,
+        "rows": [
+          {
+            "payload": "0x7",
+            "count": 1,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x7"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "notifications": 3,
+        "rows": [
+          {
+            "payload": "0x1",
+            "count": 1,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x1"
+              }
+            ]
+          },
+          {
+            "payload": "0x2",
+            "count": 2,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x2"
+              }
+            ]
+          },
+          {
+            "payload": "0x4",
+            "count": 3,
+            "events": [
+              {
+                "api": "0x103610cc",
+                "object": "0xb1864864",
+                "bits": "0x4"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "limitation": "Synthetic notification payloads; no processing unit or IRQ delivery is supplied"
+  },
   "processing_stop_events": {
     "wait_mask": "0xb1864854",
     "cases": [

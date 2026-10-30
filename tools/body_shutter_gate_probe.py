@@ -75,6 +75,8 @@ CAPTURE_INPUT_POINTS = {
     0x103d0e00: 'capture-work-mode-rejected',
     0x103d0eae: 'capture-work-request-allocation-entry',
     0x103d1132: 'capture-work-request-registration-return',
+    0x10262e64: 'capture-processing-result-event-producer',
+    0x103bde3e: 'capture-output-status-dispatch',
     0x10264f5c: 'capture-processing-release-entry',
     0x10265120: 'capture-processing-release-notification-condition',
     0x103cdb26: 'capture-processing-release-notification',
@@ -193,6 +195,12 @@ IMAGE_WORK_POINTS = {
 }
 CAPTURE_WORK_POINTS = {
     address: 'capture-' + label for address, label in IMAGE_WORK_POINTS.items()
+}
+CAPTURE_WORK_WAIT_POINTS = {
+    0x102e6518: 'capture-work-token-wait',
+    0x102e651c: 'capture-work-token-wait-return',
+    0x10269e02: 'capture-work-result-wait',
+    0x10269e06: 'capture-work-result-wait-return',
 }
 IMAGE_WORK_WAIT_POINTS = {
     0x10268c2a: 'image-work-service-wait',
@@ -459,6 +467,11 @@ def processing_worker_snapshot(remote, task):
                 word_8=hex(struct.unpack_from('<I', data, index * 16 + 8)[0]),
                 word_c=hex(struct.unpack_from('<I', data, index * 16 + 12)[0]))
                 for index in range(count)]
+            for node in result['nodes']:
+                parameters = int(node['word_c'], 0)
+                if node['tags'][0] == 10 and 0xb1800000 <= parameters <= 0xb5efff60:
+                    node['parameters'] = {hex(index * 4): hex(value) for index, value in enumerate(
+                        struct.unpack('<40I', remote.read(parameters, 160)))}
     return result
 
 
@@ -563,7 +576,15 @@ def image_work_snapshot(remote):
 def image_service_snapshot(remote):
     def words(address, count):
         return struct.unpack('<' + str(count) + 'I', remote.read(address, count * 4))
+    result_routes = words(0xb1801d78, 48)
     return dict(library_modes=list(remote.read(0xb1801ecc, 2)),
+        transfer_result_callbacks=[hex(value) for value in words(0xb1cf0f40, 8)],
+        transfer_result_routes=[dict(status=hex(0x2010001c if index < 16 else 0x20100020),
+            mask=hex(mask), payload=hex(payload)) for index, (mask, payload) in enumerate(
+                zip(result_routes[::2], result_routes[1::2]))],
+        transfer_result_units=[dict(index=index, registers={hex(offset * 4): hex(value)
+            for offset, value in enumerate(words(base, 6))})
+            for index, base in ((49, 0x20100940), (54, 0x201009e0), (55, 0x20100ba0))],
         library_callbacks=[hex(value) for value in words(0xb1801ed4, 2)],
         service_fields={hex(index * 4): hex(value)
                         for index, value in enumerate(words(0xb18095c4, 24))},
@@ -1241,6 +1262,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     capture_caller = None
     capture_input_path = None
     capture_work_requests = set()
+    capture_work_parameters = {}
     controller_step_trigger_sent = False
     try:
         before = snapshot(remote)
@@ -1877,9 +1899,33 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['worker_stage'] = remote.get(registers, 'r1')
                     if capture_focus and pc == 0x103d0c3a:
                         capture_work_requests.discard(pointer)
+                        if 'image_work' in record:
+                            capture_work_parameters.pop(int(record['image_work']['parameters'], 0), None)
                     if not (capture_focus and pc in CAPTURE_INPUT_POINTS):
                         hits[pc] = hits.get(pc, 0) + int(keep)
                         repeat = not keep or hits[pc] < 8
+                if capture_focus and pc in CAPTURE_WORK_WAIT_POINTS:
+                    parameters = remote.get(registers, 'r6') - (0x24 if pc in (0x102e6518, 0x102e651c) else 0)
+                    keep = keep and parameters in capture_work_parameters
+                    if keep:
+                        stack = remote.get(registers, 'sp')
+                        record['capture_work_wait'] = dict(parameters=hex(parameters),
+                            request=hex(capture_work_parameters[parameters]))
+                        if pc in (0x102e6518, 0x10269e02):
+                            record['capture_work_wait'].update(object=hex(remote.get(registers, 'r0')),
+                                mask=hex(remote.get(registers, 'r1')),
+                                timeout=remote.get(registers, 'r3'))
+                        else:
+                            record['capture_work_wait']['result'] = remote.get(registers, 'r0')
+                        flags = stack if pc in (0x102e6518, 0x102e651c) else stack + 0x434
+                        record['capture_work_wait']['returned_or_seeded_flags'] = hex(int.from_bytes(
+                            remote.read(flags, 4), 'little'))
+                        if pc in (0x10269e02, 0x10269e06):
+                            record['capture_work_wait'].update(
+                                queried_count=int.from_bytes(remote.read(stack + 0x430, 4), 'little'),
+                                completed_count=int.from_bytes(remote.read(0xb18648f0, 4), 'little'))
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = not keep or hits[pc] < 8
                 if pc in IMAGE_WORK_WAIT_POINTS:
                     if pc in (0x1026981c, 0x10269820, 0x102698a0, 0x102698a4):
                         record['returned_or_seeded_flags'] = hex(int.from_bytes(
@@ -1925,13 +1971,30 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc == 0x103bde3e:
+                        status = remote.get(registers, 'r0')
+                        keep = keep and bool(capture_work_requests) and bool(status & 0x610061)
+                        if keep:
+                            record['output_status_dispatch'] = dict(status_1c=hex(status),
+                                status_20=hex(remote.get(registers, 'r1')),
+                                forwarding_mask=hex(int.from_bytes(remote.read(0xb1809554, 4), 'little')),
+                                subscriber=hex(int.from_bytes(remote.read(0xb1809550, 4), 'little')),
+                                hardware_mask_10=hex(int.from_bytes(remote.read(0x20100010, 4), 'little')))
+                    if pc == 0x10262e64:
+                        keep = keep and bool(capture_work_requests)
+                        if keep:
+                            record['processing_result_event'] = dict(
+                                mask=hex(remote.get(registers, 'r5')),
+                                count_before=int.from_bytes(remote.read(0xb18648f0, 4), 'little'))
                     if pc == 0x103d1132:
                         keep = keep and record['capture_state'][0] >= 8
                         if keep:
                             request = remote.get(registers, 'r7')
                             record['work_registration_result'] = remote.get(registers, 'r0')
                             capture_work_requests.add(request)
-                            for address, label in CAPTURE_WORK_POINTS.items():
+                            if 'image_work' in record:
+                                capture_work_parameters[int(record['image_work']['parameters'], 0)] = request
+                            for address, label in (CAPTURE_WORK_POINTS | CAPTURE_WORK_WAIT_POINTS).items():
                                 if address not in armed and hits.get(address, 0) < 8:
                                     armed[address] = label
                                     remote.breakpoint(address)

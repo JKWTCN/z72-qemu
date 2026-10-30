@@ -22,7 +22,10 @@ class DescriptorProbe(RegionProbe):
     def boundary(self, cpu, address, size, unused):
         # The setter waits eight counter ticks after submitting its channel.
         # Only the two counter reads are supplied by the test environment.
-        if address == self.DATA + 0x2000:
+        if address in (0x103c5cec, 0x103c5d86, 0x103c5cee):
+            cpu.reg_write(UC_ARM_REG_R0, 1)
+            cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
+        elif address == self.DATA + 0x2000:
             self.notifications.append([cpu.reg_read(UC_ARM_REG_R0), cpu.reg_read(UC_ARM_REG_R1)])
             cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
         elif address == 0x103bdba4:
@@ -105,14 +108,32 @@ def probe(image):
             registers=[hex(value) for value in actual[port * 64:(port + 1) * 64]],
             inactive_bank_preserved=True, control_started=hex(started), control_stopped=hex(stopped)))
     native.u.mem_write(0xb1cf0f40, struct.pack('<8I', *([(native.DATA + 0x2000) | 1] * 8)))
+    result_unit_cases = []
+    for index, base in ((49, 0x20100940), (54, 0x201009e0), (55, 0x20100ba0)):
+        callback = (native.DATA + 0x2000) | 1
+        native.u.mem_write(parameters, bytes(0xa0))
+        native.u.mem_write(parameters + 0x8c, struct.pack('<4I', callback, 7, 0x200087e0, 0x88000))
+        native.u.mem_write(node, bytes([10, index]) + bytes(10) + struct.pack('<I', parameters))
+        native.call(0x103bdc92 - 0x10020000, node)
+        actual = [native.word(base + offset) for offset in (8, 12, 16, 20)]
+        require(actual == [0x200087e0, 0x88000, parameters, 0] and
+                native.word(0xb1cf0f40 + (index - 49) * 4) == callback,
+                'Original result-unit configuration or callback binding differs')
+        result_unit_cases.append(dict(index=index, base=hex(base),
+            registers={hex(offset): hex(value) for offset, value in zip((8, 12, 16, 20), actual)},
+            callback_slot=hex(0xb1cf0f40 + (index - 49) * 4)))
     routed_event_cases = []
-    for status, event in ((1, 1), (2, 2), (0x10000, 0x100), (0x20000, 0x200)):
+    for status, event in ((1, 1), (2, 2), (0x10000, 0x100), (0x20000, 0x200),
+                          (0x200000, 0x2000), (0x400000, 0x4000),
+                          (0x610000, (0x100, 0x2000, 0x4000))):
         native.notifications.clear()
         native.u.mem_write(0x20100018, struct.pack('<3I', 0, status, 0))
         native.call(0x39ce38)
-        require(native.notifications == [[0x41051002, event]],
+        events = event if isinstance(event, tuple) else (event,)
+        require(native.notifications == [[0x41051002, value] for value in events],
                 'Original processing subscriber status mapping differs: ' + repr((status, native.notifications)))
-        routed_event_cases.append(dict(status_1c=hex(status), subscriber=(status.bit_length() - 1) % 16,
+        routed_event_cases.append(dict(status_1c=hex(status),
+            subscribers=[bit % 16 for bit in range(32) if status & (1 << bit)],
             notifications=[
             dict(code=hex(code), event=hex(value)) for code, value in native.notifications]))
     native.u.mem_write(0xb1801d60, struct.pack('<I', (native.DATA + 0x2000) | 1))
@@ -132,6 +153,19 @@ def probe(image):
         native.call(0x395148, 0, event)
         require(native.notifications == [[1, bank]], 'Original processing bank callback differs')
         bank_callback_cases.append(dict(event=hex(event), logical_event=1, bank=bank))
+    native.u.mem_write(0xb1809550, struct.pack('<2I', (native.DATA + 0x2000) | 1, 0x61))
+    native.u.mem_write(0xb1d52688, bytes([1]))
+    result_forwarding_cases = []
+    for enabled in (0x70, 0x71):
+        native.u.mem_write(0x20100010, struct.pack('<I', enabled))
+        for event in (1, 0x20, 0x40, 0x100, 0x2000, 0x4000):
+            native.notifications.clear()
+            native.call(0x103b513c - 0x10020000, 0x41051002, event)
+            expected = [[event, 1]] if event & enabled & 0x61 else []
+            require(native.notifications == expected,
+                    'Original output result forwarding mask differs: ' + repr((enabled, event, native.notifications, expected)))
+            result_forwarding_cases.append(dict(mask_10=hex(enabled), payload=hex(event),
+                                                subscriber_calls=list(native.notifications)))
     return dict(firmware_included=False, master_sha256=hashlib.sha256(image).hexdigest(),
                 entry='0x103bda1e', register_table='0x10789cc0',
                 host_boundaries=['two counter reads, advanced by nine ticks',
@@ -145,6 +179,11 @@ def probe(image):
                     enable_flags_offset='0x100', cases=binding_cases,
                     enable_entry='0x103bd08a', disable_entry='0x103bd0a2'),
                 routed_event_cases=routed_event_cases,
+                result_unit_configuration=dict(entry='0x103bdc92', cases=result_unit_cases,
+                    host_boundary='Uncontended register-interface locks; register writes execute originally'),
+                result_forwarding=dict(entry='0x103b513c', software_mask='0x61',
+                    cases=result_forwarding_cases,
+                    limitation='Synthetic subscriber and mask state; fallback task marked active, no DMA supplied'),
                 bank_event_cases=bank_event_cases, bank_callback_cases=bank_callback_cases,
                 pixel_transfer_verified=False,
                 limitation='Packing, submission and handler event mapping are verified; channel direction, pixel formats, data movement and hardware completion timing remain unverified.')

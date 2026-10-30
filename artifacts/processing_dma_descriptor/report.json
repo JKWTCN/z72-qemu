@@ -449,7 +449,9 @@
   "routed_event_cases": [
     {
       "status_1c": "0x1",
-      "subscriber": 0,
+      "subscribers": [
+        0
+      ],
       "notifications": [
         {
           "code": "0x41051002",
@@ -459,7 +461,9 @@
     },
     {
       "status_1c": "0x2",
-      "subscriber": 1,
+      "subscribers": [
+        1
+      ],
       "notifications": [
         {
           "code": "0x41051002",
@@ -469,7 +473,9 @@
     },
     {
       "status_1c": "0x10000",
-      "subscriber": 0,
+      "subscribers": [
+        0
+      ],
       "notifications": [
         {
           "code": "0x41051002",
@@ -479,15 +485,194 @@
     },
     {
       "status_1c": "0x20000",
-      "subscriber": 1,
+      "subscribers": [
+        1
+      ],
       "notifications": [
         {
           "code": "0x41051002",
           "event": "0x200"
         }
       ]
+    },
+    {
+      "status_1c": "0x200000",
+      "subscribers": [
+        5
+      ],
+      "notifications": [
+        {
+          "code": "0x41051002",
+          "event": "0x2000"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x400000",
+      "subscribers": [
+        6
+      ],
+      "notifications": [
+        {
+          "code": "0x41051002",
+          "event": "0x4000"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x610000",
+      "subscribers": [
+        0,
+        5,
+        6
+      ],
+      "notifications": [
+        {
+          "code": "0x41051002",
+          "event": "0x100"
+        },
+        {
+          "code": "0x41051002",
+          "event": "0x2000"
+        },
+        {
+          "code": "0x41051002",
+          "event": "0x4000"
+        }
+      ]
     }
   ],
+  "result_unit_configuration": {
+    "entry": "0x103bdc92",
+    "cases": [
+      {
+        "index": 49,
+        "base": "0x20100940",
+        "registers": {
+          "0x8": "0x200087e0",
+          "0xc": "0x88000",
+          "0x10": "0x50001000",
+          "0x14": "0x0"
+        },
+        "callback_slot": "0xb1cf0f40"
+      },
+      {
+        "index": 54,
+        "base": "0x201009e0",
+        "registers": {
+          "0x8": "0x200087e0",
+          "0xc": "0x88000",
+          "0x10": "0x50001000",
+          "0x14": "0x0"
+        },
+        "callback_slot": "0xb1cf0f54"
+      },
+      {
+        "index": 55,
+        "base": "0x20100ba0",
+        "registers": {
+          "0x8": "0x200087e0",
+          "0xc": "0x88000",
+          "0x10": "0x50001000",
+          "0x14": "0x0"
+        },
+        "callback_slot": "0xb1cf0f58"
+      }
+    ],
+    "host_boundary": "Uncontended register-interface locks; register writes execute originally"
+  },
+  "result_forwarding": {
+    "entry": "0x103b513c",
+    "software_mask": "0x61",
+    "cases": [
+      {
+        "mask_10": "0x70",
+        "payload": "0x1",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x70",
+        "payload": "0x20",
+        "subscriber_calls": [
+          [
+            32,
+            1
+          ]
+        ]
+      },
+      {
+        "mask_10": "0x70",
+        "payload": "0x40",
+        "subscriber_calls": [
+          [
+            64,
+            1
+          ]
+        ]
+      },
+      {
+        "mask_10": "0x70",
+        "payload": "0x100",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x70",
+        "payload": "0x2000",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x70",
+        "payload": "0x4000",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x1",
+        "subscriber_calls": [
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x20",
+        "subscriber_calls": [
+          [
+            32,
+            1
+          ]
+        ]
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x40",
+        "subscriber_calls": [
+          [
+            64,
+            1
+          ]
+        ]
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x100",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x2000",
+        "subscriber_calls": []
+      },
+      {
+        "mask_10": "0x71",
+        "payload": "0x4000",
+        "subscriber_calls": []
+      }
+    ],
+    "limitation": "Synthetic subscriber and mask state; fallback task marked active, no DMA supplied"
+  },
   "bank_event_cases": [
     {
       "status_20": "0x4",
