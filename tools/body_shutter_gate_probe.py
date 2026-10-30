@@ -1172,6 +1172,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         checkpointed = started
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if (capture_caller and capture_exposure is not None and
+                    capture_caller.report['caller_returned'] and
+                    not capture_caller.report['settings_fixture']['ready']):
+                break
             if capture_focus and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')

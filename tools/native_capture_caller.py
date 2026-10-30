@@ -106,9 +106,51 @@ def caller_code(exposure=None):
     emit(0x2A7F)                 # diagnostic operation 127
     branch = len(code)
     emit(0)
+    original_near = None
+    if exposure is not None:
+        jump('diagnostic')
+        original_near = len(code)
+        literal(3, ORIGINAL_CALLBACK)
+        emit(0x4718)
+        labels['diagnostic'] = len(code)
     emit(0xB510 if exposure is None else 0xB570)  # save r4 / r4-r6 and lr
     literal(4, RESULT)
     if exposure is not None:
+        literal(6, 0x10779877)
+        emit(0x47B0)
+        store(0x50)
+        emit(0x2801)
+        jump('program_ready', 0)  # do not set an already selected program
+        literal(6, 0x104C18E3)    # original control-mode eligibility check
+        emit(0x47B0)
+        store(0x60)
+        emit(0x2801)
+        jump('return', 1)
+        emit(0x2001)
+        store(0x74)
+        literal(0, 0x040F0004)   # original asynchronous control-mode request
+        literal(1, OBJECT + 0x30)
+        mode_literal = len(literals)
+        literal(2, 0)
+        emit(0x608A)             # str r2,[r1,#8]: diagnostic notification callback
+        literal(6, 0x104C0F21)
+        emit(0x47B0)
+        store(0x64)
+        literal(5, 1000)
+        labels['mode_wait'] = len(code)
+        literal(0, 0x2400)
+        literal(6, 0x10634177)
+        emit(0x47B0)
+        store(0x68)
+        emit(0x2801)
+        jump('mode_ready', 0)
+        emit(0x3D01)
+        jump('return', 0)
+        emit(0x2001)
+        literal(3, 0x103DC539)
+        emit(0x4798)
+        jump('mode_wait')
+        labels['mode_ready'] = len(code)
         set_property(0x500e, OBJECT + 0x20, 2, 0x40)
         literal(5, 1000)
         labels['program_wait'] = len(code)
@@ -158,6 +200,16 @@ def caller_code(exposure=None):
     emit(0x6120)
     emit(0x2000)
     emit(0xBD10)
+    if exposure is not None:
+        mode_callback = CODE + len(code)
+        literal(3, RESULT + 0x6c)
+        emit(0x6018)             # str r0,[r3]
+        emit(0x6059)             # str r1,[r3,#4]
+        emit(0x2201)
+        emit(0x60DA)             # str r2,[r3,#12]: notification received
+        emit(0x2000)
+        emit(0x4770)
+        literals[mode_literal] = (literals[mode_literal][0], 2, mode_callback | 1)
     literals[callback_literal] = (literals[callback_literal][0], 1, completion | 1)
     for offset, label, condition in branches:
         displacement = (labels[label] - offset - 4) // 2
@@ -166,8 +218,9 @@ def caller_code(exposure=None):
         instruction = (0xD000 | condition << 8 | (displacement & 255)) if condition is not None else (
             0xE000 | (displacement & 2047))
         struct.pack_into('<H', code, offset, instruction)
-    require(-128 <= (original - branch - 4) // 2 <= 127, 'Original caller branch out of range')
-    struct.pack_into('<H', code, branch, 0xD100 | ((original - branch - 4) // 2 & 255))
+    original_target = original if original_near is None else original_near
+    require(-128 <= (original_target - branch - 4) // 2 <= 127, 'Original caller branch out of range')
+    struct.pack_into('<H', code, branch, 0xD100 | ((original_target - branch - 4) // 2 & 255))
     while len(code) % 4:
         emit(0xBF00)
     for offset, register, value in literals:
@@ -196,6 +249,9 @@ class NativeCaptureCaller:
                        0x103BA902: 'capture-resource-query-deferred',
                        0x103BA784: 'capture-submit-return',
                        0x103BAA06: 'capture-validation-return',
+                       0x103B9F0A: 'capture-storage-query-return',
+                       0x103B9F1E: 'capture-storage-result-return',
+                       0x103B9F50: 'capture-storage-admission-return',
                        0x103BAA70: 'capture-preparation-return'}
         self.ui_points = {0x1042E038: 'ui-capture-configuration',
                           0x1042E06E: 'ui-operation7-submit-return',
@@ -246,6 +302,7 @@ class NativeCaptureCaller:
         remote.write(REQUEST, struct.pack('<5I', 0, 1, 0, 0, 1))
         if exposure is not None:
             remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
+            remote.write(OBJECT + 0x30, struct.pack('<3I', 1, 0, 0))
         remote.write(CALLBACK, struct.pack('<I', CODE | 1))
         self.report = dict(caller_fixture=True, triggered=False, caller_entered=False,
                            caller_returned=False, body_shutter_used=False,
@@ -474,7 +531,9 @@ class NativeCaptureCaller:
             self.entry_sp = remote.get(registers, 'sp')
             self.native_return = remote.get(registers, 'lr') & ~1
         elif pc == self.return_pc:
-            self.report['api_status'] = self.word(RESULT)
+            self.report['api_status'] = self.word(RESULT) if self.word(RESULT + 4) == 1 else None
+            if self.exposure is not None:
+                self.settings_result()
             require(self.native_return is not None, 'Missing capture caller entry')
             return self.native_return
         elif pc == self.native_return:
@@ -484,7 +543,29 @@ class NativeCaptureCaller:
             pointer = remote.get(registers, 'r1')
             self.report['completion_payload_at_entry'] = dict(r1=hex(pointer),
                 first_word=self.word(pointer) if 0xB1800000 <= pointer <= 0xB5FFFFFC else None)
+        elif pc == 0x103B9F0A:
+            sp = remote.get(registers, 'sp')
+            self.report['storage_query'] = dict(status=hex(remote.get(registers, 'r0')),
+                byte_1=remote.read(sp + 1, 1)[0],
+                fields={hex(offset): hex(self.word(sp + offset))
+                        for offset in (0x4, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58)})
+        elif pc in (0x103B9F1E, 0x103B9F50):
+            sp = remote.get(registers, 'sp')
+            self.report['storage_admission'] = dict(status=remote.get(registers, 'r0'),
+                                                   flags=hex(self.word(sp + 0x60)))
         return None
+
+    def settings_result(self):
+        values = struct.unpack('<8I', self.remote.read(RESULT + 0x40, 32))
+        self.report['settings_fixture'].update(program_status=hex(values[0]),
+            exposure_status=hex(values[1]), final_property_status=hex(values[2]),
+            program_readback=values[4], exposure_readback=values[5],
+            ready=bool(values[6]), capture_api_invoked=bool(values[7]))
+        mode = struct.unpack('<7I', self.remote.read(RESULT + 0x60, 28))
+        self.report['settings_fixture']['control_mode'] = dict(eligible=mode[0],
+            request_status=hex(mode[1]), readback=mode[2],
+            notification=hex(mode[3]), notification_status=mode[4],
+            request_invoked=bool(mode[5]), notification_received=bool(mode[6]))
 
     def close(self):
         self.remote.select_thread(1)
@@ -497,11 +578,7 @@ class NativeCaptureCaller:
         self.report['api_accepted'] = self.report['api_returned'] and self.report['result_words'][0] == 0
         self.report['completion_count'] = self.report['result_words'][8]
         if self.exposure is not None:
-            values = struct.unpack('<8I', self.remote.read(RESULT + 0x40, 32))
-            self.report['settings_fixture'].update(program_status=hex(values[0]),
-                exposure_status=hex(values[1]), final_property_status=hex(values[2]),
-                program_readback=values[4], exposure_readback=values[5],
-                ready=bool(values[6]), capture_api_invoked=bool(values[7]))
+            self.settings_result()
         self.remote.write(CALLBACK, struct.pack('<I', ORIGINAL_CALLBACK))
         # Retain a potentially live caller/callback until this diagnostic VM
         # closes. Clearing code under a blocked native task would corrupt it.
@@ -509,6 +586,9 @@ class NativeCaptureCaller:
             CODE <= self.word(0xB23F6FE4 + operation * 4) < CODE + len(self.code)
             for operation in (70, 71))
         safe = (not self.report['triggered'] or self.report['caller_returned']) and not pending
+        if self.exposure is not None:
+            mode = self.report['settings_fixture']['control_mode']
+            safe = safe and (not mode['request_invoked'] or mode['notification_received'])
         if safe:
             self.remote.write(OBJECT, self.saved)
             self.remote.write(CODE, self.saved_code)
