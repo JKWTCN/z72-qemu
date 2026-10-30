@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "image_bytes": 536870912,
+  "checker": "7-Zip 24.08 archive integrity test",
+  "exit_code": 2,
+  "filesystem_identified": false,
+  "boot_sector_sha256": "33cda785ac6278488f3d6c688f0ceaea843171dd16c083e5706e1012530bba8d",
+  "boot_signature_valid": false,
+  "boot_total16": 65535,
+  "boot_total32": 2419851519,
+  "seed_boot_sector_sha256": "731c6fc76828e50f8d7bbf0ba528a17dd324748ed5e1d5bd0135b211c488f9f8",
+  "encoded_photo_verified": false,
+  "scope": "Read-only identification after VM closure; no file could be verified"
+}
