@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "builder": "0x10490872",
+  "operation": "0x100e",
+  "cases": [
+    {
+      "storage": "0x0",
+      "format": "0x0",
+      "words": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x0",
+      "format": "0x3800",
+      "words": [
+        256,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x0",
+      "format": "0x3801",
+      "words": [
+        512,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x10001",
+      "format": "0x0",
+      "words": [
+        196608,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x10001",
+      "format": "0x3800",
+      "words": [
+        196864,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x10001",
+      "format": "0x3801",
+      "words": [
+        197120,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x20001",
+      "format": "0x0",
+      "words": [
+        262144,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x20001",
+      "format": "0x3800",
+      "words": [
+        262400,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "storage": "0x20001",
+      "format": "0x3801",
+      "words": [
+        262656,
+        1,
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Supply synthetic packet/output and a single-capture mode getter"
+  ],
+  "limitations": [
+    "Request construction only; no admission, image encoding or file writing"
+  ]
+}

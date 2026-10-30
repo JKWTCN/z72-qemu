@@ -544,6 +544,12 @@ checks PCIe INTA status and GIC input 243 assertion, acknowledgement while
 the source remains high, and deassertion after SDHCI status clear. The host
 uses QEMU's SDHCI implementation at the firmware-derived first BAR.
 This check does not execute firmware or establish its filesystem path.
+The check covers a 1 MiB SDSC card and a 4 GiB SDHC card, verifies the OCR
+capacity bit, uses byte and sector command addresses respectively, and reads
+back aligned/mixed-width PIO and ADMA writes while preserving sector zero.
+Native capture probes use a complete image larger than 2 GiB: their observed
+command addresses are sector numbers. Reducing an image to 512 MiB changes
+the device to SDSC byte addressing even if its partition still fits.
 The [SD host validation record](../artifacts/sd_host_validation/report.json)
 identifies the compiled binary and the checks that passed.
 

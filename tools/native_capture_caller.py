@@ -232,7 +232,7 @@ def caller_code(exposure=None):
 
 
 class NativeCaptureCaller:
-    def __init__(self, remote, exposure=None):
+    def __init__(self, remote, exposure=None, jpeg=False):
         self.remote = remote
         self.exposure = exposure
         self.code, self.return_pc, completion = caller_code(exposure)
@@ -252,6 +252,8 @@ class NativeCaptureCaller:
                        0x103B9F0A: 'capture-storage-query-return',
                        0x103B9F1E: 'capture-storage-result-return',
                        0x103B9F50: 'capture-storage-admission-return',
+                       0x103696E4: 'capture-encoder-configure',
+                       0x1036991A: 'capture-encoder-start',
                        0x103BAA70: 'capture-preparation-return'}
         self.ui_points = {0x1042E038: 'ui-capture-configuration',
                           0x1042E06E: 'ui-operation7-submit-return',
@@ -297,9 +299,10 @@ class NativeCaptureCaller:
         self.saved_code = remote.read(CODE, len(self.code))
         require(not any(self.saved + self.saved_code), 'Capture diagnostic memory is occupied')
         remote.write(CODE, self.code)
-        # Original standard-capture defaults: one image, default target/format,
-        # request flag at +4 set; no writes to release gates or completion state.
-        remote.write(REQUEST, struct.pack('<5I', 0, 1, 0, 0, 1))
+        # Original single-capture request; byte 1 selects format 0x3801 when
+        # requested. Target remains default; no writes to release gates/state.
+        request_words = [0x200 if jpeg else 0, 1, 0, 0, 1]
+        remote.write(REQUEST, struct.pack('<5I', *request_words))
         if exposure is not None:
             remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
             remote.write(OBJECT + 0x30, struct.pack('<3I', 1, 0, 0))
@@ -308,7 +311,8 @@ class NativeCaptureCaller:
                            caller_returned=False, body_shutter_used=False,
                            hardware_completion_host_supplied=False,
                            finish_observation_max_contexts=4,
-                           request_words=[0, 1, 0, 0, 1],
+                           request_words=request_words,
+                           format_request='jpeg' if jpeg else 'default',
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         if exposure is not None:
             self.report['settings_fixture'] = dict(program_property='0x500e', program_value=1,
@@ -553,6 +557,16 @@ class NativeCaptureCaller:
             sp = remote.get(registers, 'sp')
             self.report['storage_admission'] = dict(status=remote.get(registers, 'r0'),
                                                    flags=hex(self.word(sp + 0x60)))
+        elif pc == 0x103696E4:
+            pointer = remote.get(registers, 'r1')
+            self.report['encoder_configuration'] = dict(descriptor=hex(pointer))
+            if 0xB1800000 <= pointer <= 0xB5FFFF50:
+                self.report['encoder_configuration']['fields'] = {
+                    hex(offset): hex(self.word(pointer + offset)) for offset in
+                    (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x58, 0x60, 0x64,
+                     0x68, 0x6c, 0x70, 0x74, 0x78, 0x98, 0xa8)}
+        elif pc == 0x1036991A:
+            self.report['encoder_start_entered'] = True
         return None
 
     def settings_result(self):

@@ -10,13 +10,15 @@ import tempfile
 import time
 
 
-def run(qemu):
+def run(qemu, card_bytes):
+    high_capacity = card_bytes > 2 * 1024**3
+    address_unit = 1 if high_capacity else 512
     with tempfile.TemporaryDirectory(prefix='z72-sd-') as folder:
         image = Path(folder) / 'card.raw'
         marker = bytes((index * 17 + 3) & 255 for index in range(512))
         with image.open('wb') as output:
             output.write(marker)
-            output.truncate(1024 * 1024)
+            output.truncate(card_bytes)
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -113,7 +115,8 @@ def run(qemu):
             assert command('readl 0x2a800064') & 4
             write(0x34, 0xFFFFFFFF)
             sd_command(55)
-            sd_command(41, 0x41200000)
+            sd_command(41, 0x41200000, flags=2)
+            assert bool(read(0x10) & (1 << 30)) == high_capacity, 'Card OCR capacity mode differs'
             sd_command(2)
             sd_command(3, flags=3)
             rca = read(0x10) & 0xFFFF0000
@@ -137,7 +140,7 @@ def run(qemu):
             for block, prefix in ((1, 0), (2, 33)):
                 payload = bytes((index * 73 + block * 19) & 255 for index in range(512))
                 write(0x30, 0xffffffff)
-                sd_command(24, block * 512, flags=0x20, block=True, writing=True)
+                sd_command(24, block * address_unit, flags=0x20, block=True, writing=True)
                 assert read(0x24) & 0x400, 'The host has no writable block'
                 cursor = 0
                 while cursor < len(payload):
@@ -149,7 +152,7 @@ def run(qemu):
                 assert status & 2, ('SDHCI write did not finish its transfer', block,
                                     hex(status), hex(read(0x24)), hex(read(4)), hex(read(0xc)))
                 write(0x30, 0xffffffff)
-                sd_command(17, block * 512, flags=0x20, block=True)
+                sd_command(17, block * address_unit, flags=0x20, block=True)
                 actual = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
                 assert actual == payload, 'SDHCI write/read differs across the FIFO boundary'
             payload = bytes((index * 29 + 7) & 255 for index in range(512))
@@ -158,11 +161,11 @@ def run(qemu):
             write(0x28, 0x10, 'b')  # ADMA2, 32-bit descriptor addresses.
             write(0x58, 0xb1900000)
             write(0x30, 0xffffffff)
-            sd_command(24, 3 * 512, flags=0x20, block=True, writing=True, dma=True)
+            sd_command(24, 3 * address_unit, flags=0x20, block=True, writing=True, dma=True)
             command('clock_step 1000000')
             assert read(0x30) & 2, 'ADMA write did not complete'
             write(0x30, 0xffffffff)
-            sd_command(17, 3 * 512, flags=0x20, block=True)
+            sd_command(17, 3 * address_unit, flags=0x20, block=True)
             sector = b''.join(struct.pack('<I', read(0x20)) for _ in range(128))
             assert sector == payload, 'ADMA sector write changed source bytes'
             write(0x30, 0xffffffff)
@@ -191,10 +194,13 @@ def run(qemu):
             process.stderr.close()
             process.stdin.close()
             process.stdout.close()
-    print('PASS SD host: clock gate, reset, IRQ 243, reads, aligned/mixed-width PIO and ADMA writes')
+    print(f'PASS SD host ({"SDHC sectors" if high_capacity else "SDSC bytes"}): '
+          'OCR, clock gate, reset, IRQ 243, PIO/ADMA writes and sector-zero preservation')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
-    run(parser.parse_args().qemu)
+    arguments = parser.parse_args()
+    for card_bytes in (1024**2, 4 * 1024**3):
+        run(arguments.qemu, card_bytes)

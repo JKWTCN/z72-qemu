@@ -654,6 +654,33 @@ def auxiliary_image_snapshot(remote):
     return result
 
 
+def sd_trace_snapshot(machine):
+    if not getattr(machine.args, 'trace_sd_host', False):
+        return None
+    events, counts = [], {}
+    pattern = re.compile(r'(sdhci_send_command|sdhci_adma_loop|sdhci_adma|sdhci_access|sdcard_write_block) (.*)')
+    for line in (machine.work / 'qemu.log').open(encoding='utf-8', errors='replace'):
+        match = pattern.search(line)
+        if not match:
+            continue
+        event, detail = match.groups()
+        counts[event] = counts.get(event, 0) + 1
+        if event == 'sdhci_access':
+            access = re.fullmatch(r'wr(8|16|32): addr\[0x([0-9a-f]+)\] <- 0x([0-9a-f]+) \(\d+\)', detail)
+            if not access or int(access[2], 16) not in (0, 4, 8, 0xc, 0xe, 0x28, 0x58, 0x5c):
+                continue
+            item = dict(event=event, bits=int(access[1]), offset=hex(int(access[2], 16)),
+                        value=hex(int(access[3], 16)))
+        else:
+            item = dict(event=event, detail=detail)
+        counts['selected'] = counts.get('selected', 0) + 1
+        if len(events) < 256:
+            events.append(item)
+    return dict(counts=counts, events=events, event_limit=256,
+        truncated=counts.get('selected', 0) > len(events),
+        scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -844,6 +871,8 @@ def snapshot(remote):
         processing_bank_jobs=[processing_worker_snapshot(remote, task)
                               for task in (0xb1d52600, 0xb1d52648)],
         image_service=image_service_snapshot(remote),
+        jpeg_encoder=dict(current_descriptor=hex(word(0xb1801eb8)),
+                          accumulated_flags=hex(word(0xb1801eb0))),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
@@ -1037,7 +1066,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             input_boundary_events=False, shutter_on_ready=False, capture_submit_on_ready=False,
             capture_wait_idle=False, application_only=False, shutter_click=False,
             image_work_events=False, capture_focus=False, capture_counter_seconds=None,
-            controller_step_trigger=False, capture_exposure=None):
+            controller_step_trigger=False, capture_exposure=None, capture_jpeg=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1117,7 +1146,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         before = snapshot(remote)
         if capture_submit_on_ready:
             from tools.native_capture_caller import NativeCaptureCaller
-            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure)
+            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure, jpeg=capture_jpeg)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -1915,6 +1944,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 del armed[pc]
         after = snapshot(remote)
         return dict(before=before, records=records, after=after,
+                    sd_host_trace=sd_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_caller else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
@@ -1973,6 +2003,8 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--sd-card', type=Path)
+    parser.add_argument('--trace-sd-host', action='store_true',
+                        help='Record bounded SD command/DMA metadata; keep raw traces private')
     parser.add_argument('--display-complete', action='store_true')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
@@ -2010,6 +2042,8 @@ def main():
                         help='End focused capture observation after this many camera counter seconds from submission')
     parser.add_argument('--capture-exposure', type=int,
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
+    parser.add_argument('--capture-jpeg', action='store_true',
+                        help='Use the original single-capture format 0x3801 request field')
     parser.add_argument('--boot-watch', type=int, default=240,
                         help='Host seconds to wait for the shooting foreground (30..600)')
     parser.add_argument('--watch-read', type=lambda value: int(value, 0),
@@ -2060,6 +2094,8 @@ def main():
                         help='After preview readiness, trace eight image scheduler requests per point instead of configuration nodes')
     args = parser.parse_args()
     require(10 <= args.watch <= 3600, 'Watch time out of bounds')
+    require(not args.trace_sd_host or args.sd_card is not None,
+            'SD tracing requires an attached card')
     require(args.capture_card_copy is None or args.sd_card is not None and args.capture_focus,
             'Persistent capture card requires a supplied card and focused capture tracing')
     require(args.capture_card_copy is None or
@@ -2107,6 +2143,8 @@ def main():
     require(args.capture_exposure is None or
             args.capture_submit_on_ready and 0 < args.capture_exposure <= 0xFFFFFFFF,
             'Exposure setting requires the diagnostic caller and a positive 32-bit property value')
+    require(not args.capture_jpeg or args.capture_submit_on_ready,
+            'Explicit JPEG format requires the diagnostic capture caller')
     require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
             'Focused capture requires the diagnostic caller without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
@@ -2225,6 +2263,7 @@ def main():
                                     capture_focus=args.capture_focus,
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
+                                    capture_jpeg=args.capture_jpeg,
                                     controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
