@@ -420,6 +420,140 @@
     ],
     "limitation": "Synthetic messages with wait mask zero; no aggregate completion or native delivery is supplied"
   },
+  "processor_stop_ack": {
+    "command": "0x10369fc4",
+    "address": "0x2038000c",
+    "value": 1,
+    "handler": "0x103699a4",
+    "armed_word": "0xb18095f0",
+    "cases": [
+      {
+        "armed": 0,
+        "status": "0x2",
+        "events": []
+      },
+      {
+        "armed": 1,
+        "status": "0x2",
+        "events": [
+          {
+            "api": "0x103854c4",
+            "object": "0xb1d52938",
+            "bits": "0x20"
+          }
+        ]
+      }
+    ]
+  },
+  "processor_drain": {
+    "command": "0x10369fd2",
+    "writes": [
+      {
+        "address": "0x20380084",
+        "bytes": 4,
+        "value": "0x0"
+      },
+      {
+        "address": "0x203800f0",
+        "bytes": 4,
+        "value": "0xfc400"
+      },
+      {
+        "address": "0x20380054",
+        "bytes": 4,
+        "value": "0x1"
+      },
+      {
+        "address": "0x20380060",
+        "bytes": 4,
+        "value": "0x1"
+      },
+      {
+        "address": "0x2038006c",
+        "bytes": 4,
+        "value": "0x1"
+      },
+      {
+        "address": "0x20380078",
+        "bytes": 4,
+        "value": "0x1"
+      }
+    ],
+    "mask": "0x14a0000",
+    "cases": [
+      {
+        "scratch": "0x0",
+        "partial_statuses": [
+          {
+            "status": "0x20000",
+            "accumulated": "0x20000",
+            "events": []
+          },
+          {
+            "status": "0x80000",
+            "accumulated": "0xa0000",
+            "events": []
+          },
+          {
+            "status": "0x400000",
+            "accumulated": "0x4a0000",
+            "events": []
+          },
+          {
+            "status": "0x1000000",
+            "accumulated": "0x14a0000",
+            "events": [
+              {
+                "api": "0x103854c4",
+                "object": "0xb1d52938",
+                "bits": "0x80"
+              }
+            ]
+          }
+        ],
+        "result_events": [
+          {
+            "api": "0x103854c4",
+            "object": "0xb1d52938",
+            "bits": "0x80"
+          }
+        ]
+      },
+      {
+        "scratch": "0x53000000",
+        "partial_statuses": [
+          {
+            "status": "0x20000",
+            "accumulated": "0x20000",
+            "events": []
+          },
+          {
+            "status": "0x80000",
+            "accumulated": "0xa0000",
+            "events": []
+          },
+          {
+            "status": "0x400000",
+            "accumulated": "0x4a0000",
+            "events": []
+          },
+          {
+            "status": "0x1000000",
+            "accumulated": "0x14a0000",
+            "events": []
+          }
+        ],
+        "result_events": [
+          {
+            "api": "0x103854c4",
+            "object": "0xb1d52938",
+            "bits": "0x80"
+          }
+        ]
+      }
+    ],
+    "limitation": "Synthetic causes and scratch address; original register programming only, no DMA or hardware completion"
+  },
   "input_bindings": {
     "control_setter": "0x1036a62c",
     "rectangle_setter": "0x1036a642",
@@ -453,7 +587,8 @@
         ],
         "start_08": 1,
         "start_10": 1,
-        "interrupt_mask_20": "0x1402"
+        "interrupt_mask_20": "0x1402",
+        "stop_command_0c": 1
       },
       {
         "bank": 1,
@@ -481,7 +616,8 @@
         ],
         "start_08": 1,
         "start_10": 1,
-        "interrupt_mask_20": "0x1402"
+        "interrupt_mask_20": "0x1402",
+        "stop_command_0c": 1
       }
     ],
     "limitation": "Register packing only; address groups, ring phase and control semantics remain unverified."

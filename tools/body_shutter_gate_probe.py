@@ -77,6 +77,15 @@ CAPTURE_INPUT_POINTS = {
     0x10264f5c: 'capture-processing-release-entry',
     0x10265120: 'capture-processing-release-notification-condition',
     0x103cdb26: 'capture-processing-release-notification',
+    0x102639d6: 'capture-stop-first-message-event',
+    0x102642a4: 'capture-stop-second-message-event',
+    0x10263820: 'capture-stop-first-aggregate-wait-return',
+    0x102642c6: 'capture-stop-second-aggregate-wait-return',
+    0x10369fc4: 'capture-image-stop-command',
+    0x102e4548: 'capture-image-control-first-wait',
+    0x102e455c: 'capture-image-control-command-check-return',
+    0x102e4570: 'capture-image-control-second-wait',
+    0x102e4574: 'capture-image-control-second-wait-return',
     0x103231b2: 'capture-driver-state-update',
     0x103e6e94: 'capture-state-update',
     0x103b93d0: 'capture-release-stop-entry',
@@ -942,6 +951,8 @@ def snapshot(remote):
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
                        (('driver', 0xb23edde8), ('backend', 0xb21e2654),
                         ('image', 0xb238e654), ('processing', 0xb23ecc80),
+                        ('image-bank0-control', 0xb1d52938),
+                        ('image-bank1-control', 0xb1d52a8c),
                         ('input', 0xb25eeb78), ('image-stage0', 0xb1864a94),
                         ('image-stage0-final', 0xb1864a2c), ('image-stage1', 0xb1864afc),
                         ('image-stage2', 0xb1864bb0))},
@@ -1903,17 +1914,52 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['configuration_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
                 if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                    if pc in (0x102e4548, 0x102e455c, 0x102e4570, 0x102e4574):
+                        keep = keep and record['capture_state'][0] >= 6
+                        if keep:
+                            packet = remote.get(registers, 'r11')
+                            stack = remote.get(registers, 'sp')
+                            record['image_control_wait'] = dict(packet=hex(packet),
+                                saved_flags=hex(int.from_bytes(remote.read(stack + 4, 4), 'little')),
+                                command_kind=int.from_bytes(remote.read(stack + 8, 4), 'little'))
+                            if pc in (0x102e4548, 0x102e4570):
+                                record['image_control_wait'].update(object=hex(remote.get(registers, 'r0')),
+                                    mask=hex(remote.get(registers, 'r1')))
+                            else:
+                                record['image_control_wait']['result'] = remote.get(registers, 'r0')
+                            if 0xb1800000 <= packet <= 0xb5efffe4:
+                                record['image_control_wait']['packet_fields'] = {
+                                    hex(offset): hex(int.from_bytes(remote.read(packet + offset, 4), 'little'))
+                                    for offset in (0xc, 0x10, 0x14, 0x18)}
+                    if pc == 0x10369fc4:
+                        keep = keep and record['capture_state'][0] >= 6
+                        if keep:
+                            pointer = remote.get(registers, 'r0')
+                            if 0xb1800000 <= pointer <= 0xb5effffb:
+                                record['image_stop_bank'] = remote.read(pointer + 4, 1)[0]
                     if pc in (0x103d0df0, 0x103d0e00, 0x103d0eae):
                         keep = keep and record['capture_state'][0] >= 8
                     if pc == 0x103cdb26:
                         keep = keep and remote.get(registers, 'r0') == 0x041b0042
-                    if pc in (0x10264f5c, 0x10265120):
+                    if pc in (0x10264f5c, 0x10265120, 0x102639d6, 0x102642a4,
+                              0x10263820, 0x102642c6):
                         keep = keep and record['capture_state'][0] >= 6
+                    if keep and pc in (0x10263820, 0x102642c6):
+                        record['release_wait'] = dict(result=remote.get(registers, 'r0'),
+                            mask=hex(remote.get(registers, 'r5' if pc == 0x10263820 else 'r4')))
                     if keep and pc in (0x103d0df0, 0x103d0e00, 0x103d0eae,
-                                       0x10264f5c, 0x10265120, 0x103cdb26):
+                                       0x10264f5c, 0x10265120, 0x103cdb26,
+                                       0x102639d6, 0x102642a4, 0x10263820, 0x102642c6):
                         record['processing_release'] = {
                             hex(offset): hex(int.from_bytes(remote.read(0xb1864834 + offset, 4), 'little'))
-                            for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x20, 0x50, 0x54, 0x60)}
+                            for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x1c, 0x20, 0x50, 0x54, 0x60)}
+                        if pc in (0x10264f5c, 0x103d0df0):
+                            record['processing_control_workers'] = [dict(
+                                task=task_wait_snapshot(remote, address),
+                                fields={hex(offset): hex(int.from_bytes(remote.read(address + offset, 4), 'little'))
+                                        for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18, 0x1c,
+                                                       0x20, 0x24, 0x28, 0x2c, 0x14c, 0x150)})
+                                for address in (0xb1d52938, 0xb1d52a8c)]
                     if pc in (0x103d0df0, 0x103d0e00, 0x103d0eae):
                         if keep:
                             pointer = remote.get(registers, 'r4')

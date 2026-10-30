@@ -19,11 +19,14 @@ class InterruptProbe(RegionProbe):
         super().__init__(image)
         self.u.mem_map(0x20380000, 0x80000)
         self.events, self.forwarded, self.classifications, self.acknowledgements = [], [], [], []
+        self.control_writes = []
         self.u.hook_add(UC_HOOK_MEM_WRITE, self.record_write)
 
     def record_write(self, u, access, address, size, value, unused):
         if address in (0x20380024, 0x203c0024):
             self.acknowledgements.append(dict(address=hex(address), bytes=size, value=hex(value)))
+        if address in (0x20380054, 0x20380060, 0x2038006c, 0x20380078, 0x20380084, 0x203800f0):
+            self.control_writes.append(dict(address=hex(address), bytes=size, value=hex(value)))
 
     def boundary(self, u, address, size, unused):
         a, b = u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_R1)
@@ -67,6 +70,11 @@ def probe(image):
             size_308='0x5640396', stride_30c=2080,
             addresses_310_to_34c=[hex(value) for value in actual],
             start_08=1, start_10=1, interrupt_mask_20='0x1402'))
+        native.events.clear()
+        native.call(0x10369fc4 - 0x10020000, device)
+        require(native.word(base + 0xc) == 1 and not native.events,
+                'Original input stop command differs')
+        bindings[-1]['stop_command_0c'] = 1
     cases = []
     for bank, handler, callback in ((0, 0x103699a4, 0x102e468a), (1, 0x10369968, 0x102e4608)):
         status_address = 0x20380024 + bank * 0x40000
@@ -135,6 +143,55 @@ def probe(image):
                 'Original processing-stop event translation differs')
         stop_cases.append(dict(translator=hex(entry), notification=hex(code),
                                events=list(native.events)))
+    stop_ack_cases = []
+    for armed in (0, 1):
+        native.u.mem_write(0xb1801ecc, bytes(16))
+        native.u.mem_write(0xb1801ed4, struct.pack('<I', 0x102e468b))
+        native.u.mem_write(0xb18095c4, bytes(0x60))
+        native.u.mem_write(0xb18095f0, struct.pack('<I', armed))
+        native.u.mem_write(0x20380024, struct.pack('<I', 2))
+        native.events.clear()
+        native.call(0x103699a4 - 0x10020000)
+        expected = [dict(api='0x103854c4', object='0xb1d52938', bits='0x20')] if armed else []
+        require(native.events == expected and native.word(0xb18095f0) == 0,
+                'Original armed processor stop acknowledgement differs')
+        stop_ack_cases.append(dict(armed=armed, status='0x2', events=list(native.events)))
+    native.u.mem_write(device, bytes(8))
+    native.control_writes.clear()
+    native.events.clear()
+    native.call(0x10369fd2 - 0x10020000, device)
+    drain_writes = list(native.control_writes)
+    require(drain_writes == [dict(address=hex(address), bytes=4, value=hex(value))
+                            for address, value in ((0x20380084, 0), (0x203800f0, 0xfc400),
+                                (0x20380054, 1), (0x20380060, 1), (0x2038006c, 1), (0x20380078, 1))]
+            and not native.events, 'Original drain request writes differ')
+    drain_cases = []
+    for scratch in (0, 0x53000000):
+        native.u.mem_write(0xb1801ecc, bytes(16))
+        native.u.mem_write(0xb1801ed4, struct.pack('<I', 0x102e468b))
+        native.u.mem_write(0xb18095c4, bytes(0x60))
+        native.u.mem_write(0xb18095c8, struct.pack('<I', device))
+        native.u.mem_write(0xb1809600, struct.pack('<I', scratch))
+        native.u.mem_write(0xb1809610, struct.pack('<I', 0xffffffff))
+        native.events.clear()
+        rows = []
+        for status in (0x20000, 0x80000, 0x400000, 0x1000000):
+            native.u.mem_write(0x20380024, struct.pack('<I', status))
+            native.call(0x103699a4 - 0x10020000)
+            rows.append(dict(status=hex(status), accumulated=hex(native.word(0xb1809608)),
+                             events=list(native.events)))
+            if status != 0x1000000 or scratch:
+                require(not native.events, 'Incomplete drain generated the worker result')
+        if scratch:
+            require(native.word(0x20380048) == 0x14000e and native.word(0x20380300) == 2 and
+                    native.word(0x2038030c) == 0x20 and native.word(0x20380310) == scratch,
+                    'Original drain scratch profile differs')
+            native.u.mem_write(0x20380024, struct.pack('<I', 2))
+            native.call(0x103699a4 - 0x10020000)
+        require(native.events == [dict(api='0x103854c4', object='0xb1d52938', bits='0x80')],
+                'Original drain acknowledgement differs')
+        drain_cases.append(dict(scratch=hex(scratch), partial_statuses=rows,
+                                result_events=list(native.events)))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         handlers=['0x103699a4', '0x10369968'], interrupt_ids=[99, 100],
         status_addresses=['0x20380024', '0x203c0024'], callbacks=['0x102e468a', '0x102e4608'],
@@ -143,6 +200,10 @@ def probe(image):
                                cases=stage1_cases),
         processing_stop_events=dict(wait_mask='0xb1864854', cases=stop_cases,
             limitation='Synthetic messages with wait mask zero; no aggregate completion or native delivery is supplied'),
+        processor_stop_ack=dict(command='0x10369fc4', address='0x2038000c', value=1,
+            handler='0x103699a4', armed_word='0xb18095f0', cases=stop_ack_cases),
+        processor_drain=dict(command='0x10369fd2', writes=drain_writes, mask='0x14a0000',
+            cases=drain_cases, limitation='Synthetic causes and scratch address; original register programming only, no DMA or hardware completion'),
         input_bindings=dict(control_setter='0x1036a62c', rectangle_setter='0x1036a642',
             addresses_setter='0x1036a672', start_setter='0x10369faa',
             interrupt_mask_setter='0x1036a246', cases=bindings,
