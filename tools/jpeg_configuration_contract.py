@@ -23,6 +23,38 @@ class ConfigurationProbe(EncoderProbe):
         self.writes.append(dict(address=hex(address), bytes=size, value=hex(value)))
 
 
+def source_mapping(native):
+    request, image, output, job, descriptor = [native.DATA + offset for offset in
+                                              (0x2000, 0x2100, 0x2200, 0x2300, 0x2400)]
+    source = bytearray(0x20)
+    source[0] = 1
+    struct.pack_into('<2H', source, 2, 640, 320)
+    struct.pack_into('<2H', source, 0xa, 640, 480)
+    struct.pack_into('<2I', source, 0x14, 0x53000000, 0x53100000)
+    native.u.mem_write(image, bytes(source))
+    native.u.mem_write(output, struct.pack('<3I', 0, 0, 0x53200000))
+    native.u.mem_write(request, struct.pack('<3I', image, output, 0x100000) + bytes(0x34))
+    native.call(0x102b3d14 - 0x10020000, request, 0, job)
+    native.call(0x102e431a - 0x10020000, job, descriptor)
+    native.writes.clear()
+    native.events.clear()
+    native.call(0x103696e4 - 0x10020000, 0xb1801eb4, descriptor)
+    mapping = {0x24073410: 640, 0x24073414: 320,
+               0x24073418: 640, 0x2407341c: 480,
+               0x24073430: 0x53000000, 0x24073434: 0x53100000,
+               0x24073440: 0x53200000, 0x24073458: 0x800}
+    require(all(native.word(address) == value for address, value in mapping.items()),
+            'Original image/job/encoder field route differs')
+    require(not native.events, 'Source configuration manufactured an encoder notification')
+    return dict(image_builder='0x102b3d14', descriptor_builder='0x102e431a',
+        image_fields={'0x2': 640, '0x4': 320, '0xa': 640, '0xc': 480,
+                      '0x14': '0x53000000', '0x18': '0x53100000'},
+        output_descriptor_field_8='0x53200000', request_field_8='0x100000',
+        registers={hex(address): hex(value) for address, value in mapping.items()},
+        interpretation='Image halfwords 2/4 become DMA geometry; image pointers 0x14/0x18 '
+                       'and output descriptor pointer 8 use separate register groups')
+
+
 def check(image):
     native = ConfigurationProbe(image)
     descriptor = native.DATA + 0x200
@@ -82,11 +114,13 @@ def check(image):
         cases.append(dict(scale=scale, header_dimensions=dimensions.hex(),
             registers={hex(address): hex(value) for address, value in mapping.items()},
             configuration_writes=configuration_writes, start_writes=list(native.writes)))
+    source = source_mapping(native)
     return dict(format=1, result='passed', firmware_included=False, master_sha256=MASTER_SHA,
         configure='0x103696e4', start='0x1036991a', current_pointer='0xb1801eb8', cases=cases,
+        source_mapping=source,
         host_boundaries=['supply synthetic descriptors, quantization tables and MMIO storage',
                          'record register writes; no hardware events are supplied'],
-        limitations=['Addresses retain descriptor offsets until input/output roles are verified',
+        limitations=['Synthetic image, output descriptor and request; pixel layout and DMA semantics remain unverified',
                      'No source pixels, encoded bitstream, photo completion or card file are produced'])
 
 

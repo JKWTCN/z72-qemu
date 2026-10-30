@@ -3212,12 +3212,37 @@
       ]
     }
   ],
+  "source_mapping": {
+    "image_builder": "0x102b3d14",
+    "descriptor_builder": "0x102e431a",
+    "image_fields": {
+      "0x2": 640,
+      "0x4": 320,
+      "0xa": 640,
+      "0xc": 480,
+      "0x14": "0x53000000",
+      "0x18": "0x53100000"
+    },
+    "output_descriptor_field_8": "0x53200000",
+    "request_field_8": "0x100000",
+    "registers": {
+      "0x24073410": "0x280",
+      "0x24073414": "0x140",
+      "0x24073418": "0x280",
+      "0x2407341c": "0x1e0",
+      "0x24073430": "0x53000000",
+      "0x24073434": "0x53100000",
+      "0x24073440": "0x53200000",
+      "0x24073458": "0x800"
+    },
+    "interpretation": "Image halfwords 2/4 become DMA geometry; image pointers 0x14/0x18 and output descriptor pointer 8 use separate register groups"
+  },
   "host_boundaries": [
     "supply synthetic descriptors, quantization tables and MMIO storage",
     "record register writes; no hardware events are supplied"
   ],
   "limitations": [
-    "Addresses retain descriptor offsets until input/output roles are verified",
+    "Synthetic image, output descriptor and request; pixel layout and DMA semantics remain unverified",
     "No source pixels, encoded bitstream, photo completion or card file are produced"
   ]
 }
