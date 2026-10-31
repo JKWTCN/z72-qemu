@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Observe the slave compute program loader from reset without changing it."""
+"""Observe compute program upload and parameter DMA completion from reset."""
 import hashlib
 import re
 import struct
@@ -16,13 +16,23 @@ POINTS = {
     0x100593a0: 'compute-program-configure',
     0x10054a80: 'compute-program-configure-return',
     0x10053602: 'compute-init-return',
+    0x1012a910: 'parameter-transfer-entry',
+    0x1012a93c: 'parameter-copy-entry',
+    0x1012a940: 'parameter-copy-return',
+    0x1012a946: 'parameter-base-published',
+    0x100695da: 'memory-worker-return',
+    0x1006970c: 'memory-service-callback',
+    0x100696e2: 'memory-service-wait-return',
 }
 
 
 class CaptureComputeMachine(Machine):
     def _boot_dance(self):
         remote = self.remote
-        self.compute_boot = dict(records=[], initialized=False, synchronized=False)
+        self.compute_boot = dict(records=[], initialized=False, synchronized=False,
+                                 parameter_base_published=False)
+        parameter_entered = False
+        memory_points = {0x100695da, 0x1006970c, 0x100696e2}
         armed = set(POINTS) | {SYNC_WAIT}
         for address in armed:
             remote.breakpoint(address)
@@ -58,7 +68,7 @@ class CaptureComputeMachine(Machine):
                     remote.breakpoint(pc, False)
                     armed.remove(pc)
                 else:
-                    if thread in (3, 4):
+                    if thread in (3, 4) and (parameter_entered or pc not in memory_points):
                         record = dict(entry=POINTS[pc], pc=hex(pc), thread=thread,
                             registers={name: hex(remote.get(registers, name)) for name in
                                 ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'sp', 'lr')},
@@ -82,16 +92,39 @@ class CaptureComputeMachine(Machine):
                                     sha256=hashlib.sha256(data).hexdigest())
                             except ValueError as error:
                                 record['loaded_program_read_error'] = str(error)
+                        if pc == 0x1012a910:
+                            parameter_entered = True
+                            source, length = remote.get(registers, 'r0'), remote.get(registers, 'r1')
+                            record['parameter_bytes'] = length
+                            if 0xb0000000 <= source <= 0xbfffffff - length and length >= 0xbe016:
+                                remote.select_thread(1)
+                                try:
+                                    record['master_parameter_version'] = remote.read(source + 0xbe014, 2).hex()
+                                finally:
+                                    remote.select_thread(thread)
+                        if pc in (0x1012a93c, 0x1012a940):
+                            source = remote.get(registers, 'r1' if pc == 0x1012a93c else 'r6')
+                            target = remote.get(registers, 'r0' if pc == 0x1012a93c else 'r7')
+                            length = remote.get(registers, 'r4')
+                            if (0x40000000 <= source <= 0x4fffffff - length and
+                                    0xc6100000 <= target <= 0xc8200000 - length and length >= 0xbe016):
+                                record['parameter_versions'] = dict(source=hex(source), target=hex(target),
+                                    bytes=length, source_version=remote.read(source + 0xbe014, 2).hex(),
+                                    target_version=remote.read(target + 0xbe014, 2).hex())
+                        if pc == 0x1012a946:
+                            record['parameter_base'] = hex(int.from_bytes(remote.read(0xc1012f28, 4), 'little'))
+                            self.compute_boot['parameter_base_published'] = True
                         self.compute_boot['records'].append(record)
                         if pc == 0x10053602:
                             self.compute_boot['initialized'] = True
                     remote.breakpoint(pc, False)
                     remote.command(f'vCont;s:{thread:x}')
-                    if thread not in (3, 4):
+                    if thread not in (3, 4) or (not parameter_entered and pc in memory_points):
                         remote.breakpoint(pc)
                     else:
                         armed.remove(pc)
-                if self.compute_boot['synchronized'] and self.compute_boot['initialized']:
+                if (self.compute_boot['synchronized'] and self.compute_boot['initialized'] and
+                        self.compute_boot['parameter_base_published']):
                     break
             require(self.compute_boot['synchronized'], 'Compute observation missed startup synchronization')
         finally:
