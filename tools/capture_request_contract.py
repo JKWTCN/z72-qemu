@@ -77,12 +77,20 @@ def check(image):
                 native.word(output) == 1, 'Original control getter differs from its descriptor')
         mode_properties.append(dict(id=hex(property_id), descriptor=hex(record), address=hex(pointer),
                                     getter='0x101017d8', synthetic_value=1, readback=1))
+    program_mapping = []
+    for external, internal in ((1, 3), (2, 0), (3, 2), (4, 1)):
+        require(native.call(0x105032b2 - 0x10020000, 0x119e9004, 11, external) == internal and
+                native.call(0x105032d0 - 0x10020000, 0x119e9004, 11, internal) == external,
+                'Original exposure-program mapping differs')
+        program_mapping.append(dict(external=external, internal=internal))
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=MASTER_SHA, builder='0x10490872', operation='0x100e', cases=cases,
         diagnostic_caller_comparisons=9,
         format_selection=dict(entry='0x103ba934', stop='0x103ba94a',
                               supplied_current_format=3),
         control_properties=mode_properties,
+        exposure_program_mapping=dict(table='0x119e9004', count=11,
+            to_internal='0x105032b2', to_external='0x105032d0', cases=program_mapping),
         format_property=dict(id='0x161a', descriptor=hex(descriptor), address=hex(address),
             getter='0x101017d8', synthetic_value=3, readback=3),
         host_boundaries=['Supply synthetic packet/output and a single-capture mode getter',

@@ -1583,7 +1583,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_capture_events=False, body_input_events=False, body_compute_events=False,
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
-            capture_format_3800=False):
+            capture_format_3800=False, body_exposure=None):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -1672,17 +1672,31 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     capture_work_requests = set()
     capture_work_parameters = {}
     controller_step_trigger_sent = False
+    def arm_capture_input():
+        nonlocal capture_input_path
+        paths = ['/machine/unattached/' + name for name in machine.config_names]
+        capture_input_path = next(path for path in paths if machine.qmp.command(
+            'qom-get', dict(path=path, property='master-role')))
+        for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
+                               CAPTURE_SLAVE_POINTS).items():
+            if address in CAPTURE_SLAVE_INIT_POINTS:
+                continue
+            require(address not in armed, 'Capture input observation overlaps a breakpoint')
+            armed[address] = label
+            remote.breakpoint(address)
     try:
         before = snapshot(remote)
         if body_compute_events:
             before['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:
             before['peer_input'] = peer_input_snapshot(remote)
-        if capture_submit_on_ready:
+        if capture_submit_on_ready or body_exposure is not None:
             from tools.native_capture_caller import NativeCaptureCaller
-            capture_caller = NativeCaptureCaller(remote, exposure=capture_exposure,
+            capture_caller = NativeCaptureCaller(remote,
+                                                 exposure=body_exposure if body_exposure is not None else capture_exposure,
                                                  jpeg=capture_jpeg, storage=capture_storage,
-                                                 format_3800=capture_format_3800)
+                                                 format_3800=capture_format_3800,
+                                                 settings_only=body_exposure is not None)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -1746,10 +1760,29 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     capture_caller.report.get('api_status') not in (None, 0)):
                 capture_caller.report['observation_ended_for_rejection'] = True
                 break
-            if (capture_caller and capture_exposure is not None and
+            if (capture_caller and (capture_exposure is not None or body_exposure is not None) and
                     capture_caller.report['caller_returned'] and
                     not capture_caller.report['settings_fixture']['ready']):
                 break
+            if body_exposure is not None and capture_caller.report['caller_returned'] and not preview_press_sent:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if half_before_full and preview_half_tick is None:
+                    machine.set_key(24, 0)
+                    preview_half_tick = ticks
+                    records.append(dict(entry='body-short-exposure-half-press', counter_ticks=ticks))
+                elif not half_before_full or ticks - preview_half_tick >= before['counter_frequency'] // 2:
+                    if capture_focus:
+                        arm_capture_input()
+                    machine.set_key(25, 0)
+                    preview_press_sent = True
+                    preview_full_tick = ticks
+                    click['press_ticks'] = ticks
+                    capture_caller.report['body_shutter_used'] = True
+                    records.append(dict(entry='body-short-exposure-full-press', counter_ticks=ticks,
+                        release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
+                        half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
+                            if half_before_full else None))
             if capture_focus and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
@@ -1761,10 +1794,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     encoding='utf-8')
                 temporary.replace(checkpoint)
                 checkpointed = time.monotonic()
-            if capture_counter_seconds is not None and capture_caller.report['triggered']:
+            counter_start = (preview_full_tick if body_exposure is not None else
+                capture_caller.report['trigger_counter_ticks']
+                if capture_caller and capture_caller.report['triggered'] else None)
+            if capture_counter_seconds is not None and counter_start is not None:
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                if ticks - capture_caller.report['trigger_counter_ticks'] >= (
+                if ticks - counter_start >= (
                         capture_counter_seconds * before['counter_frequency']):
                     break
             if shutter_click and preview_full_tick is not None and not click['released']:
@@ -1976,16 +2012,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         armed[return_pc] = 'diagnostic-capture-task-return'
                         remote.breakpoint(return_pc)
                     if capture_focus and armed[pc] == 'diagnostic-capture-caller':
-                        paths = ['/machine/unattached/' + name for name in machine.config_names]
-                        capture_input_path = next(path for path in paths if machine.qmp.command(
-                            'qom-get', dict(path=path, property='master-role')))
-                        for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
-                                               CAPTURE_SLAVE_POINTS).items():
-                            if address in CAPTURE_SLAVE_INIT_POINTS:
-                                continue
-                            require(address not in armed, 'Capture input observation overlaps a breakpoint')
-                            armed[address] = label
-                            remote.breakpoint(address)
+                        arm_capture_input()
                 keep = not (pc == 0x10319d88 and remote.get(registers, 'r4') != 0x10326677 or
                             pc == 0x103191c4 and not reconfigure and remote.get(registers, 'r1') != 0x10326677 or
                             pc == 0x103231b2 and remote.get(registers, 'r0') == remote.get(registers, 'r7'))
@@ -2191,7 +2218,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 body_system_armed = True
                                 record['body_system_observation_after_processing_frames'] = completed
                             ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                            if capture_submit_on_ready:
+                            if body_exposure is not None:
+                                if not capture_caller.report['triggered']:
+                                    capture_caller.trigger()
+                                    record['body_settings_after_processing_frames'] = completed
+                            elif capture_submit_on_ready:
                                 idle_preview_seen = True
                                 blocked = capture_caller.blocking_resources() if capture_wait_idle else []
                                 record['capture_pending_resources'] = blocked
@@ -2335,7 +2366,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             following.update(BODY_STATE_POINTS)
                         elif body_capture_events:
                             following.update(BODY_CAPTURE_CONFIGURATION_POINTS)
-                        elif application_only and not (image_work_events or body_capture_events or
+                        elif application_only and not (capture_focus or image_work_events or body_capture_events or
                                                         body_input_events or body_compute_events or body_system_events):
                             following.update(BODY_CONFIGURATION_POINTS)
                         for address, label in following.items():
@@ -2932,7 +2963,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             after['peer_input'] = peer_input_snapshot(remote)
         return dict(before=before, records=records, after=after,
                     sd_host_trace=sd_trace_snapshot(machine),
-                    diagnostic_capture=capture_caller.report if capture_caller else None,
+                    diagnostic_capture=capture_caller.report if capture_submit_on_ready else None,
+                    body_settings=capture_caller.report if body_exposure is not None else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
@@ -2942,8 +2974,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     controller_step_trigger=dict(requested=controller_step_trigger,
                                                  supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
-                        reached=bool(capture_caller.report['triggered'] and
-                            after['counter_ticks'] - capture_caller.report['trigger_counter_ticks'] >=
+                        reached=bool(counter_start is not None and
+                            after['counter_ticks'] - counter_start >=
                             capture_counter_seconds * before['counter_frequency']))
                         if capture_counter_seconds is not None else None),
                     observed_seconds=round(time.monotonic() - started, 3),
@@ -3034,9 +3066,11 @@ def main():
     parser.add_argument('--icount-shift', type=int, default=0,
                         help='Diagnostic virtual nanoseconds per instruction as a power of two (0..6)')
     parser.add_argument('--capture-counter-seconds', type=float,
-                        help='End focused capture observation after this many camera counter seconds from submission')
+                        help='End focused observation this many camera counter seconds after submission or body full-press')
     parser.add_argument('--capture-exposure', type=int,
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
+    parser.add_argument('--body-exposure', type=int,
+                        help='Set local program parameter 0 to 3 and exposure through native APIs before body input')
     capture_formats = parser.add_mutually_exclusive_group()
     capture_formats.add_argument('--capture-jpeg', action='store_true',
                         help='Use the original single-capture format 0x3801 request field')
@@ -3160,14 +3194,18 @@ def main():
     require(args.capture_exposure is None or
             args.capture_submit_on_ready and 0 < args.capture_exposure <= 0xFFFFFFFF,
             'Exposure setting requires the diagnostic caller and a positive 32-bit property value')
+    require(args.body_exposure is None or args.application_only and args.shutter_on_ready and
+            not args.capture_submit_on_ready and 0 < args.body_exposure <= 0xFFFFFFFF,
+            'Body exposure requires readiness-triggered body input and a positive 32-bit property value')
     require(not args.capture_jpeg or args.capture_submit_on_ready,
             'Explicit JPEG format requires the diagnostic capture caller')
     require(not args.capture_format_3800 or args.capture_submit_on_ready,
             'Explicit format 0x3800 requires the diagnostic capture caller')
     require(not args.capture_storage or args.capture_submit_on_ready,
             'Explicit capture storage requires the diagnostic capture caller')
-    require(not args.capture_focus or args.capture_submit_on_ready and not args.reconfigure_watch,
-            'Focused capture requires the diagnostic caller without reconfiguration tracing')
+    require(not args.capture_focus or (args.capture_submit_on_ready or args.body_exposure is not None) and
+            not args.reconfigure_watch,
+            'Focused capture requires a diagnostic capture or body exposure without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
             'Controller step input experiment requires focused capture tracing')
     require(sum((args.trace_primary_allocation_boot, args.trace_capture_resource_boot,
@@ -3305,6 +3343,7 @@ def main():
                                     capture_focus=args.capture_focus,
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
+                                    body_exposure=args.body_exposure,
                                     capture_jpeg=args.capture_jpeg,
                                     capture_format_3800=args.capture_format_3800,
                                     capture_storage=args.capture_storage,

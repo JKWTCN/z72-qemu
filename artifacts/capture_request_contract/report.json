@@ -139,6 +139,30 @@
       "readback": 1
     }
   ],
+  "exposure_program_mapping": {
+    "table": "0x119e9004",
+    "count": 11,
+    "to_internal": "0x105032b2",
+    "to_external": "0x105032d0",
+    "cases": [
+      {
+        "external": 1,
+        "internal": 3
+      },
+      {
+        "external": 2,
+        "internal": 0
+      },
+      {
+        "external": 3,
+        "internal": 2
+      },
+      {
+        "external": 4,
+        "internal": 1
+      }
+    ]
+  },
   "format_property": {
     "id": "0x161a",
     "descriptor": "0x11901804",

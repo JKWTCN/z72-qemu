@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Diagnostic capture caller executed by the native resource-8 service task.
+"""Diagnostic capture or exposure-settings caller on the native resource-8 task.
 
 This supplies a caller, not capture admission, hardware completion or a photo.
 Non-diagnostic operations retain the original callback. All downstream APIs,
 tasks and scheduling are original firmware execution.
+Settings-only mode returns after readback and leaves capture to body inputs.
 """
 import hashlib
 import struct
@@ -80,7 +81,8 @@ POST_SUBMIT_POINTS = {
 }
 
 
-def caller_code(exposure=None):
+def caller_code(exposure=None, settings_only=False):
+    require(not settings_only or exposure is not None, 'Settings caller requires an exposure')
     code, literals, branches, labels = bytearray(), [], [], {}
 
     def emit(value):
@@ -98,11 +100,16 @@ def caller_code(exposure=None):
         emit(0x6000 | (offset // 4 << 6) | (4 << 3))
 
     def set_property(prop, payload, size, result_offset):
-        literal(0, prop)
-        literal(1, payload)
-        emit(0x2200 | size)
-        literal(3, RESULT + 0x48)
-        literal(6, 0x104C8255)    # original typed property setter and gates
+        if settings_only:
+            require(prop == 0x500d, 'Unexpected local settings property')
+            literal(0, payload)
+            literal(6, 0x104D1621)  # original exposure setter and validation
+        else:
+            literal(0, prop)
+            literal(1, payload)
+            emit(0x2200 | size)
+            literal(3, RESULT + 0x48)
+            literal(6, 0x104C8255)    # original typed property setter and gates
         emit(0x47B0)
         store(result_offset)
         literal(5, 0x2001)
@@ -123,42 +130,65 @@ def caller_code(exposure=None):
     emit(0xB510 if exposure is None else 0xB570)  # save r4 / r4-r6 and lr
     literal(4, RESULT)
     if exposure is not None:
+        if settings_only:
+            literal(0, 0x2400)
+            literal(6, 0x10634177)
+            emit(0x47B0)
+            store(0x68)
+            emit(0x2800)
+            jump('return', 1)
         literal(6, 0x10779877)
         emit(0x47B0)
         store(0x50)
         emit(0x2801)
         jump('program_ready', 0)  # do not set an already selected program
-        literal(6, 0x104C18E3)    # original control-mode eligibility check
-        emit(0x47B0)
-        store(0x60)
-        emit(0x2801)
-        jump('return', 1)
-        emit(0x2001)
-        store(0x74)
-        literal(0, 0x040F0004)   # original asynchronous control-mode request
-        literal(1, OBJECT + 0x30)
-        mode_literal = len(literals)
-        literal(2, 0)
-        emit(0x608A)             # str r2,[r1,#8]: diagnostic notification callback
-        literal(6, 0x104C0F21)
-        emit(0x47B0)
-        store(0x64)
-        literal(5, 1000)
-        labels['mode_wait'] = len(code)
-        literal(0, 0x2400)
-        literal(6, 0x10634177)
-        emit(0x47B0)
-        store(0x68)
-        emit(0x2801)
-        jump('mode_ready', 0)
-        emit(0x3D01)
-        jump('return', 0)
-        emit(0x2001)
-        literal(3, 0x103DC539)
-        emit(0x4798)
-        jump('mode_wait')
-        labels['mode_ready'] = len(code)
-        set_property(0x500e, OBJECT + 0x20, 2, 0x40)
+        if settings_only:
+            emit(0x2000)         # local exposure-program parameter
+            emit(0x2103)         # original table: PTP program 1 maps to 3
+            literal(6, 0x10634325)
+            emit(0x47B0)         # original allowed-value validation
+            store(0x4c)
+            emit(0x2801)
+            jump('return', 1)
+            emit(0x2000)
+            emit(0x2103)
+            literal(6, 0x106342DF)
+            emit(0x47B0)         # original parameter setter and propagation
+            store(0x40)
+            emit(0x2800)
+            jump('return', 1)
+        else:
+            literal(6, 0x104C18E3)    # original control-mode eligibility check
+            emit(0x47B0)
+            store(0x60)
+            emit(0x2801)
+            jump('return', 1)
+            emit(0x2001)
+            store(0x74)
+            literal(0, 0x040F0004)   # original asynchronous control-mode request
+            literal(1, OBJECT + 0x30)
+            mode_literal = len(literals)
+            literal(2, 0)
+            emit(0x608A)             # str r2,[r1,#8]: diagnostic notification callback
+            literal(6, 0x104C0F21)
+            emit(0x47B0)
+            store(0x64)
+            literal(5, 1000)
+            labels['mode_wait'] = len(code)
+            literal(0, 0x2400)
+            literal(6, 0x10634177)
+            emit(0x47B0)
+            store(0x68)
+            emit(0x2801)
+            jump('mode_ready', 0)
+            emit(0x3D01)
+            jump('return', 0)
+            emit(0x2001)
+            literal(3, 0x103DC539)
+            emit(0x4798)
+            jump('mode_wait')
+            labels['mode_ready'] = len(code)
+            set_property(0x500e, OBJECT + 0x20, 2, 0x40)
         literal(5, 1000)
         labels['program_wait'] = len(code)
         literal(6, 0x10779877)    # original program property readback
@@ -182,15 +212,17 @@ def caller_code(exposure=None):
         jump('return', 1)
         emit(0x2001)
         store(0x58)              # both properties accepted and read back
-        store(0x5c)              # capture API will now be invoked
-    literal(0, REQUEST)
-    callback_literal = len(literals)
-    literal(1, 0)
-    literal(3, 0x103BA6EB)       # original capture submit
-    emit(0x4798)
-    emit(0x6020)                 # store return status
-    emit(0x2001)
-    emit(0x6060)                 # mark API returned
+        if not settings_only:
+            store(0x5c)          # capture API will now be invoked
+    if not settings_only:
+        literal(0, REQUEST)
+        callback_literal = len(literals)
+        literal(1, 0)
+        literal(3, 0x103BA6EB)   # original capture submit
+        emit(0x4798)
+        emit(0x6020)             # store return status
+        emit(0x2001)
+        emit(0x6060)             # mark API returned
     labels['return'] = len(code)
     return_pc = CODE + len(code)
     emit(0xBD10 if exposure is None else 0xBD70)
@@ -207,7 +239,7 @@ def caller_code(exposure=None):
     emit(0x6120)
     emit(0x2000)
     emit(0xBD10)
-    if exposure is not None:
+    if exposure is not None and not settings_only:
         mode_callback = CODE + len(code)
         literal(3, RESULT + 0x6c)
         emit(0x6018)             # str r0,[r3]
@@ -217,7 +249,8 @@ def caller_code(exposure=None):
         emit(0x2000)
         emit(0x4770)
         literals[mode_literal] = (literals[mode_literal][0], 2, mode_callback | 1)
-    literals[callback_literal] = (literals[callback_literal][0], 1, completion | 1)
+    if not settings_only:
+        literals[callback_literal] = (literals[callback_literal][0], 1, completion | 1)
     for offset, label, condition in branches:
         displacement = (labels[label] - offset - 4) // 2
         require(-128 <= displacement <= 127 if condition is not None else
@@ -239,11 +272,12 @@ def caller_code(exposure=None):
 
 
 class NativeCaptureCaller:
-    def __init__(self, remote, exposure=None, jpeg=False, storage=0, format_3800=False):
+    def __init__(self, remote, exposure=None, jpeg=False, storage=0, format_3800=False,
+                 settings_only=False):
         request_words = capture_request_words(jpeg, storage, format_3800)
         self.remote = remote
         self.exposure = exposure
-        self.code, self.return_pc, completion = caller_code(exposure)
+        self.code, self.return_pc, completion = caller_code(exposure, settings_only)
         self.completion_pc = completion
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
@@ -301,6 +335,12 @@ class NativeCaptureCaller:
                           0x10311498: 'lens-control-response',
                           **POST_SUBMIT_POINTS, **INPUT_LEASE_POINTS, **AUX_IMAGE_POINTS}
         self.points.update(self.ui_points)
+        if settings_only:
+            self.ui_points = {}
+            self.points = {CODE + 6: 'body-exposure-settings-caller',
+                           self.return_pc: 'body-exposure-settings-return',
+                           0x103696e4: 'capture-encoder-configure',
+                           0x1036991a: 'capture-encoder-start'}
         self.ui_hits = {}
         remote.select_thread(1)
         require(self.word(CALLBACK) == ORIGINAL_CALLBACK, 'Unexpected resource-8 callback')
@@ -311,23 +351,30 @@ class NativeCaptureCaller:
         # Original single-capture request; byte 1 selects the requested image
         # format. Byte 2 selects the original slot code, without changing
         # release gates or state.
-        remote.write(REQUEST, struct.pack('<5I', *request_words))
+        if not settings_only:
+            remote.write(REQUEST, struct.pack('<5I', *request_words))
         if exposure is not None:
             remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
             remote.write(OBJECT + 0x30, struct.pack('<3I', 1, 0, 0))
         remote.write(CALLBACK, struct.pack('<I', CODE | 1))
         self.report = dict(caller_fixture=True, triggered=False, caller_entered=False,
                            caller_returned=False, body_shutter_used=False,
+                           settings_only=settings_only,
                            hardware_completion_host_supplied=False,
                            finish_observation_max_contexts=4,
-                           request_words=request_words,
-                           format_request='0x3800' if format_3800 else 'jpeg' if jpeg else 'default',
-                           storage_request=storage,
+                           request_words=None if settings_only else request_words,
+                           format_request=None if settings_only else
+                               '0x3800' if format_3800 else 'jpeg' if jpeg else 'default',
+                           storage_request=None if settings_only else storage,
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         if exposure is not None:
             self.report['settings_fixture'] = dict(program_property='0x500e', program_value=1,
                 exposure_property='0x500d', exposure_value=exposure,
                 setter='0x104c8254', readback_required=True)
+            if settings_only:
+                self.report['settings_fixture'].update(program_property='0x0000', program_value=3,
+                    program_readback_expected=1, program_validator='0x10634324',
+                    program_setter='0x106342de', setter='0x104d1620', control_mode_request=False)
         self.entry_sp = None
         self.native_return = None
         excluded = self.remote.read(0x118FA48B, 40)
