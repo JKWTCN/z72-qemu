@@ -1,0 +1,284 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "initializer": "0x10054a2a",
+  "cases": [
+    {
+      "copy_return": 0,
+      "uploads": [
+        {
+          "source": "0x10834b54",
+          "destination": "0x80300000",
+          "bytes": 161792,
+          "sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
+          "supplied_return": 0,
+          "data_written": true
+        }
+      ],
+      "mmio_accesses": [
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x20"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x40"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281248",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10000000"
+        },
+        {
+          "pc": "0x10067590",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100675ac",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": true,
+          "value": "0xfbffffff"
+        },
+        {
+          "pc": "0x100594a4",
+          "address": "0x24060008",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x100594a8",
+          "address": "0x2406000c",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        },
+        {
+          "pc": "0x100676e6",
+          "address": "0x4280084",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100676ec",
+          "address": "0x4280084",
+          "bytes": 4,
+          "write": true,
+          "value": "0xdfffffff"
+        },
+        {
+          "pc": "0x100593c8",
+          "address": "0x24060000",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x100593ca",
+          "address": "0x24060014",
+          "bytes": 4,
+          "write": true,
+          "value": "0x8030c000"
+        },
+        {
+          "pc": "0x10067272",
+          "address": "0x4281138",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        },
+        {
+          "pc": "0x10067590",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100675ac",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": true,
+          "value": "0xfaffffff"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        }
+      ],
+      "initialized": 1,
+      "events": [
+        {
+          "object": "0xc1007170",
+          "mask": "0x2"
+        }
+      ],
+      "core_reads": []
+    },
+    {
+      "copy_return": 1,
+      "uploads": [
+        {
+          "source": "0x10834b54",
+          "destination": "0x80300000",
+          "bytes": 161792,
+          "sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
+          "supplied_return": 1,
+          "data_written": false
+        }
+      ],
+      "mmio_accesses": [
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x20"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x40"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281248",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10000000"
+        },
+        {
+          "pc": "0x10067590",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100675ac",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": true,
+          "value": "0xfbffffff"
+        },
+        {
+          "pc": "0x100594a4",
+          "address": "0x24060008",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x100594a8",
+          "address": "0x2406000c",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        },
+        {
+          "pc": "0x100676e6",
+          "address": "0x4280084",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100676ec",
+          "address": "0x4280084",
+          "bytes": 4,
+          "write": true,
+          "value": "0xdfffffff"
+        },
+        {
+          "pc": "0x100593c8",
+          "address": "0x24060000",
+          "bytes": 4,
+          "write": true,
+          "value": "0x0"
+        },
+        {
+          "pc": "0x100593ca",
+          "address": "0x24060014",
+          "bytes": 4,
+          "write": true,
+          "value": "0x8030c000"
+        },
+        {
+          "pc": "0x10067272",
+          "address": "0x4281138",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        },
+        {
+          "pc": "0x10067590",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": false
+        },
+        {
+          "pc": "0x100675ac",
+          "address": "0x4281058",
+          "bytes": 4,
+          "write": true,
+          "value": "0xfaffffff"
+        },
+        {
+          "pc": "0x1006723a",
+          "address": "0x4281238",
+          "bytes": 4,
+          "write": true,
+          "value": "0x10"
+        }
+      ],
+      "initialized": 1,
+      "events": [
+        {
+          "object": "0xc1007170",
+          "mask": "0x2"
+        }
+      ],
+      "core_reads": []
+    }
+  ],
+  "host_boundaries": [
+    "Resource initialization and uncontended lock operations return zero",
+    "Upload boundary copies the actual payload for return zero; return one writes nothing",
+    "Record the original event notification without scheduling tasks",
+    "Plain MMIO fixture storage; no processor or hardware side effects"
+  ],
+  "limitations": [
+    "Software initialization is set even when the supplied upload return is one",
+    "This contract does not execute the uploaded program or produce a mailbox reply",
+    "Control-bit writes alone do not identify the processor architecture or prove execution"
+  ]
+}

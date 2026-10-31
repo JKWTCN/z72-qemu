@@ -3263,6 +3263,43 @@ static char *boot_config_input_trace_get(Object *obj, Error **errp)
     return g_string_free(text, false);
 }
 
+/* Inspect the existing controller without MMIO reads, which need a running
+ * CPU context for its banked registers. This does not acknowledge an IRQ. */
+static char *boot_config_compute_interrupts_get(Object *obj, Error **errp)
+{
+    NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
+    GString *text = g_string_new("{");
+
+    if (s->intc) {
+        GICState *gic = ARM_GIC(s->intc);
+
+        g_string_append_printf(text, "\"distributor_control\":%u,\"cpus\":[",
+                               gic->ctlr);
+        for (unsigned cpu = 0; cpu < gic->num_cpu; cpu++) {
+            g_string_append_printf(text,
+                "%s{\"index\":%u,\"control\":%u,\"priority_mask\":%u}",
+                cpu ? "," : "", cpu, gic->cpu_ctlr[cpu],
+                gic->priority_mask[cpu]);
+        }
+        g_string_append(text, "],\"interrupts\":[");
+        for (unsigned intid = 227; intid <= 229; intid++) {
+            const gic_irq_state *irq = &gic->irq_state[intid];
+
+            g_string_append_printf(text,
+                "%s{\"intid\":%u,\"enabled\":%u,\"pending\":%u,"
+                "\"active\":%u,\"level\":%u,\"target_cpus\":%u,"
+                "\"priority\":%u,\"group\":%u,\"edge_trigger\":%s}",
+                intid == 227 ? "" : ",", intid, irq->enabled, irq->pending,
+                irq->active, irq->level, gic->irq_target[intid],
+                gic->priority2[intid - GIC_INTERNAL], irq->group,
+                irq->edge_trigger ? "true" : "false");
+        }
+        g_string_append_c(text, ']');
+    }
+    g_string_append_c(text, '}');
+    return g_string_free(text, false);
+}
+
 static void boot_config_init(Object *obj)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
@@ -3302,6 +3339,8 @@ static void boot_config_init(Object *obj)
                                    OBJ_PROP_FLAG_READ);
     object_property_add_str(obj, "input-trace-log",
                             boot_config_input_trace_get, NULL);
+    object_property_add_str(obj, "compute-interrupt-state",
+                            boot_config_compute_interrupts_get, NULL);
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
     qdev_init_gpio_in_named(DEVICE(obj), engine_gpio_input, "gpio-input", 16);

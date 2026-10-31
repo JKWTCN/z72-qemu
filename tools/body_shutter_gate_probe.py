@@ -988,7 +988,7 @@ def sd_trace_snapshot(machine):
         scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
 
 
-def peer_input_snapshot(remote, resume_thread=1):
+def peer_input_snapshot(remote, resume_thread=1, machine=None):
     result = dict(thread=3, controls={}, banks=[])
     remote.select_thread(3)
     try:
@@ -1021,6 +1021,12 @@ def peer_input_snapshot(remote, resume_thread=1):
         compute['clock_words'] = {hex(offset): hex(word(0x04281000 + offset))
                                   for offset in (0x20, 0x28, 0x30, 0x34, 0x58, 0x5c)}
         compute['gate_125_word'] = hex(word(0x04280084))
+        if machine is not None:
+            paths = ['/machine/unattached/' + name for name in machine.config_names]
+            path = next(path for path in paths if not machine.qmp.command(
+                'qom-get', dict(path=path, property='master-role')))
+            compute['interrupt_controller'] = json.loads(machine.qmp.command(
+                'qom-get', dict(path=path, property='compute-interrupt-state')))
         engine = word(0xc1006408)
         compute['engine'] = hex(engine)
         if 0xc1000000 <= engine <= 0xc81fffec:
@@ -1689,7 +1695,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if body_compute_events:
             before['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:
-            before['peer_input'] = peer_input_snapshot(remote)
+            before['peer_input'] = peer_input_snapshot(remote, machine=machine)
         if capture_submit_on_ready or body_exposure is not None:
             from tools.native_capture_caller import NativeCaptureCaller
             capture_caller = NativeCaptureCaller(remote,
@@ -2004,7 +2010,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
                 if capture_focus and pc == 0x1023938c:
-                    record['peer_input'] = peer_input_snapshot(remote, thread)
+                    record['peer_input'] = peer_input_snapshot(remote, thread, machine)
                 if capture_caller:
                     return_pc = capture_caller.observe(pc, registers)
                     if return_pc is not None:
@@ -2960,7 +2966,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if body_compute_events:
             after['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:
-            after['peer_input'] = peer_input_snapshot(remote)
+            after['peer_input'] = peer_input_snapshot(remote, machine=machine)
         return dict(before=before, records=records, after=after,
                     sd_host_trace=sd_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_submit_on_ready else None,
