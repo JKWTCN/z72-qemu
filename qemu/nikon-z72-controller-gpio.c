@@ -16,6 +16,7 @@ struct Z72ControllerGPIO {
     uint16_t connected;
     qemu_irq outputs[16];
     qemu_irq pads[16];
+    qemu_irq active_low_inputs[16];
     qemu_irq alternate2[16];
     qemu_irq alternate1[16];
 };
@@ -55,6 +56,10 @@ static void gpio_update(Z72ControllerGPIO *s)
         qemu_set_irq(s->alternate1[pin], mode == 2 && function == 1);
         qemu_set_irq(s->outputs[pin], !!(levels & (1u << pin)));
         qemu_set_irq(s->pads[pin], !!(pads & (1u << pin)));
+        /* External contacts are independent of firmware pad configuration.
+         * Undriven means open; only an explicitly driven low closes one. */
+        qemu_set_irq(s->active_low_inputs[pin],
+                     !!(s->connected & ~s->inputs & (1u << pin)));
     }
 }
 
@@ -148,6 +153,8 @@ static void gpio_init(Object *obj)
     qdev_init_gpio_in(DEVICE(s), gpio_input, 16);
     qdev_init_gpio_out(DEVICE(s), s->outputs, 16);
     qdev_init_gpio_out_named(DEVICE(s), s->pads, "pad", 16);
+    qdev_init_gpio_out_named(DEVICE(s), s->active_low_inputs,
+                            "active-low-input", 16);
     qdev_init_gpio_out_named(DEVICE(s), s->alternate2, "alternate-2-enable", 16);
     qdev_init_gpio_out_named(DEVICE(s), s->alternate1, "alternate-1-enable", 16);
 }

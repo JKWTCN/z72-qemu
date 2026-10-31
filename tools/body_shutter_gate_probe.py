@@ -1122,6 +1122,27 @@ def card_admission_snapshot(remote):
     return result
 
 
+def engine_release_gpio_snapshot(remote, resume_thread=1):
+    """Observe the main engine's independent release input descriptors."""
+    remote.select_thread(1)
+    try:
+        def word(address):
+            return int.from_bytes(remote.read(address, 4), 'little')
+        contacts = []
+        for name, resource in (('half', 0x58), ('full', 0x59)):
+            descriptor = 0xb180249c + resource * 56
+            contacts.append(dict(contact=name, resource=resource, descriptor=hex(descriptor),
+                intid=word(descriptor + 0x28),
+                edge_mode=remote.read(descriptor + 0x34, 1)[0],
+                callback=hex(word(descriptor + 0x30))))
+        return dict(gpio=hex(word(0x04282014)),
+            mask=hex(word(0x0426f000)), pending=hex(word(0x0426f008)),
+            polarity=hex(word(0x0426f014)), contacts=contacts,
+            state=[hex(value) for value in struct.unpack('<13I', remote.read(0xb18698cc, 52))])
+    finally:
+        remote.select_thread(resume_thread)
+
+
 def controller_release_irq_snapshot(remote, resume_thread=1):
     """Read native body-contact GPIO/EXTI bindings without acknowledging IRQs."""
     remote.select_thread(5)
@@ -1198,6 +1219,7 @@ def snapshot(remote):
             struct.unpack('<4I', remote.read(lens_descriptor, 16))]
     remote.select_thread(1)
     lens_detection['master_connection'] = remote.read(0xB188A27A, 1)[0]
+    engine_release_gpio = engine_release_gpio_snapshot(remote)
     resources = {}
     for index in (11, 71, 80):
         row = 0xb185eb70 + index * 28
@@ -1331,6 +1353,7 @@ def snapshot(remote):
         application=dict(initialized=int.from_bytes(manager[:4], 'little'),
                          current=manager[16], requested=manager[17], state=manager[24]),
         engine_inputs=engines, lens_detection=lens_detection,
+        engine_release_gpio=engine_release_gpio,
         controller_capture=controller_capture,
         resources=resources, capture_readiness=readiness, cores=cores,
         capture_tasks={name: task_wait_snapshot(remote, task) for name, task in
@@ -1618,6 +1641,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       0x1038848a: 'primary-input-remap-request'})
     if application_only or capture_focus:
         armed.update({0x103ba6ea: 'body-native-capture-api',
+                      0x1022aaae: 'body-release-engine-gpio-callback',
                       0x103ba164: 'body-native-capture-release',
                       0x103f36fa: 'body-operation59-api',
                       0x103f19c0: 'body-operation59-task',
@@ -2290,6 +2314,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     if keep and pc == 0x10319d88:
                         record['queue_words'] = [hex(value) for value in struct.unpack(
                             '<5I', remote.read(0xb23ede14, 20))]
+                if pc == 0x1022aaae:
+                    record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 16
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
@@ -2297,6 +2325,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record.update(action=hex(action), full_press=full)
                     if action in (0x13, 0x14):
                         record['controller_release_irq'] = controller_release_irq_snapshot(remote, thread)
+                        record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
                     repeat = action != 0x1a if playback else not (full and action == 0x14)
                     if not repeat:
                         record['switch_words'] = [hex(x) for x in struct.unpack(

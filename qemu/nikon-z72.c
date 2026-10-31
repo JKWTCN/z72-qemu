@@ -879,8 +879,9 @@ static void controller_update_irqs(NikonZ72BootConfig *s)
 
 /* C 1.70's GPIO descriptors map interrupt inputs 0..8 to GPIO word
  * 0x04282014 bits 7..15, and 9..15 to 0x04282018 bits 0..6.
- * The connected controller already drives inputs 2 and 3. Other inputs
- * are external laboratory pins; no output-to-input loopback is assumed. */
+ * The connected controller drives inputs 2 and 3. Its body contacts also
+ * drive inputs 4 and 5 through the board wiring below. No firmware output
+ * is looped back into these external inputs. */
 static void engine_gpio_input(void *opaque, int line, int level)
 {
     NikonZ72BootConfig *s = opaque;
@@ -4415,6 +4416,16 @@ static void nikon_z72_dual_init(MachineState *machine)
                                     ARM_CPU_TYPE_NAME("cortex-m4"), s->controller_firmware);
         if (s->controller_link) {
             master_boot->controller_connected = true;
+            /* C1.70 0x1022c010 binds half/full to resources 0x58/0x59,
+             * inputs 4/5, INTIDs 69/70. 0x1022aaae qualifies full with
+             * half held, high meaning closed. Functional wiring hypothesis:
+             * the same body contacts also feed the controller's G1/G13. */
+            qdev_connect_gpio_out_named(s->controller_inputs.gpio[6],
+                "active-low-input", 1,
+                qdev_get_gpio_in_named(master_config, "gpio-input", 4));
+            qdev_connect_gpio_out_named(s->controller_inputs.gpio[6],
+                "active-low-input", 13,
+                qdev_get_gpio_in_named(master_config, "gpio-input", 5));
             qdev_connect_gpio_out_named(master_config, "controller-ack", 0,
                 qdev_get_gpio_in(s->controller_inputs.gpio[6], 6));
             if (s->controller_step_link) {
