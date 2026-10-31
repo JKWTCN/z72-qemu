@@ -1069,6 +1069,26 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
             job = dict(request=hex(request), parameters=hex(parameters), table=hex(table),
                        completion=hex(word(request + 0x2c8)), stage_states=states,
                        stage_indices=indices, active_stages=[])
+            if 0xc1000000 <= parameters <= 0xc81ffff0:
+                context = word(parameters + 0xc)
+                if 0xc1000000 <= context <= 0xc81ffb08:
+                    fields = {hex(offset): hex(word(context + offset))
+                              for offset in (0x310, 0x404, 0x4f4)}
+                    job['capture_context'] = dict(address=hex(context), fields=fields,
+                                                  referenced_headers=[])
+                    for offset in (0x310, 0x404):
+                        pointer = int(fields[hex(offset)], 16)
+                        if 0xc1000000 <= pointer <= 0xc81fffc0:
+                            job['capture_context']['referenced_headers'].append(dict(
+                                field=hex(offset), address=hex(pointer), words=[hex(value)
+                                    for value in struct.unpack('<16I', remote.read(pointer, 64))]))
+                    nested = int(fields['0x4f4'], 16)
+                    if 0xc1000000 <= nested <= 0xc81fd480:
+                        job['capture_context']['nested'] = dict(address=hex(nested),
+                            bytes={hex(offset): remote.read(nested + offset, 1)[0]
+                                   for offset in (0x2898, 0x2b79, 0x2b7b, 0x2b7c)},
+                            result_halfwords=list(struct.unpack('<3H',
+                                remote.read(nested + 0x1e08, 6))))
             if 0xc1000000 <= table <= 0xc81ffd6c:
                 entries = struct.unpack('<165I', remote.read(table, 660))
                 for stage, state in enumerate(states):
