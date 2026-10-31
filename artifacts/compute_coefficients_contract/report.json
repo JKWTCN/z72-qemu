@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "entry": "0x101623c2",
+  "selector": "0x1016223a",
+  "cases": [
+    {
+      "name": "full",
+      "metadata_hex": "0002060000010200000000000000000000000000ffff0000000000000000000000000000",
+      "source_offset": "0xdb7d0",
+      "source_bytes": 1808,
+      "banks": 6,
+      "rows": 21,
+      "columns": 10,
+      "bank_stride": 896,
+      "row_stride": 40,
+      "bytes_written": 5040,
+      "output_sha256": "53ba0bb28cd2e4545a600896ca92eb6fa3a6d71ed12dc79c8a2652d25f9b2577",
+      "signed_byte_rows": 12,
+      "signed_halfword_rows": 9,
+      "guards_preserved": true,
+      "unwritten_fields_preserved": true
+    },
+    {
+      "name": "six-columns",
+      "metadata_hex": "0500020000010000000000000000000000000000ffff0000000000000000000000000000",
+      "source_offset": "0xe31a0",
+      "source_bytes": 1088,
+      "banks": 6,
+      "rows": 21,
+      "columns": 6,
+      "bank_stride": 896,
+      "row_stride": 40,
+      "bytes_written": 3024,
+      "output_sha256": "3b218f303781ba442d50e4f038bc0c3b35fc7d012fbadf4fe9c17c92812d6bb5",
+      "signed_byte_rows": 12,
+      "signed_halfword_rows": 9,
+      "guards_preserved": true,
+      "unwritten_fields_preserved": true
+    },
+    {
+      "name": "two-columns",
+      "metadata_hex": "0500000000010000000000000000000000000000ffff0000000000000000000000000000",
+      "source_offset": "0xe5cb0",
+      "source_bytes": 368,
+      "banks": 6,
+      "rows": 21,
+      "columns": 2,
+      "bank_stride": 896,
+      "row_stride": 40,
+      "bytes_written": 1008,
+      "output_sha256": "d510ea62dfa50418034cd23d36b6c59ca2dafafa504a88f0e4066a725d2903bd",
+      "signed_byte_rows": 12,
+      "signed_halfword_rows": 9,
+      "guards_preserved": true,
+      "unwritten_fields_preserved": true
+    }
+  ],
+  "host_boundaries": [
+    "Synthetic metadata, signed source tables, output storage and stack",
+    "Address translation is identity for synthetic RAM; cache maintenance is recorded"
+  ],
+  "limitations": [
+    "Only three default-source branches with signed halfword at metadata +20 equal to -1",
+    "Interpolation, other metadata branches and real calibration contents remain unverified",
+    "No compute program, RAW pixel algorithm, result reply or photograph is produced"
+  ]
+}
