@@ -27,7 +27,8 @@ def run(qemu):
             remote.write(0xc6313cc0, master_guard)
             for source in (0xc1000010, 0xc144d5c0, 0xc3f00000,
                            0xc5b9f300, 0xc60f0000, 0xc6100000,
-                           0xc6313cc0, 0xc81ffff8, 0xc8200000, 0xc88ffff8):
+                           0xc6313cc0, 0xc81ffff8, 0xc8200000, 0xc88ffff8,
+                           0xc8900000, 0xc91d2200, 0xc9d12200, 0xca7121f8):
                 bus = source - 0x80000000
                 words = (source ^ 0x12345678, source ^ 0x87654321)
                 remote.select_thread(3)
@@ -56,8 +57,22 @@ def run(qemu):
                     require(remote.read(source, 8) == master_guard,
                             'Slave runtime arena bus store did not update local storage')
             require(remote.command('m17200000,4').startswith('E') and
-                    remote.command('mc8900000,4').startswith('E'),
-                    'Slave arena bus alias or code cache extends beyond its boundary')
+                    remote.command('mca712200,4').startswith('E'),
+                    'Slave arena bus alias or processing scratch extends beyond its boundary')
+            remote.select_thread(1)
+            remote.write(0x80800000, master_guard)
+            remote.select_thread(3)
+            for address in (0x80800000, 0x8146b400, 0x8384f5f8):
+                remote.write(address, b'slaveRAM')
+                require(remote.read(address, 8) == b'slaveRAM',
+                        'Slave processing output storage boundary differs')
+            require(remote.command('m807ffffc,4').startswith('E') and
+                    remote.command('m8384f600,4').startswith('E'),
+                    'Slave processing output storage exceeds its initialization record')
+            remote.select_thread(1)
+            require(remote.read(0x80800000, 8) == master_guard,
+                    'Slave processing output replaced the master local pool')
+            remote.select_thread(3)
             # The native compute initializer saves code through channel 0.
             # Verify real bytes and guards in the separate cache, then reject
             # a transfer to the still-unmapped arena bus endpoint.
@@ -143,7 +158,7 @@ def run(qemu):
             require(remote.get(regs, 'pc') == 0x10 and
                     remote.get(regs, 'cpsr') & 0x1f == 0x17,
                     'Peer alias filled an unmapped RAM gap')
-            print('PASS peer ownership, RAM gaps, slave code-cache and compute program uploads')
+            print('PASS peer ownership, RAM gaps, processing pools, slave code-cache and compute program uploads')
         finally:
             if remote is not None:
                 remote.sock.close()

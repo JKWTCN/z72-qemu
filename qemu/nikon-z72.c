@@ -640,6 +640,9 @@ struct NikonZ72BootConfig {
     uint32_t aux_image_reference_heights[2];
     uint8_t aux_image_references[2 * AUX_IMAGE_MAX_PIXELS];
     uint64_t aux_image_process_count;
+    MemoryRegion sflt_ram;
+    uint32_t sflt_registers[0x1000 / 4];
+    uint32_t sflt_levels;
     MemoryRegion dbi_ram;
     MemoryRegion sd_config_ram;
     MemoryRegion sd_clock_status;
@@ -1042,6 +1045,62 @@ static void aux_image_write(void *opaque, hwaddr offset,
 static const MemoryRegionOps aux_image_ops = {
     .read = aux_image_read,
     .write = aux_image_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
+static void sflt_update_irq(NikonZ72BootConfig *s)
+{
+    if (s->intc && s->release_config) {
+        uint32_t pending = s->sflt_registers[0x20 / 4] &
+                           s->sflt_registers[0x2c / 4];
+        qemu_set_irq(qdev_get_gpio_in(s->intc, 124 - 32), pending != 0);
+    }
+}
+
+static void sflt_event(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint32_t bit = 1u << line;
+
+    if (!s->release_config) {
+        return;
+    }
+    if (level && !(s->sflt_levels & bit)) {
+        s->sflt_registers[0x2c / 4] |= bit;
+    }
+    if (level) {
+        s->sflt_levels |= bit;
+    } else {
+        s->sflt_levels &= ~bit;
+    }
+    sflt_update_irq(s);
+}
+
+static uint64_t sflt_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    return s->sflt_registers[offset / 4];
+}
+
+static void sflt_write(void *opaque, hwaddr offset, uint64_t value, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    if (offset == 0x2c) {
+        s->sflt_registers[offset / 4] &= ~(uint32_t)value;
+    } else {
+        s->sflt_registers[offset / 4] = value;
+    }
+    /* Configuration and start do not consume the DMA program or create
+     * pixels. A processing backend must supply a cause after doing that work. */
+    sflt_update_irq(s);
+}
+
+static const MemoryRegionOps sflt_ops = {
+    .read = sflt_read,
+    .write = sflt_write,
     .endianness = DEVICE_LITTLE_ENDIAN,
     .valid = { .min_access_size = 4, .max_access_size = 4 },
     .impl = { .min_access_size = 4, .max_access_size = 4 },
@@ -3166,6 +3225,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->aux_image_references, 0, sizeof(s->aux_image_references));
     s->aux_image_process_count = 0;
     aux_image_update_irq(s);
+    memset(s->sflt_registers, 0, sizeof(s->sflt_registers));
+    s->sflt_levels = 0;
+    sflt_update_irq(s);
     s->auto_sample_level = false;
     timer_del(s->frame_sync_timer);
     s->frame_sync_count = 0;
@@ -3235,6 +3297,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     sync_update_irqs(s);
     sd_update_irq(s);
     aux_image_update_irq(s);
+    sflt_update_irq(s);
     image_update_irqs(s);
     compute_mailbox_update_irqs(s);
     if (s->intc) {
@@ -3251,8 +3314,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 51,
-    .minimum_version_id = 51,
+    .version_id = 52,
+    .minimum_version_id = 52,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -3281,6 +3344,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(aux_image_reference_heights, NikonZ72BootConfig, 2),
         VMSTATE_UINT8_ARRAY(aux_image_references, NikonZ72BootConfig, 2 * AUX_IMAGE_MAX_PIXELS),
         VMSTATE_UINT64(aux_image_process_count, NikonZ72BootConfig),
+        VMSTATE_UINT32_ARRAY(sflt_registers, NikonZ72BootConfig, 0x1000 / 4),
+        VMSTATE_UINT32(sflt_levels, NikonZ72BootConfig),
         VMSTATE_BOOL(auto_sample_level, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_counter, NikonZ72BootConfig),
         VMSTATE_BOOL(sample_group1, NikonZ72BootConfig),
@@ -3438,6 +3503,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), engine_gpio_input, "gpio-input", 16);
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
     qdev_init_gpio_in_named(DEVICE(obj), aux_image_event, "aux-image-event", 8);
+    qdev_init_gpio_in_named(DEVICE(obj), sflt_event, "sflt-event", 32);
     qdev_init_gpio_in_named(DEVICE(obj), sync_event, "sync-event", 11 + 32);
     qdev_init_gpio_in_named(DEVICE(obj), frame_sync_enable, "frame-sync-enable", 1);
     qdev_init_gpio_in_named(DEVICE(obj), auto_sample_event, "auto-sample-event", 1);
@@ -3491,6 +3557,9 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                               "z72-auxiliary-image", 0x200);
         memory_region_add_subregion_overlap(root, 0x20201000,
                                             &s->aux_image_ram, 1);
+        memory_region_init_io(&s->sflt_ram, OBJECT(dev), &sflt_ops, s,
+                              "z72-sflt", 0x1000);
+        memory_region_add_subregion_overlap(root, 0x20203000, &s->sflt_ram, 1);
         /* Configuration readback and banked translation descriptors only;
          * this block does not create a link, an endpoint or DMA completion. */
         memory_region_init_io(&s->dbi_ram, OBJECT(dev), &dbi_ops, s,

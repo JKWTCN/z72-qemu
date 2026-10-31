@@ -1,0 +1,1302 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "name": "SFLT",
+  "registers": "0x20203000",
+  "registration": [
+    {
+      "intid": 124,
+      "handler": "0x1009a491"
+    }
+  ],
+  "resource_registration": [
+    {
+      "identifier": "0x111",
+      "object": "0xc100156c"
+    }
+  ],
+  "configuration_writes": [
+    {
+      "address": "0x20203000",
+      "bytes": 4,
+      "value": "0x1"
+    },
+    {
+      "address": "0x20203000",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x20203044",
+      "bytes": 4,
+      "value": "0x1"
+    },
+    {
+      "address": "0x2020304c",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x20203050",
+      "bytes": 4,
+      "value": "0x1"
+    },
+    {
+      "address": "0x2020305c",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x2020306c",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x2020308c",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x20203020",
+      "bytes": 4,
+      "value": "0x3c8d"
+    },
+    {
+      "address": "0x20203024",
+      "bytes": 4,
+      "value": "0x0"
+    }
+  ],
+  "start_writes": [
+    {
+      "address": "0x20203004",
+      "bytes": 4,
+      "value": "0x1"
+    }
+  ],
+  "handler": "0x1009a490",
+  "service_callback": "0x100b4b62",
+  "cases": [
+    {
+      "status": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x2020302c",
+          "bytes": 4,
+          "value": "0x0"
+        }
+      ],
+      "reset_writes": [],
+      "callbacks": [
+        {
+          "notification": "0x41052c01",
+          "configuration": "0x50001000",
+          "status": "0x0"
+        }
+      ],
+      "service_events": []
+    },
+    {
+      "status": "0x1",
+      "acknowledgements": [
+        {
+          "address": "0x2020302c",
+          "bytes": 4,
+          "value": "0x1"
+        }
+      ],
+      "reset_writes": [
+        1,
+        0
+      ],
+      "callbacks": [
+        {
+          "notification": "0x41052c01",
+          "configuration": "0x50001000",
+          "status": "0x1"
+        }
+      ],
+      "service_events": [
+        {
+          "object": "0xc1486dac",
+          "mask": "0x4"
+        }
+      ]
+    },
+    {
+      "status": "0x400",
+      "acknowledgements": [
+        {
+          "address": "0x2020302c",
+          "bytes": 4,
+          "value": "0x400"
+        }
+      ],
+      "reset_writes": [
+        1,
+        0
+      ],
+      "callbacks": [
+        {
+          "notification": "0x41052c01",
+          "configuration": "0x50001000",
+          "status": "0x400"
+        }
+      ],
+      "service_events": [
+        {
+          "object": "0xc1486dac",
+          "mask": "0x2"
+        }
+      ]
+    },
+    {
+      "status": "0x401",
+      "acknowledgements": [
+        {
+          "address": "0x2020302c",
+          "bytes": 4,
+          "value": "0x401"
+        }
+      ],
+      "reset_writes": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "callbacks": [
+        {
+          "notification": "0x41052c01",
+          "configuration": "0x50001000",
+          "status": "0x401"
+        }
+      ],
+      "service_events": [
+        {
+          "object": "0xc1486dac",
+          "mask": "0x2"
+        },
+        {
+          "object": "0xc1486dac",
+          "mask": "0x4"
+        }
+      ]
+    },
+    {
+      "status": "0x80",
+      "acknowledgements": [
+        {
+          "address": "0x2020302c",
+          "bytes": 4,
+          "value": "0x80"
+        }
+      ],
+      "reset_writes": [],
+      "callbacks": [
+        {
+          "notification": "0x41052c01",
+          "configuration": "0x50001000",
+          "status": "0x80"
+        }
+      ],
+      "service_events": []
+    }
+  ],
+  "program_cases": [
+    {
+      "image_format": 2,
+      "packed_mode": 2,
+      "dimensions": [
+        128,
+        32
+      ],
+      "stride": 256,
+      "bytes": 448,
+      "record_count": 4,
+      "header_words": [
+        "0x2",
+        "0x100",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            128,
+            32
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91000900",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            8,
+            2
+          ],
+          "addresses": [
+            "0x93000700",
+            "0x92000000",
+            "0x0",
+            "0x0",
+            "0x93000900",
+            "0x0",
+            "0x93000b00"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x91000900",
+            "0x93000900",
+            "0x93000b00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    },
+    {
+      "image_format": 3,
+      "packed_mode": 0,
+      "dimensions": [
+        128,
+        32
+      ],
+      "stride": 256,
+      "bytes": 448,
+      "record_count": 4,
+      "header_words": [
+        "0x0",
+        "0x100",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            128,
+            32
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91000900",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            8,
+            2
+          ],
+          "addresses": [
+            "0x93000700",
+            "0x92000000",
+            "0x0",
+            "0x0",
+            "0x93000900",
+            "0x0",
+            "0x93000b00"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x91000900",
+            "0x93000900",
+            "0x93000b00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    },
+    {
+      "image_format": 4,
+      "packed_mode": 1,
+      "dimensions": [
+        128,
+        32
+      ],
+      "stride": 256,
+      "bytes": 448,
+      "record_count": 4,
+      "header_words": [
+        "0x1",
+        "0x100",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            128,
+            32
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91000900",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            8,
+            2
+          ],
+          "addresses": [
+            "0x93000700",
+            "0x92000000",
+            "0x0",
+            "0x0",
+            "0x93000900",
+            "0x0",
+            "0x93000b00"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            16,
+            4
+          ],
+          "addresses": [
+            "0x91000900",
+            "0x93000900",
+            "0x93000b00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    },
+    {
+      "image_format": 2,
+      "packed_mode": 2,
+      "dimensions": [
+        8288,
+        5520
+      ],
+      "stride": 16576,
+      "bytes": 1088,
+      "record_count": 12,
+      "header_words": [
+        "0x2",
+        "0x40c0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            8288,
+            5520
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91024700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93317a00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x93031600",
+            "0x0"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93102d00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 4,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93137800",
+            "0x0"
+          ]
+        },
+        {
+          "index": 5,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93144200",
+            "0x0",
+            "0x93145000",
+            "0x0"
+          ]
+        },
+        {
+          "index": 6,
+          "dimensions": [
+            33,
+            22
+          ],
+          "addresses": [
+            "0x93145000",
+            "0x93144200",
+            "0x0",
+            "0x0",
+            "0x93148500",
+            "0x0",
+            "0x9314ba00"
+          ]
+        },
+        {
+          "index": 7,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x93137800",
+            "0x93148500",
+            "0x9314ba00",
+            "0x0",
+            "0x9314c400",
+            "0x0",
+            "0x93158e00"
+          ]
+        },
+        {
+          "index": 8,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x93102d00",
+            "0x9314c400",
+            "0x93158e00",
+            "0x0",
+            "0x9315b200",
+            "0x0",
+            "0x9318c800"
+          ]
+        },
+        {
+          "index": 9,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x93031600",
+            "0x9315b200",
+            "0x9318c800",
+            "0x0",
+            "0x93195000",
+            "0x0",
+            "0x93259d00"
+          ]
+        },
+        {
+          "index": 10,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x93317a00",
+            "0x93195000",
+            "0x93259d00",
+            "0x0",
+            "0x93313100",
+            "0x0",
+            "0x9327af00"
+          ]
+        },
+        {
+          "index": 11,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x91024700",
+            "0x93313100",
+            "0x9327af00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    },
+    {
+      "image_format": 3,
+      "packed_mode": 0,
+      "dimensions": [
+        8288,
+        5520
+      ],
+      "stride": 16576,
+      "bytes": 1088,
+      "record_count": 12,
+      "header_words": [
+        "0x0",
+        "0x40c0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            8288,
+            5520
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91024700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93317a00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x93031600",
+            "0x0"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93102d00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 4,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93137800",
+            "0x0"
+          ]
+        },
+        {
+          "index": 5,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93144200",
+            "0x0",
+            "0x93145000",
+            "0x0"
+          ]
+        },
+        {
+          "index": 6,
+          "dimensions": [
+            33,
+            22
+          ],
+          "addresses": [
+            "0x93145000",
+            "0x93144200",
+            "0x0",
+            "0x0",
+            "0x93148500",
+            "0x0",
+            "0x9314ba00"
+          ]
+        },
+        {
+          "index": 7,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x93137800",
+            "0x93148500",
+            "0x9314ba00",
+            "0x0",
+            "0x9314c400",
+            "0x0",
+            "0x93158e00"
+          ]
+        },
+        {
+          "index": 8,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x93102d00",
+            "0x9314c400",
+            "0x93158e00",
+            "0x0",
+            "0x9315b200",
+            "0x0",
+            "0x9318c800"
+          ]
+        },
+        {
+          "index": 9,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x93031600",
+            "0x9315b200",
+            "0x9318c800",
+            "0x0",
+            "0x93195000",
+            "0x0",
+            "0x93259d00"
+          ]
+        },
+        {
+          "index": 10,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x93317a00",
+            "0x93195000",
+            "0x93259d00",
+            "0x0",
+            "0x93313100",
+            "0x0",
+            "0x9327af00"
+          ]
+        },
+        {
+          "index": 11,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x91024700",
+            "0x93313100",
+            "0x9327af00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    },
+    {
+      "image_format": 4,
+      "packed_mode": 1,
+      "dimensions": [
+        8288,
+        5520
+      ],
+      "stride": 16576,
+      "bytes": 1088,
+      "record_count": 12,
+      "header_words": [
+        "0x1",
+        "0x40c0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7",
+        "0x3f903f8",
+        "0x3fb03fa",
+        "0x3fd03fc",
+        "0x3ff03fe",
+        "0x10000",
+        "0x30002",
+        "0x50004",
+        "0x70006",
+        "0xfffffff7"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "dimensions": [
+            8288,
+            5520
+          ],
+          "addresses": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x91024700",
+            "0x0"
+          ]
+        },
+        {
+          "index": 1,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93317a00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 2,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x0",
+            "0x92000000",
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x93031600",
+            "0x0"
+          ]
+        },
+        {
+          "index": 3,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x0",
+            "0x93000000",
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93102d00",
+            "0x0"
+          ]
+        },
+        {
+          "index": 4,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x0",
+            "0x930f6300",
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93137800",
+            "0x0"
+          ]
+        },
+        {
+          "index": 5,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x0",
+            "0x93134300",
+            "0x0",
+            "0x93144200",
+            "0x0",
+            "0x93145000",
+            "0x0"
+          ]
+        },
+        {
+          "index": 6,
+          "dimensions": [
+            33,
+            22
+          ],
+          "addresses": [
+            "0x93145000",
+            "0x93144200",
+            "0x0",
+            "0x0",
+            "0x93148500",
+            "0x0",
+            "0x9314ba00"
+          ]
+        },
+        {
+          "index": 7,
+          "dimensions": [
+            65,
+            44
+          ],
+          "addresses": [
+            "0x93137800",
+            "0x93148500",
+            "0x9314ba00",
+            "0x0",
+            "0x9314c400",
+            "0x0",
+            "0x93158e00"
+          ]
+        },
+        {
+          "index": 8,
+          "dimensions": [
+            130,
+            87
+          ],
+          "addresses": [
+            "0x93102d00",
+            "0x9314c400",
+            "0x93158e00",
+            "0x0",
+            "0x9315b200",
+            "0x0",
+            "0x9318c800"
+          ]
+        },
+        {
+          "index": 9,
+          "dimensions": [
+            259,
+            173
+          ],
+          "addresses": [
+            "0x93031600",
+            "0x9315b200",
+            "0x9318c800",
+            "0x0",
+            "0x93195000",
+            "0x0",
+            "0x93259d00"
+          ]
+        },
+        {
+          "index": 10,
+          "dimensions": [
+            518,
+            345
+          ],
+          "addresses": [
+            "0x93317a00",
+            "0x93195000",
+            "0x93259d00",
+            "0x0",
+            "0x93313100",
+            "0x0",
+            "0x9327af00"
+          ]
+        },
+        {
+          "index": 11,
+          "dimensions": [
+            1036,
+            690
+          ],
+          "addresses": [
+            "0x91024700",
+            "0x93313100",
+            "0x9327af00",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        }
+      ]
+    }
+  ],
+  "storage": [
+    {
+      "profile": "0x101f15d0",
+      "base": "0x80800000",
+      "capacity": "0x2b8f600",
+      "unit": "0xe85200",
+      "initialization": {
+        "table_offset": 82016,
+        "kind": "zero",
+        "source": 277202132,
+        "destination": 2155872256,
+        "size": 50656768,
+        "handler": 268566664
+      }
+    },
+    {
+      "profile": "0x101f1540",
+      "base": "0xc8900000",
+      "capacity": "0xdd2200",
+      "unit": "0x49b600",
+      "initialization": {
+        "table_offset": 82128,
+        "kind": "zero",
+        "source": 277400896,
+        "destination": 3364880384,
+        "size": 31531520,
+        "handler": 268566664
+      }
+    }
+  ],
+  "host_boundaries": [
+    "Resource and interrupt registration are recorded",
+    "Synthetic register status and configuration; native callbacks execute",
+    "Native service-event publication is recorded at its kernel boundary",
+    "Synthetic context, geometry, strides, addresses and coefficients; image buffers unmapped"
+  ],
+  "limitations": [
+    "Plain MMIO storage records W1C writes without implementing hardware clearing",
+    "Calling the handler directly does not prove an interrupt was delivered by hardware",
+    "Command encoding checks do not establish pixel packing or arithmetic",
+    "No DMA command, source pixel, filter calculation or photograph is executed"
+  ]
+}

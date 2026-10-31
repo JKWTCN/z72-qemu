@@ -95,6 +95,9 @@ static const NikonZ72Window nikon_z72_slave_windows[] = {
     /* Native 0x10054A56 uploads this C1.70 compute program span. Its
      * configuration block at 0x8030C000 is inside the same storage. */
     {0x80300000, 0x00027800, "z72-slave-compute-program-lab"},
+    /* Original zero record covers the SFLT output pool at 0x80800000
+     * and its following allocations; the pool profile starts at 101F15D0. */
+    {0x80800000, 0x0304F600, "z72-slave-processing-output-pool-lab"},
     /* Original slave zero-initialization record and pool profile 0x101F1660.
      * The master's matching pool 0x11983578 describes this peer storage;
      * its numeric addresses must not name the master's execution cache. */
@@ -117,6 +120,9 @@ static const NikonZ72Window nikon_z72_slave_windows[] = {
      * initializing the compute service. This is separate from the arena
      * and is not translated to its 0x15100000 bus-address family. */
     {0xC8200000, 0x00700000, "z72-slave-code-cache-lab"},
+    /* Separate original zero record, containing the command addresses
+     * emitted by 10116B0C. Storage only, without processing completion. */
+    {0xC8900000, 0x01E12200, "z72-slave-processing-scratch-pool-lab"},
     /* Companion serial-adjacent block beside the console interface; the
      * kernel writes it (observed at +0x560) once the handoff completes. */
     {0x2C0A0000, 0x00001000, "z72-slave-console-companion-lab"},
