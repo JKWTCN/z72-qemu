@@ -571,17 +571,172 @@
       }
     }
   ],
+  "full_request_preparations": [
+    {
+      "name": "center",
+      "pass_index": 0,
+      "supplied_offsets": [
+        0,
+        0
+      ],
+      "geometry": [
+        4144,
+        2760
+      ],
+      "selected_row": "0xc1921d6c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "center",
+      "pass_index": 1,
+      "supplied_offsets": [
+        0,
+        0
+      ],
+      "geometry": [
+        4144,
+        2760
+      ],
+      "selected_row": "0xc192530c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "offset",
+      "pass_index": 0,
+      "supplied_offsets": [
+        2560,
+        -5120
+      ],
+      "geometry": [
+        4154,
+        2740
+      ],
+      "selected_row": "0xc1921d6c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "offset",
+      "pass_index": 1,
+      "supplied_offsets": [
+        2560,
+        -5120
+      ],
+      "geometry": [
+        4154,
+        2740
+      ],
+      "selected_row": "0xc192530c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "fractional",
+      "pass_index": 0,
+      "supplied_offsets": [
+        -2561,
+        255
+      ],
+      "geometry": [
+        4133,
+        2760
+      ],
+      "selected_row": "0xc1921d6c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "fractional",
+      "pass_index": 1,
+      "supplied_offsets": [
+        -2561,
+        255
+      ],
+      "geometry": [
+        4133,
+        2760
+      ],
+      "selected_row": "0xc192530c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "negative",
+      "pass_index": 0,
+      "supplied_offsets": [
+        -1061377,
+        -707073
+      ],
+      "geometry": [
+        -2,
+        -2
+      ],
+      "selected_row": "0xc1921d6c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    },
+    {
+      "name": "negative",
+      "pass_index": 1,
+      "supplied_offsets": [
+        -1061377,
+        -707073
+      ],
+      "geometry": [
+        -2,
+        -2
+      ],
+      "selected_row": "0xc192530c",
+      "metadata_hex": "0002060000000200000000000000000000000000ffff0000ffffffffffff000000000000",
+      "coefficients_sha256": "358ccebd3693e59d2a0ec06950058cc92c5281ff73f51708f82351524bad99e3",
+      "results_untouched": true,
+      "guards_preserved": true
+    }
+  ],
+  "supplied_auxiliary_words": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111
+  ],
   "entries": {
     "filter": "0x1011e75a",
     "selector": "0x10148ff2"
   },
   "host_boundaries": [
     "Synthetic contexts, RAW descriptor, result triples and nine configuration words",
-    "Configuration lookup 0x10161e5a returns supplied words"
+    "Configuration lookup 0x10161e5a returns supplied words",
+    "Full preparation supplies absent temperature and twelve auxiliary words",
+    "Signed calibration fixture; identity source translation; recorded cache maintenance"
   ],
   "limitations": [
     "No compute program or RAW input algorithm is executed",
-    "Request preparation stops at 0x1011edb8 before geometry/configuration helpers",
+    "Early preparation cases stop at 0x1011edb8; full cases execute 0x1011ecd6 to return",
+    "Full preparation covers one RAW descriptor and the default coefficient source, without preview or interpolation",
     "Synthetic result triples do not establish physical units or their producer",
     "No whole-machine reply, encoding or photograph is produced"
   ]
