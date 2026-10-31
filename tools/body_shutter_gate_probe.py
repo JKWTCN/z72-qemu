@@ -1040,6 +1040,8 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                     busy_channels=hex(word(base + 0x900)),
                     request_irq_head=hex(word(base + 0x80)),
                     result_irq_head=hex(word(base + 0x84)),
+                    receiver_irq_head=hex(word(base + 0x88)),
+                    receiver_irq_status=hex(word(base + 8)),
                     channel_words=[hex(value) for value in struct.unpack(
                         '<32I', remote.read(registers, 128))])
         result['compute'] = compute

@@ -614,9 +614,9 @@ struct NikonZ72BootConfig {
     bool gate_pending;
     MemoryRegion transfer_ram;
     uint8_t transfer_table[0x100];
-    MemoryRegion compute_ownership[9];
-    NikonZ72ConfigWord compute_ownership_words[9];
+    MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
+    uint32_t compute_mailbox_words[0x400];
     bool transfer_reset_completion;
     MemoryRegion *root;
     bool own_file;
@@ -3002,39 +3002,127 @@ static const MemoryRegionOps transport_ops = {
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
-/* The original allocator checks the occupied bitmap, claims a channel with
- * a 16-bit owner mask and verifies ownership by reading the same register.
- * This models arbitration only; accepting ownership does not consume a
- * request, raise an acknowledgement or manufacture a calculation result. */
-static uint64_t compute_ownership_read(void *opaque, hwaddr offset, unsigned size)
+/* Source, destination and acknowledgement use endpoint masks. The observed
+ * mode 3 acknowledges only after the recipient clears its destination bit;
+ * neither ownership nor SEND alone means that a recipient has consumed data. */
+static uint32_t compute_mailbox_pending(NikonZ72BootConfig *s, unsigned endpoint)
 {
-    NikonZ72ConfigWord *word = opaque;
-    NikonZ72BootConfig *s = word->device;
-    uint32_t occupied = 0;
+    uint32_t pending = 0;
+    uint32_t bit = 1u << endpoint;
 
-    if (word->index < 8) {
-        return s->compute_owners[word->index];
-    }
     for (unsigned channel = 0; channel < 8; channel++) {
-        occupied |= (s->compute_owners[channel] != 0) << channel;
+        const uint32_t *regs = s->compute_mailbox_words + 0x40 + channel * 32;
+        if (regs[0x28 / 4] & bit) {
+            continue;
+        }
+        if ((s->compute_owners[channel] && (regs[8 / 4] & 1) &&
+             (regs[0x18 / 4] & bit)) ||
+            (regs[0x38 / 4] && (regs[0x3c / 4] & bit))) {
+            pending |= 1u << channel;
+        }
     }
-    return occupied;
+    return pending;
 }
 
-static void compute_ownership_write(void *opaque, hwaddr offset, uint64_t value,
-                                    unsigned size)
+static void compute_mailbox_update_irqs(NikonZ72BootConfig *s)
 {
-    NikonZ72ConfigWord *word = opaque;
-    NikonZ72BootConfig *s = word->device;
-
-    if (word->index < 8 && (!s->compute_owners[word->index] || !(value & 0xffff))) {
-        s->compute_owners[word->index] = value & 0xffff;
+    if (s->release_config && s->intc) {
+        /* Native wrappers assign endpoint 0 to request acknowledgements and
+         * endpoint 1 to results. Endpoint 2 belongs to the unmodeled receiver,
+         * not to the ARM error interrupt 229. */
+        for (unsigned endpoint = 0; endpoint < 2; endpoint++) {
+            qemu_set_irq(qdev_get_gpio_in(s->intc, 227 + endpoint - 32),
+                         compute_mailbox_pending(s, endpoint) != 0);
+        }
     }
 }
 
-static const MemoryRegionOps compute_ownership_ops = {
-    .read = compute_ownership_read,
-    .write = compute_ownership_write,
+static uint64_t compute_mailbox_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    if (offset < 0x40) {
+        return compute_mailbox_pending(s, offset / 4);
+    }
+    if (offset >= 0x80 && offset < 0xc0) {
+        uint32_t pending = compute_mailbox_pending(s, (offset - 0x80) / 4);
+        for (unsigned channel = 0; channel < 8; channel++) {
+            if (pending & (1u << channel)) {
+                return 0x100 + channel * 0x80;
+            }
+        }
+        return 0;
+    }
+    if (offset == 0x900) {
+        uint32_t occupied = 0;
+        for (unsigned channel = 0; channel < 8; channel++) {
+            occupied |= (s->compute_owners[channel] != 0) << channel;
+        }
+        return occupied;
+    }
+    if (offset >= 0x100 && offset < 0x500 && !(offset & 0x7f)) {
+        return s->compute_owners[(offset - 0x100) / 0x80];
+    }
+    return s->compute_mailbox_words[offset / 4];
+}
+
+static void compute_mailbox_write(void *opaque, hwaddr offset, uint64_t value,
+                                  unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+
+    if (offset < 0x40 || (offset >= 0x80 && offset < 0xc0) || offset == 0x900) {
+        return;
+    }
+    if (offset >= 0x100 && offset < 0x500) {
+        unsigned channel = (offset - 0x100) / 0x80;
+        unsigned reg = offset & 0x7f;
+        uint32_t *regs = s->compute_mailbox_words + 0x40 + channel * 32;
+
+        if (!reg) {
+            if (!s->compute_owners[channel] || !(value & 0xffff)) {
+                s->compute_owners[channel] = value & 0xffff;
+            }
+        } else if (reg != 0x18 && reg != 0x28 && reg != 0x38 && reg != 0x3c) {
+            regs[reg / 4] = value;
+            if (reg == 0x10) {
+                regs[0x18 / 4] |= value & 0xffff;
+            } else if (reg == 0x14) {
+                uint32_t cleared = regs[0x18 / 4] & value & 0xffff;
+
+                regs[0x18 / 4] &= ~cleared;
+                if ((regs[8 / 4] & 1) && cleared) {
+                    if (regs[4 / 4] == 3) {
+                        regs[0x38 / 4] |= cleared;
+                        regs[0x3c / 4] = s->compute_owners[channel];
+                    }
+                    if (!regs[0x18 / 4]) {
+                        regs[8 / 4] = 0;
+                    }
+                }
+            } else if (reg == 0x20) {
+                regs[0x28 / 4] |= value & 0xffff;
+            } else if (reg == 0x24) {
+                regs[0x28 / 4] &= ~(value & 0xffff);
+            } else if (reg == 0x30) {
+                regs[0x38 / 4] |= value & 0xffff;
+                regs[0x3c / 4] = s->compute_owners[channel];
+            } else if (reg == 0x34) {
+                regs[0x38 / 4] &= ~(value & 0xffff);
+                if (!regs[0x38 / 4]) {
+                    regs[0x3c / 4] = 0;
+                }
+            }
+        }
+    } else {
+        s->compute_mailbox_words[offset / 4] = value;
+    }
+    compute_mailbox_update_irqs(s);
+}
+
+static const MemoryRegionOps compute_mailbox_ops = {
+    .read = compute_mailbox_read,
+    .write = compute_mailbox_write,
     .endianness = DEVICE_LITTLE_ENDIAN,
     .valid = { .min_access_size = 4, .max_access_size = 4 },
     .impl = { .min_access_size = 4, .max_access_size = 4 },
@@ -3059,6 +3147,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->gate_pending = false;
     memset(s->transfer_table, 0, sizeof(s->transfer_table));
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
+    memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
     memset(s->dbi_regions, 0, sizeof(s->dbi_regions));
     s->dbi_viewport = 0;
@@ -3099,6 +3188,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->image_drain_requests = 0;
     s->image_draining = false;
     image_update_irqs(s);
+    compute_mailbox_update_irqs(s);
     input_update_irqs(s);
     sync_update_irqs(s);
     if (s->intc) {
@@ -3146,6 +3236,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     sd_update_irq(s);
     aux_image_update_irq(s);
     image_update_irqs(s);
+    compute_mailbox_update_irqs(s);
     if (s->intc) {
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), s->gate_pending);
         if (s->release_config) {
@@ -3160,12 +3251,13 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 50,
-    .minimum_version_id = 50,
+    .version_id = 51,
+    .minimum_version_id = 51,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
         VMSTATE_UINT32_ARRAY(compute_owners, NikonZ72BootConfig, 8),
+        VMSTATE_UINT32_ARRAY(compute_mailbox_words, NikonZ72BootConfig, 0x400),
         VMSTATE_UINT32(gpio_input_levels, NikonZ72BootConfig),
         VMSTATE_UINT32(gpio_input_driven, NikonZ72BootConfig),
         VMSTATE_BOOL(input_handshake, NikonZ72BootConfig),
@@ -3391,15 +3483,10 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
      * machine; the role suffix keeps the dual machine's blocks apart. */
     const char *tag = s->master_role ? "master" : "slave";
     if (s->release_config) {
-        for (unsigned index = 0; index < 9; index++) {
-            s->compute_ownership_words[index] = (NikonZ72ConfigWord) { s, index };
-            memory_region_init_io(&s->compute_ownership[index], OBJECT(dev),
-                &compute_ownership_ops, &s->compute_ownership_words[index],
-                "z72-compute-ownership", 4);
-            memory_region_add_subregion_overlap(root,
-                index < 8 ? 0x24061100 + index * 0x80 : 0x24061900,
-                &s->compute_ownership[index], 1);
-        }
+        memory_region_init_io(&s->compute_mailbox, OBJECT(dev), &compute_mailbox_ops,
+                              s, "z72-compute-mailbox", 0x1000);
+        memory_region_add_subregion_overlap(root, 0x24061000,
+                                            &s->compute_mailbox, 1);
         memory_region_init_io(&s->aux_image_ram, OBJECT(dev), &aux_image_ops, s,
                               "z72-auxiliary-image", 0x200);
         memory_region_add_subregion_overlap(root, 0x20201000,
