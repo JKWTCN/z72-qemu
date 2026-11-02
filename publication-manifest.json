@@ -729,7 +729,7 @@
     "tests/test_sflt_registers.py": "7778cdee9115f899302f53e8426eee166bd0a1ee1cd8364e63c00b68d2bd1e94",
     "tests/test_smp.py": "542d598604b2688f5572fbd06684bfd31b06b65a7e3c8429018b674807acf2eb",
     "tests/test_spi.py": "29f4340a63331ec83afed30711920b589c6436ef7ce32754f02ba36e14435215",
-    "tests/test_structure.py": "27c3fee019d3b6aa45ee47fea078321968c0fe720dc184115420dff8c1b2477b",
+    "tests/test_structure.py": "ec41e27db7f38652fa0e7fc742d1de550fadb7574ac83d647792c66c348ecb15",
     "tests/test_uart.py": "71ce1a4e06b56bbab0009336c2bf2e7a3dd20d7d46beb4d5b8e1782a1d6d23b6",
     "tests/include/ui/console.h": "1bea67bff4c30da287d908f87b36d96e461c0469be076ab01fc2804524c5c556",
     "tools/aux_image_contract.py": "91ba957666c9a0c55ea6fb9943952a4d6728ea68f10be6a802fd2716456f6cd1",

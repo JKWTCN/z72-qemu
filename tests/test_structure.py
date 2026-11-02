@@ -224,6 +224,14 @@ class Structure(unittest.TestCase):
                 # The slave role additionally keeps its post-heap startup
                 # storage span that backs peer-memory accesses.
                 expected.add((0xC5100000, 0xF00000))
+                # Native compute uploads, processing pools, runtime arena
+                # and saved code spans are physical storage outside the
+                # snippet harness translation windows.
+                expected.update({
+                    (0x80300000, 0x27800), (0x80800000, 0x304F600),
+                    (0x83900000, 0x3B586000), (0xC6100000, 0x2100000),
+                    (0xC8200000, 0x700000), (0xC8900000, 0x1E12200),
+                })
             if role == 'master':
                 expected.add((0xB7D00000, 0x2D00000))
                 # Native runtime pools and auxiliary load destinations are
