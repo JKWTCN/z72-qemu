@@ -4,6 +4,18 @@
   "firmware_included": false,
   "program_sha256": "3d4ec1c8d56984cc296d732cd5d9dc06b5fdcaeb74b811cd92f3c013dbfe4dac",
   "program_bytes": 161792,
+  "descriptor_tables": {
+    "bytes": 27456,
+    "banks": 2,
+    "rows_per_bank": 12,
+    "stride": 1144,
+    "sha256": "2605bdfd0ea7a9953c2291b232a47ed5efc9de1446c5834edfaad0783bb7f9cd"
+  },
+  "selector_baseline": {
+    "entry": "0x1011eff0",
+    "bytes": 166,
+    "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a"
+  },
   "versions": [
     {
       "package": "Z7_2_0101.bin",
@@ -14,7 +26,28 @@
       "program_file_offset": "0x8080cc",
       "program_source_address": "0x108280cc",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfec5c",
+        "source_address": "0x1011ec5c",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x10869074",
+        "descriptor_file_offset": "0x849074",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0110_01.bin",
@@ -25,7 +58,28 @@
       "program_file_offset": "0x80814c",
       "program_source_address": "0x1082814c",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfec54",
+        "source_address": "0x1011ec54",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108690f4",
+        "descriptor_file_offset": "0x8490f4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0120.bin",
@@ -36,7 +90,28 @@
       "program_file_offset": "0x80814c",
       "program_source_address": "0x1082814c",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfec54",
+        "source_address": "0x1011ec54",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108690f4",
+        "descriptor_file_offset": "0x8490f4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0121.bin",
@@ -47,7 +122,28 @@
       "program_file_offset": "0x80834c",
       "program_source_address": "0x1082834c",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee68",
+        "source_address": "0x1011ee68",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108692f4",
+        "descriptor_file_offset": "0x8492f4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0130.bin",
@@ -58,7 +154,28 @@
       "program_file_offset": "0x8149d4",
       "program_source_address": "0x108349d4",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee70",
+        "source_address": "0x1011ee70",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108759b4",
+        "descriptor_file_offset": "0x8559b4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0131.bin",
@@ -69,7 +186,28 @@
       "program_file_offset": "0x8149d4",
       "program_source_address": "0x108349d4",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee70",
+        "source_address": "0x1011ee70",
+        "bytes": 166,
+        "sha256": "453fbc4a5189c2cdc365f15bb3e6d0f29171d71b7a3282586f237cb58e8d2b85",
+        "metadata_offsets": {
+          "special": "0x1681",
+          "dimension": "0x846",
+          "subtype": "0x4ca",
+          "group": "0x4c9",
+          "kind": "0x4c8"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108759b4",
+        "descriptor_file_offset": "0x8559b4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0140.bin",
@@ -80,7 +218,28 @@
       "program_file_offset": "0x8149d4",
       "program_source_address": "0x108349d4",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee68",
+        "source_address": "0x1011ee68",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108759b4",
+        "descriptor_file_offset": "0x8559b4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0150.bin",
@@ -91,7 +250,28 @@
       "program_file_offset": "0x814b14",
       "program_source_address": "0x10834b14",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfefb0",
+        "source_address": "0x1011efb0",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x10875af4",
+        "descriptor_file_offset": "0x855af4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0160.bin",
@@ -102,7 +282,28 @@
       "program_file_offset": "0x8149d4",
       "program_source_address": "0x108349d4",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee68",
+        "source_address": "0x1011ee68",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108759b4",
+        "descriptor_file_offset": "0x8559b4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0161.bin",
@@ -113,7 +314,28 @@
       "program_file_offset": "0x8149d4",
       "program_source_address": "0x108349d4",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfee68",
+        "source_address": "0x1011ee68",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x108759b4",
+        "descriptor_file_offset": "0x8559b4",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0162.bin",
@@ -124,7 +346,28 @@
       "program_file_offset": "0x814b54",
       "program_source_address": "0x10834b54",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfeff0",
+        "source_address": "0x1011eff0",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x10875b34",
+        "descriptor_file_offset": "0x855b34",
+        "complete_descriptor_tables_equal": true
+      }
     },
     {
       "package": "Z7_2_0170.bin",
@@ -135,12 +378,35 @@
       "program_file_offset": "0x814b54",
       "program_source_address": "0x10834b54",
       "program_bytes": 161792,
-      "complete_payload_equal": true
+      "complete_payload_equal": true,
+      "request_selector": {
+        "file_offset": "0xfeff0",
+        "source_address": "0x1011eff0",
+        "bytes": 166,
+        "sha256": "fc0389430dfb55e29311ea189a73157f7d27c6e54a1aed88db22124bc87c066a",
+        "metadata_offsets": {
+          "special": "0x1689",
+          "dimension": "0x84e",
+          "subtype": "0x4d6",
+          "group": "0x4d5",
+          "kind": "0x4d4"
+        },
+        "other_instructions_equal": true,
+        "bank_bases": [
+          "0xc19218f4",
+          "0xc1924e94"
+        ],
+        "descriptor_source_address": "0x10875b34",
+        "descriptor_file_offset": "0x855b34",
+        "complete_descriptor_tables_equal": true
+      }
     }
   ],
   "limitations": [
     "Complete byte equality establishes payload presence, not historical loader execution",
-    "Host-side request preparation, configuration and memory placement may differ",
+    "Selector equality permits five verified metadata operand changes; other preparation may differ",
+    "Native copy records and selector literals establish static references, not historical execution",
+    "Descriptor field meanings and compute receiver behavior remain unproven",
     "No processor instruction set, calculation or photograph is established"
   ]
 }
