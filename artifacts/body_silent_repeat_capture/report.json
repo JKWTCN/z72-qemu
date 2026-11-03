@@ -1,0 +1,3618 @@
+{
+  "observation": "native-full-release-application-gate",
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 22,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "sd_attached": true,
+  "sd_image_bytes": 4294967296,
+  "display_complete": true,
+  "watch_seconds": 900,
+  "icount_shift": 2,
+  "sd_snapshot": false,
+  "preserved_card_name": "body-silent-repeat-capture.raw",
+  "input_handshake": false,
+  "frame_phase": true,
+  "input_stop_complete": true,
+  "frame_generate": true,
+  "frame_notify": true,
+  "frame_process": true,
+  "aux_image_process": true,
+  "local_stop_events": false,
+  "gpio_handshake_events": false,
+  "round_trip": false,
+  "reconfiguration_wait": null,
+  "return_watch_seconds": 120,
+  "trace": {
+    "before": {
+      "system_mode": 4,
+      "previous_mode": 2,
+      "system_input_class": 1,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 4,
+      "status_codes": [],
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x10104d2c",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10120804",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a68",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a64",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "controller_capture": {
+        "header": [
+          9,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "release_input_irq": {
+          "vtor": "0x20000000",
+          "exti_words": [
+            "0x201c9",
+            "0x0",
+            "0x201c9",
+            "0x81",
+            "0x0",
+            "0x0"
+          ],
+          "route_words": [
+            "0x6006",
+            "0x6600",
+            "0x6",
+            "0x0"
+          ],
+          "contacts": [
+            {
+              "contact": "half",
+              "pin": 1,
+              "gpio_mode": 0,
+              "gpio_level": 1,
+              "exti_port": 0,
+              "interrupt_enabled": false,
+              "rising_enabled": false,
+              "falling_enabled": false,
+              "pending": false,
+              "callback_slot": "0x2000f384",
+              "callback": "0x0",
+              "descriptor": "0x2000e34c",
+              "irq": 7,
+              "nvic_enabled": false,
+              "descriptor_words": [
+                "0x61",
+                "0x2000f952",
+                "0x40021800",
+                "0x2"
+              ],
+              "vector": "0x80201fd"
+            },
+            {
+              "contact": "full",
+              "pin": 13,
+              "gpio_mode": 0,
+              "gpio_level": 1,
+              "exti_port": 0,
+              "interrupt_enabled": false,
+              "rising_enabled": false,
+              "falling_enabled": false,
+              "pending": false,
+              "callback_slot": "0x2000f468",
+              "callback": "0x0",
+              "descriptor": "0x2000e40c",
+              "irq": 40,
+              "nvic_enabled": false,
+              "descriptor_words": [
+                "0x6d",
+                "0x2000f952",
+                "0x40021800",
+                "0x2000"
+              ],
+              "vector": "0x80201fd"
+            }
+          ]
+        },
+        "words": {
+          "0x14": "0x0",
+          "0x18": "0x0",
+          "0x1c": "0x0",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0x0",
+          "0x2c": "0x0",
+          "0x30": "0x1",
+          "0x34": "0x2001372c",
+          "0x38": "0x2001363c"
+        },
+        "backend_header": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          30,
+          0,
+          3,
+          0,
+          0,
+          0,
+          6,
+          0,
+          6,
+          6,
+          6,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "backend_words": {
+          "0x18": "0x803686d",
+          "0x1c": "0x80369a1",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0xeba131"
+        },
+        "backend_request": [
+          0,
+          0,
+          255,
+          255,
+          0,
+          0
+        ],
+        "backend_timer_bases": [
+          "0x40000800",
+          "0x40000000"
+        ],
+        "faults": [
+          "0x0",
+          "0x0"
+        ]
+      },
+      "sampling_header": [
+        2,
+        0,
+        0,
+        18,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        18,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        227,
+        210,
+        38,
+        16,
+        153,
+        210,
+        38,
+        16,
+        111,
+        209,
+        38,
+        16,
+        0,
+        0,
+        0,
+        0,
+        148,
+        73,
+        128,
+        177,
+        220,
+        62,
+        128,
+        177,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        62,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sampling_registers": {
+        "control": {
+          "0x0": "0x0",
+          "0x4": "0x0",
+          "0x8": "0x206",
+          "0xc": "0x206",
+          "0x10": "0x1",
+          "0x14": "0x1",
+          "0x18": "0x0",
+          "0x1c": "0x0",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0x1",
+          "0x2c": "0x1",
+          "0x30": "0x0",
+          "0x34": "0x19",
+          "0x38": "0x0",
+          "0x40": "0x27feb7",
+          "0x44": "0x0",
+          "0x4c": "0x0",
+          "0x50": "0x1"
+        },
+        "outputs": [
+          [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x6000004",
+            "0x0",
+            "0x0"
+          ],
+          [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x6000006",
+            "0x0",
+            "0x0"
+          ]
+        ]
+      },
+      "sampling_counter_context": [
+        6,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        121,
+        183,
+        46,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        184,
+        46,
+        16,
+        16,
+        0,
+        0,
+        0
+      ],
+      "counter_ticks": 65356845,
+      "counter_frequency": 48000000,
+      "still_image_work": [
+        {
+          "address": "0xb238e694",
+          "count": 0,
+          "jobs": []
+        }
+      ],
+      "jpeg_encoder": {
+        "current_descriptor": "0x0",
+        "accumulated_flags": "0x0"
+      },
+      "input_state": {
+        "state_5": 1,
+        "state_6": 2,
+        "finite_frames": [
+          0,
+          0
+        ],
+        "processing_flags": "0x4",
+        "finite_request": "0x0",
+        "finite_queue_count": 0,
+        "mode1_output_latches": [
+          0,
+          0
+        ],
+        "configured_mask": "0x1",
+        "required_mask": "0xb",
+        "processing_masks": [
+          "0x0",
+          "0x0",
+          "0x1",
+          "0x1"
+        ]
+      },
+      "release_gate": 1
+    },
+    "records": [
+      {
+        "entry": "body-capture-format-table",
+        "pc": "0x1034f918",
+        "thread": 1,
+        "registers": {
+          "r0": "0x100",
+          "r1": "0xb295113c",
+          "r2": "0x1034ccac",
+          "r3": "0x0",
+          "r4": "0x1000000",
+          "r5": "0xb51dfc58",
+          "r6": "0xa",
+          "r7": "0x0",
+          "lr": "0x1034cb15"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 5,
+        "counter_ticks": 70265111
+      },
+      {
+        "entry": "body-exposure-settings-caller",
+        "pc": "0x13f01006",
+        "thread": 1,
+        "registers": {
+          "r0": "0x42070001",
+          "r1": "0xb1d53ee8",
+          "r2": "0x7f",
+          "r3": "0x0",
+          "r4": "0xb1d53dd8",
+          "r5": "0xb1d5fda8",
+          "r6": "0xc0",
+          "r7": "0x42070001",
+          "lr": "0x103885d3"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 99129062
+      },
+      {
+        "entry": "body-exposure-settings-return",
+        "pc": "0x13f010ba",
+        "thread": 1,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x1",
+          "r2": "0x664",
+          "r3": "0x1",
+          "r4": "0xb5f00100",
+          "r5": "0x3e6",
+          "r6": "0x1063c7d5",
+          "r7": "0x42070001",
+          "lr": "0x101017e7"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 129252637
+      },
+      {
+        "entry": "body-short-exposure-half-press",
+        "counter_ticks": 129252664,
+        "shot": 1
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x45",
+          "r1": "0x1",
+          "r2": "0x1022aaaf",
+          "r3": "0x10",
+          "r4": "0x1",
+          "r5": "0x0",
+          "r6": "0xb2b415f4",
+          "r7": "0xb2b42258",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 129253128
+      },
+      {
+        "entry": "body-half-deferred-callback",
+        "pc": "0x1022aa82",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa83",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0x0",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 129258844
+      },
+      {
+        "entry": "body-short-exposure-full-press",
+        "counter_ticks": 153360670,
+        "shot": 1,
+        "half_press_counter_seconds": 0.502250125
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x46",
+          "r1": "0x1",
+          "r2": "0x1022aaaf",
+          "r3": "0x20",
+          "r4": "0xb1d697dc",
+          "r5": "0xb1d69c04",
+          "r6": "0x1",
+          "r7": "0x0",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153360690
+      },
+      {
+        "entry": "body-full-deferred-callback",
+        "pc": "0x1022aa5c",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa5d",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362094
+      },
+      {
+        "entry": "body-full-deferred-mask-check",
+        "pc": "0x1022aa64",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362095
+      },
+      {
+        "entry": "body-full-deferred-submit",
+        "pc": "0x1022aa72",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362095
+      },
+      {
+        "entry": "body-release-operation-dispatch",
+        "pc": "0x1022cfbc",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1b",
+          "r1": "0xb51e41e0",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x1022aa81"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362097
+      },
+      {
+        "entry": "body-full-capture-route",
+        "pc": "0x103eda92",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb51e41e0",
+          "r1": "0xfffffff9",
+          "r2": "0x10204e3d",
+          "r3": "0x9",
+          "r4": "0xb18695a0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x1022cfdb"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362203
+      },
+      {
+        "entry": "body-full-capture-handler",
+        "pc": "0x103f53b6",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb51e41e0",
+          "r1": "0xfffffff9",
+          "r2": "0x10204e3d",
+          "r3": "0x9",
+          "r4": "0xb18695a0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x103eda97"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362203
+      },
+      {
+        "entry": "body-full-processing-condition",
+        "pc": "0x103f53ea",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0xb23f6ca0",
+          "r2": "0x0",
+          "r3": "0x9",
+          "r4": "0xb51e41e0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x103f53eb"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362208
+      },
+      {
+        "entry": "body-full-global-subscriber-check",
+        "pc": "0x103f5422",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1b",
+          "r1": "0x1",
+          "r2": "0x10204e3d",
+          "r3": "0x29",
+          "r4": "0xb51e41e0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x10229899"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362240
+      },
+      {
+        "entry": "body-full-system-route",
+        "pc": "0x1020e568",
+        "thread": 2,
+        "registers": {
+          "r0": "0x8000",
+          "r1": "0x14",
+          "r2": "0x4100030",
+          "r3": "0x29",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x10204e51"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153362247
+      },
+      {
+        "entry": "body-full-system-interface-call",
+        "pc": "0x1020e59a",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb1819604",
+          "r1": "0xb51e41e0",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1020e593"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153363671
+      },
+      {
+        "entry": "body-full-system-state4-handler",
+        "pc": "0x102473f6",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb1819604",
+          "r1": "0xb51e41e0",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1020e59d"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153363671
+      },
+      {
+        "entry": "body-full-system-mode-result",
+        "pc": "0x1024740a",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x1020df17",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb1819604",
+          "r5": "0xb51e41e0",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1024740b"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153363673
+      },
+      {
+        "entry": "body-full-common-mode-result",
+        "pc": "0x102a6cb2",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x1020df17",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1819604",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x102a6cb3"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 153363676
+      },
+      {
+        "entry": "body-action-state-check",
+        "pc": "0x10542064",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542065"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 154196416
+      },
+      {
+        "entry": "body-action-fallback-check",
+        "pc": "0x10542368",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10633917"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 154196709
+      },
+      {
+        "entry": "body-action-normal-route",
+        "pc": "0x10542394",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0xb20d2894",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x1063151f"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 154196877
+      },
+      {
+        "entry": "body-action-dispatch",
+        "pc": "0x104e63ae",
+        "thread": 1,
+        "registers": {
+          "r0": "0x14",
+          "r1": "0x14",
+          "r2": "0x14",
+          "r3": "0xa1",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542413"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 154197753
+      },
+      {
+        "entry": "body-action-callback-dispatch",
+        "pc": "0x105af1dc",
+        "thread": 1,
+        "registers": {
+          "r0": "0x14",
+          "r1": "0x14",
+          "r2": "0x104e6c1d",
+          "r3": "0xa1",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542413"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 154197778
+      },
+      {
+        "entry": "body-sampling-mode-selected",
+        "pc": "0x102ea626",
+        "thread": 1,
+        "registers": {
+          "r0": "0x5",
+          "r1": "0xb1868628",
+          "r2": "0x2",
+          "r3": "0xb186c934",
+          "r4": "0x0",
+          "r5": "0xb1868628",
+          "r6": "0xb18686a8",
+          "r7": "0x0",
+          "lr": "0x102ea627"
+        },
+        "capture_state": [
+          6,
+          0
+        ],
+        "driver_state": 14,
+        "counter_ticks": 156834125
+      },
+      {
+        "entry": "body-action-state-update",
+        "pc": "0x104e6cb4",
+        "thread": 1,
+        "registers": {
+          "r0": "0x104e6cb5",
+          "r1": "0x0",
+          "r2": "0x249",
+          "r3": "0x1f",
+          "r4": "0xb202be70",
+          "r5": "0x0",
+          "r6": "0xb181d970",
+          "r7": "0xb181da91",
+          "lr": "0x10541ba1"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 162171425
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x45",
+          "r1": "0x0",
+          "r2": "0x1022aaaf",
+          "r3": "0x1",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0xb2b42258",
+          "r7": "0xb2b415e4",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 165422667
+      },
+      {
+        "entry": "body-repeat-readiness",
+        "capture_state": [
+          8,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 0,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 165422667
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x46",
+          "r1": "0x0",
+          "r2": "0x1022aaaf",
+          "r3": "0x1",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0xb2b42258",
+          "r7": "0xb2b415e4",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 165422706
+      },
+      {
+        "entry": "body-full-release-deferred-callback",
+        "pc": "0x1022aa24",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa25",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x4",
+          "r5": "0x2",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 165424671
+      },
+      {
+        "entry": "body-full-release-deferred-mask-check",
+        "pc": "0x1022aa32",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0xb23f7e64",
+          "r5": "0x2",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 165424672
+      },
+      {
+        "entry": "body-status-message-handler",
+        "pc": "0x10394d06",
+        "thread": 1,
+        "registers": {
+          "r0": "0x4200185",
+          "r1": "0xb53a7fa4",
+          "r2": "0x10394d07",
+          "r3": "0x1388",
+          "r4": "0xb1868510",
+          "r5": "0xb1868590",
+          "r6": "0x420010c",
+          "r7": "0x1000",
+          "lr": "0x1026cfab"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 169178226,
+        "status_codes": [],
+        "system_input_class": 1
+      },
+      {
+        "entry": "body-repeat-readiness",
+        "capture_state": [
+          9,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 1,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 169725380
+      },
+      {
+        "entry": "body-repeat-readiness",
+        "capture_state": [
+          10,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 1,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 170239330
+      },
+      {
+        "entry": "body-repeat-readiness",
+        "capture_state": [
+          10,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 0,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 174951790
+      },
+      {
+        "entry": "body-repeat-readiness",
+        "capture_state": [
+          2,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 0,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 181994472
+      },
+      {
+        "entry": "body-repeat-ready",
+        "capture_state": [
+          2,
+          0
+        ],
+        "release_gate": 0,
+        "primary_frames": 1,
+        "still_queue_count": 0,
+        "system_input_class": 1,
+        "status_codes": [],
+        "counter_ticks": 181994472
+      },
+      {
+        "entry": "body-short-exposure-half-press",
+        "counter_ticks": 181994472,
+        "shot": 2
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x45",
+          "r1": "0x1",
+          "r2": "0x1022aaaf",
+          "r3": "0x10",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0x1",
+          "r7": "0x7f",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 8,
+        "counter_ticks": 181994545
+      },
+      {
+        "entry": "body-half-deferred-callback",
+        "pc": "0x1022aa82",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa83",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0x0",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 8,
+        "counter_ticks": 181995743
+      },
+      {
+        "entry": "body-short-exposure-full-press",
+        "counter_ticks": 206067113,
+        "shot": 2,
+        "half_press_counter_seconds": 0.5015133541666666
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x46",
+          "r1": "0x1",
+          "r2": "0x1022aaaf",
+          "r3": "0x20",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0x1",
+          "r7": "0x7f",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206067535
+      },
+      {
+        "entry": "body-full-deferred-callback",
+        "pc": "0x1022aa5c",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa5d",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068777
+      },
+      {
+        "entry": "body-full-deferred-mask-check",
+        "pc": "0x1022aa64",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068778
+      },
+      {
+        "entry": "body-full-deferred-submit",
+        "pc": "0x1022aa72",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068778
+      },
+      {
+        "entry": "body-release-operation-dispatch",
+        "pc": "0x1022cfbc",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1b",
+          "r1": "0xb51e41e0",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x2",
+          "r5": "0x1",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x1022aa81"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068779
+      },
+      {
+        "entry": "body-full-capture-route",
+        "pc": "0x103eda92",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb51e41e0",
+          "r1": "0xfffffff9",
+          "r2": "0x10204e3d",
+          "r3": "0x9",
+          "r4": "0xb18695a0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x1022cfdb"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068990
+      },
+      {
+        "entry": "body-full-capture-handler",
+        "pc": "0x103f53b6",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb51e41e0",
+          "r1": "0xfffffff9",
+          "r2": "0x10204e3d",
+          "r3": "0x9",
+          "r4": "0xb18695a0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x103eda97"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068991
+      },
+      {
+        "entry": "body-full-processing-condition",
+        "pc": "0x103f53ea",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0xb23f6ca0",
+          "r2": "0x0",
+          "r3": "0x9",
+          "r4": "0xb51e41e0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x103f53eb"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206068996
+      },
+      {
+        "entry": "body-full-global-subscriber-check",
+        "pc": "0x103f5422",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1b",
+          "r1": "0x1",
+          "r2": "0x10204e3d",
+          "r3": "0x29",
+          "r4": "0xb51e41e0",
+          "r5": "0x4100022",
+          "r6": "0x41000ab",
+          "r7": "0xb51e41e0",
+          "lr": "0x10229899"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206069028
+      },
+      {
+        "entry": "body-full-system-route",
+        "pc": "0x1020e568",
+        "thread": 2,
+        "registers": {
+          "r0": "0x8000",
+          "r1": "0x14",
+          "r2": "0x4100030",
+          "r3": "0x29",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x10204e51"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206069035
+      },
+      {
+        "entry": "body-full-system-interface-call",
+        "pc": "0x1020e59a",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb1819604",
+          "r1": "0xb51e41e0",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1020e593"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206070377
+      },
+      {
+        "entry": "body-full-system-state4-handler",
+        "pc": "0x102473f6",
+        "thread": 2,
+        "registers": {
+          "r0": "0xb1819604",
+          "r1": "0xb51e41e0",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1818f60",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1020e59d"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206070377
+      },
+      {
+        "entry": "body-full-system-mode-result",
+        "pc": "0x1024740a",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x1020df17",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb1819604",
+          "r5": "0xb51e41e0",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1024740b"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206070379
+      },
+      {
+        "entry": "body-full-common-mode-result",
+        "pc": "0x102a6cb2",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x1020df17",
+          "r2": "0x102473f7",
+          "r3": "0x0",
+          "r4": "0xb51e41e0",
+          "r5": "0xb1819604",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x102a6cb3"
+        },
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "counter_ticks": 206070382
+      },
+      {
+        "entry": "body-action-state-check",
+        "pc": "0x10542064",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542065"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 209520823
+      },
+      {
+        "entry": "body-action-fallback-check",
+        "pc": "0x10542368",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10633917"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 209520970
+      },
+      {
+        "entry": "body-action-normal-route",
+        "pc": "0x10542394",
+        "thread": 1,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0xb20d2894",
+          "r2": "0x0",
+          "r3": "0x0",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x1063151f"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 209521055
+      },
+      {
+        "entry": "body-action-dispatch",
+        "pc": "0x104e63ae",
+        "thread": 1,
+        "registers": {
+          "r0": "0x14",
+          "r1": "0x14",
+          "r2": "0x14",
+          "r3": "0xa1",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542413"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 209521911
+      },
+      {
+        "entry": "body-action-callback-dispatch",
+        "pc": "0x105af1dc",
+        "thread": 1,
+        "registers": {
+          "r0": "0x14",
+          "r1": "0x14",
+          "r2": "0x104e6c1d",
+          "r3": "0xa1",
+          "r4": "0x14",
+          "r5": "0xb181d970",
+          "r6": "0xb540f700",
+          "r7": "0x0",
+          "lr": "0x10542413"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 209521933
+      },
+      {
+        "entry": "body-action-state-update",
+        "pc": "0x104e6cb4",
+        "thread": 1,
+        "registers": {
+          "r0": "0x104e6cb5",
+          "r1": "0x0",
+          "r2": "0x249",
+          "r3": "0x1f",
+          "r4": "0xb202be70",
+          "r5": "0x0",
+          "r6": "0xb181d970",
+          "r7": "0xb181da91",
+          "lr": "0x10541ba1"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 215607672
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x45",
+          "r1": "0x0",
+          "r2": "0x1022aaaf",
+          "r3": "0x1",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0xb2b42258",
+          "r7": "0xb2b415e4",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 218127091
+      },
+      {
+        "entry": "body-release-engine-gpio-callback",
+        "pc": "0x1022aaae",
+        "thread": 2,
+        "registers": {
+          "r0": "0x46",
+          "r1": "0x0",
+          "r2": "0x1022aaaf",
+          "r3": "0x1",
+          "r4": "0xb2b415f8",
+          "r5": "0xb2b41608",
+          "r6": "0xb2b42258",
+          "r7": "0xb2b415e4",
+          "lr": "0x10107274"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 218127130
+      },
+      {
+        "entry": "body-full-release-deferred-callback",
+        "pc": "0x1022aa24",
+        "thread": 2,
+        "registers": {
+          "r0": "0x1022aa25",
+          "r1": "0x10228c95",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0x4",
+          "r5": "0x2",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 218128560
+      },
+      {
+        "entry": "body-full-release-deferred-mask-check",
+        "pc": "0x1022aa32",
+        "thread": 2,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0xffffffff",
+          "r3": "0x0",
+          "r4": "0xb23f7e64",
+          "r5": "0x2",
+          "r6": "0x1",
+          "r7": "0xb23f7d94",
+          "lr": "0x10228cad"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 218128562
+      },
+      {
+        "entry": "body-status-message-handler",
+        "pc": "0x10394d06",
+        "thread": 1,
+        "registers": {
+          "r0": "0x4200185",
+          "r1": "0xb53a7fa4",
+          "r2": "0x10394d07",
+          "r3": "0x1388",
+          "r4": "0xb1868510",
+          "r5": "0xb1868590",
+          "r6": "0x420010c",
+          "r7": "0x1000",
+          "lr": "0x1026cfab"
+        },
+        "capture_state": [
+          8,
+          0
+        ],
+        "driver_state": 15,
+        "counter_ticks": 220336237,
+        "status_codes": [],
+        "system_input_class": 1
+      }
+    ],
+    "after": {
+      "system_mode": 4,
+      "previous_mode": 2,
+      "system_input_class": 1,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "status_codes": [],
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x102ced94",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10361116",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a48",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a44",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "controller_capture": {
+        "header": [
+          9,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "release_input_irq": {
+          "vtor": "0x20000000",
+          "exti_words": [
+            "0x201c9",
+            "0x0",
+            "0x201c9",
+            "0x81",
+            "0x0",
+            "0x0"
+          ],
+          "route_words": [
+            "0x6006",
+            "0x6600",
+            "0x6",
+            "0x0"
+          ],
+          "contacts": [
+            {
+              "contact": "half",
+              "pin": 1,
+              "gpio_mode": 0,
+              "gpio_level": 1,
+              "exti_port": 0,
+              "interrupt_enabled": false,
+              "rising_enabled": false,
+              "falling_enabled": false,
+              "pending": false,
+              "callback_slot": "0x2000f384",
+              "callback": "0x0",
+              "descriptor": "0x2000e34c",
+              "irq": 7,
+              "nvic_enabled": false,
+              "descriptor_words": [
+                "0x61",
+                "0x2000f952",
+                "0x40021800",
+                "0x2"
+              ],
+              "vector": "0x80201fd"
+            },
+            {
+              "contact": "full",
+              "pin": 13,
+              "gpio_mode": 0,
+              "gpio_level": 1,
+              "exti_port": 0,
+              "interrupt_enabled": false,
+              "rising_enabled": false,
+              "falling_enabled": false,
+              "pending": false,
+              "callback_slot": "0x2000f468",
+              "callback": "0x0",
+              "descriptor": "0x2000e40c",
+              "irq": 40,
+              "nvic_enabled": false,
+              "descriptor_words": [
+                "0x6d",
+                "0x2000f952",
+                "0x40021800",
+                "0x2000"
+              ],
+              "vector": "0x80201fd"
+            }
+          ]
+        },
+        "words": {
+          "0x14": "0x0",
+          "0x18": "0x0",
+          "0x1c": "0x0",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0x0",
+          "0x2c": "0x0",
+          "0x30": "0x0",
+          "0x34": "0x2001372c",
+          "0x38": "0x2001363c"
+        },
+        "backend_header": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          30,
+          0,
+          3,
+          0,
+          0,
+          0,
+          6,
+          0,
+          6,
+          6,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "backend_words": {
+          "0x18": "0x803686d",
+          "0x1c": "0x80369a1",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0x1ad04dd"
+        },
+        "backend_request": [
+          0,
+          0,
+          255,
+          255,
+          0,
+          0
+        ],
+        "backend_timer_bases": [
+          "0x40000800",
+          "0x40000000"
+        ],
+        "faults": [
+          "0x0",
+          "0x0"
+        ]
+      },
+      "sampling_header": [
+        2,
+        0,
+        0,
+        18,
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        0,
+        3,
+        0,
+        1,
+        5,
+        1,
+        0,
+        0,
+        18,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        52,
+        201,
+        0,
+        0,
+        227,
+        210,
+        38,
+        16,
+        153,
+        210,
+        38,
+        16,
+        111,
+        209,
+        38,
+        16,
+        0,
+        0,
+        0,
+        0,
+        148,
+        73,
+        128,
+        177,
+        220,
+        62,
+        128,
+        177,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        240,
+        55,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        62,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sampling_registers": {
+        "control": {
+          "0x0": "0x3",
+          "0x4": "0x0",
+          "0x8": "0x0",
+          "0xc": "0x206",
+          "0x10": "0x1",
+          "0x14": "0x1",
+          "0x18": "0x0",
+          "0x1c": "0x0",
+          "0x20": "0x0",
+          "0x24": "0x0",
+          "0x28": "0x1",
+          "0x2c": "0x1",
+          "0x30": "0x0",
+          "0x34": "0x19",
+          "0x38": "0x0",
+          "0x40": "0x27feb7",
+          "0x44": "0x0",
+          "0x4c": "0x0",
+          "0x50": "0x1"
+        },
+        "outputs": [
+          [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x6000004",
+            "0x0",
+            "0x0"
+          ],
+          [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x6000006",
+            "0x0",
+            "0x0"
+          ]
+        ]
+      },
+      "sampling_counter_context": [
+        6,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        121,
+        183,
+        46,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        184,
+        46,
+        16,
+        16,
+        0,
+        0,
+        0
+      ],
+      "counter_ticks": 302081240,
+      "counter_frequency": 48000000,
+      "still_image_work": [
+        {
+          "address": "0xb238e694",
+          "count": 1,
+          "jobs": [
+            {
+              "request": "0xb2d14180",
+              "parameters": "0xb2d3a340",
+              "owner": "0xb2d0fc80",
+              "queue_flags": "0x1",
+              "control_flags": 1,
+              "stage_table": "0xb2be7624",
+              "completion": "0x103ce237",
+              "stage_states": [
+                1,
+                0,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3
+              ],
+              "stage_indices": [
+                1,
+                0,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295,
+                4294967295
+              ],
+              "active_stages": [
+                {
+                  "stage": 0,
+                  "state": 1,
+                  "column": 1,
+                  "descriptor": "0xb2be66ac",
+                  "fields": [
+                    "0x1",
+                    "0xb1864e64",
+                    "0x0",
+                    "0x0",
+                    "0x102c2a4b",
+                    "0xb2be65bc",
+                    "0x0",
+                    "0x0",
+                    "0x0",
+                    "0x1"
+                  ],
+                  "methods": [
+                    {
+                      "index": 0,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c3df1"
+                      ]
+                    },
+                    {
+                      "index": 1,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c3eb5"
+                      ]
+                    },
+                    {
+                      "index": 2,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c3f9f"
+                      ]
+                    },
+                    {
+                      "index": 3,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c2931"
+                      ]
+                    },
+                    {
+                      "index": 4,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c3c87"
+                      ]
+                    },
+                    {
+                      "index": 5,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c3d83"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "stage": 1,
+                  "state": 0,
+                  "column": 0,
+                  "descriptor": "0xb2be7084",
+                  "fields": [
+                    "0x2",
+                    "0xb1864ecc",
+                    "0x0",
+                    "0x0",
+                    "0x0",
+                    "0xb2be6f94",
+                    "0x0",
+                    "0x0",
+                    "0x0",
+                    "0x1"
+                  ],
+                  "methods": [
+                    {
+                      "index": 0,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c2c4b"
+                      ]
+                    },
+                    {
+                      "index": 1,
+                      "fields": [
+                        "0x0",
+                        "0x0",
+                        "0x102c2949"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "jpeg_encoder": {
+        "current_descriptor": "0x0",
+        "accumulated_flags": "0x0"
+      },
+      "input_state": {
+        "state_5": 2,
+        "state_6": 2,
+        "finite_frames": [
+          0,
+          1
+        ],
+        "processing_flags": "0x2",
+        "finite_request": "0x0",
+        "finite_queue_count": 0,
+        "mode1_output_latches": [
+          0,
+          0
+        ],
+        "configured_mask": "0x2eb",
+        "required_mask": "0x2eb",
+        "processing_masks": [
+          "0x0",
+          "0x2eb",
+          "0x0",
+          "0x2eb"
+        ]
+      },
+      "release_gate": 0,
+      "primary_input": {
+        "geometry": {
+          "0x20069500": "0x2",
+          "0x20069504": "0x20600000",
+          "0x20069508": "0x15900000",
+          "0x2006950c": "0x0",
+          "0x20069510": "0x0"
+        },
+        "dma": {
+          "0x8": "0x3090",
+          "0x14": "0x1",
+          "0x18": "0x1",
+          "0x3c": "0x0",
+          "0x40": "0x1",
+          "0x44": "0x0",
+          "0x48": "0x3",
+          "0x50": "0xa6f22000",
+          "0x60": "0x0"
+        },
+        "second_dma": {
+          "0x8": "0x3090",
+          "0x50": "0x12d0b080",
+          "0x54": "0x0",
+          "0x58": "0x0",
+          "0x5c": "0x0",
+          "0x60": "0x0",
+          "0x64": "0x0",
+          "0x68": "0x0",
+          "0x6c": "0x0"
+        },
+        "buffers": [
+          {
+            "name": "input",
+            "address": "0xa6f22000",
+            "readable": true,
+            "sample": {
+              "bytes": 4096,
+              "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+              "unique_bytes": 1,
+              "minimum": 0,
+              "maximum": 0
+            },
+            "section_descriptor": "0xa6f14426",
+            "physical_address": "0xa6f22000"
+          },
+          {
+            "name": "output0",
+            "address": "0x5d134000"
+          },
+          {
+            "name": "output1",
+            "address": "0x5d170000"
+          }
+        ],
+        "address_remap": [
+          {
+            "base": "0x201350b0",
+            "entries": [
+              {
+                "slot": 0,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 1,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 2,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 3,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 4,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 5,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 6,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 7,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              }
+            ]
+          },
+          {
+            "base": "0x2013d0b0",
+            "entries": [
+              {
+                "slot": 0,
+                "target_page": "0xe0000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 1,
+                "target_page": "0xe8000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x8000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 2,
+                "target_page": "0xb8000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x10000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 3,
+                "target_page": "0xc0000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x18000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 4,
+                "target_page": "0xc0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x20000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 5,
+                "target_page": "0xd0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x30000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 6,
+                "target_page": "0xc0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x40000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 7,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              }
+            ]
+          }
+        ],
+        "execution_sections": [
+          {
+            "address": "0x10100000",
+            "descriptor": "0xbab0c426",
+            "physical_address": "0xbab00000"
+          },
+          {
+            "address": "0x1020c334",
+            "descriptor": "0xbac0c426",
+            "physical_address": "0xbac0c334"
+          },
+          {
+            "address": "0x1038848a",
+            "descriptor": "0xbad0c426",
+            "physical_address": "0xbad8848a"
+          },
+          {
+            "address": "0x10542038",
+            "descriptor": "0xbaf0c426",
+            "physical_address": "0xbaf42038"
+          },
+          {
+            "address": "0xb26b3924",
+            "descriptor": "0xb2614426",
+            "physical_address": "0xb26b3924"
+          }
+        ]
+      }
+    },
+    "sd_host_trace": {
+      "counts": {
+        "sdhci_access": 1275,
+        "selected": 10666,
+        "sdhci_send_command": 63,
+        "sdhci_adma_loop": 120,
+        "sdcard_write_block": 10265
+      },
+      "event_limit": 256,
+      "truncated": true,
+      "scope": "Ordered command, DMA and control metadata only; data-port contents are excluded"
+    },
+    "memory_transfer_trace": {
+      "count": 391,
+      "event_limit": 1024,
+      "truncated": false,
+      "scope": "Latest engine memory DMA metadata only; no buffer contents"
+    },
+    "controller_gpio_trace": {
+      "counts": {
+        "z72_controller_gpio_transition": 1097,
+        "z72_engine_gpio_latch": 1176
+      },
+      "event_limit": 4096,
+      "truncated": false,
+      "scope": "Controller output transitions and engine GPIO latch changes at virtual nanoseconds; no assumed wiring"
+    },
+    "diagnostic_capture": null,
+    "body_settings": {
+      "caller_fixture": true,
+      "triggered": true,
+      "caller_entered": true,
+      "caller_returned": true,
+      "body_shutter_used": true,
+      "settings_only": true,
+      "hardware_completion_host_supplied": false,
+      "finish_observation_max_contexts": 4,
+      "request_words": null,
+      "format_request": null,
+      "storage_request": null,
+      "code_bytes": 324,
+      "code_sha256": "b849fb9373eebbed7aed143c8a54de5fa2e80e8f827aa13aba30fb3f4eadc820",
+      "settings_fixture": {
+        "program_property": "0x0000",
+        "program_value": 3,
+        "exposure_property": "0x500d",
+        "exposure_value": 1000,
+        "setter": "0x104d1620",
+        "readback_required": true,
+        "program_readback_expected": 1,
+        "program_validator": "0x10634324",
+        "program_setter": "0x106342de",
+        "control_mode_request": false,
+        "silent": {
+          "property": "0x057a",
+          "value": 1,
+          "effective_property": "0x161d",
+          "validator": "0x10634324",
+          "setter": "0x106342de",
+          "getter": "0x1063c7d4",
+          "readback_required": true,
+          "validation": 1,
+          "setter_status": "0x0",
+          "readback": 1,
+          "effective_readback": 1,
+          "ready": true
+        },
+        "program_status": "0x0",
+        "exposure_status": "0x2001",
+        "final_property_status": "0x0",
+        "program_readback": 1,
+        "exposure_readback": 1000,
+        "ready": true,
+        "capture_api_invoked": false,
+        "control_mode": {
+          "eligible": 0,
+          "request_status": "0x0",
+          "readback": 0,
+          "notification": "0x0",
+          "notification_status": 0,
+          "request_invoked": false,
+          "notification_received": false
+        }
+      },
+      "resources_before": {
+        "masks": [
+          {
+            "descriptor": "0xb1869898",
+            "capacity": 124,
+            "pointer": "0xb23f7e24",
+            "set_bits": [
+              49,
+              87
+            ]
+          },
+          {
+            "descriptor": "0xb18698a0",
+            "capacity": 124,
+            "pointer": "0xb23f7e34",
+            "set_bits": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              48,
+              50,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120,
+              121,
+              122,
+              123
+            ]
+          },
+          {
+            "descriptor": "0xb18698b0",
+            "capacity": 124,
+            "pointer": "0xb23f7e54",
+            "set_bits": [
+              49,
+              87
+            ]
+          }
+        ],
+        "primary_scratch_intersection": [
+          49,
+          87
+        ],
+        "processing_resource_flags": [
+          1,
+          1
+        ],
+        "ui_reason_byte": 0
+      },
+      "trigger_counter_ticks": 98402745,
+      "api_status": null,
+      "observed_after_trigger_counter_seconds": 4.243302,
+      "result_words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "api_returned": false,
+      "api_accepted": false,
+      "completion_count": 0,
+      "scratch_restored": true,
+      "callback_restored": true,
+      "scratch_retained_until_vm_close": false
+    },
+    "body_repeat_capture": {
+      "requested": true,
+      "shots": [
+        {
+          "requested": true,
+          "released": true,
+          "press_ticks": 153360670,
+          "shot": 1,
+          "release_ticks": 165422392,
+          "held_counter_seconds": 0.251285875
+        },
+        {
+          "requested": true,
+          "released": true,
+          "press_ticks": 206067113,
+          "shot": 2,
+          "release_ticks": 218126794,
+          "held_counter_seconds": 0.25124335416666665
+        }
+      ]
+    },
+    "capture_wait_idle": false,
+    "capture_focus": true,
+    "compute_statistics_skip": {
+      "requested": true,
+      "contexts": [
+        {
+          "context": "0xc19d3ec0",
+          "nested": "0xc29b9040",
+          "address": "0xc29bbbbc",
+          "previous": 0,
+          "supplied": 2,
+          "native_clear_observed": true,
+          "preprocessing_inputs": [
+            {
+              "address": "0xc29bbbb9",
+              "offset": "0x2b79",
+              "previous": 0,
+              "supplied": 1
+            },
+            {
+              "address": "0xc29bbbbb",
+              "offset": "0x2b7b",
+              "previous": 0,
+              "supplied": 2
+            }
+          ],
+          "sflt_skip_observed": true,
+          "raw_compute_skip_observed": true,
+          "result_halfwords": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "still_preprocessing_skip_requested": true,
+    "controller_step_link": true,
+    "controller_step_feedback": true,
+    "controller_actuator": true,
+    "sampling_output_complete": true,
+    "primary_exposure_sync": false,
+    "controller_step_trigger": {
+      "requested": false,
+      "supplied": false
+    },
+    "capture_counter_window": {
+      "requested_seconds": 2.0,
+      "reached": true
+    },
+    "observed_seconds": 610.422,
+    "observed_counter_seconds": 4.931758,
+    "driver_notification_hits": 0,
+    "tail_frame_events": [],
+    "mode1_frame_events": [],
+    "memory_watch": null,
+    "shutter_on_preview": false,
+    "preview_press_sent": true,
+    "half_before_full": true,
+    "preview_half_sent": true,
+    "input_boundary_events": false,
+    "shutter_on_ready": true,
+    "application_only": true,
+    "image_work_events": false,
+    "body_state_events": false,
+    "body_capture_events": false,
+    "body_periodic_operations": {},
+    "body_input_events": false,
+    "body_input_samples": {},
+    "body_compute_events": false,
+    "body_system_events": false,
+    "shutter_click": {
+      "requested": true,
+      "released": true,
+      "press_ticks": 206067113,
+      "shot": 2,
+      "release_ticks": 218126794,
+      "held_counter_seconds": 0.25124335416666665
+    },
+    "unseen": [
+      "body-native-capture-api",
+      "body-native-capture-release",
+      "body-operation59-api",
+      "body-operation59-task",
+      "release-configuration-timer-callback",
+      "execution-prefetch-abort",
+      "execution-data-abort",
+      "slave-execution-prefetch-abort",
+      "slave-execution-data-abort",
+      "capture-slave-compute-init-task",
+      "capture-slave-compute-init-memory-ready",
+      "capture-slave-compute-init-program",
+      "capture-slave-compute-init-program-copy-return",
+      "capture-slave-compute-init-configure",
+      "capture-slave-compute-init-configure-return",
+      "capture-slave-compute-init-memory-switch",
+      "capture-slave-compute-control-one-entry",
+      "capture-slave-compute-control-one-written",
+      "capture-slave-compute-status-check",
+      "capture-slave-compute-state-request",
+      "capture-slave-compute-flush-request",
+      "body-half-release-deferred-callback",
+      "body-release-mask-clear",
+      "body-full-information-result",
+      "body-full-property-result",
+      "body-full-system-busy-result",
+      "body-full-system-status-callback",
+      "capture-encoder-configure",
+      "capture-encoder-start",
+      "capture-input-hard-stop-entry",
+      "capture-input-hard-stop-return",
+      "capture-input-driver-output-enqueue",
+      "capture-alternate-context-entry",
+      "capture-alternate-context-ready",
+      "capture-work-mode-rejected",
+      "capture-display-deferred",
+      "capture-display-reset-before",
+      "capture-display-reset-after",
+      "capture-image-stop-command",
+      "capture-image-control-first-wait",
+      "capture-release-stop-entry",
+      "capture-release-stop-state-updated",
+      "capture-release-signal",
+      "capture-release-completion-notification",
+      "capture-release-phase-request",
+      "capture-release-phase-request-return",
+      "capture-release-phase-result",
+      "capture-release-count-updated",
+      "capture-input-completed-enqueue",
+      "capture-image-tracking-enqueue-mode2",
+      "capture-input-parameter-clone",
+      "capture-input-parameter-clone-ready",
+      "capture-input-parameter-copy",
+      "capture-metadata-skip-body",
+      "capture-jpeg-job-build",
+      "capture-jpeg-worker-output-allocation-return",
+      "capture-jpeg-worker-first-submit",
+      "capture-jpeg-worker-second-submit",
+      "capture-input-selection-empty",
+      "capture-still-job-queue",
+      "capture-input-adapter-command",
+      "capture-input-adapter-response",
+      "capture-processing-second-handshake-request",
+      "capture-processing-first-handshake-request",
+      "capture-gpio-first-handshake",
+      "capture-gpio-second-handshake",
+      "capture-gpio-input-callback",
+      "capture-gpio-timer-callback",
+      "capture-sampling-second-step-producer",
+      "capture-sampling-stage5-wait",
+      "capture-sampling-counter-callback",
+      "capture-sampling-counter-configure",
+      "capture-sampling-hardware-operation",
+      "capture-sampling-output-control",
+      "capture-sampling-output-gate",
+      "capture-sampling-output-configure",
+      "capture-sampling-first-output-callback",
+      "capture-sampling-second-output-callback",
+      "capture-controller-channel9-request",
+      "capture-controller-channel9-task",
+      "capture-controller-channel9-command2",
+      "capture-controller-channel9-result9",
+      "capture-controller-backend-configure",
+      "capture-controller-backend-configured",
+      "capture-controller-backend-request",
+      "capture-controller-backend-task",
+      "capture-controller-backend-start",
+      "capture-controller-backend-hardware-start",
+      "capture-controller-backend-phase-complete",
+      "capture-controller-backend-notification",
+      "capture-controller-step-input-armed",
+      "capture-controller-step-trigger",
+      "capture-controller-step-request",
+      "capture-controller-step-input-rearmed",
+      "capture-controller-step-input-callback",
+      "capture-slave-sflt-output-allocation-return",
+      "capture-slave-sflt-request",
+      "capture-slave-sflt-request-return",
+      "capture-slave-sflt-service-submit",
+      "capture-slave-sflt-service-execute",
+      "capture-slave-sflt-program-packed",
+      "capture-slave-sflt-start",
+      "capture-slave-sflt-service-wait",
+      "capture-slave-sflt-interrupt",
+      "capture-slave-sflt-service-callback",
+      "capture-slave-processing-service-submit",
+      "capture-slave-processing-bank1-interrupt",
+      "capture-slave-processing-bank1-callback",
+      "capture-slave-stage0-transform-return",
+      "capture-slave-stage0-statistics-return",
+      "capture-slave-compute-entry",
+      "capture-slave-compute-first-return",
+      "capture-slave-compute-second-return",
+      "capture-slave-compute-driver",
+      "capture-slave-compute-initialized",
+      "capture-slave-compute-submit-return",
+      "capture-slave-compute-wait-return",
+      "capture-slave-compute-channel-start",
+      "body-status-list-update",
+      "body-status-input-classification",
+      "body-status-operation-submit",
+      "body-status-operation-worker",
+      "body-sampling-signal-request",
+      "body-sampling-capture-missing-flag",
+      "body-sampling-capture-second-edge",
+      "release-action-property-check",
+      "body-action-mode-result",
+      "body-action-condition-result",
+      "body-action-flags-choice"
+    ]
+  },
+  "processing_resource_header": true,
+  "input_dma_before": {
+    "frames": 7,
+    "address": "0x58d1a000",
+    "stride": 2080,
+    "running_mask": "0x1",
+    "frame_ticks": 9,
+    "startup_grid_frames": 0,
+    "startup_grid_address": "0x0",
+    "processing_frames": 0,
+    "processing_grids": 0,
+    "auxiliary_jobs": 0,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "e234525b90ade5365ae68ba62f32a041cbb350c28729a07e386c75a0dcb91cab",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "final_application": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 634,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "input_dma_after": {
+    "frames": 103,
+    "address": "0x58d1a000",
+    "stride": 2080,
+    "running_mask": "0x6ff",
+    "frame_ticks": 151,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 89,
+    "processing_grids": 89,
+    "auxiliary_jobs": 74,
+    "primary_frames": 1,
+    "primary_address": "0x62700000",
+    "primary_second_address": "0xbad0b080",
+    "primary_current_row_strides": {
+      "first": 12432,
+      "full": 12432
+    },
+    "primary_samples": [],
+    "primary_samples_unavailable": "Current configuration is not a supported RAW row layout",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "e234525b90ade5365ae68ba62f32a041cbb350c28729a07e386c75a0dcb91cab",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "full_report_archive": {
+    "path": ".local\\capture-report-archive\\body_silent_repeat_capture.json",
+    "bytes": 9105629,
+    "sha256": "c02759372a238640261cc3ebac0e80301731869ac9602b5bf165da7dd86fd01b"
+  },
+  "unimplemented_input_profile": {
+    "geometry": [
+      "0x2",
+      "0x20600000",
+      "0x15900000",
+      "0x0",
+      "0x0"
+    ],
+    "width": 8288,
+    "height": 5520,
+    "packed_bits": 12,
+    "split": false,
+    "row_stride": 12432,
+    "target": "0xa6f22000",
+    "owner": "master",
+    "note": "Native second capture requests a complete RAW row. The pixel backend accepts only the earlier split layout, so primary count remains 1."
+  }
+}
