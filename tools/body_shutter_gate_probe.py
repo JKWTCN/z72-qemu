@@ -356,6 +356,11 @@ CAPTURE_WORK_WAIT_POINTS = {
     0x10269e02: 'capture-work-result-wait',
     0x10269e06: 'capture-work-result-wait-return',
 }
+COMPUTE_STATISTICS_SKIP_POINTS = {
+    0x1012c648: 'capture-slave-statistics-skip-gate',
+    0x1012c6b0: 'capture-slave-statistics-skip-native-clear',
+    0x1012c6d2: 'capture-slave-statistics-skip-finish',
+}
 IMAGE_WORK_WAIT_POINTS = {
     0x10268c2a: 'image-work-service-wait',
     0x10268c2e: 'image-work-service-wait-return',
@@ -1611,10 +1616,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_capture_events=False, body_input_events=False, body_compute_events=False,
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
-            capture_format_3800=False, body_exposure=None):
+            capture_format_3800=False, body_exposure=None, skip_compute_statistics=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
+    slave_points = CAPTURE_SLAVE_POINTS | (COMPUTE_STATISTICS_SKIP_POINTS
+                                           if skip_compute_statistics else {})
+    skipped_statistics = {}
     armed = {ACTION: 'application-action'}
     if playback:
         armed.update(AFTER_PLAYBACK)
@@ -1706,7 +1714,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         capture_input_path = next(path for path in paths if machine.qmp.command(
             'qom-get', dict(path=path, property='master-role')))
         for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
-                               CAPTURE_SLAVE_POINTS).items():
+                               slave_points).items():
             if address in CAPTURE_SLAVE_INIT_POINTS:
                 continue
             require(address not in armed, 'Capture input observation overlaps a breakpoint')
@@ -1918,7 +1926,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 memory_watch_armed = True
                 continue
             require(pc in armed, f'Unexpected stop at {pc:#x}')
-            repeat = thread > 2 or pc in CAPTURE_SLAVE_POINTS
+            repeat = thread > 2 or pc in slave_points
             if pc in ENGINE_ABORT_POINTS and thread <= 4:
                 prefetch = pc in (0x1010000c, 0x1003410c)
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
@@ -2007,12 +2015,44 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 records.append(record)
                 hits[pc] = hits.get(pc, 0) + 1
                 repeat = hits[pc] < (32 if pc == 0x08034de0 else 8)
-            if thread in (3, 4) and pc in CAPTURE_SLAVE_POINTS:
+            if thread in (3, 4) and pc in slave_points:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                         ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                          'r8', 'r9', 'r10', 'r11', 'lr')})
                 keep = True
+                if skip_compute_statistics and pc in COMPUTE_STATISTICS_SKIP_POINTS:
+                    context = remote.get(registers, 'r4')
+                    require(context % 4 == 0 and 0xc1000000 <= context and
+                            context + 0x4f8 <= 0xc5000000,
+                            'Unexpected slave statistics context')
+                    nested = int.from_bytes(remote.read(context + 0x4f4, 4), 'little')
+                    require(nested % 4 == 0 and 0xc1000000 <= nested and
+                            nested + 0x2b7d <= 0xc5000000,
+                            'Unexpected slave statistics parameter block')
+                    if pc == 0x1012c648:
+                        require(remote.read(pc, 14) == bytes.fromhex(
+                            'd4f8f40442f67c31095c02292cd0'),
+                            'Original statistics gate instructions differ')
+                        address = nested + 0x2b7c
+                        previous = remote.read(address, 1)[0]
+                        remote.write(address, b'\x02')
+                        require(remote.read(address, 1) == b'\x02',
+                                'Statistics skip input readback differs')
+                        change = dict(context=hex(context), nested=hex(nested),
+                            address=hex(address), previous=previous, supplied=2,
+                            native_clear_observed=False)
+                        skipped_statistics[context] = change
+                        record['experimental_statistics_input'] = dict(change)
+                    elif context in skipped_statistics:
+                        require(skipped_statistics[context]['nested'] == hex(nested),
+                                'Statistics parameter block changed during native clear')
+                        if pc == 0x1012c6d2:
+                            results = list(struct.unpack('<3H', remote.read(nested + 0x1e08, 6)))
+                            require(results == [0, 0, 0], 'Native statistics skip did not clear its results')
+                            skipped_statistics[context].update(native_clear_observed=True,
+                                                               result_halfwords=results)
+                            record['native_statistics_skip'] = dict(skipped_statistics[context])
                 if pc == 0x10129faa:
                     pointer = remote.get(registers, 'r1')
                     keep = remote.get(registers, 'r0') == 0x42070001 and 0xc1000000 <= pointer <= 0xc81fffe0
@@ -2027,7 +2067,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     records.append(record)
                     hits[pc] = hits.get(pc, 0) + 1
                 repeat = not keep or hits[pc] < 8
-            if thread <= 2 and pc not in CAPTURE_SLAVE_POINTS:
+            if thread <= 2 and pc not in slave_points:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
@@ -2995,6 +3035,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_settings=capture_caller.report if body_exposure is not None else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
+                    compute_statistics_skip=dict(requested=skip_compute_statistics,
+                                                 contexts=list(skipped_statistics.values())),
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
@@ -3142,6 +3184,8 @@ def main():
                         help='Defer the diagnostic capture until the native filtered resource intersection clears')
     parser.add_argument('--capture-focus', action='store_true',
                         help='Trace diagnostic capture admission, stop and primary allocation without background input work')
+    parser.add_argument('--skip-compute-statistics', action='store_true',
+                        help='Experimental RAM input: select the native value-2 still-statistics skip branch')
     parser.add_argument('--controller-step-trigger', action='store_true',
                         help='Laboratory input: pulse and restore controller G8 after native capture preparation arms it')
     parser.add_argument('--controller-actuator', action='store_true',
@@ -3236,6 +3280,8 @@ def main():
             'Focused capture requires a diagnostic capture or body exposure without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
             'Controller step input experiment requires focused capture tracing')
+    require(not args.skip_compute_statistics or args.capture_focus,
+            'Statistics skip experiment requires focused capture tracing')
     require(sum((args.trace_primary_allocation_boot, args.trace_capture_resource_boot,
                  args.trace_capture_compute_boot)) <= 1,
             'Select one boot observation')
@@ -3384,6 +3430,7 @@ def main():
                                     body_input_events=args.body_input_events,
                                     body_compute_events=args.body_compute_events,
                                     body_system_events=args.body_system_events,
+                                    skip_compute_statistics=args.skip_compute_statistics,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
