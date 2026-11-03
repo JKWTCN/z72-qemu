@@ -1,0 +1,157 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "request_property": "0x057a",
+  "request_registration": "0x118f65a8",
+  "request_processor": "0x10336a68",
+  "normalized_cases": [
+    {
+      "requested": 0,
+      "flags": "0x0",
+      "updates": [
+        [
+          5661,
+          0
+        ]
+      ]
+    },
+    {
+      "requested": 0,
+      "flags": "0x1",
+      "updates": [
+        [
+          5661,
+          0
+        ]
+      ]
+    },
+    {
+      "requested": 0,
+      "flags": "0x20",
+      "updates": []
+    },
+    {
+      "requested": 0,
+      "flags": "0x200",
+      "updates": []
+    },
+    {
+      "requested": 1,
+      "flags": "0x0",
+      "updates": [
+        [
+          5661,
+          1
+        ]
+      ]
+    },
+    {
+      "requested": 1,
+      "flags": "0x1",
+      "updates": [
+        [
+          5661,
+          0
+        ]
+      ]
+    },
+    {
+      "requested": 1,
+      "flags": "0x20",
+      "updates": []
+    },
+    {
+      "requested": 1,
+      "flags": "0x200",
+      "updates": []
+    }
+  ],
+  "property": "0x161d",
+  "descriptor": "0x11901834",
+  "scalar_address": "0xb25517dc",
+  "property_array": "0x118e60b4",
+  "scalar_offset": "0x138",
+  "bulk_getter": "0x101004a0",
+  "camera_parameter_getter": "0x1063c7d4",
+  "copy_block": [
+    "0x10358670",
+    "0x10358678"
+  ],
+  "parameter_offset": "0x2e67",
+  "format_builder": "0x102324cc",
+  "table_selector": "0x1034f918",
+  "cases": [
+    {
+      "runtime_state": 0,
+      "scalar": 0,
+      "parameter_byte": 0,
+      "format_mask": "0x100",
+      "table": "0x119cf4cc",
+      "label": "LvStill"
+    },
+    {
+      "runtime_state": 0,
+      "scalar": 1,
+      "parameter_byte": 1,
+      "format_mask": "0x200",
+      "table": "0x119cf94c",
+      "label": "LvStillSilent"
+    },
+    {
+      "runtime_state": 0,
+      "scalar": 2,
+      "parameter_byte": 2,
+      "format_mask": "0x100",
+      "table": "0x119cf4cc",
+      "label": "LvStill"
+    },
+    {
+      "runtime_state": 0,
+      "scalar": 255,
+      "parameter_byte": 255,
+      "format_mask": "0x100",
+      "table": "0x119cf4cc",
+      "label": "LvStill"
+    },
+    {
+      "runtime_state": 2,
+      "scalar": 0,
+      "parameter_byte": 0,
+      "format_mask": "0x1",
+      "table": "0x119cebcc",
+      "label": "Still"
+    },
+    {
+      "runtime_state": 2,
+      "scalar": 1,
+      "parameter_byte": 1,
+      "format_mask": "0x2",
+      "table": "0x119cf04c",
+      "label": "StillSilent"
+    },
+    {
+      "runtime_state": 2,
+      "scalar": 2,
+      "parameter_byte": 2,
+      "format_mask": "0x1",
+      "table": "0x119cebcc",
+      "label": "Still"
+    },
+    {
+      "runtime_state": 2,
+      "scalar": 255,
+      "parameter_byte": 255,
+      "format_mask": "0x1",
+      "table": "0x119cebcc",
+      "label": "Still"
+    }
+  ],
+  "limitations": [
+    "Synthetic request descriptors; record and acknowledge the derived batch at 0x1032b854",
+    "Synthetic scalar and runtime state; full parameter construction is outside this check",
+    "Does not exercise native setting validation, propagation, capture or mechanical sampling",
+    "Only scalar value 1 selects the recovered silent tables; other values are negative cases"
+  ]
+}

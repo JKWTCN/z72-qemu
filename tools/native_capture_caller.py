@@ -81,8 +81,9 @@ POST_SUBMIT_POINTS = {
 }
 
 
-def caller_code(exposure=None, settings_only=False):
+def caller_code(exposure=None, settings_only=False, silent=False):
     require(not settings_only or exposure is not None, 'Settings caller requires an exposure')
+    require(not silent or settings_only, 'Silent setting requires the local settings caller')
     code, literals, branches, labels = bytearray(), [], [], {}
 
     def emit(value):
@@ -210,6 +211,43 @@ def caller_code(exposure=None, settings_only=False):
         literal(5, exposure)
         emit(0x42A8)
         jump('return', 1)
+        if silent:
+            literal(0, 0x057a)
+            emit(0x2101)
+            literal(6, 0x10634325)  # original allowed-value validation
+            emit(0x47B0)
+            store(0x24)
+            emit(0x2801)
+            jump('return', 1)
+            literal(0, 0x057a)
+            emit(0x2101)
+            literal(6, 0x106342DF)  # original parameter setter and propagation
+            emit(0x47B0)
+            store(0x28)
+            emit(0x2800)
+            jump('return', 1)
+            literal(5, 1000)
+            labels['silent_wait'] = len(code)
+            literal(0, 0x057a)
+            literal(6, 0x1063C7D5)
+            emit(0x47B0)
+            store(0x2c)
+            emit(0x2801)
+            jump('silent_retry', 1)
+            literal(0, 0x161d)
+            literal(6, 0x1063C7D5)  # original camera parameter readback
+            emit(0x47B0)
+            store(0x30)
+            emit(0x2801)
+            jump('silent_ready', 0)
+            labels['silent_retry'] = len(code)
+            emit(0x3D01)
+            jump('return', 0)
+            emit(0x2001)
+            literal(3, 0x103DC539)
+            emit(0x4798)
+            jump('silent_wait')
+            labels['silent_ready'] = len(code)
         emit(0x2001)
         store(0x58)              # both properties accepted and read back
         if not settings_only:
@@ -273,11 +311,12 @@ def caller_code(exposure=None, settings_only=False):
 
 class NativeCaptureCaller:
     def __init__(self, remote, exposure=None, jpeg=False, storage=0, format_3800=False,
-                 settings_only=False):
+                 settings_only=False, silent=False):
         request_words = capture_request_words(jpeg, storage, format_3800)
         self.remote = remote
         self.exposure = exposure
-        self.code, self.return_pc, completion = caller_code(exposure, settings_only)
+        self.silent = silent
+        self.code, self.return_pc, completion = caller_code(exposure, settings_only, silent)
         self.completion_pc = completion
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
@@ -341,6 +380,9 @@ class NativeCaptureCaller:
                            self.return_pc: 'body-exposure-settings-return',
                            0x103696e4: 'capture-encoder-configure',
                            0x1036991a: 'capture-encoder-start'}
+            if silent:
+                self.points.update({0x1034f918: 'body-capture-format-table',
+                                    0x102ea626: 'body-sampling-mode-selected'})
         self.ui_hits = {}
         remote.select_thread(1)
         require(self.word(CALLBACK) == ORIGINAL_CALLBACK, 'Unexpected resource-8 callback')
@@ -375,6 +417,11 @@ class NativeCaptureCaller:
                 self.report['settings_fixture'].update(program_property='0x0000', program_value=3,
                     program_readback_expected=1, program_validator='0x10634324',
                     program_setter='0x106342de', setter='0x104d1620', control_mode_request=False)
+            if silent:
+                self.report['settings_fixture']['silent'] = dict(property='0x057a', value=1,
+                    effective_property='0x161d',
+                    validator='0x10634324', setter='0x106342de', getter='0x1063c7d4',
+                    readback_required=True)
         self.entry_sp = None
         self.native_return = None
         excluded = self.remote.read(0x118FA48B, 40)
@@ -640,6 +687,11 @@ class NativeCaptureCaller:
             request_status=hex(mode[1]), readback=mode[2],
             notification=hex(mode[3]), notification_status=mode[4],
             request_invoked=bool(mode[5]), notification_received=bool(mode[6]))
+        if self.silent:
+            validated, status, readback, effective = struct.unpack('<4I', self.remote.read(RESULT + 0x24, 16))
+            self.report['settings_fixture']['silent'].update(validation=validated,
+                setter_status=hex(status), readback=readback, effective_readback=effective,
+                ready=validated == 1 and status == 0 and readback == effective == 1)
 
     def close(self):
         self.remote.select_thread(1)

@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "temporary_card_retained": false,
+  "temporary_card": ".local\\body-silent-native-capture.raw",
+  "native_key_sequences": [
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 141748490,
+      "shot": 1,
+      "release_ticks": 154064992,
+      "held_counter_seconds": 0.2565937916666667
+    }
+  ],
+  "completed_raw_frames": 0,
+  "final_state": [
+    2,
+    0
+  ],
+  "final_driver_state": 9,
+  "system_input_class": 1,
+  "status_codes": [],
+  "files": [
+    {
+      "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+      "bytes": 978645,
+      "sha256": "c45e5adbcfd485cf99889a267e29fd03595c3af0580d0dbad7e127abb79c2d8a",
+      "decoded": true,
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0xc6c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0xd8000",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-1507a3f36d5c61c890feec9c0724acdd562f8a5f418ec30c031c080eb8f95243.jpg",
+          "offset": "0xd6c02",
+          "bytes": 4947
+        },
+        {
+          "ram_jpeg": "codec-2ac9f8cd89fe960ca70f8501edb2032d8bc542a1044a6b6ee74a15948529523c.jpg",
+          "offset": "0xe8002",
+          "bytes": 28371
+        },
+        {
+          "ram_jpeg": "codec-b0e5f28c34fa4a0c44dba86a96e1d057c1769c7911a8effb06c53cb7e4d52360.jpg",
+          "offset": "0x19402",
+          "bytes": 710643
+        },
+        {
+          "ram_jpeg": "codec-e969222122a2abfd25de210c21fa6cd731cefa0d49bb85b0c84c143a4ceb3f82.jpg",
+          "offset": "0x824a",
+          "bytes": 947
+        }
+      ],
+      "pattern_check": {
+        "samples": 11310,
+        "failed_samples": 5655,
+        "maximum_rgb_error": 255
+      },
+      "has_completed_raw": false
+    }
+  ],
+  "original_file_preserved": true,
+  "probe_txt_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+  "repeat_capture_verified": false,
+  "temporary_ram_jpegs_retained": false,
+  "scope": "Original firmware card files. Diagnostic monochrome pixels and explicit DSP preprocessing bypass; physical electronic exposure timing is not established."
+}

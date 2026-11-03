@@ -1913,16 +1913,21 @@ def input_dma_snapshot(machine):
                 peer = int(result['primary_second_address'], 16)
                 first_stride = int.from_bytes(machine._bytes(0x20069808, 4), 'little')
                 full_stride = int.from_bytes(machine._bytes(0x20069908, 4), 'little')
-                require((first_stride, full_stride) in ((4224, 12432), (4928, 14512)),
-                        'Unexpected completed primary input strides')
-                result['primary_row_strides'] = dict(first=first_stride, full=full_stride)
+                result['primary_current_row_strides'] = dict(first=first_stride, full=full_stride)
                 result['primary_samples'] = []
-                for owner, cpu, target, length in (('master', 0, primary, first_stride),
-                                                  ('slave', 2, peer, 5472 * first_stride // 2816)):
-                    data = machine._bytes(target, length, cpu=cpu)
-                    result['primary_samples'].append(dict(owner=owner, cpu=cpu,
-                        address=hex(target), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
-                        unique_bytes=len(set(data)), minimum=min(data), maximum=max(data)))
+                if (first_stride, full_stride) not in ((4224, 12432), (4928, 14512)):
+                    # These registers describe the current request, whereas
+                    # the device counters/addresses retain the last completion.
+                    result['primary_samples_unavailable'] = 'Current configuration is not a supported RAW row layout'
+                else:
+                    result['primary_row_strides'] = dict(first=first_stride, full=full_stride)
+                    result['primary_samples_scope'] = 'Last completed addresses sampled using the current row layout'
+                    for owner, cpu, target, length in (('master', 0, primary, first_stride),
+                                                      ('slave', 2, peer, 5472 * first_stride // 2816)):
+                        data = machine._bytes(target, length, cpu=cpu)
+                        result['primary_samples'].append(dict(owner=owner, cpu=cpu,
+                            address=hex(target), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                            unique_bytes=len(set(data)), minimum=min(data), maximum=max(data)))
             if count and address and 0 < stride <= 16384:
                 data = machine._bytes(address, stride)
                 result['first_row'] = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
@@ -1967,7 +1972,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
             capture_format_3800=False, body_exposure=None, repeat_body_capture=False, skip_compute_statistics=False,
-            skip_still_preprocessing=False):
+            skip_still_preprocessing=False, body_silent=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -2090,7 +2095,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                  exposure=body_exposure if body_exposure is not None else capture_exposure,
                                                  jpeg=capture_jpeg, storage=capture_storage,
                                                  format_3800=capture_format_3800,
-                                                 settings_only=body_exposure is not None)
+                                                 settings_only=body_exposure is not None,
+                                                 silent=body_silent)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -3746,6 +3752,8 @@ def main():
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
     parser.add_argument('--body-exposure', type=int,
                         help='Set local program parameter 0 to 3 and exposure through native APIs before body input')
+    parser.add_argument('--body-silent', action='store_true',
+                        help='With body exposure, set native silent parameter 0x057a and verify effective 0x161d')
     parser.add_argument('--repeat-body-capture', action='store_true',
                         help='Repeat body capture once after native readiness and the still queue recover')
     capture_formats = parser.add_mutually_exclusive_group()
@@ -3882,6 +3890,8 @@ def main():
     require(args.body_exposure is None or args.application_only and args.shutter_on_ready and
             not args.capture_submit_on_ready and 0 < args.body_exposure <= 0xFFFFFFFF,
             'Body exposure requires readiness-triggered body input and a positive 32-bit property value')
+    require(not args.body_silent or args.body_exposure is not None,
+            'Silent body capture requires the local body exposure settings caller')
     require(not args.repeat_body_capture or args.body_exposure is not None and
             args.capture_focus and args.shutter_click and args.half_before_full,
             'Repeated body capture requires focused local exposure settings and staged press/release contacts')
@@ -4034,6 +4044,7 @@ def main():
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
                                     body_exposure=args.body_exposure,
+                                    body_silent=args.body_silent,
                                     repeat_body_capture=args.repeat_body_capture,
                                     capture_jpeg=args.capture_jpeg,
                                     capture_format_3800=args.capture_format_3800,

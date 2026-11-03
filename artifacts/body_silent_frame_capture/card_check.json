@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "filesystem_integrity": true,
+  "observer_failed": true,
+  "observer_error": "Unexpected completed primary input strides",
+  "final_native_report_available": false,
+  "completed_raw_frames": null,
+  "repeat_capture_verified": false,
+  "temporary_card_retained": false,
+  "probe_txt_preserved": true,
+  "jpeg_count": 1,
+  "files": [
+    {
+      "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "14e3afc046da438c67d9547d9c2f93d5113dbfb1326ef66d8f747229a50b2e68",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "offset": "0x824a",
+          "bytes": 10942
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "offset": "0x488202",
+          "bytes": 374772
+        }
+      ],
+      "pattern_check": {
+        "samples": 11310,
+        "failed_samples": 0,
+        "maximum_rgb_error": 0
+      }
+    }
+  ],
+  "scope": "Only an independently verified first card file; final native snapshot was lost to an observer assertion. No second-photo success claimed."
+}

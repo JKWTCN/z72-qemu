@@ -1,0 +1,7 @@
+{
+  "format": 1,
+  "result": "observer failed",
+  "error": "Unexpected completed primary input strides",
+  "stage": "input_dma_after before final report write",
+  "exit_code": 1
+}

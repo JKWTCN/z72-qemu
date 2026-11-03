@@ -15,13 +15,13 @@ from analyze.decode_z72 import require
 from tools.native_capture_caller import caller_code, CODE, OBJECT, REQUEST, RESULT, ORIGINAL_CALLBACK
 
 
-def check_case(failure=None, operation=127, program_selected=False, settings_only=False):
+def check_case(failure=None, operation=127, program_selected=False, settings_only=False, silent=False):
     exposure = 1000
-    code, _, completion = caller_code(exposure, settings_only)
+    code, _, completion = caller_code(exposure, settings_only, silent)
     cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
     functions = (0x104C8254, 0x10779876, 0x104D12AA, 0x103DC538,
                  0x103BA6EA, 0x104C18E2, 0x104C0F20, 0x10634176,
-                 0x10634324, 0x106342DE, 0x104D1620,
+                 0x10634324, 0x106342DE, 0x104D1620, 0x1063C7D4,
                  ORIGINAL_CALLBACK & ~1)
     stop, stack = 0x14000000, 0x14010000
     for page in {CODE & ~4095, OBJECT, stop, stack, *(p & ~4095 for p in functions)}:
@@ -64,11 +64,16 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
         elif address == 0x104D12AA:
             result = exposure + (failure == 'exposure-mismatch')
         elif address == 0x10634324:
-            require(settings_only and args[:2] == [0, 3], 'Invalid local program validation ABI')
-            result = int(failure != 0x500e)
+            require(settings_only and args[:2] in ([0, 3], [0x057a, 1]),
+                    'Invalid local parameter validation ABI')
+            result = int(failure != ('silent-denied' if args[0] else 0x500e))
         elif address == 0x106342DE:
-            require(settings_only and args[:2] == [0, 3], 'Invalid local program setter ABI')
-            result = 0x80000000 if failure == 'local-set-failed' else 0
+            require(settings_only and args[:2] in ([0, 3], [0x057a, 1]),
+                    'Invalid local parameter setter ABI')
+            result = 0x80000000 if failure == ('silent-set-failed' if args[0] else 'local-set-failed') else 0
+        elif address == 0x1063C7D4:
+            require(silent and args[0] in (0x057a, 0x161d), 'Invalid silent readback ABI')
+            result = int(failure != ('silent-mismatch' if args[0] == 0x161d else 'silent-request-mismatch'))
         elif address == 0x104D1620:
             require(settings_only and args[0] == OBJECT + 0x24 and
                     int.from_bytes(uc.mem_read(args[0], 4), 'little') == exposure,
@@ -116,6 +121,18 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
         require(reads == 1001, 'Program readback did not stop at retry limit')
     if failure == 'mode-timeout':
         require(mode_reads == 1000, 'Control-mode readback did not stop at retry limit')
+    if silent and operation == 127:
+        validations = [args[:2] for address, args in calls if address == 0x10634324]
+        setters = [args[:2] for address, args in calls if address == 0x106342DE]
+        require([0x057a, 1] in validations, 'Silent value was not validated')
+        require(([0x057a, 1] in setters) == (failure != 'silent-denied'),
+                'Silent setting bypassed validation')
+        require(not any(args[0] == 0x161d for address, args in calls if address == 0x106342DE),
+                'Caller attempted to set the effective silent property')
+        if failure in ('silent-mismatch', 'silent-request-mismatch'):
+            key = 0x161d if failure == 'silent-mismatch' else 0x057a
+            require(sum(address == 0x1063C7D4 and args[0] == key for address, args in calls) == 1000,
+                    'Silent readback did not stop at retry limit')
     if program_selected:
         require(not any(address == 0x104C8254 and args[0] == 0x500e for address, args in calls),
                 'Already selected program was unnecessarily set')
@@ -146,4 +163,8 @@ if __name__ == '__main__':
         check_case(failure, settings_only=True)
     check_case(operation=3, settings_only=True)
     check_case(program_selected=True, settings_only=True)
+    for failure in (None, 'silent-denied', 'silent-set-failed', 'silent-mismatch', 'silent-request-mismatch'):
+        check_case(failure, settings_only=True, silent=True)
+    check_case(operation=3, settings_only=True, silent=True)
+    check_case(program_selected=True, settings_only=True, silent=True)
     print('PASS: native caller ABI, readback, property failures and original callback')

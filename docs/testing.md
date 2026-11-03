@@ -847,3 +847,24 @@ including output-mode gating, held levels, polarity, acknowledgement, source
 conflicts and existing reset coverage. Original firmware observations are
 separate from these synthetic checks; the fixed-delay source is disabled when
 testing the native controller completion source.
+
+`tools/silent_capture_contract.py --master ... --out ...` follows the original
+`0x057a` parameter processor into effective property `0x161d`. Eight synthetic
+request/constraint cases record the derived update batch at its submission
+boundary. Eight further cases execute the camera parameter getter, bulk scalar
+read, guarded parameter-field copy and ordinary/silent format-table selection.
+This does not supply a setting or completion to a running camera.
+
+The body probe's experimental `--body-silent` requires `--body-exposure`.
+It validates and sets request property `0x057a` with original APIs, then requires
+both that property and effective property `0x161d` to read back 1 before body
+contacts. The effective property is never set directly. The existing caller ABI
+batch additionally checks validation rejection, setter failure, both readback
+timeouts, preserved registers and non-diagnostic callback forwarding. Native
+admission and photograph saving require separate original-firmware evidence.
+
+`tests/test_body_input_snapshot.py` checks retained completion counters against
+four current row layouts, including a reconfigured zero layout. Unsupported
+current layouts report unavailable samples while retaining counters, addresses
+and the independent preview observation. They do not abort the final native
+report or imply that current registers describe an earlier completed DMA.
