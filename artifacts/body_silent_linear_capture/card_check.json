@@ -1,0 +1,111 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "temporary_card_retained": false,
+  "completed_raw_frames": 2,
+  "native_key_sequences": [
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 146907997,
+      "shot": 1,
+      "release_ticks": 159158375,
+      "held_counter_seconds": 0.25521620833333336
+    },
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 198094777,
+      "shot": 2,
+      "release_ticks": 210312432,
+      "held_counter_seconds": 0.25453447916666666
+    }
+  ],
+  "jpeg_count": 1,
+  "second_raw_row": {
+    "address": "0xa6f22000",
+    "owner": "master",
+    "cpu": 0,
+    "bytes": 12432,
+    "expected_phase": 1,
+    "expected_sha256": "ce6cfbcb68770de4eaa7ad0414e14808a2d7f68ec86e85c12f884decba4fc060",
+    "actual_sha256": "ce6cfbcb68770de4eaa7ad0414e14808a2d7f68ec86e85c12f884decba4fc060",
+    "matched": true
+  },
+  "repeat_capture_verified": false,
+  "final_capture_state": [
+    8,
+    0
+  ],
+  "final_driver_state": 15,
+  "master_faults": {
+    "DFAR_S": "0x25",
+    "IFAR_S": "0x0",
+    "DFSR_S": "0x5",
+    "IFSR_S": "0x0"
+  },
+  "files": [
+    {
+      "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "072aca1a095fe7f273580f977baae8ff5e5494a86e2755055a2f78f84ba633c8",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "offset": "0x824a",
+          "bytes": 10942
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "offset": "0x488202",
+          "bytes": 374772
+        }
+      ],
+      "pattern_check": {
+        "samples": 11310,
+        "failed_samples": 0,
+        "maximum_rgb_error": 0
+      }
+    }
+  ],
+  "original_file_preserved": true,
+  "probe_txt_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+  "scope": "Two native RAW transfers, but only the first card JPG is verified. The second capture stops at the original metadata descriptor dereference. Diagnostic monochrome input and explicit DSP preprocessing bypass; no native repeated-save success claimed."
+}

@@ -36,13 +36,14 @@ def probe(image):
     native = PrimaryProbe(image)
     argument, full, partial, payload = [native.DATA + offset for offset in (0, 0x1000, 0x2000, 0x3000)]
     cases = []
-    for split, source_format, packed, bits in (
-            (False, 2, 2, 12), (True, 2, 2, 12),
-            (True, 3, 0, 16), (True, 0, 1, 14)):
+    for split, source_format, packed, bits, primary_width in (
+            (False, 2, 2, 12, 2816), (False, 2, 2, 12, 8288),
+            (False, 0, 1, 14, 8288), (True, 2, 2, 12, 2816),
+            (True, 3, 0, 16, 2816), (True, 0, 1, 14, 2816)):
         native.u.mem_write(argument, bytes(0x18))
         native.u.mem_write(argument + 0xc, struct.pack('<2I', full, partial))
         native.u.mem_write(argument + 0x14, struct.pack('<I', int(not split)))
-        for descriptor, width, target in ((full, 8288 if split else 2816, 0x68000000),
+        for descriptor, width, target in ((full, 8288 if split else primary_width, 0x68000000),
                                           (partial, 2816, 0x62700000)):
             native.u.mem_write(descriptor, bytes(0x40))
             native.u.mem_write(descriptor + 4, struct.pack('<I', payload))
@@ -61,10 +62,10 @@ def probe(image):
                 'Original remap window initialization failed')
         native.mappings.clear()
         result = native.call(0x10239c34 - 0x10020000, argument)
-        first_stride = ((2816 * bits // 8) + 15) & ~15
+        first_stride = ((primary_width * bits // 8) + 15) & ~15
         full_stride = ((8288 * bits // 8) + 15) & ~15
         geometry = [native.word(0x20069500 + offset) for offset in range(0, 0x14, 4)]
-        require(result == 1 and geometry == [packed, 2816 << 16, 5520 << 16,
+        require(result == 1 and geometry == [packed, primary_width << 16, 5520 << 16,
                 int(split), 5472 if split else 0], 'Primary input geometry differs')
         expected_first = 0x62700000 if split else 0x68000000
         first_addresses = [native.word(0x20069850 + index * 4) for index in range(8)]

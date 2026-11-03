@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "red": {
+    "binary_sha256": "00a9bbc64273338167eca257922f4cad0148c81851ade8b5810771c8701a2008",
+    "fixture": "tests/test_primary_input_dma.py, first_case=9",
+    "exit_code": 1,
+    "error": "Full-frame primary input was not transferred"
+  },
+  "green": {
+    "binary_sha256": "da8a196453de5e7bce4df8a5fed7e81ed06458938f22d1e98c848e783bbd2c82",
+    "selected_linear_cases": 6,
+    "selected_exit_code": 0,
+    "full_batch_cases": 15,
+    "full_batch_exit_code": 0
+  },
+  "snapshot_cases": 7,
+  "source_sha256": {
+    "qemu/nikon-z72.c": "81383300f35a414bcfaf32c732f50447c1c5da2cbbde7e4b121a03c7f46596a9",
+    "tests/test_primary_input_dma.py": "f5294386fe8d1faae701755b204293b4e3ad5037f47b2adc01fe8995ca223827",
+    "tools/body_shutter_gate_probe.py": "425ec354dcf806fd97fa7065aa064ad660d7394d7de20595e752e9c3642b9d99",
+    "tests/test_body_input_snapshot.py": "30a8839a5488d0f4f4236b1693074b315aba2bf50b65922893fca29fdb42552c",
+    "tools/input_primary_contract.py": "ff840cefd58a7c16d7055a9ca1e7c1eeb79362e5fae867cea7dd64365a24a977"
+  },
+  "scope": "Firmware-free QEMU input and snapshot fixtures; original descriptor generation is a separate bounded contract. Native repeated photograph saving remains separate."
+}

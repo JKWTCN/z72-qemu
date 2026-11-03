@@ -868,3 +868,13 @@ four current row layouts, including a reconfigured zero layout. Unsupported
 current layouts report unavailable samples while retaining counters, addresses
 and the independent preview observation. They do not abort the final native
 report or imply that current registers describe an earlier completed DMA.
+
+The primary input batch also checks local full-frame RAW12/RAW14 input, with
+transport disabled or without a peer. It covers retained inactive second-lane
+words, row padding, both frame phases, stopped input, reset, invalid geometry,
+DMA controls, address bounds and independent peer RAM. The complete batch has
+15 configurations. The original builder contract additionally constructs both
+8288-column single-buffer layouts; its synthetic narrow and split cases remain.
+Snapshot checks distinguish retained single/split destinations and read only the
+owners consistent with the currently supported row layout. None of these checks
+establishes native repeated saving or physical exposure timing.

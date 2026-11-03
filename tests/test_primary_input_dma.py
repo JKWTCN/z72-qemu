@@ -13,7 +13,87 @@ import time
 SCENE = bytes((10, 32, 35, 255, 64, 96, 128, 160, 192, 224, 0, 255, 35, 10, 32, 128))
 
 
-def check(qemu, scene):
+def linear_case(command, monitor, read, write, data_at, path, active, notifying, paired, bits):
+    width, height = 8288, 5520
+    stride = (width * bits // 8 + 15) & ~15
+    pixels = width * bits // 8
+    target = 0xa6f22000
+    rows = (0, 63, 64, height // 2, height - 1)
+    peer_before = data_at(target, 64, True) if paired else None
+
+    def count():
+        return monitor('qom-get', dict(path=path, property='primary-input-dma-count'))
+
+    def tick():
+        command('clock_step 33333333')
+
+    def expected(y, phase):
+        group, size = (4, 7) if bits == 14 else (2, 3)
+        return bytes(255 if ((x // 64 + y // 64 + phase) & 1) else 0
+                     for x in range(0, width, group) for _ in range(size))
+
+    for address, value in ((0x20069500, 1 if bits == 14 else 2), (0x20069504, width << 16),
+            (0x20069508, height << 16), (0x20069808, stride), (0x20069814, 1),
+            (0x20069818, 1), (0x20069840, 1), (0x20069848, 3), (0x20069850, target),
+            (0x20068200, 0x98), (0x20068260, 0xc0000021),
+            (target - 4, 0x12345678), (target + stride * height, 0x87654321)):
+        write(address, value)
+    # A previous split request can leave all inactive second-lane words set.
+    for offset in (8, 0x50, 0x54, 0x58, 0x5c, 0x60, 0x64, 0x68, 0x6c):
+        write(0x20069900 + offset, 0xffffffff)
+    if bits == 14:
+        for y in rows:
+            command(f'write {target + y * stride + pixels:#x} 0x8 0x1122334455667788')
+    command(f'set_irq_in {path} frame-sync-enable 0 1')
+    write(0x20068008, 0x400)
+    tick()
+    assert count() == int(active), 'Full-frame primary input was not transferred'
+    if active:
+        assert monitor('qom-get', dict(path=path, property='primary-input-dma-address')) == target
+        assert monitor('qom-get', dict(path=path, property='primary-input-second-dma-address')) == 0
+        for y in rows:
+            assert data_at(target + y * stride, pixels) == expected(y, 0)
+            if bits == 14:
+                assert data_at(target + y * stride + pixels, 8) == bytes.fromhex('1122334455667788')
+        assert read(0x20068210) == (0x59 if notifying else 0)
+        original = data_at(target, 256)
+        for address, invalid in ((0x20069500, 6), (0x20069504, (width - 1) << 16),
+                (0x20069508, (height - 1) << 16), (0x2006950c, 2), (0x20069510, 1),
+                (0x20069808, stride - 16), (0x20069814, 0), (0x20069818, 0),
+                (0x2006983c, 1), (0x20069840, 0), (0x20069844, 1), (0x20069848, 4),
+                (0x2006984c, 1), (0x20069854, target), (0x20069850, 0xbaa00000),
+                (0x20069850, 0x62000000), (0x20069850, 0xac1c4ff0)):
+            previous = read(address)
+            write(address, invalid)
+            write(0x20068210, 0xffffffff)
+            tick()
+            assert count() == 1 and read(0x20068210) == 0
+            assert data_at(target, 256) == original
+            write(address, previous)
+        write(0x2006800c, 0x400)
+        tick()
+        assert count() == 1
+        write(0x20068210, 0xffffffff)
+        write(0x20068008, 0x400)
+        tick()
+        assert count() == 2
+        for y in rows:
+            assert data_at(target + y * stride, pixels) == expected(y, 1)
+    else:
+        assert data_at(target, 256) == bytes(256) and read(0x20068210) == 0
+    assert read(target - 4) == 0x12345678 and read(target + stride * height) == 0x87654321
+    if paired:
+        assert data_at(target, 64, True) == peer_before, 'Local full-frame DMA changed peer RAM'
+    monitor('system_reset')
+    assert count() == 0
+    assert monitor('qom-get', dict(path=path, property='primary-input-dma-address')) == 0
+    assert monitor('qom-get', dict(path=path, property='primary-input-second-dma-address')) == 0
+    command(f'set_irq_in {path} frame-sync-enable 0 1')
+    tick()
+    assert count() == 0 and read(0x20068210) == 0
+
+
+def check(qemu, scene, first_case=0):
     height = 5520
     for case, (role, enabled, sampling, notifying, paired, linked) in enumerate((
             ('master', True, True, True, True, True), ('master', True, True, False, True, True),
@@ -21,8 +101,16 @@ def check(qemu, scene):
             ('master', True, True, True, True, False), ('master', True, True, True, False, True),
             ('slave', True, True, True, False, True),
             ('master', True, True, True, True, True),
-            ('master', True, True, True, True, True))):
-        bits = 14 if case == 8 else 12
+            ('master', True, True, True, True, True),
+            ('master', True, True, True, True, False),
+            ('master', True, True, True, False, False),
+            ('master', True, True, False, False, False),
+            ('slave', True, True, True, False, False),
+            ('master', False, True, True, False, False),
+            ('master', True, False, True, False, False))):
+        if case < first_case:
+            continue
+        bits = 14 if case in (8, 10) else 12
         geometry_mode = 1 if bits == 14 else 2
         first_stride = 2816 * bits // 8
         full_stride = (8288 * bits // 8 + 15) & ~15
@@ -118,6 +206,15 @@ def check(qemu, scene):
             names = [item['name'] for item in monitor('qom-list', dict(path='/machine/unattached'))
                      if item['type'] == 'child<nikon-z72-boot-config>']
             assert len(names) == (2 if paired else 1)
+            if case >= 9:
+                path = '/machine/unattached/' + next(name for name in names if
+                    monitor('qom-get', dict(path='/machine/unattached/' + name,
+                                           property='master-role')) == (role == 'master'))
+                linear_case(command, monitor, read, write, data_at, path,
+                            role == 'master' and enabled and sampling, notifying, paired, bits)
+                monitor('quit')
+                process.wait(timeout=5)
+                continue
             path = next('/machine/unattached/' + name for name in names if
                 monitor('qom-get', dict(path='/machine/unattached/' + name,
                     property='master-role')) == (role == 'master'))

@@ -1914,16 +1914,21 @@ def input_dma_snapshot(machine):
                 first_stride = int.from_bytes(machine._bytes(0x20069808, 4), 'little')
                 full_stride = int.from_bytes(machine._bytes(0x20069908, 4), 'little')
                 result['primary_current_row_strides'] = dict(first=first_stride, full=full_stride)
+                result['primary_completed_layout'] = 'split' if peer else 'single'
                 result['primary_samples'] = []
-                if (first_stride, full_stride) not in ((4224, 12432), (4928, 14512)):
+                supported = ((first_stride, full_stride) in ((4224, 12432), (4928, 14512))
+                             if peer else first_stride in (12432, 14512))
+                if not supported:
                     # These registers describe the current request, whereas
                     # the device counters/addresses retain the last completion.
                     result['primary_samples_unavailable'] = 'Current configuration is not a supported RAW row layout'
                 else:
                     result['primary_row_strides'] = dict(first=first_stride, full=full_stride)
                     result['primary_samples_scope'] = 'Last completed addresses sampled using the current row layout'
-                    for owner, cpu, target, length in (('master', 0, primary, first_stride),
-                                                      ('slave', 2, peer, 5472 * first_stride // 2816)):
+                    samples = [('master', 0, primary, first_stride)]
+                    if peer:
+                        samples.append(('slave', 2, peer, 5472 * first_stride // 2816))
+                    for owner, cpu, target, length in samples:
                         data = machine._bytes(target, length, cpu=cpu)
                         result['primary_samples'].append(dict(owner=owner, cpu=cpu,
                             address=hex(target), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),

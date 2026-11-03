@@ -2205,21 +2205,21 @@ typedef struct NikonZ72PrimaryWrite {
 static void input_generate_primary(NikonZ72BootConfig *s)
 {
     uint8_t geometry[20], first[0x70] = { 0 }, second[0x70] = { 0 };
-    uint8_t first_row[4928], second_row[9576];
-    AddressSpace *view, *peer_view;
+    uint8_t first_row[14512], second_row[9576];
+    AddressSpace *view, *peer_view = NULL;
     uint32_t first_address, second_bus;
     unsigned index = 0;
-    unsigned first_stride, full_stride, second_length, first_size;
+    unsigned first_width, first_length, first_stride, full_stride;
+    unsigned bits, second_length, first_size;
+    bool split;
     g_autoptr(GArray) writes = NULL;
     const unsigned height = 5520;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
-        !(s->input_running & 0x400) || !s->peer || s->peer->master_role ||
-        !s->transport_link || !s->peer->transport_link) {
+        !(s->input_running & 0x400)) {
         return;
     }
     view = CPU(s->cpu)->as;
-    peer_view = CPU(s->peer->cpu)->as;
     if (address_space_read(view, 0x20069500, MEMTXATTRS_UNSPECIFIED,
                            geometry, sizeof(geometry)) != MEMTX_OK ||
         address_space_read(view, 0x20069808, MEMTXATTRS_UNSPECIFIED,
@@ -2236,31 +2236,45 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                            second + 0x50, 32) != MEMTX_OK) {
         return;
     }
-    /* C1.70's observed RAW12/RAW14 splits: the first 2816 columns have a
-     * separate buffer, the remaining 5472 keep the full row stride.
+    if (ldl_le_p(geometry + 12) > 1) {
+        return;
+    }
+    split = ldl_le_p(geometry + 12) == 1;
+    if (split) {
+        if (!s->peer || s->peer->master_role ||
+            !s->transport_link || !s->peer->transport_link) {
+            return;
+        }
+        peer_view = CPU(s->peer->cpu)->as;
+    }
+    /* C1.70 supplies either one complete local row or a 2816/5472 split
+     * across the engines. Inactive second-lane words can retain an earlier
+     * request; only the geometry's split selector makes them active.
      * Other profiles and address-group rotation remain unsupported. */
     switch (ldl_le_p(geometry)) {
     case 1:
         if (s->scene_pixels) {
             return;  /* Only the diagnostic RAW12 scene path is supported. */
         }
-        first_stride = 4928;
-        full_stride = 14512;
-        second_length = 9576;
+        bits = 14;
         break;
     case 2:
-        first_stride = 4224;
-        full_stride = 12432;
-        second_length = 8208;
+        bits = 12;
         break;
     default:
         return;
     }
+    first_width = split ? 2816 : 8288;
+    first_length = first_width * bits / 8;
+    first_stride = (first_length + 15) & ~15u;
+    full_stride = (8288 * bits / 8 + 15) & ~15u;
+    second_length = 5472 * bits / 8;
     first_size = first_stride * height;
-    if (ldl_le_p(geometry + 4) != (2816u << 16) ||
+    if (ldl_le_p(geometry + 4) != (first_width << 16) ||
         ldl_le_p(geometry + 8) != (height << 16) ||
-        ldl_le_p(geometry + 12) != 1 || ldl_le_p(geometry + 16) != 5472 ||
-        ldl_le_p(first + 8) != first_stride || ldl_le_p(second + 8) != full_stride ||
+        ldl_le_p(geometry + 16) != (split ? 5472 : 0) ||
+        ldl_le_p(first + 8) != first_stride ||
+        (split && ldl_le_p(second + 8) != full_stride) ||
         ldl_le_p(first + 0x14) != 1 || ldl_le_p(first + 0x18) != 1 ||
         ldl_le_p(first + 0x3c) != 0 || ldl_le_p(first + 0x40) != 1 ||
         ldl_le_p(first + 0x44) != 0 || ldl_le_p(first + 0x48) != 3 ||
@@ -2268,21 +2282,21 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         return;
     }
     for (unsigned offset = 0x54; offset < 0x70; offset += 4) {
-        if (ldl_le_p(first + offset) || ldl_le_p(second + offset)) {
+        if (ldl_le_p(first + offset) || (split && ldl_le_p(second + offset))) {
             return;
         }
     }
     first_address = ldl_le_p(first + 0x50);
     second_bus = ldl_le_p(second + 0x50);
-    if (first_address < 0x62700000 || !second_bus ||
+    if (first_address < 0x62700000 || (split && !second_bus) ||
         (uint64_t)first_address + first_size > 0xac1c5000 ||
         !processing_ram_range(view, first_address, first_size)) {
         return;
     }
     /* Validate the entire remapped second stripe before changing either
      * buffer. Its row gaps belong to the complete-frame buffer's left part. */
-    writes = g_array_sized_new(false, false, sizeof(NikonZ72PrimaryWrite), height + 8);
-    for (unsigned y = 0; y < height; y++) {
+    writes = g_array_sized_new(false, false, sizeof(NikonZ72PrimaryWrite), split ? height + 8 : 0);
+    for (unsigned y = 0; split && y < height; y++) {
         uint64_t bus = (uint64_t)second_bus + y * full_stride;
         unsigned offset = 0;
 
@@ -2335,15 +2349,19 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     }
     for (unsigned y = 0; y < height; y++) {
         if (ldl_le_p(geometry) == 1) {
-            input_raw14_row(first_row, 2816, 0, y, s->primary_dma_count);
-            input_raw14_row(second_row, 5472, 2816, y, s->primary_dma_count);
+            input_raw14_row(first_row, first_width, 0, y, s->primary_dma_count);
+            if (split) {
+                input_raw14_row(second_row, 5472, 2816, y, s->primary_dma_count);
+            }
         } else {
-            input_raw12_row(s, first_row, 2816, 0, y, s->primary_dma_count, 8288, height);
-            input_raw12_row(s, second_row, 5472, 2816, y, s->primary_dma_count, 8288, height);
+            input_raw12_row(s, first_row, first_width, 0, y, s->primary_dma_count, 8288, height);
+            if (split) {
+                input_raw12_row(s, second_row, 5472, 2816, y, s->primary_dma_count, 8288, height);
+            }
         }
         if (address_space_write(view, (hwaddr)first_address + y * first_stride,
                                 MEMTXATTRS_UNSPECIFIED, first_row,
-                                first_stride) != MEMTX_OK) {
+                                first_length) != MEMTX_OK) {
             return;
         }
         while (index < writes->len &&
@@ -2357,11 +2375,12 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         }
     }
     s->primary_dma_address = first_address;
-    s->primary_second_address = g_array_index(writes, NikonZ72PrimaryWrite, 0).address;
+    s->primary_second_address = split ?
+        g_array_index(writes, NikonZ72PrimaryWrite, 0).address : 0;
     s->primary_dma_count++;
     s->primary_frame_written = true;
     if (s->frame_notify) {
-        /* Both RAW stripes were written. Do not claim statistics output
+        /* The complete RAW input was written. Do not claim statistics output
          * or processing/JPEG completion from this input transfer. */
         *boot_config_value(s, 0x20068210) |= 0x41;
         /* Native reconfiguration waits at b188814c for the enabled input
