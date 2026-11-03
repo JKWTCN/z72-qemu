@@ -1,0 +1,554 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "copy_entry": "0x103603d8",
+  "reader_entry": "0x103c09e8",
+  "cache_base": "0xb20d2894",
+  "destination_offset": "0x2b78",
+  "copied_indices": [
+    1051,
+    1052,
+    null,
+    672,
+    673,
+    849,
+    848,
+    1045,
+    1064,
+    1065,
+    1042,
+    1061,
+    1054,
+    273
+  ],
+  "default_initialization": {
+    "initializer": "0x103c0a64",
+    "source": "0x118b02ac",
+    "bytes": 131068,
+    "sha256": "52a0e1412647ce359765c8ba4fa8ca87df862ad02cde85a666464f67b1608e57",
+    "copy_and_refresh_executed": true,
+    "returned": 1,
+    "cache_guards_preserved": true,
+    "mutex_boundaries": [
+      {
+        "entry": "0x10360f18",
+        "object": "0xb185e5bc"
+      },
+      {
+        "entry": "0x10360f12",
+        "object": "0xb185e5bc"
+      }
+    ],
+    "cache_2a1": 0
+  },
+  "cases": [
+    {
+      "fixture": "firmware_defaults",
+      "cache_2a1": 0,
+      "copied_bytes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "nested_2b7c": 0,
+      "calculation_requested": true,
+      "stopped_pc": "0x1011ef16",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "fixture": "synthetic",
+      "cache_2a1": 0,
+      "copied_bytes": [
+        27,
+        28,
+        0,
+        160,
+        0,
+        81,
+        80,
+        21,
+        40,
+        41,
+        18,
+        37,
+        30,
+        17
+      ],
+      "nested_2b7c": 0,
+      "calculation_requested": true,
+      "stopped_pc": "0x1011ef16",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "fixture": "synthetic",
+      "cache_2a1": 1,
+      "copied_bytes": [
+        27,
+        28,
+        0,
+        160,
+        1,
+        81,
+        80,
+        21,
+        40,
+        41,
+        18,
+        37,
+        30,
+        17
+      ],
+      "nested_2b7c": 1,
+      "calculation_requested": true,
+      "stopped_pc": "0x1011ef16",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "fixture": "synthetic",
+      "cache_2a1": 2,
+      "copied_bytes": [
+        27,
+        28,
+        0,
+        160,
+        2,
+        81,
+        80,
+        21,
+        40,
+        41,
+        18,
+        37,
+        30,
+        17
+      ],
+      "nested_2b7c": 2,
+      "calculation_requested": false,
+      "stopped_pc": "0x1012c6d2",
+      "result_halfwords": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "fixture": "synthetic",
+      "cache_2a1": 3,
+      "copied_bytes": [
+        27,
+        28,
+        0,
+        160,
+        3,
+        81,
+        80,
+        21,
+        40,
+        41,
+        18,
+        37,
+        30,
+        17
+      ],
+      "nested_2b7c": 3,
+      "calculation_requested": true,
+      "stopped_pc": "0x1011ef16",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "fixture": "synthetic",
+      "cache_2a1": 255,
+      "copied_bytes": [
+        27,
+        28,
+        0,
+        160,
+        255,
+        81,
+        80,
+        21,
+        40,
+        41,
+        18,
+        37,
+        30,
+        17
+      ],
+      "nested_2b7c": 255,
+      "calculation_requested": true,
+      "stopped_pc": "0x1011ef16",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    }
+  ],
+  "preprocessing_cases": [
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 0,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x1012c81c",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x1012c85c",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 1,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 2,
+      "skipped": true,
+      "stopped_pc": "0x1012c8f6",
+      "raw_header_14": 1,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 3,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 255,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    }
+  ],
+  "master_preprocessing_cases": [
+    {
+      "kind": "statistics",
+      "entry": "0x102c3fb6",
+      "nested_2b7c": 0,
+      "skipped": false,
+      "stopped_pc": "0x102b72cc",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "kind": "software_raw_correction",
+      "entry": "0x102c3e0a",
+      "nested_2b83": 0,
+      "skipped": false,
+      "stopped_pc": "0x102c3e16"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c430e",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x102c431e"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c43a4",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x102c43b4"
+    },
+    {
+      "kind": "raw_compute",
+      "entry": "0x102c446c",
+      "nested_2b7b": 0,
+      "skipped": false,
+      "stopped_pc": "0x102b688c",
+      "raw_header_14": 0
+    },
+    {
+      "kind": "statistics",
+      "entry": "0x102c3fb6",
+      "nested_2b7c": 1,
+      "skipped": false,
+      "stopped_pc": "0x102b72cc",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "kind": "software_raw_correction",
+      "entry": "0x102c3e0a",
+      "nested_2b83": 1,
+      "skipped": true,
+      "stopped_pc": "0x102c3eae"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c430e",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x102c4376"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c43a4",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x102c43d0"
+    },
+    {
+      "kind": "raw_compute",
+      "entry": "0x102c446c",
+      "nested_2b7b": 1,
+      "skipped": false,
+      "stopped_pc": "0x102b688c",
+      "raw_header_14": 0
+    },
+    {
+      "kind": "statistics",
+      "entry": "0x102c3fb6",
+      "nested_2b7c": 2,
+      "skipped": true,
+      "stopped_pc": "0x102c4040",
+      "result_halfwords": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "kind": "software_raw_correction",
+      "entry": "0x102c3e0a",
+      "nested_2b83": 2,
+      "skipped": false,
+      "stopped_pc": "0x102c3e16"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c430e",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x102c431e"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c43a4",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x102c43b4"
+    },
+    {
+      "kind": "raw_compute",
+      "entry": "0x102c446c",
+      "nested_2b7b": 2,
+      "skipped": true,
+      "stopped_pc": "0x102c4468",
+      "raw_header_14": 1
+    },
+    {
+      "kind": "statistics",
+      "entry": "0x102c3fb6",
+      "nested_2b7c": 3,
+      "skipped": false,
+      "stopped_pc": "0x102b72cc",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "kind": "software_raw_correction",
+      "entry": "0x102c3e0a",
+      "nested_2b83": 3,
+      "skipped": false,
+      "stopped_pc": "0x102c3e16"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c430e",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x102c431e"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c43a4",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x102c43b4"
+    },
+    {
+      "kind": "raw_compute",
+      "entry": "0x102c446c",
+      "nested_2b7b": 3,
+      "skipped": false,
+      "stopped_pc": "0x102b688c",
+      "raw_header_14": 0
+    },
+    {
+      "kind": "statistics",
+      "entry": "0x102c3fb6",
+      "nested_2b7c": 255,
+      "skipped": false,
+      "stopped_pc": "0x102b72cc",
+      "result_halfwords": [
+        42405,
+        42405,
+        42405
+      ]
+    },
+    {
+      "kind": "software_raw_correction",
+      "entry": "0x102c3e0a",
+      "nested_2b83": 255,
+      "skipped": false,
+      "stopped_pc": "0x102c3e16"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c430e",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x102c431e"
+    },
+    {
+      "kind": "sflt",
+      "entry": "0x102c43a4",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x102c43b4"
+    },
+    {
+      "kind": "raw_compute",
+      "entry": "0x102c446c",
+      "nested_2b7b": 255,
+      "skipped": false,
+      "stopped_pc": "0x102b688c",
+      "raw_header_14": 0
+    }
+  ],
+  "host_boundaries": [
+    "Default-refresh mutex wrappers return success",
+    "Synthetic object-8 cache bytes for non-default cases and capture context",
+    "Enter gate at 0x1012c648 after earlier stage preconditions",
+    "Stop requested calculation at 0x1011ef16 before it executes",
+    "SFLT gate fragments stop before other preconditions or the shared return",
+    "RAW gate starts after earlier preconditions and stops before 0x1011e480",
+    "Master statistics gate starts after earlier preconditions and stops before 0x102b72cc",
+    "Master software correction fragment stops before the header precondition or shared return",
+    "Master SFLT fragments stop before later preconditions or the shared return",
+    "Master RAW fragment stops before 0x102b688c or the shared return"
+  ],
+  "limitations": [
+    "No persistent configuration is changed in the whole machine",
+    "ROM defaults do not establish the contents of a particular camera",
+    "Skip values are native branch conditions, not verified supported user settings",
+    "No compute result algorithm, encoding or photograph is executed"
+  ]
+}

@@ -902,3 +902,9 @@ case additionally checks masked pending, IRQ86, unrelated acknowledgement, W1C,
 the next frame, source stop and reset. The console and body probe expose the
 existing source through `--sample-group1`, disabled by default. Full capture and
 queue retirement require separate original-firmware evidence.
+
+The master preprocessing contract now has 25 fragment cases, including fifteen
+additional SFLT/RAW cases. SFLT preparation and processing select the value-1
+return branch; RAW value 2 executes the original header update. Other values
+stop before later preconditions or the real service. The body probe checks those
+original branches separately when the explicit full preprocessing bypass is used.

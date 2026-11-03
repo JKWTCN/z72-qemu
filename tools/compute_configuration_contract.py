@@ -52,7 +52,7 @@ def check(master, slave):
 
     source.hook_add(UC_HOOK_CODE, lock_boundary)
     def master_request_boundary(cpu, address, size, unused):
-        if address == 0x102b72cc:
+        if address in (0x102b72cc, 0x102b688c):
             cpu.emu_stop()
     source.hook_add(UC_HOOK_CODE, master_request_boundary)
     default_address, default_size = 0x118b02ac, 0x1fffc
@@ -166,6 +166,28 @@ def check(master, slave):
                 'Native master software correction skip condition differs')
         master_cases.append(dict(kind='software_raw_correction', entry='0x102c3e0a', nested_2b83=value,
             skipped=value == 1, stopped_pc=hex(pc)))
+        source.mem_write(nested + 0x2b79, bytes([value]))
+        for entry, requested, skipped in ((0x102c430e, 0x102c431e, 0x102c4376),
+                                           (0x102c43a4, 0x102c43b4, 0x102c43d0)):
+            source.reg_write(UC_ARM_REG_R4, capture)
+            source.emu_start(entry | 1, skipped if value == 1 else requested, count=100)
+            pc = source.reg_read(UC_ARM_REG_PC)
+            require(pc == (skipped if value == 1 else requested), 'Native master SFLT gate differs')
+            master_cases.append(dict(kind='sflt', entry=hex(entry), nested_2b79=value,
+                skipped=value == 1, stopped_pc=hex(pc)))
+        source.mem_write(capture + 0x310, struct.pack('<I', raw_header))
+        source.mem_write(nested + 0x2b7b, bytes([value]))
+        source.mem_write(raw_header + 0x14, bytes(4))
+        source.reg_write(UC_ARM_REG_R5, capture)
+        source.reg_write(UC_ARM_REG_R2, 0x50008000)
+        source.reg_write(UC_ARM_REG_SP, 0x5000e000)
+        source.emu_start(0x102c446d, 0x102c4468, count=1000)
+        pc = source.reg_read(UC_ARM_REG_PC)
+        marked = struct.unpack('<I', source.mem_read(raw_header + 0x14, 4))[0]
+        require(pc == (0x102c4468 if value == 2 else 0x102b688c) and marked == (1 if value == 2 else 0),
+                'Native master RAW compute skip condition differs')
+        master_cases.append(dict(kind='raw_compute', entry='0x102c446c', nested_2b7b=value,
+            skipped=value == 2, stopped_pc=hex(pc), raw_header_14=marked))
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=master_info['sha256'], slave_sha256=slave_info['sha256'],
         copy_entry='0x103603d8', reader_entry='0x103c09e8', cache_base=hex(cache),
@@ -178,7 +200,9 @@ def check(master, slave):
                          'SFLT gate fragments stop before other preconditions or the shared return',
                          'RAW gate starts after earlier preconditions and stops before 0x1011e480',
                          'Master statistics gate starts after earlier preconditions and stops before 0x102b72cc',
-                         'Master software correction fragment stops before the header precondition or shared return'],
+                         'Master software correction fragment stops before the header precondition or shared return',
+                         'Master SFLT fragments stop before later preconditions or the shared return',
+                         'Master RAW fragment stops before 0x102b688c or the shared return'],
         limitations=['No persistent configuration is changed in the whole machine',
                      'ROM defaults do not establish the contents of a particular camera',
                      'Skip values are native branch conditions, not verified supported user settings',

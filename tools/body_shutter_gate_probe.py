@@ -498,6 +498,10 @@ MASTER_STATISTICS_SKIP_POINTS = {
     0x102c401e: 'capture-master-statistics-skip-native-clear',
     0x102c4040: 'capture-master-statistics-skip-finish',
 }
+MASTER_PREPROCESSING_SKIP_POINTS = {
+    0x102c43d0: 'capture-master-sflt-skip-finish',
+    0x102c44be: 'capture-master-raw-compute-skip-finish',
+}
 IMAGE_WORK_WAIT_POINTS = {
     0x10268c2a: 'image-work-service-wait',
     0x10268c2e: 'image-work-service-wait-return',
@@ -2047,7 +2051,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     skip_statistics = skip_compute_statistics or skip_still_preprocessing
     slave_points = CAPTURE_SLAVE_POINTS | (COMPUTE_STATISTICS_SKIP_POINTS
                                            if skip_statistics else {})
-    master_skip_points = MASTER_STATISTICS_SKIP_POINTS if skip_statistics else {}
+    master_skip_points = dict(MASTER_STATISTICS_SKIP_POINTS) if skip_statistics else {}
+    if skip_still_preprocessing:
+        master_skip_points |= MASTER_PREPROCESSING_SKIP_POINTS
     skipped_statistics = {}
     armed = {ACTION: 'application-action'}
     if playback:
@@ -3554,7 +3560,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 remote.read(address, 4), 'little')) for address in
                                 (0xb23ed660, 0xb23ed698, 0xb18685a0)}
                     if pc in master_skip_points:
-                        context = remote.get(registers, 'r4')
+                        context = remote.get(registers, 'r5' if pc == 0x102c44be else 'r4')
                         require(context % 4 == 0 and 0xb2c00000 <= context <= 0xb5effb08,
                                 'Unexpected master statistics context')
                         nested = int.from_bytes(remote.read(context + 0x4f4, 4), 'little')
@@ -3572,6 +3578,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             change = dict(role='master', context=hex(context), nested=hex(nested),
                                 address=hex(address), previous=previous, supplied=2,
                                 native_clear_entered=False, native_clear_observed=False)
+                            if skip_still_preprocessing:
+                                change['preprocessing_inputs'] = []
+                                for offset, value in ((0x2b79, 1), (0x2b7b, 2)):
+                                    address = nested + offset
+                                    old = remote.read(address, 1)[0]
+                                    remote.write(address, bytes([value]))
+                                    require(remote.read(address, 1) == bytes([value]),
+                                            'Master preprocessing skip input readback differs')
+                                    change['preprocessing_inputs'].append(dict(address=hex(address),
+                                        offset=hex(offset), previous=old, supplied=value))
+                                change.update(sflt_skip_observed=False, raw_compute_skip_observed=False)
                             skipped_statistics[context] = change
                             record['experimental_statistics_input'] = dict(change)
                         elif context in skipped_statistics:
@@ -3581,12 +3598,26 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                     'Master statistics skip input changed before native clear')
                             if pc == 0x102c401e:
                                 change['native_clear_entered'] = True
-                            else:
+                            elif pc == 0x102c4040:
                                 results = list(struct.unpack('<3H', remote.read(nested + 0x1e08, 6)))
                                 require(change['native_clear_entered'] and results == [0, 0, 0],
                                         'Native master statistics skip did not clear its results')
                                 change.update(native_clear_observed=True, result_halfwords=results)
                                 record['native_statistics_skip'] = dict(change)
+                            elif pc == 0x102c43d0:
+                                require(remote.read(nested + 0x2b79, 1) == b'\x01',
+                                        'Master SFLT skip input changed')
+                                change['sflt_skip_observed'] = True
+                                record['native_preprocessing_skip'] = dict(change)
+                            elif pc == 0x102c44be:
+                                require(remote.read(nested + 0x2b7b, 1) == b'\x02',
+                                        'Master RAW compute skip input changed')
+                                header = int.from_bytes(remote.read(context + 0x310, 4), 'little')
+                                require(header % 4 == 0 and 0xb2c00000 <= header <= 0xb5efffe8 and
+                                        remote.read(header + 0x14, 4) == b'\x01\x00\x00\x00',
+                                        'Native master RAW compute skip did not mark its header')
+                                change['raw_compute_skip_observed'] = True
+                                record['native_preprocessing_skip'] = dict(change)
                     if pc == 0x10307fe0:
                         kind = remote.get(registers, 'r5')
                         keep = keep and kind in (0, 80) and record['capture_state'][0] >= 6
