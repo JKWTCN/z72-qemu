@@ -14,7 +14,8 @@ def check(qemu):
     base, output, capacity = 0x24072000, 0xdf52e800, 0x100000
     quantizers = [[1 + index % 8 for index in range(64)],
                   [2 + index * 3 % 11 for index in range(64)]]
-    for role, enabled in (('slave', True), ('slave', False), ('master', True)):
+    for role, enabled, color in (('slave', True, False), ('slave', False, False),
+                                  ('master', True, False), ('slave', True, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -23,6 +24,7 @@ def check(qemu):
             '-display', 'none', '-serial', 'none', '-qmp', 'stdio',
             '-global', 'nikon-z72-boot-config.release-config=on',
             '-global', f'nikon-z72-boot-config.frame-process={"on" if enabled else "off"}',
+            '-global', f'nikon-z72-boot-config.jpeg-color-checker={"on" if color else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
@@ -118,7 +120,8 @@ def check(qemu):
                 assert image.quantization[0] == quantizers[0] and image.quantization[1] == quantizers[1]
                 assert not image.info.get('progressive', False)
                 for point, expected in ((bright, 255), ((width // 2, height // 2), 0), ((width - 8, height - 8), 0)):
-                    assert all(abs(value - expected) <= 3 for value in image.getpixel(point)), (point, image.getpixel(point))
+                    rgb = ((240, 208, 32) if expected else (32, 64, 224)) if color else (expected,) * 3
+                    assert all(abs(value - target) <= 3 for value, target in zip(image.getpixel(point), rgb)), (point, image.getpixel(point))
                 image.close()
                 return length
 
@@ -267,7 +270,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS slave JPEG pixels, quantizers, bounds, rejected jobs, IRQ acknowledgement and reset')
+    print('PASS monochrome/color JPEG pixels, quantizers, bounds, rejected jobs, IRQ acknowledgement and reset')
 
 
 if __name__ == '__main__':

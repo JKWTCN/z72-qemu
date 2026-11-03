@@ -1,0 +1,123 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "card_path": "D:\\code\\z72-qemu\\.local\\capture-color-checker-20261103.raw",
+  "card_bytes": 4294967296,
+  "checker": "Read-only 7-Zip integrity/extraction and complete Pillow JPEG decoding",
+  "original_files_preserved": true,
+  "card_retained": true,
+  "qemu_global": "nikon-z72-boot-config.jpeg-color-checker=on",
+  "palette_rgb": [
+    [
+      32,
+      64,
+      224
+    ],
+    [
+      240,
+      208,
+      32
+    ]
+  ],
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 7635485,
+      "sha256": "b5f407aff7e005df817321cc41e23cafbd558765d630da04334bebcd421a94ee",
+      "exported_file": "DSC_0001.JPG",
+      "width": 8256,
+      "height": 5504,
+      "decoded": true,
+      "exif_make": "NIKON CORPORATION",
+      "exif_model": "NIKON Z 7_2",
+      "exif_software": "Ver.01.70\u0000\u0000\u0000",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true,
+          "max_red_blue_difference": 215
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true,
+          "max_red_blue_difference": 190
+        },
+        {
+          "offset": "0x6b7600",
+          "width": 640,
+          "height": 424,
+          "decoded": true,
+          "max_red_blue_difference": 255
+        },
+        {
+          "offset": "0x6d8000",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true,
+          "max_red_blue_difference": 255
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-f41cddf228027a296f763cc3a3a83d24ce817dce0c2b410b02f0d6a603cd8066.jpg",
+          "offset": "0x19402",
+          "bytes": 6938986
+        },
+        {
+          "ram_jpeg": "codec-6c698f0a67a91cb5419ddfe091bb9239293532758a95ecd1050b59509d9af5bf.jpg",
+          "offset": "0x6e8002",
+          "bytes": 393755
+        },
+        {
+          "ram_jpeg": "codec-b352e10dbee8bc098515f0eba534e0a878518ec39fdecbef73cf8da2c78b0f34.jpg",
+          "offset": "0x6c7602",
+          "bytes": 67659
+        },
+        {
+          "ram_jpeg": "codec-9a3e73fa7a04e3ba87dfb754bf3f84029161a0a31b6e2238407319dd469abf20.jpg",
+          "offset": "0x824a",
+          "bytes": 9423
+        }
+      ],
+      "pattern_check": {
+        "source_geometry": [
+          8288,
+          5520
+        ],
+        "cell_size": 64,
+        "phase": 0,
+        "method": "Every source cell center mapped through nearest sampling: ceil(center_x*8256/8288), ceil(center_y*5504/5520)",
+        "samples": 11310,
+        "left_samples": 3828,
+        "right_samples": 7482,
+        "maximum_rgb_error": 1,
+        "allowed_rgb_error": 12,
+        "failed_samples": 0,
+        "passed": true
+      }
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "c8a94177ba7d62acb456fb88ad97f140feb5548d0e45bb857ed4006bc9575cde"
+    }
+  ],
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "color_pattern_verified": true,
+  "scope": "Binary RAW and monochrome processing remain diagnostic. The optional JPEG encoder palette maps dark/light to blue/yellow before native firmware packaging and card writes. It applies to size measurements and all embedded JPEGs. No Bayer decoding, original DSP color processing or real scene is claimed. Export is byte-for-byte from the card, with no external image recoloring; images remain outside Git."
+}

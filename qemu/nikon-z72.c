@@ -681,6 +681,7 @@ struct NikonZ72BootConfig {
     /* Sensor frame generation state */
     bool frame_generate;
     bool frame_process;
+    bool jpeg_color_checker;
     bool frame_notify;
     uint32_t input_running;
     uint64_t input_dma_count;
@@ -3419,11 +3420,14 @@ static void codec_jpeg_end(j_compress_ptr jpeg)
 }
 
 /* A bounded baseline JPEG for the lab's binary luma and neutral chroma.
+ * Optional blue/yellow false color visualizes that same binary stimulus;
+ * it does not decode a Bayer pattern or model native color processing.
  * Quantizers come from the native register file. Three-component 4:2:0,
  * standard Huffman tables and the input-plane interpretation are diagnostic
  * choices, not a reconstruction of the hardware's bit-exact codec. */
 static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
-                       const unsigned quantizers[2][64], size_t capacity,
+                       const unsigned quantizers[2][64], bool color_checker,
+                       size_t capacity,
                        uint8_t **bytes, size_t *length)
 {
     struct CodecContext {
@@ -3462,9 +3466,18 @@ static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
         unsigned y = context->jpeg.next_scanline;
         JSAMPROW row = context->row;
         for (unsigned x = 0; x < width; x++) {
-            row[x * 3] = pixels[(size_t)y * width + x];
-            row[x * 3 + 1] = 128;
-            row[x * 3 + 2] = 128;
+            uint8_t level = pixels[(size_t)y * width + x];
+            if (color_checker) {
+                /* Full-range YCbCr for RGB (32,64,224)/(240,208,32). */
+                static const uint8_t palette[2][3] = {
+                    {73, 213, 99}, {198, 35, 158},
+                };
+                memcpy(row + x * 3, palette[!!level], 3);
+            } else {
+                row[x * 3] = level;
+                row[x * 3 + 1] = 128;
+                row[x * 3 + 2] = 128;
+            }
         }
         jpeg_write_scanlines(&context->jpeg, &row, 1);
     }
@@ -3557,7 +3570,8 @@ static bool codec_encode(NikonZ72BootConfig *s)
             luma[(size_t)y * out_width + x] = pixels[((size_t)y << scale) * stride + (x << scale)];
         }
     }
-    if (!codec_jpeg(luma, out_width, out_height, quantizers, capacity, &encoded, &length)) {
+    if (!codec_jpeg(luma, out_width, out_height, quantizers, s->jpeg_color_checker,
+                    capacity, &encoded, &length)) {
         return false;
     }
     if (measuring) {
@@ -4519,6 +4533,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
         DEFINE_PROP_BOOL("frame-process", NikonZ72BootConfig, frame_process, false),
+        DEFINE_PROP_BOOL("jpeg-color-checker", NikonZ72BootConfig, jpeg_color_checker, false),
         DEFINE_PROP_BOOL("aux-image-process", NikonZ72BootConfig, aux_image_process, false),
         DEFINE_PROP_BOOL("frame-notify", NikonZ72BootConfig, frame_notify, false),
         DEFINE_PROP_BOOL("sample-counter", NikonZ72BootConfig, sample_counter, false),
