@@ -1,0 +1,930 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "temporary_card_retained": false,
+  "completed_raw_frames": 2,
+  "native_key_sequences": [
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 140061249,
+      "shot": 1,
+      "release_ticks": 152064148,
+      "held_counter_seconds": 0.25006039583333334
+    },
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 191239337,
+      "shot": 2,
+      "release_ticks": 203385158,
+      "held_counter_seconds": 0.2530379375
+    }
+  ],
+  "jpeg_count": 1,
+  "second_raw_row": {
+    "owner": "master",
+    "cpu": 0,
+    "address": "0xa6f22000",
+    "bytes": 12432,
+    "sha256": "ce6cfbcb68770de4eaa7ad0414e14808a2d7f68ec86e85c12f884decba4fc060",
+    "unique_bytes": 2,
+    "minimum": 0,
+    "maximum": 255,
+    "expected_phase": 1,
+    "matched": true
+  },
+  "repeat_capture_verified": false,
+  "two_card_images_verified": false,
+  "final_capture_state": [
+    8,
+    0
+  ],
+  "final_driver_state": 15,
+  "core_faults": [
+    {
+      "thread": 1,
+      "pc": "0x10100010",
+      "faults": {
+        "DFAR_S": "0x174",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x805",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x103ac8ce",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a44",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "files": [
+    {
+      "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "767c6ce0e109a7a0511b47f6344c3387fe85ab6bb8c7156094a5c1adb5eff83d",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "offset": "0x824a",
+          "bytes": 10942
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "offset": "0x488202",
+          "bytes": 374772
+        }
+      ],
+      "checkerboard": {
+        "centers": 11310,
+        "expected_phase": 0,
+        "mismatches": 0,
+        "maximum_error": 0
+      }
+    }
+  ],
+  "master_statistics_contexts": [],
+  "master_statistics_skip_observed": false,
+  "tail_phase_packets": [
+    {
+      "counter_ticks": 155657508,
+      "address": "0xb5349778",
+      "first_byte": 1,
+      "words": [
+        "0x1",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "counter_ticks": 205329274,
+      "address": "0xb5349778",
+      "first_byte": 1,
+      "words": [
+        "0x1",
+        "0x0",
+        "0x0"
+      ]
+    }
+  ],
+  "tail_queue_events": [
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 144996380,
+      "clear_mask": "0x0",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 144996389,
+      "clear_mask": "0x0",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 144998979,
+      "clear_mask": "0x8",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 144998988,
+      "clear_mask": "0x8",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x17",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 155657530,
+      "clear_mask": "0x2",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x17",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 155657539,
+      "clear_mask": "0x2",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x15",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 155809185,
+      "clear_mask": "0x4",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x15",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 155809195,
+      "clear_mask": "0x4",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x11",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 155846620,
+      "clear_mask": "0x10",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x11",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 155846629,
+      "clear_mask": "0x10",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1",
+        "head": "0xb2cca580",
+        "count": 1,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0xb2cbee5c"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0xb2cbee5c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 194988532,
+      "clear_mask": "0x0",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 194988541,
+      "clear_mask": "0x0",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x0",
+        "nested": "0x0",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0x0"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0x0"
+        }
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 205329296,
+      "clear_mask": "0x2",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1f",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 205329306,
+      "clear_mask": "0x2",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1d",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x0",
+        "nested": "0x0",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0x0"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0x0"
+        }
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-before",
+      "counter_ticks": 205427102,
+      "clear_mask": "0x4",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x1d",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "capture-input-tail-queue-result",
+      "counter_ticks": 205427111,
+      "clear_mask": "0x4",
+      "tail_queue": {
+        "address": "0xb25ef114",
+        "pending": "0x19",
+        "head": "0xb2cca580",
+        "count": 2,
+        "contexts": [
+          {
+            "address": "0xb2d3b980",
+            "parameter_2b4": "0x0",
+            "nested": "0x0",
+            "metadata_buffer": {
+              "selector": 0,
+              "slots": {
+                "0x310": "0x0",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x46c",
+              "selected": "0x0"
+            }
+          },
+          {
+            "address": "0xb2d3b580",
+            "parameter_2b4": "0x1",
+            "nested": "0xb3c87080",
+            "metadata_buffer": {
+              "selector": 1,
+              "slots": {
+                "0x310": "0xb2c9f55c",
+                "0x46c": "0x0"
+              },
+              "selected_offset": "0x310",
+              "selected": "0xb2c9f55c"
+            },
+            "nested_2844": "0x0",
+            "nested_2848": "0x0"
+          }
+        ]
+      },
+      "returned_context": {
+        "address": "0xb2d3b980",
+        "parameter_2b4": "0x0",
+        "nested": "0x0",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0x0"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0x0"
+        }
+      }
+    }
+  ],
+  "delegate_guards": [
+    {
+      "entry": "capture-delegate-phase-events",
+      "pc": "0x1026c66e",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1000",
+        "r1": "0x1026c66f",
+        "r2": "0xffffffff",
+        "r3": "0x0",
+        "r4": "0xb23ed628",
+        "r5": "0xb23ed648",
+        "r6": "0x0",
+        "r7": "0x0",
+        "lr": "0x103606b5"
+      },
+      "capture_state": [
+        8,
+        0
+      ],
+      "driver_state": 15,
+      "driver_pending_state": 20,
+      "driver_mode": 0,
+      "counter_ticks": 155653638,
+      "delegate_events": "0x1000",
+      "delegate_guard": {
+        "0xb23ed660": "0x0",
+        "0xb23ed698": "0x0",
+        "0xb18685a0": "0x0"
+      },
+      "input_source": {
+        "running_mask": 0,
+        "frame_ticks": 63,
+        "primary_frames": 1
+      }
+    },
+    {
+      "entry": "capture-delegate-phase-events",
+      "pc": "0x1026c66e",
+      "thread": 1,
+      "registers": {
+        "r0": "0x1000",
+        "r1": "0x1026c66f",
+        "r2": "0xffffffff",
+        "r3": "0x0",
+        "r4": "0xb23ed628",
+        "r5": "0xb23ed648",
+        "r6": "0x0",
+        "r7": "0x0",
+        "lr": "0x103606b5"
+      },
+      "capture_state": [
+        8,
+        0
+      ],
+      "driver_state": 15,
+      "driver_pending_state": 20,
+      "driver_mode": 0,
+      "counter_ticks": 205326170,
+      "delegate_events": "0x1000",
+      "delegate_guard": {
+        "0xb23ed660": "0x0",
+        "0xb23ed698": "0x0",
+        "0xb18685a0": "0x0"
+      },
+      "input_source": {
+        "running_mask": 0,
+        "frame_ticks": 93,
+        "primary_frames": 2
+      }
+    }
+  ],
+  "original_probe": {
+    "bytes": 20,
+    "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+    "preserved": true
+  },
+  "limitations": [
+    "Complete repeated capture additionally requires correct native queue retirement and no faults",
+    "A gate not reached in this run is not native validation of the experimental skip",
+    "Only the first twelve bytes of native tail phase packets are observed; the complete payload is not inferred"
+  ]
+}

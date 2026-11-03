@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "result": "passed",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "sync_callback": "0x102d6c38",
+  "sync_cases": [
+    {
+      "flags": "0x0",
+      "notifications": []
+    },
+    {
+      "flags": "0x1",
+      "notifications": [
+        "0x2010003"
+      ]
+    },
+    {
+      "flags": "0x2",
+      "notifications": []
+    },
+    {
+      "flags": "0x3",
+      "notifications": [
+        "0x2010003"
+      ]
+    }
+  ],
+  "tail_gate": "0x1022f4a0",
+  "queue_cases": [
+    {
+      "first_byte": 0,
+      "clear_mask": "0x1"
+    },
+    {
+      "first_byte": 1,
+      "clear_mask": "0x2"
+    },
+    {
+      "first_byte": 2,
+      "clear_mask": "0x2"
+    },
+    {
+      "first_byte": 255,
+      "clear_mask": "0x2"
+    }
+  ],
+  "delegate_setter": "0x1026f714",
+  "flag_cases": [
+    {
+      "index": 0,
+      "words": [
+        "0xa5a5a5a5",
+        "0x1",
+        "0xa5a5a5a5",
+        "0xa5a5a5a5"
+      ],
+      "posts": [
+        [
+          "0xb23ed628",
+          "0x400"
+        ]
+      ]
+    },
+    {
+      "index": 1,
+      "words": [
+        "0xa5a5a5a5",
+        "0xa5a5a5a5",
+        "0x1",
+        "0xa5a5a5a5"
+      ],
+      "posts": [
+        [
+          "0xb23ed628",
+          "0x400"
+        ]
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Synthetic callback registration and packet RAM",
+    "Timestamp query is intercepted without producing a timestamp",
+    "Stop at native callback, queue getter or event post; their consumers do not execute"
+  ],
+  "limitations": [
+    "Gate fragments do not execute earlier packet routing or producer preconditions",
+    "The sync callback is not a pixel producer or physical exposure timing model",
+    "No whole-machine event, queue mask or descriptor is supplied"
+  ]
+}

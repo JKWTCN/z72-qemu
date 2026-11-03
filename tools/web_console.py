@@ -334,6 +334,8 @@ class Machine:
                       if getattr(self.args, 'input_handshake', False) else ()) +
                      (('nikon-z72-boot-config.frame-phase=on',)
                       if getattr(self.args, 'frame_phase', False) else ()) +
+                     (('nikon-z72-boot-config.sample-group1=on',)
+                      if getattr(self.args, 'sample_group1', False) else ()) +
                      (('nikon-z72-boot-config.input-stop-complete=on',)
                       if getattr(self.args, 'input_stop_complete', False) else ()) +
                      (('nikon-z72-boot-config.frame-generate=on',)
@@ -1073,6 +1075,8 @@ def main():
                         help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
+    parser.add_argument('--sample-group1', action='store_true',
+                        help='Enable the optional group-1 frame synchronization event source')
     parser.add_argument('--controller-actuator', action='store_true',
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',

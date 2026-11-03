@@ -891,3 +891,14 @@ value 2 clears its three halfwords, while software RAW correction value 1
 selects its return branch. Other values stop before the service or header
 preconditions. The correction routine is native CPU code; its field is not
 the slave SFLT skip field. These isolated gates do not alter a running camera.
+
+`tools/capture_tail_phase_contract.py` executes four group-1 callback inputs,
+four tail packet values and two delegate flag setters. It checks the original
+notification, clear-mask selection, neighboring words and event-post arguments.
+Timestamp and queue consumers remain intercepted boundaries.
+
+The synchronization batch has seven configurations. Its explicit group-1 source
+case additionally checks masked pending, IRQ86, unrelated acknowledgement, W1C,
+the next frame, source stop and reset. The console and body probe expose the
+existing source through `--sample-group1`, disabled by default. Full capture and
+queue retirement require separate original-firmware evidence.

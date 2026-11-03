@@ -222,6 +222,9 @@ CAPTURE_INPUT_POINTS = {
     0x1022ff42: 'capture-input-tail-worker-parameter-check',
     0x1022de1a: 'capture-input-tail-queue-before',
     0x1022de46: 'capture-input-tail-queue-result',
+    0x1022f346: 'capture-input-tail-phase-packet',
+    0x1026c66e: 'capture-delegate-phase-events',
+    0x1026cba6: 'capture-delegate-phase-zero-gate',
     0x10230052: 'capture-input-tail-driver-notification',
     0x1032ac52: 'capture-input-parameter-clone',
     0x1032ac9a: 'capture-input-parameter-clone-ready',
@@ -489,6 +492,11 @@ COMPUTE_STATISTICS_SKIP_POINTS = {
     0x1012c648: 'capture-slave-statistics-skip-gate',
     0x1012c6b0: 'capture-slave-statistics-skip-native-clear',
     0x1012c6d2: 'capture-slave-statistics-skip-finish',
+}
+MASTER_STATISTICS_SKIP_POINTS = {
+    0x102c3fb6: 'capture-master-statistics-skip-gate',
+    0x102c401e: 'capture-master-statistics-skip-native-clear',
+    0x102c4040: 'capture-master-statistics-skip-finish',
 }
 IMAGE_WORK_WAIT_POINTS = {
     0x10268c2a: 'image-work-service-wait',
@@ -2039,6 +2047,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     skip_statistics = skip_compute_statistics or skip_still_preprocessing
     slave_points = CAPTURE_SLAVE_POINTS | (COMPUTE_STATISTICS_SKIP_POINTS
                                            if skip_statistics else {})
+    master_skip_points = MASTER_STATISTICS_SKIP_POINTS if skip_statistics else {}
     skipped_statistics = {}
     armed = {ACTION: 'application-action'}
     if playback:
@@ -2137,7 +2146,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         capture_input_path = next(path for path in paths if machine.qmp.command(
             'qom-get', dict(path=path, property='master-role')))
         for address, label in (CAPTURE_INPUT_POINTS | CAPTURE_CONTROLLER_POINTS |
-                               slave_points).items():
+                               slave_points | master_skip_points).items():
             if address in CAPTURE_SLAVE_INIT_POINTS:
                 continue
             require(address not in armed, 'Capture input observation overlaps a breakpoint')
@@ -3296,7 +3305,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                           0x1054238a, 0x10542394):
                     record['action_saved_registers'] = {
                         name: hex(remote.get(registers, name)) for name in ('r8', 'r9', 'r10', 'r11')}
-                if capture_focus and capture_input_path is not None and pc in CAPTURE_INPUT_POINTS:
+                if (capture_focus and capture_input_path is not None and
+                        (pc in CAPTURE_INPUT_POINTS or pc in master_skip_points)):
                     if pc in (0x10448496, 0x104484de, 0x104d7596, 0x10448e92, 0x10448e96):
                         keep = keep and capture_caller is not None and capture_caller.report['triggered']
                         if keep:
@@ -3528,6 +3538,55 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         if pc == 0x1022de46:
                             record['returned_context'] = input_tail_parameter_snapshot(
                                 remote, remote.get(registers, 'r4'))
+                    if pc == 0x1022f346:
+                        pointer = remote.get(registers, 'r1')
+                        require(pointer % 4 == 0 and 0xb1800000 <= pointer <= 0xb5effff4,
+                                'Unexpected native tail phase packet')
+                        data = remote.read(pointer, 12)
+                        record['tail_phase_packet'] = dict(address=hex(pointer), first_byte=data[0],
+                            words=[hex(value) for value in struct.unpack('<3I', data)])
+                    if pc in (0x1026c66e, 0x1026cba6):
+                        events = remote.get(registers, 'r0' if pc == 0x1026c66e else 'r7')
+                        keep = keep and (pc == 0x1026cba6 or bool(events & 0x1400))
+                        if keep:
+                            record['delegate_events'] = hex(events)
+                            record['delegate_guard'] = {hex(address): hex(int.from_bytes(
+                                remote.read(address, 4), 'little')) for address in
+                                (0xb23ed660, 0xb23ed698, 0xb18685a0)}
+                    if pc in master_skip_points:
+                        context = remote.get(registers, 'r4')
+                        require(context % 4 == 0 and 0xb2c00000 <= context <= 0xb5effb08,
+                                'Unexpected master statistics context')
+                        nested = int.from_bytes(remote.read(context + 0x4f4, 4), 'little')
+                        require(nested % 4 == 0 and 0xb2c00000 <= nested <= 0xb5efd483,
+                                'Unexpected master statistics parameter block')
+                        if pc == 0x102c3fb6:
+                            require(remote.read(pc, 14) == bytes.fromhex(
+                                'd4f8f40442f67c31095c02292cd0'),
+                                'Original master statistics gate instructions differ')
+                            address = nested + 0x2b7c
+                            previous = remote.read(address, 1)[0]
+                            remote.write(address, b'\x02')
+                            require(remote.read(address, 1) == b'\x02',
+                                    'Master statistics skip input readback differs')
+                            change = dict(role='master', context=hex(context), nested=hex(nested),
+                                address=hex(address), previous=previous, supplied=2,
+                                native_clear_entered=False, native_clear_observed=False)
+                            skipped_statistics[context] = change
+                            record['experimental_statistics_input'] = dict(change)
+                        elif context in skipped_statistics:
+                            change = skipped_statistics[context]
+                            require(change['nested'] == hex(nested) and
+                                    remote.read(nested + 0x2b7c, 1) == b'\x02',
+                                    'Master statistics skip input changed before native clear')
+                            if pc == 0x102c401e:
+                                change['native_clear_entered'] = True
+                            else:
+                                results = list(struct.unpack('<3H', remote.read(nested + 0x1e08, 6)))
+                                require(change['native_clear_entered'] and results == [0, 0, 0],
+                                        'Native master statistics skip did not clear its results')
+                                change.update(native_clear_observed=True, result_halfwords=results)
+                                record['native_statistics_skip'] = dict(change)
                     if pc == 0x10307fe0:
                         kind = remote.get(registers, 'r5')
                         keep = keep and kind in (0, 80) and record['capture_state'][0] >= 6
@@ -3680,6 +3739,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         0x10360468, 0x103604ca, 0x103eb2e4,
                         0x1023cc10, 0x1023cc28, 0x1023cc32, 0x1023cc44, 0x10307fe0, 0x10327108,
                         0x1022de1a, 0x1022de46,
+                        0x1022f346,
+                        0x1026c66e, 0x1026cba6,
                         0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else
                         16 if repeat_body_capture and pc == 0x103e6e94 else 8)
                 if keep:
@@ -3797,6 +3858,8 @@ def main():
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--frame-phase', action='store_true',
                         help='Enable the optional masked periodic sampling phase source')
+    parser.add_argument('--sample-group1', action='store_true',
+                        help='Enable the optional group-1 frame synchronization event source')
     parser.add_argument('--input-stop-complete', action='store_true',
                         help='Enable the optional command-triggered input stop response')
     parser.add_argument('--frame-generate', action='store_true',
@@ -4102,6 +4165,7 @@ def main():
                       preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
+                      sample_group1=args.sample_group1,
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,

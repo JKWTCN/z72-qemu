@@ -1,0 +1,29 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "command": [
+    "C:\\Users\\15056\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "-B",
+    ".local/run-wsl-test.py",
+    "tests/test_frame_sync.py"
+  ],
+  "test": "tests/test_frame_sync.py",
+  "test_sha256": "e0df181b2aa3356cbbcae2e771becc985eb52e2590a2e897641c6f93baa2b063",
+  "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+  "binary_sha256": "da8a196453de5e7bce4df8a5fed7e81ed06458938f22d1e98c848e783bbd2c82",
+  "configurations": 7,
+  "group1_source_checks": [
+    "Pending bit without interrupt while masked",
+    "Enable original IRQ86 mask",
+    "Unrelated acknowledgement preserves bit0",
+    "W1C clears bit0 and IRQ",
+    "Next source tick rearms pending",
+    "Source stop prevents further events",
+    "Reset clears mask and pending without a synthetic edge"
+  ],
+  "other_checks": "Existing six frame/sampling/output configurations also passed",
+  "limitations": [
+    "Synthetic device checks; no original capture or physical exposure is established"
+  ]
+}

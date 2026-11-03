@@ -8,10 +8,11 @@ import time
 
 
 def check(qemu):
-    for role, enabled, sampling, automatic, phase in (
-            ('master', False, True, True, True), ('master', True, False, True, True),
-            ('master', True, True, True, True), ('master', True, True, False, True),
-            ('slave', True, True, True, True), ('master', True, True, True, False)):
+    for role, enabled, sampling, automatic, phase, group1 in (
+            ('master', False, True, True, True, False), ('master', True, False, True, True, False),
+            ('master', True, True, True, True, False), ('master', True, True, False, True, False),
+            ('slave', True, True, True, True, False), ('master', True, True, True, False, False),
+            ('master', True, True, True, True, True)):
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -24,6 +25,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.auto-complete={"on" if automatic else "off"}',
             '-global', f'nikon-z72-boot-config.sampling-output-complete={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.frame-phase={"on" if phase else "off"}',
+            '-global', f'nikon-z72-boot-config.sample-group1={"on" if group1 else "off"}',
             '-global', 'nikon-z72-boot-config.sample-lines=0x1234',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -90,9 +92,31 @@ def check(qemu):
             assert read(0x20060044) == 0
             command('clock_step 1')
             assert read(0x20060044) == (0x10 if active else 0)
-            assert read(0x20060038) == 0
+            assert read(0x20060038) == (1 if group1 else 0)
             for index in range(5):
                 assert read(0x20061300 + index * 4) == (0x1234 if active and sampling else 0)
+            if group1:
+                gics = [item['name'] for item in devices if item['type'] == 'child<arm_gic>']
+                assert len(gics) == 1
+                command('irq_intercept_in /machine/unattached/' + gics[0])
+                assert not irq_levels.get(86 - 32, False)
+                write(0x20060034, 1)
+                assert irq_levels[86 - 32]
+                write(0x20060038, 0x18)
+                assert read(0x20060038) == 1 and irq_levels[86 - 32]
+                write(0x20060038, 1)
+                assert read(0x20060038) == 0 and not irq_levels[86 - 32]
+                command('clock_step 33333333')
+                assert read(0x20060038) == 1 and irq_levels[86 - 32]
+                command(f'set_irq_in {clock_path} frame-sync-enable 0 0')
+                write(0x20060038, 1)
+                command('clock_step 100000000')
+                assert read(0x20060038) == 0 and not irq_levels[86 - 32]
+                monitor('system_reset')
+                assert read(0x20060034) == 0 and read(0x20060038) == 0
+                command('clock_step 100000000')
+                assert read(0x20060038) == 0
+                continue
             if active:
                 write(0x20060040, 0x10)
                 write(0x20060044, 1)
