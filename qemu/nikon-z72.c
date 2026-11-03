@@ -3417,6 +3417,10 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
     AddressSpace *view = CPU(s->cpu)->as;
     uint8_t descriptors[2][52], word[4], parameters[0x3c];
     uint32_t planes[4];
+    const uint32_t pool_start = s->master_role ? 0xbd200000 : 0xc8900000;
+    const uint32_t pool_end = s->master_role ? 0xc3dcb400 : 0xca712200;
+    const uint32_t parameter_start = s->master_role ? 0xb1800000 : 0xc1000000;
+    const uint32_t parameter_end = s->master_role ? 0xb5f00000 : 0xc8200000;
 
     if (address_space_read(view, 0x201009c0, MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK ||
         ldl_le_p(word) != 1 ||
@@ -3465,7 +3469,7 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
     }
     for (unsigned index = 0; index < ARRAY_SIZE(planes); index++) {
         unsigned bytes = index < 2 ? input_bytes : output_bytes;
-        if (planes[index] < 0xc8900000 || (uint64_t)planes[index] + bytes > 0xca712200 ||
+        if (planes[index] < pool_start || (uint64_t)planes[index] + bytes > pool_end ||
             !processing_ram_range(view, planes[index], bytes)) {
             return false;
         }
@@ -3481,7 +3485,7 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
         return false;
     }
     uint32_t pointer = ldl_le_p(word);
-    if (pointer < 0xc1000000 || pointer > 0xc81fffc4 ||
+    if (pointer < parameter_start || pointer > parameter_end - sizeof(parameters) ||
         !processing_ram_range(view, pointer, sizeof(parameters)) ||
         address_space_read(view, pointer, MEMTXATTRS_UNSPECIFIED,
                            parameters, sizeof(parameters)) != MEMTX_OK ||
@@ -3538,7 +3542,7 @@ static void still_thumbnail_start_write(void *opaque, hwaddr offset, uint64_t va
     NikonZ72BootConfig *s = opaque;
     s->still_thumbnail_command = value;
     /* Unit 41 is started last by the five-node recipe. */
-    if (value == 1 && s->frame_process && s->cpu && !s->master_role &&
+    if (value == 1 && s->frame_process && s->cpu &&
         !(ldl_le_p(s->transfer_table + 0x1c) & 0x10) && still_thumbnail_frame(s)) {
         stl_le_p(s->transfer_table + 0x1c, ldl_le_p(s->transfer_table + 0x1c) | 0x10);
         transfer_update_irq(s);

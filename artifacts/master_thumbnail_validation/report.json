@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "binary_sha256": "e80a572f648d36288b34bf86fac25458a121396af9ac565b8a2a6f41abb66409",
+  "source_sha256": "bea58e5f02b8a121e1863bf1a4ff598ce300d114deebea1bd6d462a75e1aff6e",
+  "red": {
+    "binary_sha256": "7c711a69c148c2fe51fa5778fc5ba3042017ff5eb3ba80d5a40276d50556e3c4",
+    "role": "master",
+    "processing_count": 4,
+    "pending_1c": "0x0",
+    "expected_processing_count": 5,
+    "expected_pending_1c": "0x10"
+  },
+  "checks": [
+    {
+      "command": "tests/test_still_processing.py",
+      "passed": true,
+      "configurations": 6
+    }
+  ],
+  "scope": "Master and slave finite 640x424 and 160x120 diagnostic thumbnail profiles. Pixel samples, guard words, invalid geometry/stride/plane spacing, bounds, foreign parameter memory, input/output aliasing, invalid final active chroma, pending completion, W1C and reset with image and thumbnail IRQs pending. Nearest sampling and neutral chroma remain declared modeling choices, not factory image processing."
+}

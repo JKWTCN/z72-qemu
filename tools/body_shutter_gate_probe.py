@@ -166,6 +166,10 @@ CAPTURE_MASTER_TRANSFORM_POINTS = {
     0x102c4cc2: 'capture-master-transform-dispatch',
     0x102c4cd4: 'capture-master-transform-wait-return',
     0x102c2394: 'capture-master-transform-callback',
+    0x102c5558: 'capture-master-thumbnail-dispatch',
+    0x102c5568: 'capture-master-thumbnail-wait-return',
+    0x102c55f0: 'capture-master-secondary-thumbnail-dispatch',
+    0x102c5600: 'capture-master-secondary-thumbnail-wait-return',
 }
 CAPTURE_INPUT_POINTS = {
     **CAPTURE_MASTER_PROCESSING_POINTS,
@@ -1867,7 +1871,10 @@ def snapshot(remote):
         image_service=image_service_snapshot(remote),
         master_transform=transform_snapshot(remote, slave=False),
         jpeg_encoder=dict(current_descriptor=hex(word(0xb1801eb8)),
-                          accumulated_flags=hex(word(0xb1801eb0))),
+                          accumulated_flags=hex(word(0xb1801eb0)),
+                          register_base='0x24072000',
+                          registers=[hex(value) for value in struct.unpack(
+                              '<320I', remote.read(0x24072000, 0x500))]),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),

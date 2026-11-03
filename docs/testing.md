@@ -933,3 +933,12 @@ and transform IRQs pending. See the
 The body probe records either engine's transform context, selected program,
 parameter blocks and pixel rows; original callbacks and wait returns remain
 independent observations.
+
+The thumbnail part of the same six still-processing configurations now runs
+on both engines, including 640x424 and 160x120 outputs. Checks cover pixel
+sampling through both levels, source/destination guards, invalid geometry and
+plane spacing, foreign parameter RAM, aliasing, invalid final chroma, duplicate
+starts, W1C and reset with image and thumbnail completions pending. See the
+[thumbnail device receipt](../artifacts/master_thumbnail_validation/report.json).
+The body probe records each native thumbnail dispatch and wait return; its
+read-only master JPEG register snapshot is based at `24072000`.

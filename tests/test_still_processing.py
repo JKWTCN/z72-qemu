@@ -256,19 +256,9 @@ def check(qemu):
             write(0x2010001c, 0x70)
 
             if role == 'master':
-                assert read(0x20380024) == 0, 'Bank 1 completion changed bank 0'
-                write(base + 0x20, 2)
-                write(base + 8, 1)
-                assert count() == 5 and read(base + 0x24) == 2 and levels[irq]
-                write(0x20100900, 1)
-                assert count() == 6 and read(0x2010001c) == 0x70 and levels[102 - 32]
-                monitor('system_reset')
-                assert count() == 0 and read(base + 8) == 0 and read(base + 0x24) == 0
-                assert read(0x20100900) == 0 and read(0x2010001c) == 0
-                assert not levels.get(irq, False) and not levels[102 - 32]
-                continue
-
-            thumbnail, thumbnail_uv = 0xc8900000, 0xc8942400
+                thumbnail, thumbnail_uv = 0xbd200000, 0xbd242400
+            else:
+                thumbnail, thumbnail_uv = 0xc8900000, 0xc8942400
             thumbnail_bytes = 640 * 424
 
             def configure_thumbnail():
@@ -277,19 +267,22 @@ def check(qemu):
                         (640, 424 << 16 | 640, thumbnail, thumbnail_uv))):
                     load(0x20100440 + index * 0x40, struct.pack('<13I',
                         0x09000001, 0x10000, 0, 0, pitch, pitch, 0, 0, geometry, y_plane, uv_plane, 0, 0))
-                load(0xc1001000, struct.pack('<15I', 0x110a0000, 0x400000, 0,
+                load(parameter_base, struct.pack('<15I', 0x110a0000, 0x400000, 0,
                     0x10002, 0, 0, 0, 0xff000000, 0, 0, 0x11080040,
                     0x027f0000, 0x01a70000, 0x400040, 0x40004))
-                write(0x201009d0, 0xc1001000)
+                write(0x201009d0, parameter_base)
                 write(0x201009c0, 1)
 
             write(thumbnail, 0xa5a5a5a5)
             write(thumbnail_uv, 0x5a5a5a5a)
+            configure_thumbnail()
+            load(foreign_parameters, data_at(parameter_base, 0x3c))
             source_head, source_tail = read(small), read(small_uv + small_stride * 1088)
             for address, value in ((0x20100464, small + 16), (0x201004a8, thumbnail + 16),
-                                   (0x201004a4, 0xca7121f0), (0x201004a0, 0x1000100),
+                                   (0x201004a4, scratch_end - 16), (0x201004a0, 0x1000100),
                                    (0x201009d0, 0xfffffff0), (0x201009c0, 0),
-                                   (0xc100102c, 0x10000)):
+                                   (0x201009d0, foreign_parameters),
+                                   (parameter_base + 0x2c, 0x10000)):
                 configure_thumbnail()
                 write(address, value)
                 write(0x201008a0, 1)
@@ -304,7 +297,8 @@ def check(qemu):
                 assert read(thumbnail) == 0xa5a5a5a5 and read(thumbnail_uv) == 0x5a5a5a5a
                 load(address, previous)
             write(0x201008a0, 1)
-            assert count() == 5 and read(0x2010001c) == 0x10 and levels[102 - 32]
+            assert count() == 5 and read(0x2010001c) == 0x10 and levels[102 - 32], (
+                role, count(), hex(read(0x2010001c)))
             assert data_at(thumbnail, 1) == b'\x60'
             for x, y in ((0, 0), (320, 212), (639, 423), (1, 1), (638, 422)):
                 sy, sx = y * small_height // 424, x * small_width // 640
@@ -319,26 +313,30 @@ def check(qemu):
             write(0x201008a0, 1)
             assert count() == 6 and read(0x2010001c) == 0x10
             write(0x2010001c, 0x10)
-            secondary, secondary_uv = 0xc8cf8800, 0xc8cfd300
+            secondary = 0xbd5f8800 if role == 'master' else 0xc8cf8800
+            secondary_uv = secondary + 160 * 120
 
             def configure_secondary():
                 load(0x20100440, struct.pack('<13I', 0x09000001, 0, 0x800000, 0x80,
                     640, 640, 0, 0, 424 << 16 | 640, thumbnail, thumbnail_uv, 0, 0))
                 load(0x20100480, struct.pack('<13I', 0x09000001, 0x10000, 0, 0,
                     160, 160, 0, 0, 120 << 16 | 160, secondary, secondary_uv, 0, 0))
-                load(0xc1001000, struct.pack('<15I', 0x110a0000, 0x400000, 0,
+                load(parameter_base, struct.pack('<15I', 0x110a0000, 0x400000, 0,
                     0x10002, 0, 0, 0, 0xff000000, 0, 0, 0x11080040,
                     0x009f0000, 0x00770000, 0x400040, 0x40004))
-                write(0x201009d0, 0xc1001000)
+                write(0x201009d0, parameter_base)
                 write(0x201009c0, 1)
 
+            configure_secondary()
+            load(foreign_parameters, data_at(parameter_base, 0x3c))
             write(secondary, 0xa5a5a5a5)
             write(secondary_uv, 0x5a5a5a5a)
             write(secondary - 4, 0x11223344)
             write(secondary_uv + 160 * 120, 0x55667788)
             for address, value in ((0x20100448, 0), (0x2010044c, 0), (0x20100444, 0x10000),
                                    (0x201004a4, thumbnail), (0x201004a8, secondary + 16),
-                                   (0x201004a0, 0x1000100), (0xc1001030, 0x10000)):
+                                   (0x201004a0, 0x1000100), (parameter_base + 0x30, 0x10000),
+                                   (0x201009d0, foreign_parameters)):
                 configure_secondary()
                 write(address, value)
                 write(0x201008a0, 1)
@@ -359,8 +357,14 @@ def check(qemu):
             assert read(secondary - 4) == 0x11223344 and read(secondary_uv + 160 * 120) == 0x55667788
             write(0x201008a0, 1)
             assert count() == 7
+            if role == 'master':
+                write(base + 0x20, 2)
+                write(base + 8, 1)
+                assert count() == 8 and read(base + 0x24) == 2 and levels[irq]
+                assert read(0x2010001c) == 0x10 and levels[102 - 32]
             monitor('system_reset')
-            assert count() == 0 and read(0x20380024) == 0
+            assert count() == 0 and read(base + 0x24) == 0 and read(base + 8) == 0
+            assert not levels.get(irq, False)
             assert read(0x20100900) == 0 and read(0x2010001c) == 0 and not levels[102 - 32]
             assert read(0x201008a0) == 0
         finally:
