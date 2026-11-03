@@ -8,7 +8,7 @@ import struct
 import sys
 
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_HOOK_CODE
-from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R4, UC_ARM_REG_SP,
+from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R2, UC_ARM_REG_R4, UC_ARM_REG_R5, UC_ARM_REG_SP,
                               UC_ARM_REG_LR, UC_ARM_REG_PC)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -31,9 +31,9 @@ def check(master, slave):
     source.mem_map(0xb20d2000, 0x21000)
     source.mem_map(0xb20cf000, 0x1000)
     target = machine(slave)
-    # The taken path stops at the real calculation entry, before execution.
+    # Stop before calculation, or before the SFLT methods' other preconditions.
     def stop_at_request(cpu, address, size, unused):
-        if address == 0x1011ef16:
+        if address in (0x1011ef16, 0x1011e480, 0x1012c7bc, 0x1012c840):
             cpu.emu_stop()
     target.hook_add(UC_HOOK_CODE, stop_at_request)
     ids = [0x41b, 0x41c, None, 0x2a0, 0x2a1, 0x351, 0x350,
@@ -110,18 +110,48 @@ def check(master, slave):
         cases.append(dict(fixture=fixture, cache_2a1=value, copied_bytes=list(data),
                           nested_2b7c=data[4], calculation_requested=requested,
                           stopped_pc=hex(pc), result_halfwords=list(struct.unpack('<3H', output))))
+    preprocessing_cases = []
+    raw_header = 0x50009000
+    target.mem_write(capture + 0x310, struct.pack('<I', raw_header))
+    for value in (0, 1, 2, 3, 255):
+        target.mem_write(nested + 0x2b79, bytes([value]))
+        for entry, requested, skipped in ((0x1012c7ac, 0x1012c7bc, 0x1012c81c),
+                                           (0x1012c830, 0x1012c840, 0x1012c85c)):
+            target.reg_write(UC_ARM_REG_R4, capture)
+            target.emu_start(entry | 1, skipped, count=100)
+            pc = target.reg_read(UC_ARM_REG_PC)
+            require(pc == (skipped if value == 1 else requested),
+                    'Native SFLT skip condition differs')
+            preprocessing_cases.append(dict(entry=hex(entry), nested_2b79=value,
+                skipped=value == 1, stopped_pc=hex(pc),
+                scope='Gate fragment only; stops before other preconditions or return'))
+        target.mem_write(nested + 0x2b7b, bytes([value]))
+        target.mem_write(raw_header + 0x14, bytes(4))
+        target.reg_write(UC_ARM_REG_R5, capture)
+        target.reg_write(UC_ARM_REG_R2, 0x50008000)
+        target.reg_write(UC_ARM_REG_SP, 0x5000e000)
+        target.emu_start(0x1012c8fb, 0x1012c8f6, count=100)
+        pc = target.reg_read(UC_ARM_REG_PC)
+        marked = struct.unpack('<I', target.mem_read(raw_header + 0x14, 4))[0]
+        require(pc == (0x1012c8f6 if value == 2 else 0x1011e480) and
+                marked == (1 if value == 2 else 0), 'Native RAW compute skip condition differs')
+        preprocessing_cases.append(dict(entry='0x1012c8fa', nested_2b7b=value,
+            skipped=value == 2, stopped_pc=hex(pc), raw_header_14=marked,
+            scope='Starts after earlier preconditions; stops before calculation or common return'))
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=master_info['sha256'], slave_sha256=slave_info['sha256'],
         copy_entry='0x103603d8', reader_entry='0x103c09e8', cache_base=hex(cache),
         destination_offset='0x2b78', copied_indices=ids, default_initialization=default_report,
-        cases=cases,
+        cases=cases, preprocessing_cases=preprocessing_cases,
         host_boundaries=['Default-refresh mutex wrappers return success',
                          'Synthetic object-8 cache bytes for non-default cases and capture context',
                          'Enter gate at 0x1012c648 after earlier stage preconditions',
-                         'Stop requested calculation at 0x1011ef16 before it executes'],
+                         'Stop requested calculation at 0x1011ef16 before it executes',
+                         'SFLT gate fragments stop before other preconditions or the shared return',
+                         'RAW gate starts after earlier preconditions and stops before 0x1011e480'],
         limitations=['No persistent configuration is changed in the whole machine',
                      'ROM defaults do not establish the contents of a particular camera',
-                     'Value 2 is a native branch condition, not a verified supported user setting',
+                     'Skip values are native branch conditions, not verified supported user settings',
                      'No compute result algorithm, encoding or photograph is executed'])
 
 
@@ -134,4 +164,4 @@ if __name__ == '__main__':
     result = check(args.master.read_bytes(), args.slave.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8', newline='\n')
-    print('PASS original persistent configuration copy and exact still-compute gate')
+    print('PASS original persistent configuration copy and still-processing skip gates')

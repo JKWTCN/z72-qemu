@@ -214,16 +214,130 @@
       ]
     }
   ],
+  "preprocessing_cases": [
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 0,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 0,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x1012c81c",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 1,
+      "skipped": true,
+      "stopped_pc": "0x1012c85c",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 1,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 2,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 2,
+      "skipped": true,
+      "stopped_pc": "0x1012c8f6",
+      "raw_header_14": 1,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 3,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 3,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    },
+    {
+      "entry": "0x1012c7ac",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x1012c7bc",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c830",
+      "nested_2b79": 255,
+      "skipped": false,
+      "stopped_pc": "0x1012c840",
+      "scope": "Gate fragment only; stops before other preconditions or return"
+    },
+    {
+      "entry": "0x1012c8fa",
+      "nested_2b7b": 255,
+      "skipped": false,
+      "stopped_pc": "0x1011e480",
+      "raw_header_14": 0,
+      "scope": "Starts after earlier preconditions; stops before calculation or common return"
+    }
+  ],
   "host_boundaries": [
     "Default-refresh mutex wrappers return success",
     "Synthetic object-8 cache bytes for non-default cases and capture context",
     "Enter gate at 0x1012c648 after earlier stage preconditions",
-    "Stop requested calculation at 0x1011ef16 before it executes"
+    "Stop requested calculation at 0x1011ef16 before it executes",
+    "SFLT gate fragments stop before other preconditions or the shared return",
+    "RAW gate starts after earlier preconditions and stops before 0x1011e480"
   ],
   "limitations": [
     "No persistent configuration is changed in the whole machine",
     "ROM defaults do not establish the contents of a particular camera",
-    "Value 2 is a native branch condition, not a verified supported user setting",
+    "Skip values are native branch conditions, not verified supported user settings",
     "No compute result algorithm, encoding or photograph is executed"
   ]
 }

@@ -302,8 +302,24 @@ CAPTURE_SLAVE_INIT_POINTS = {
     0x1005944c: 'capture-slave-compute-state-request',
     0x1005947c: 'capture-slave-compute-flush-request',
 }
+CAPTURE_SLAVE_SFLT_POINTS = {
+    0x1012c7a2: 'capture-slave-sflt-output-prepare',
+    0x1012c800: 'capture-slave-sflt-output-allocation-return',
+    0x1012c82a: 'capture-slave-sflt-process',
+    0x1012c85c: 'capture-slave-sflt-process-finish',
+    0x1011712a: 'capture-slave-sflt-request',
+    0x1011714e: 'capture-slave-sflt-request-return',
+    0x100b4e14: 'capture-slave-sflt-service-submit',
+    0x100b4bb6: 'capture-slave-sflt-service-execute',
+    0x100b4c52: 'capture-slave-sflt-program-packed',
+    0x1009ac14: 'capture-slave-sflt-start',
+    0x100b4cca: 'capture-slave-sflt-service-wait',
+    0x1009a490: 'capture-slave-sflt-interrupt',
+    0x100b4b62: 'capture-slave-sflt-service-callback',
+}
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
+    **CAPTURE_SLAVE_SFLT_POINTS,
     0x10129faa: 'capture-slave-image-service',
     0x10129e12: 'capture-slave-still-request',
     0x10129e54: 'capture-slave-request-copy-return',
@@ -329,6 +345,8 @@ CAPTURE_SLAVE_POINTS = {
     0x1012eb1a: 'capture-slave-stage1-input-ready',
     0x1012bc26: 'capture-slave-stage1-buffers',
     0x1012c2de: 'capture-slave-stage1-process',
+    0x1012c8dc: 'capture-slave-raw-compute-prepare',
+    0x1012c94c: 'capture-slave-raw-compute-finish',
     0x1011ef16: 'capture-slave-compute-entry',
     0x1011ef70: 'capture-slave-compute-first-return',
     0x1011efba: 'capture-slave-compute-second-return',
@@ -993,6 +1011,33 @@ def sd_trace_snapshot(machine):
         scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
 
 
+def sflt_snapshot(remote):
+    # Called with a slave thread selected. The service's +0xc holds the
+    # current request while its native worker waits for device completion.
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result = dict(registers={hex(offset): hex(word(0x20203000 + offset))
+                             for offset in (0, 4, 0x20, 0x2c, 0x44, 0x4c, 0x50,
+                                            0x60, 0x70, 0x80, 0x90, 0xa0, 0xb0)},
+                  service_words=[hex(value) for value in struct.unpack(
+                      '<4I', remote.read(0xc1007a88, 16))],
+                  task=task_wait_snapshot(remote, 0xc1486dac, slave=True))
+    request = word(0xc1007a94)
+    if request % 4 == 0 and 0xc1000000 <= request <= 0xc81fff5c:
+        fields = struct.unpack('<41I', remote.read(request, 0xa4))
+        result['request'] = dict(address=hex(request),
+            fields={hex(index * 4): hex(value) for index, value in enumerate(fields)})
+        program, length = fields[0x8c // 4:0x94 // 4]
+        if program == 0xc500c000 and 128 <= length <= 128 + 16 * 80 and (length - 128) % 80 == 0:
+            data = remote.read(program, length)
+            result['program'] = dict(address=hex(program), bytes=length,
+                sha256=hashlib.sha256(data).hexdigest(),
+                header_words=[hex(value) for value in struct.unpack('<32I', data[:128])],
+                records=[[hex(value) for value in struct.unpack_from('<20I', data, offset)]
+                         for offset in range(128, length, 80)])
+    return result
+
+
 def peer_input_snapshot(remote, resume_thread=1, machine=None):
     result = dict(thread=3, controls={}, banks=[])
     remote.select_thread(3)
@@ -1050,6 +1095,7 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                     channel_words=[hex(value) for value in struct.unpack(
                         '<32I', remote.read(registers, 128))])
         result['compute'] = compute
+        result['sflt'] = sflt_snapshot(remote)
         compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
             struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
             for channel in range(4)]
@@ -1616,12 +1662,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_capture_events=False, body_input_events=False, body_compute_events=False,
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
-            capture_format_3800=False, body_exposure=None, skip_compute_statistics=False):
+            capture_format_3800=False, body_exposure=None, skip_compute_statistics=False,
+            skip_still_preprocessing=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
+    skip_statistics = skip_compute_statistics or skip_still_preprocessing
     slave_points = CAPTURE_SLAVE_POINTS | (COMPUTE_STATISTICS_SKIP_POINTS
-                                           if skip_compute_statistics else {})
+                                           if skip_statistics else {})
     skipped_statistics = {}
     armed = {ACTION: 'application-action'}
     if playback:
@@ -2021,7 +2069,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                          'r8', 'r9', 'r10', 'r11', 'lr')})
                 keep = True
-                if skip_compute_statistics and pc in COMPUTE_STATISTICS_SKIP_POINTS:
+                if pc in CAPTURE_SLAVE_SFLT_POINTS:
+                    record['sflt'] = sflt_snapshot(remote)
+                if skip_statistics and pc in COMPUTE_STATISTICS_SKIP_POINTS:
                     context = remote.get(registers, 'r4')
                     require(context % 4 == 0 and 0xc1000000 <= context and
                             context + 0x4f8 <= 0xc5000000,
@@ -2042,6 +2092,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         change = dict(context=hex(context), nested=hex(nested),
                             address=hex(address), previous=previous, supplied=2,
                             native_clear_observed=False)
+                        if skip_still_preprocessing:
+                            change['preprocessing_inputs'] = []
+                            for offset, value in ((0x2b79, 1), (0x2b7b, 2)):
+                                address = nested + offset
+                                old = remote.read(address, 1)[0]
+                                remote.write(address, bytes([value]))
+                                require(remote.read(address, 1) == bytes([value]),
+                                        'Still preprocessing skip input readback differs')
+                                change['preprocessing_inputs'].append(dict(
+                                    address=hex(address), offset=hex(offset), previous=old, supplied=value))
+                            change.update(sflt_skip_observed=False, raw_compute_skip_observed=False)
                         skipped_statistics[context] = change
                         record['experimental_statistics_input'] = dict(change)
                     elif context in skipped_statistics:
@@ -2053,6 +2114,24 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             skipped_statistics[context].update(native_clear_observed=True,
                                                                result_halfwords=results)
                             record['native_statistics_skip'] = dict(skipped_statistics[context])
+                if skip_still_preprocessing and pc in (0x1012c85c, 0x1012c94c):
+                    context = remote.get(registers, 'r4' if pc == 0x1012c85c else 'r5')
+                    if context in skipped_statistics:
+                        change = skipped_statistics[context]
+                        nested = int(change['nested'], 16)
+                        if pc == 0x1012c85c:
+                            require(remote.read(nested + 0x2b79, 1) == b'\x01',
+                                    'SFLT skip input changed')
+                            change['sflt_skip_observed'] = True
+                        else:
+                            require(remote.read(nested + 0x2b7b, 1) == b'\x02',
+                                    'RAW compute skip input changed')
+                            header = int.from_bytes(remote.read(context + 0x310, 4), 'little')
+                            require(0xc1000000 <= header <= 0xc81fffe8 and
+                                    remote.read(header + 0x14, 4) == b'\x01\x00\x00\x00',
+                                    'Native RAW compute skip did not mark its header')
+                            change['raw_compute_skip_observed'] = True
+                        record['native_preprocessing_skip'] = dict(change)
                 if pc == 0x10129faa:
                     pointer = remote.get(registers, 'r1')
                     keep = remote.get(registers, 'r0') == 0x42070001 and 0xc1000000 <= pointer <= 0xc81fffe0
@@ -3035,8 +3114,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_settings=capture_caller.report if body_exposure is not None else None,
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
-                    compute_statistics_skip=dict(requested=skip_compute_statistics,
+                    compute_statistics_skip=dict(requested=skip_statistics,
                                                  contexts=list(skipped_statistics.values())),
+                    still_preprocessing_skip_requested=skip_still_preprocessing,
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
@@ -3186,6 +3266,8 @@ def main():
                         help='Trace diagnostic capture admission, stop and primary allocation without background input work')
     parser.add_argument('--skip-compute-statistics', action='store_true',
                         help='Experimental RAM input: select the native value-2 still-statistics skip branch')
+    parser.add_argument('--skip-still-preprocessing', action='store_true',
+                        help='Experimental RAM inputs: select native statistics, SFLT and RAW-compute skip branches')
     parser.add_argument('--controller-step-trigger', action='store_true',
                         help='Laboratory input: pulse and restore controller G8 after native capture preparation arms it')
     parser.add_argument('--controller-actuator', action='store_true',
@@ -3280,8 +3362,8 @@ def main():
             'Focused capture requires a diagnostic capture or body exposure without reconfiguration tracing')
     require(not args.controller_step_trigger or args.capture_focus,
             'Controller step input experiment requires focused capture tracing')
-    require(not args.skip_compute_statistics or args.capture_focus,
-            'Statistics skip experiment requires focused capture tracing')
+    require(not (args.skip_compute_statistics or args.skip_still_preprocessing) or args.capture_focus,
+            'Still-processing skip experiments require focused capture tracing')
     require(sum((args.trace_primary_allocation_boot, args.trace_capture_resource_boot,
                  args.trace_capture_compute_boot)) <= 1,
             'Select one boot observation')
@@ -3431,6 +3513,7 @@ def main():
                                     body_compute_events=args.body_compute_events,
                                     body_system_events=args.body_system_events,
                                     skip_compute_statistics=args.skip_compute_statistics,
+                                    skip_still_preprocessing=args.skip_still_preprocessing,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
