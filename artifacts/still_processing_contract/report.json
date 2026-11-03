@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "irq_cases": [
+    {
+      "bank": 0,
+      "handler": "0x10096418",
+      "cause": "0x0",
+      "events": [],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "handler": "0x10096418",
+      "cause": "0x2",
+      "events": [
+        {
+          "object": "0xc1486708",
+          "mask": "0x1"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "value": "0x2"
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "handler": "0x10096418",
+      "cause": "0x80",
+      "events": [
+        {
+          "object": "0xc1486708",
+          "mask": "0x100"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20380024",
+          "value": "0x80"
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "handler": "0x100963dc",
+      "cause": "0x0",
+      "events": [],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "handler": "0x100963dc",
+      "cause": "0x2",
+      "events": [
+        {
+          "object": "0xc148685c",
+          "mask": "0x1"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "value": "0x2"
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "handler": "0x100963dc",
+      "cause": "0x80",
+      "events": [
+        {
+          "object": "0xc148685c",
+          "mask": "0x100"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x203c0024",
+          "value": "0x80"
+        }
+      ]
+    }
+  ],
+  "plane_cases": [
+    {
+      "width": 8256,
+      "height": 5504,
+      "secondary_view": false,
+      "first": "0xea3b6800",
+      "second": "0xecf0c800",
+      "spacing": 45441024
+    },
+    {
+      "width": 8256,
+      "height": 5504,
+      "secondary_view": true,
+      "first": "0xea3b6800",
+      "second": "0xecf0c800",
+      "spacing": 45441024
+    },
+    {
+      "width": 128,
+      "height": 32,
+      "secondary_view": false,
+      "first": "0xea3b6800",
+      "second": "0xea3b7800",
+      "spacing": 4096
+    }
+  ],
+  "host_boundaries": [
+    "Synthetic handler mode bytes and native service callback addresses",
+    "Record native task-event publication instead of executing the kernel",
+    "Output constructor fragment starts after earlier allocation and geometry setup"
+  ],
+  "limitations": [
+    "Synthetic MMIO causes; no hardware interrupt delivery or pixel operation",
+    "Plane spacing does not establish chroma packing or the camera color algorithm"
+  ]
+}

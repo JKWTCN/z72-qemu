@@ -330,6 +330,11 @@ CAPTURE_SLAVE_PROCESSING_POINTS = {
     0x100965cc: 'capture-slave-processing-device-prepare',
     0x10096a1e: 'capture-slave-processing-input-start',
     0x100b27ba: 'capture-slave-processing-service-wait',
+    0x10096418: 'capture-slave-processing-bank0-interrupt',
+    0x100963dc: 'capture-slave-processing-bank1-interrupt',
+    0x100b26ea: 'capture-slave-processing-bank0-callback',
+    0x100b2698: 'capture-slave-processing-bank1-callback',
+    0x100b3760: 'capture-slave-processing-service-completion',
 }
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
@@ -1056,7 +1061,7 @@ def sflt_snapshot(remote):
 def slave_processing_snapshot(remote):
     def words(address, size):
         return [hex(value) for value in struct.unpack('<' + 'I' * (size // 4), remote.read(address, size))]
-    return dict(context=hex(0xc16be7f4),
+    result = dict(context=hex(0xc16be7f4),
         context_fields={hex(offset): words(0xc16be7f4 + offset, 4)[0]
                         for offset in (0, 4, 8, 0x98, 0x1a8, 0x35c, 0x360,
                                        0x364, 0x370, 0x374, 0x378, 0x380)},
@@ -1067,6 +1072,21 @@ def slave_processing_snapshot(remote):
         service_task=task_wait_snapshot(remote, 0xc1486708, slave=True),
         devices=[dict(base=hex(base), words=words(base, 0x1400))
                  for base in (0x20380000, 0x203c0000)])
+    registers = result['devices'][0]['words']
+    first, second = (int(registers[offset // 4], 16) for offset in (0x488, 0x498))
+    plane_bytes = 8256 * 5504
+    if (0xea3b6800 <= first and first + 2 * plane_bytes <= 0xffe66800 and
+            second == first + plane_bytes and registers[0x4c8 // 4] == '0x2040'):
+        result['output_planes'] = []
+        for address in (first, second):
+            row = remote.read(address, 8256)
+            result['output_planes'].append(dict(address=hex(address),
+                first_row_sha256=hashlib.sha256(row).hexdigest(),
+                first_row_unique_bytes=len(set(row)), first_row_minimum=min(row),
+                first_row_maximum=max(row),
+                samples=[remote.read(address + offset, 16).hex()
+                         for offset in (0, plane_bytes // 2, plane_bytes - 16)]))
+    return result
 
 
 def peer_input_snapshot(remote, resume_thread=1, machine=None):
@@ -1128,6 +1148,9 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
         result['compute'] = compute
         result['sflt'] = sflt_snapshot(remote)
         result['processing'] = slave_processing_snapshot(remote)
+        if machine is not None:
+            result['processing']['completed_frames'] = machine.qmp.command(
+                'qom-get', dict(path=path, property='processing-dma-count'))
         compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
             struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
             for channel in range(4)]

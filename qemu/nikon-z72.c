@@ -1539,6 +1539,98 @@ static uint64_t image_control_read(void *opaque, hwaddr offset, unsigned size)
     return word->device->image_control_values[word->index];
 }
 
+/* Diagnostic raster for C1.70's observed paired still recipe. Geometry,
+ * addresses, pitches and plane spacing are native. Nearest RAW sampling,
+ * an 8-bit luma plane and an equal-height neutral chroma plane are explicit
+ * layout/color hypotheses. Accept only the full-scale RAW12 lab stimulus;
+ * the camera's color operators and other recipes remain unimplemented. */
+static bool image_process_still_frame(NikonZ72BootConfig *s)
+{
+    enum { INPUT_WIDTH = 8288, INPUT_HEIGHT = 5520, INPUT_STRIDE = 12432,
+           OUTPUT_WIDTH = 8256, OUTPUT_HEIGHT = 5504 };
+    static const struct { unsigned offset; uint32_t value; } profile[] = {
+        {0, 3}, {4, 3}, {0x10, 1}, {0x40, 5}, {0x44, 0},
+        {0x48, INPUT_WIDTH << 16 | INPUT_HEIGHT},
+        {0x300, 2}, {0x304, 0}, {0x308, 0}, {0x30c, INPUT_STRIDE},
+        {0x400, 0xa01580}, {0x404, 0}, {0x408, 0},
+        {0x40c, 0x20400048}, {0x420, 1}, {0x428, 1}, {0x42c, 2},
+        {0x4c8, OUTPUT_WIDTH},
+    };
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t word[4], partner[12], inputs[0x40], targets[0x20];
+    uint8_t y_row[OUTPUT_WIDTH];
+    uint8_t chroma_row[OUTPUT_WIDTH];
+    uint32_t source, first, second;
+    const unsigned source_bytes = INPUT_STRIDE * INPUT_HEIGHT;
+    const unsigned plane_bytes = OUTPUT_WIDTH * OUTPUT_HEIGHT;
+
+    if (address_space_read(view, 0x203c0040, MEMTXATTRS_UNSPECIFIED,
+                           partner, sizeof(partner)) != MEMTX_OK ||
+        address_space_read(view, 0x20380310, MEMTXATTRS_UNSPECIFIED,
+                           inputs, sizeof(inputs)) != MEMTX_OK ||
+        address_space_read(view, 0x20380488, MEMTXATTRS_UNSPECIFIED,
+                           targets, sizeof(targets)) != MEMTX_OK ||
+        ldl_le_p(partner) != 5 || ldl_le_p(partner + 4) ||
+        ldl_le_p(partner + 8) != (INPUT_WIDTH << 16 | INPUT_HEIGHT)) {
+        return false;
+    }
+    for (unsigned i = 0; i < ARRAY_SIZE(profile); i++) {
+        if (address_space_read(view, 0x20380000 + profile[i].offset,
+                               MEMTXATTRS_UNSPECIFIED, word, sizeof(word)) != MEMTX_OK ||
+            ldl_le_p(word) != profile[i].value) {
+            return false;
+        }
+    }
+    for (unsigned offset = 4; offset < sizeof(inputs); offset += 4) {
+        if (ldl_le_p(inputs + offset)) {
+            return false;
+        }
+    }
+    for (unsigned offset = 0; offset < sizeof(targets); offset += 4) {
+        if (offset != 0 && offset != 0x10 && ldl_le_p(targets + offset)) {
+            return false;
+        }
+    }
+    source = ldl_le_p(inputs);
+    first = ldl_le_p(targets);
+    second = ldl_le_p(targets + 0x10);
+    if (source < 0x83900000 || (uint64_t)source + source_bytes > 0xbee86000 ||
+        first < 0xea3b6800 || (uint64_t)first + 2 * plane_bytes > 0xffe66800 ||
+        (uint64_t)first + plane_bytes != second ||
+        !processing_ram_range(view, source, source_bytes) ||
+        !processing_ram_range(view, first, 2 * plane_bytes)) {
+        return false;
+    }
+    g_autofree uint8_t *raw = g_malloc(source_bytes);
+    if (address_space_read(view, source, MEMTXATTRS_UNSPECIFIED,
+                           raw, source_bytes) != MEMTX_OK) {
+        return false;
+    }
+    /* Validate the entire source before the first destination write. */
+    for (unsigned offset = 0; offset < source_bytes; offset += 3) {
+        if ((raw[offset] != 0 && raw[offset] != 0xff) ||
+            raw[offset + 1] != raw[offset] || raw[offset + 2] != raw[offset]) {
+            return false;
+        }
+    }
+    memset(chroma_row, 128, sizeof(chroma_row));
+    for (unsigned y = 0; y < OUTPUT_HEIGHT; y++) {
+        unsigned sy = (uint64_t)y * INPUT_HEIGHT / OUTPUT_HEIGHT;
+        for (unsigned x = 0; x < OUTPUT_WIDTH; x++) {
+            unsigned sx = (uint64_t)x * INPUT_WIDTH / OUTPUT_WIDTH;
+            y_row[x] = raw[sy * INPUT_STRIDE + sx / 2 * 3];
+        }
+        if (address_space_write(view, first + y * OUTPUT_WIDTH,
+                                MEMTXATTRS_UNSPECIFIED, y_row, sizeof(y_row)) != MEMTX_OK ||
+            address_space_write(view, second + y * OUTPUT_WIDTH,
+                                MEMTXATTRS_UNSPECIFIED, chroma_row, sizeof(chroma_row)) != MEMTX_OK) {
+            return false;
+        }
+    }
+    s->processing_dma_count++;
+    return true;
+}
+
 static void image_control_write(void *opaque, hwaddr offset,
                                 uint64_t value, unsigned size)
 {
@@ -1548,7 +1640,15 @@ static void image_control_write(void *opaque, hwaddr offset,
     AddressSpace *view;
 
     s->image_control_values[word->index] = value;
-    if (!s->frame_process || !s->master_role || !s->cpu || value != 1) {
+    if (!s->frame_process || !s->cpu || value != 1) {
+        return;
+    }
+    if (!s->master_role) {
+        if (word->index == 0 && !s->image_interrupt_status[0] &&
+            image_process_still_frame(s)) {
+            s->image_interrupt_status[0] |= 2;
+            image_update_irqs(s);
+        }
         return;
     }
     view = CPU(s->cpu)->as;
