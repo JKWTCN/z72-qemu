@@ -15,14 +15,15 @@ from analyze.decode_z72 import BASE, require
 from analyze.firmware_structure import analyze_eg, scatter_records
 
 
-def check(image, capture):
+def check(image, capture, mode):
     identity = analyze_eg(image, 'slave')
     trace = capture['trace']
     record = next(row for row in trace['records']
-                  if row['entry'] == 'capture-slave-transform-program-start')
+                  if row['entry'] == 'capture-slave-transform-program-start' and
+                  row['transform']['slot']['mode'] == mode)
     program = record['transform']['program']
     operations = program['operations']
-    require(program['count'] == len(operations) == 18, 'Unexpected transform recipe')
+    require(program['count'] == len(operations) == (18 if mode == 0 else 5), 'Unexpected transform recipe')
     cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
     for start, size in ((BASE, (len(image) + 4095) & ~4095),
                         (0xc1000000, 0xa00000), (0x20100000, 0x1000),
@@ -67,17 +68,19 @@ def check(image, capture):
     cpu.mem_write(0x50001000, struct.pack('<IB', 0x50002000, len(operations)))
     run(0x100b146a, 0x50001000, 0x50003000)
     wait_mask = struct.unpack('<I', cpu.mem_read(0x50003000, 4))[0]
-    require(starts == [55, 41, 62, 61, 54, 53, 46, 45] and wait_mask == 0xe0,
+    expected_starts = [55, 41, 62, 61, 54, 53, 46, 45] if mode == 0 else [53, 41]
+    require(starts == expected_starts and wait_mask == (0xe0 if mode == 0 else 0x20),
             f'Unexpected native unit starts/mask: {starts}, {wait_mask:#x}')
-    # The captured operators install the resource-0 callback in these three slots.
+    # The captured operators install resource-0 callbacks in the selected slots.
     cpu.mem_write(0xc144da0c, bytes(32))
-    for slot in (4, 5, 6):
+    for slot in ((4, 5, 6) if mode == 0 else (4,)):
         cpu.mem_write(0xc144da0c + slot * 4, struct.pack('<I', 0x100b13d5))
     cpu.mem_write(0xc10012b4, bytes(4))
     cpu.mem_write(0xc10012c4, bytes(4))
     cases = []
-    for status, masks in ((0, []), (0x10, [0x20]), (0x20, [0x40]),
-                          (0x40, [0x80]), (0x70, [0x20, 0x40, 0x80])):
+    for status, masks in ((0, []), (0x10, [0x20]), (0x20, [0x40] if mode == 0 else []),
+                          (0x40, [0x80] if mode == 0 else []),
+                          (0x70, [0x20, 0x40, 0x80] if mode == 0 else [0x20])):
         cpu.mem_write(0x20100018, struct.pack('<3I', 0, status, 0))
         events.clear()
         acknowledgements.clear()
@@ -89,7 +92,7 @@ def check(image, capture):
         cases.append(dict(status_1c=hex(status), events=list(events),
                           acknowledgements=list(acknowledgements)))
     return dict(format=1, result='passed', firmware_included=False,
-        slave_sha256=identity['sha256'], start_units=starts, wait_mask=hex(wait_mask), cases=cases,
+        slave_sha256=identity['sha256'], mode=mode, start_units=starts, wait_mask=hex(wait_mask), cases=cases,
         host_boundaries=['Use the observed recipe selectors and a zero sentinel',
             'Record unit-start calls instead of programming the hardware',
             'Install the captured resource-0 callbacks in synthetic runtime state',
@@ -102,9 +105,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--slave', type=Path, required=True)
     parser.add_argument('--capture-report', type=Path, required=True)
+    parser.add_argument('--mode', type=int, choices=(0, 2, 3), default=0)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    report = check(args.slave.read_bytes(), json.loads(args.capture_report.read_text(encoding='utf-8')))
+    report = check(args.slave.read_bytes(), json.loads(args.capture_report.read_text(encoding='utf-8')), args.mode)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print('PASS native still-transform unit starts, wait mask and shared IRQ callbacks')

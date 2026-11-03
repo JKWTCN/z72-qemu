@@ -616,6 +616,8 @@ struct NikonZ72BootConfig {
     uint8_t transfer_table[0x100];
     MemoryRegion still_transform_start;
     uint32_t still_transform_command;
+    MemoryRegion still_thumbnail_start;
+    uint32_t still_thumbnail_command;
     MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
     uint32_t compute_mailbox_words[0x400];
@@ -3022,7 +3024,7 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
 {
     enum { WIDTH = 8256, HEIGHT = 5504, SMALL_WIDTH = 1620,
            SMALL_HEIGHT = 1080, SMALL_STRIDE = 1664, SMALL_ROWS = 1088 };
-    static const unsigned units[] = {0x8a0, 0x9c0, 0x9e0, 0xac0, 0xba0, 0xdc0, 0xde0};
+    static const unsigned units[] = {0x9c0, 0x9e0, 0xac0, 0xba0, 0xdc0, 0xde0};
     static const unsigned scalers[] = {0x9c0, 0x9e0, 0xba0};
     AddressSpace *view = CPU(s->cpu)->as;
     uint8_t descriptors[3][52], word[4], parameters[0x3c];
@@ -3031,6 +3033,9 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
     const unsigned small_bytes = SMALL_STRIDE * SMALL_HEIGHT;
     uint8_t neutral[SMALL_WIDTH], row[SMALL_WIDTH];
 
+    if (s->still_thumbnail_command != 1) {
+        return false;
+    }
     for (unsigned index = 0; index < ARRAY_SIZE(units); index++) {
         if (address_space_read(view, 0x20100000 + units[index],
                                MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK ||
@@ -3155,6 +3160,152 @@ static void still_transform_start_write(void *opaque, hwaddr offset, uint64_t va
 static const MemoryRegionOps still_transform_start_ops = {
     .read = still_transform_start_read,
     .write = still_transform_start_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
+/* Modes 2/3 follow the full still transform: native five-node graphs
+ * produce 640x424 and 160x120 diagnostic thumbnails. Color conversion,
+ * filtering and mode 3's 0x80 input fields are not interpreted; the lab
+ * replacement nearest-samples the active raster in either case. */
+static bool still_thumbnail_frame(NikonZ72BootConfig *s)
+{
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t descriptors[2][52], word[4], parameters[0x3c];
+    uint32_t planes[4];
+
+    if (address_space_read(view, 0x201009c0, MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK ||
+        ldl_le_p(word) != 1 ||
+        address_space_read(view, 0x20100440, MEMTXATTRS_UNSPECIFIED,
+                           descriptors[0], 52) != MEMTX_OK ||
+        address_space_read(view, 0x20100480, MEMTXATTRS_UNSPECIFIED,
+                           descriptors[1], 52) != MEMTX_OK) {
+        return false;
+    }
+    bool secondary = ldl_le_p(descriptors[1] + 0x20) == (120 << 16 | 160);
+    unsigned width = secondary ? 640 : 1620;
+    unsigned height = secondary ? 424 : 1080;
+    unsigned stride = secondary ? 640 : 1664;
+    unsigned rows = secondary ? 424 : 1088;
+    unsigned out_width = secondary ? 160 : 640;
+    unsigned out_height = secondary ? 120 : 424;
+    unsigned input_bytes = stride * height;
+    unsigned output_bytes = out_width * out_height;
+    for (unsigned index = 0; index < 2; index++) {
+        unsigned pitch = index ? out_width : stride;
+        unsigned geometry = index ? out_height << 16 | out_width : height << 16 | width;
+        for (unsigned offset = 0; offset < 52; offset += 4) {
+            uint32_t expected = offset == 0 ? 0x09000001 : offset == 4 ? 0x10000 :
+                                offset == 0x10 || offset == 0x14 ? pitch :
+                                offset == 0x20 ? geometry : 0;
+            if (secondary && index == 0) {
+                if (offset == 4) {
+                    expected = 0;
+                } else if (offset == 8) {
+                    expected = 0x800000;
+                } else if (offset == 0xc) {
+                    expected = 0x80;
+                }
+            }
+            if (offset != 0x24 && offset != 0x28 &&
+                ldl_le_p(descriptors[index] + offset) != expected) {
+                return false;
+            }
+        }
+        planes[index * 2] = ldl_le_p(descriptors[index] + 0x24);
+        planes[index * 2 + 1] = ldl_le_p(descriptors[index] + 0x28);
+    }
+    if ((uint64_t)planes[0] + stride * rows != planes[1] ||
+        (uint64_t)planes[2] + output_bytes != planes[3]) {
+        return false;
+    }
+    for (unsigned index = 0; index < ARRAY_SIZE(planes); index++) {
+        unsigned bytes = index < 2 ? input_bytes : output_bytes;
+        if (planes[index] < 0xc8900000 || (uint64_t)planes[index] + bytes > 0xca712200 ||
+            !processing_ram_range(view, planes[index], bytes)) {
+            return false;
+        }
+        for (unsigned other = 0; other < index; other++) {
+            unsigned other_bytes = other < 2 ? input_bytes : output_bytes;
+            if (planes[index] < (uint64_t)planes[other] + other_bytes &&
+                planes[other] < (uint64_t)planes[index] + bytes) {
+                return false;
+            }
+        }
+    }
+    if (address_space_read(view, 0x201009d0, MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK) {
+        return false;
+    }
+    uint32_t pointer = ldl_le_p(word);
+    if (pointer < 0xc1000000 || pointer > 0xc81fffc4 ||
+        !processing_ram_range(view, pointer, sizeof(parameters)) ||
+        address_space_read(view, pointer, MEMTXATTRS_UNSPECIFIED,
+                           parameters, sizeof(parameters)) != MEMTX_OK ||
+        ldl_le_p(parameters) != 0x110a0000 ||
+        ldl_le_p(parameters + 0xc) != 0x10002 ||
+        ldl_le_p(parameters + 0x28) != 0x11080040 ||
+        ldl_le_p(parameters + 0x2c) != (out_width - 1) << 16 ||
+        ldl_le_p(parameters + 0x30) != (out_height - 1) << 16 ||
+        ldl_le_p(parameters + 0x34) != 0x400040 ||
+        ldl_le_p(parameters + 0x38) != 0x40004) {
+        return false;
+    }
+    g_autofree uint8_t *pixels = g_malloc(2 * input_bytes);
+    g_autofree uint8_t *thumbnail = g_malloc(2 * output_bytes);
+    for (unsigned plane = 0; plane < 2; plane++) {
+        if (address_space_read(view, planes[plane], MEMTXATTRS_UNSPECIFIED,
+                               pixels + plane * input_bytes, input_bytes) != MEMTX_OK) {
+            return false;
+        }
+    }
+    /* Ignore unconsumed row padding; validate all active pixels first. */
+    for (unsigned y = 0; y < height; y++) {
+        for (unsigned x = 0; x < width; x++) {
+            unsigned offset = y * stride + x;
+            if ((pixels[offset] != 0 && pixels[offset] != 255) ||
+                pixels[input_bytes + offset] != 128) {
+                return false;
+            }
+        }
+    }
+    memset(thumbnail + output_bytes, 128, output_bytes);
+    for (unsigned y = 0; y < out_height; y++) {
+        unsigned sy = (uint64_t)y * height / out_height;
+        for (unsigned x = 0; x < out_width; x++) {
+            thumbnail[y * out_width + x] = pixels[sy * stride + (uint64_t)x * width / out_width];
+        }
+    }
+    if (address_space_write(view, planes[2], MEMTXATTRS_UNSPECIFIED,
+                            thumbnail, 2 * output_bytes) != MEMTX_OK) {
+        return false;
+    }
+    s->processing_dma_count++;
+    return true;
+}
+
+static uint64_t still_thumbnail_start_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    return s->still_thumbnail_command;
+}
+
+static void still_thumbnail_start_write(void *opaque, hwaddr offset, uint64_t value,
+                                        unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    s->still_thumbnail_command = value;
+    /* Unit 41 is started last by the five-node recipe. */
+    if (value == 1 && s->frame_process && s->cpu && !s->master_role &&
+        !(ldl_le_p(s->transfer_table + 0x1c) & 0x10) && still_thumbnail_frame(s)) {
+        stl_le_p(s->transfer_table + 0x1c, ldl_le_p(s->transfer_table + 0x1c) | 0x10);
+        transfer_update_irq(s);
+    }
+}
+
+static const MemoryRegionOps still_thumbnail_start_ops = {
+    .read = still_thumbnail_start_read,
+    .write = still_thumbnail_start_write,
     .endianness = DEVICE_LITTLE_ENDIAN,
     .valid = { .min_access_size = 4, .max_access_size = 4 },
     .impl = { .min_access_size = 4, .max_access_size = 4 },
@@ -3454,6 +3605,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->gate_pending = false;
     memset(s->transfer_table, 0, sizeof(s->transfer_table));
     s->still_transform_command = 0;
+    s->still_thumbnail_command = 0;
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
@@ -3563,8 +3715,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 53,
-    .minimum_version_id = 53,
+    .version_id = 54,
+    .minimum_version_id = 54,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -3633,6 +3785,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(gate_pending, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transfer_table, NikonZ72BootConfig, 0x100),
         VMSTATE_UINT32(still_transform_command, NikonZ72BootConfig),
+        VMSTATE_UINT32(still_thumbnail_command, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
@@ -3882,6 +4035,10 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                               &still_transform_start_ops, s, "z72-still-transform-start", 4);
         memory_region_add_subregion_overlap(root, 0x20100900,
                                             &s->still_transform_start, 1);
+        memory_region_init_io(&s->still_thumbnail_start, OBJECT(dev),
+                              &still_thumbnail_start_ops, s, "z72-still-thumbnail-start", 4);
+        memory_region_add_subregion_overlap(root, 0x201008a0,
+                                            &s->still_thumbnail_start, 1);
         /* Register file addressed 0x04280004-relative (single words plus the
          * indexed +0x30/+0x60 arrays), read by the kernel after the handoff.
          * Added below the word registers so exact words keep precedence and

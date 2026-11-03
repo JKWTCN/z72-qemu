@@ -348,8 +348,11 @@ CAPTURE_SLAVE_TRANSFORM_POINTS = {
     0x100b12be: 'capture-slave-transform-unit-wait',
     0x100b12c2: 'capture-slave-transform-unit-wait-return',
     0x100b13d4: 'capture-slave-transform-unit-callback',
+    0x10094338: 'capture-slave-transform-interrupt',
     0x1012af28: 'capture-slave-transform-callback',
     0x1012d152: 'capture-slave-transform-wait-return',
+    0x1012d5ee: 'capture-slave-thumbnail-wait-return',
+    0x1012d69a: 'capture-slave-secondary-thumbnail-wait-return',
 }
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
@@ -1124,7 +1127,8 @@ def slave_transform_snapshot(remote):
         width_height = int(registers[(offset + 0x20) // 4], 16)
         width, height = width_height & 0xffff, width_height >> 16
         stride = int(registers[(offset + 0x10) // 4], 16)
-        if (width, height, stride) not in ((8256, 5504, 8256), (1620, 1080, 1664)):
+        if (width, height, stride) not in ((8256, 5504, 8256), (1620, 1080, 1664),
+                                         (640, 424, 640), (160, 120, 160)):
             continue
         for plane in range(2):
             address = int(registers[(offset + 0x24 + plane * 4) // 4], 16)
