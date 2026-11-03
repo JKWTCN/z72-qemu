@@ -885,3 +885,9 @@ Zero slots remain zero. Modes requiring refresh are classified without supplying
 a refresh result or allocating buffers. The separate native buffer trace records
 both original allocation results and later metadata lookups; a successful lookup
 in that run does not explain the prior null descriptor or prove repeated saving.
+
+The configuration contract adds ten master-side gate fragments: statistics
+value 2 clears its three halfwords, while software RAW correction value 1
+selects its return branch. Other values stop before the service or header
+preconditions. The correction routine is native CPU code; its field is not
+the slave SFLT skip field. These isolated gates do not alter a running camera.

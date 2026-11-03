@@ -818,6 +818,20 @@ def image_work_snapshot(remote, still=False):
                         job.update(queue_flags=hex(word(parameters + 0x6c)),
                                    busy=remote.read(parameters + 0x3e30, 1)[0])
                     owner = word(parameters + 0xc)
+                    if still and 0xb2c00000 <= owner <= 0xb5effb08:
+                        context = input_tail_parameter_snapshot(remote, owner)
+                        context['raw_headers'] = []
+                        for offset in (0x310, 0x314):
+                            pointer = word(owner + offset)
+                            if 0xb2c00000 <= pointer <= 0xb5efffc0:
+                                context['raw_headers'].append(dict(field=hex(offset), address=hex(pointer),
+                                    words=[hex(value) for value in struct.unpack('<16I', remote.read(pointer, 64))]))
+                        nested = word(owner + 0x4f4)
+                        if 0xb2c00000 <= nested <= 0xb5efd47c:
+                            context['preprocessing_bytes'] = {hex(offset): remote.read(nested + offset, 1)[0]
+                                for offset in (0x54e, 0x564, 0x2b79, 0x2b7b, 0x2b7c, 0x2b83)}
+                            context['parameter_1df0'] = hex(word(nested + 0x1df0))
+                        job['capture_context'] = context
                     if not still and unused < 4 and 0xb2c00000 <= owner <= 0xb5effd40:
                         data = remote.read(owner, 0x2c0)
                         job['owner_output_words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
@@ -869,6 +883,9 @@ def image_work_snapshot(remote, still=False):
                                         fields=[hex(value) for value in struct.unpack(
                                             '<10I', remote.read(descriptor, 40))])
                                     methods = int(active['fields'][5], 16)
+                                    worker = int(active['fields'][1], 16)
+                                    if still and worker % 4 == 0 and 0xb1800000 <= worker <= 0xb5effffc:
+                                        active['worker'] = task_wait_snapshot(remote, worker)
                                     if still and 0xb1800000 <= methods <= 0xb5efff10:
                                         values = struct.unpack('<60I', remote.read(methods, 240))
                                         active['methods'] = [dict(index=i, fields=[hex(v) for v in values[i*3:i*3+3]])

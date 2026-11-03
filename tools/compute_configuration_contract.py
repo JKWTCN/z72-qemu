@@ -41,6 +41,7 @@ def check(master, slave):
     cache, copied = 0xb20d2894, 0x50001000
     capture, nested = 0x50002000, 0x50003000
     target.mem_map(0xc16be000, 0x1000)
+    source.mem_map(0xb23a7000, 0x1000)
     locks = []
 
     def lock_boundary(cpu, address, size, unused):
@@ -50,6 +51,10 @@ def check(master, slave):
             cpu.reg_write(UC_ARM_REG_PC, cpu.reg_read(UC_ARM_REG_LR))
 
     source.hook_add(UC_HOOK_CODE, lock_boundary)
+    def master_request_boundary(cpu, address, size, unused):
+        if address == 0x102b72cc:
+            cpu.emu_stop()
+    source.hook_add(UC_HOOK_CODE, master_request_boundary)
     default_address, default_size = 0x118b02ac, 0x1fffc
     defaults = master[default_address - BASE:default_address - BASE + default_size]
     source.mem_write(cache - 1, b'\xa5' * (default_size + 2))
@@ -138,17 +143,42 @@ def check(master, slave):
         preprocessing_cases.append(dict(entry='0x1012c8fa', nested_2b7b=value,
             skipped=value == 2, stopped_pc=hex(pc), raw_header_14=marked,
             scope='Starts after earlier preconditions; stops before calculation or common return'))
+    master_cases = []
+    source.mem_write(capture + 0x4f4, struct.pack('<I', nested))
+    for value in (0, 1, 2, 3, 255):
+        source.mem_write(nested + 0x2b7c, bytes([value]))
+        source.mem_write(nested + 0x1e08, b'\xa5' * 6)
+        source.reg_write(UC_ARM_REG_R4, capture)
+        source.reg_write(UC_ARM_REG_SP, 0x5000e000)
+        source.emu_start(0x102c3fb7, 0x102c4040, count=1000)
+        pc = source.reg_read(UC_ARM_REG_PC)
+        output = bytes(source.mem_read(nested + 0x1e08, 6))
+        require(pc == (0x102c4040 if value == 2 else 0x102b72cc) and
+                output == (bytes(6) if value == 2 else b'\xa5' * 6),
+                'Native master statistics skip condition differs')
+        master_cases.append(dict(kind='statistics', entry='0x102c3fb6', nested_2b7c=value,
+            skipped=value == 2, stopped_pc=hex(pc), result_halfwords=list(struct.unpack('<3H', output))))
+        source.mem_write(nested + 0x2b83, bytes([value]))
+        source.reg_write(UC_ARM_REG_R0, nested)
+        source.emu_start(0x102c3e0b, 0x102c3eae if value == 1 else 0x102c3e16, count=100)
+        pc = source.reg_read(UC_ARM_REG_PC)
+        require(pc == (0x102c3eae if value == 1 else 0x102c3e16),
+                'Native master software correction skip condition differs')
+        master_cases.append(dict(kind='software_raw_correction', entry='0x102c3e0a', nested_2b83=value,
+            skipped=value == 1, stopped_pc=hex(pc)))
     return dict(format=1, result='passed', firmware_included=False,
         master_sha256=master_info['sha256'], slave_sha256=slave_info['sha256'],
         copy_entry='0x103603d8', reader_entry='0x103c09e8', cache_base=hex(cache),
         destination_offset='0x2b78', copied_indices=ids, default_initialization=default_report,
-        cases=cases, preprocessing_cases=preprocessing_cases,
+        cases=cases, preprocessing_cases=preprocessing_cases, master_preprocessing_cases=master_cases,
         host_boundaries=['Default-refresh mutex wrappers return success',
                          'Synthetic object-8 cache bytes for non-default cases and capture context',
                          'Enter gate at 0x1012c648 after earlier stage preconditions',
                          'Stop requested calculation at 0x1011ef16 before it executes',
                          'SFLT gate fragments stop before other preconditions or the shared return',
-                         'RAW gate starts after earlier preconditions and stops before 0x1011e480'],
+                         'RAW gate starts after earlier preconditions and stops before 0x1011e480',
+                         'Master statistics gate starts after earlier preconditions and stops before 0x102b72cc',
+                         'Master software correction fragment stops before the header precondition or shared return'],
         limitations=['No persistent configuration is changed in the whole machine',
                      'ROM defaults do not establish the contents of a particular camera',
                      'Skip values are native branch conditions, not verified supported user settings',
