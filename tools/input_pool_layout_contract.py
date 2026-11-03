@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Execute the original managed pool behind the observed primary RAW buffer."""
+"""Execute the primary RAW allocator and verify native slave processing storage."""
 import argparse
 import json
 from pathlib import Path
@@ -87,6 +87,26 @@ def probe(image, slave=None):
             profile=hex(peer_profile), initialization=records[0],
             matching_profiles=True, full_allocation_within_slave_initialization=True,
             full_allocation_within_master_initialization=False)
+        records = [row for row in scatter_records(slave) if row['kind'] == 'zero' and
+                   row['destination'] == 0xca800000 and row['size'] == 0x35666800]
+        require(len(records) == 1, 'Slave still-processing storage initialization differs')
+        profiles = []
+        for address, expected in (
+                (0x101f1588, (0x118, 0x15dad000, 0x34c800, 106, 0xca800000, 1, 7)),
+                (0x101f1678, (0x38, 0x9e09800, 0x4f04c00, 2, 0xe05ad000, 1, 7)),
+                (0x101f1690, (0x68, 0xad58000, 0x56ac000, 0, 0xea3b6800, 0, 7)),
+                (0x101f16a8, (0x68, 0xad58000, 0x56ac000, 0, 0xf510e800, 0, 7))):
+            values = struct.unpack_from('<5I2B', slave, address - BASE)
+            require(values == expected, 'Slave still-processing pool profile differs')
+            header, capacity, unit, limit, start, kind, alignment = values
+            require(0xca800000 <= start and start + capacity <= 0xffe66800,
+                    'Slave still-processing pool exceeds its initialization')
+            profiles.append(dict(address=hex(address), header_bytes=header,
+                base=hex(start), bytes=capacity, unit_bytes=unit, limit=limit,
+                kind=kind, alignment_bits=alignment, end=hex(start + capacity)))
+        report['still_processing_storage'] = dict(initialization=records[0],
+            base='0xca800000', end='0xffe66800', profiles=profiles,
+            limitation='Native profiles and initialization only; no pixel algorithm or DMA completion')
     return report
 
 

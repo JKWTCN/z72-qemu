@@ -23,6 +23,7 @@ def run(qemu):
             remote.select_thread(1)
             remote.write(0x40100000, struct.pack('<2I', 0xe1c200d0, 0xe1c200f0))
             master_guard = b'ownerRAM'
+            remote.write(0xea3b6800, master_guard)
             remote.write(0xc5b9f300, master_guard)
             remote.write(0xc6313cc0, master_guard)
             for source in (0xc1000010, 0xc144d5c0, 0xc3f00000,
@@ -69,7 +70,21 @@ def run(qemu):
             require(remote.command('m807ffffc,4').startswith('E') and
                     remote.command('m8384f600,4').startswith('E'),
                     'Slave processing output storage exceeds its initialization record')
+            remote.write(0x40100000, struct.pack('<2I', 0xe1c200d0, 0xe1c200f0))
+            for address in (0xca800000, 0xe05ad000, 0xea3b6800, 0xecf0c800,
+                            0xf510e800, 0xffe667f8):
+                remote.set(pc=0x40100004, cpsr=0xd3, r2=address,
+                           r0=0x12345678, r1=0x87654321)
+                remote.command('vCont;s:3')
+                require(remote.get(remote.regs(), 'pc') == 0x40100008 and
+                        remote.read(address, 8) == struct.pack('<2I', 0x12345678, 0x87654321),
+                        'Slave still-processing pool ARM store or boundary differs')
+            require(remote.command('mca7ffffc,4').startswith('E') and
+                    remote.command('mffe66800,4').startswith('E'),
+                    'Slave still-processing storage exceeds its initialization record')
             remote.select_thread(1)
+            require(remote.read(0xea3b6800, 8) == master_guard,
+                    'Slave still-processing output changed the master frame pool')
             require(remote.read(0x80800000, 8) == master_guard,
                     'Slave processing output replaced the master local pool')
             remote.select_thread(3)

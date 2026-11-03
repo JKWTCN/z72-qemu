@@ -317,9 +317,24 @@ CAPTURE_SLAVE_SFLT_POINTS = {
     0x1009a490: 'capture-slave-sflt-interrupt',
     0x100b4b62: 'capture-slave-sflt-service-callback',
 }
+CAPTURE_SLAVE_PROCESSING_POINTS = {
+    0x1012cb94: 'capture-slave-processing-stage',
+    0x1012ca38: 'capture-slave-processing-context',
+    0x10128046: 'capture-slave-processing-request',
+    0x10128092: 'capture-slave-processing-request-return',
+    0x100b377c: 'capture-slave-processing-paired-service-submit',
+    0x100b3404: 'capture-slave-processing-paired-service-execute',
+    0x100b3808: 'capture-slave-processing-service-submit',
+    0x100b32f8: 'capture-slave-processing-service-execute',
+    0x100b2c9a: 'capture-slave-processing-device-configure',
+    0x100965cc: 'capture-slave-processing-device-prepare',
+    0x10096a1e: 'capture-slave-processing-input-start',
+    0x100b27ba: 'capture-slave-processing-service-wait',
+}
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
     **CAPTURE_SLAVE_SFLT_POINTS,
+    **CAPTURE_SLAVE_PROCESSING_POINTS,
     0x10129faa: 'capture-slave-image-service',
     0x10129e12: 'capture-slave-still-request',
     0x10129e54: 'capture-slave-request-copy-return',
@@ -1038,6 +1053,22 @@ def sflt_snapshot(remote):
     return result
 
 
+def slave_processing_snapshot(remote):
+    def words(address, size):
+        return [hex(value) for value in struct.unpack('<' + 'I' * (size // 4), remote.read(address, size))]
+    return dict(context=hex(0xc16be7f4),
+        context_fields={hex(offset): words(0xc16be7f4 + offset, 4)[0]
+                        for offset in (0, 4, 8, 0x98, 0x1a8, 0x35c, 0x360,
+                                       0x364, 0x370, 0x374, 0x378, 0x380)},
+        service_words=words(0xc10079dc, 0x60),
+        banks=[dict(bank=bank, address=hex(0xc16a46d8 + bank * 0x8e8),
+                    words=words(0xc16a46d8 + bank * 0x8e8, 0x100)) for bank in range(2)],
+        worker=task_wait_snapshot(remote, 0xc1008f28, slave=True),
+        service_task=task_wait_snapshot(remote, 0xc1486708, slave=True),
+        devices=[dict(base=hex(base), words=words(base, 0x1400))
+                 for base in (0x20380000, 0x203c0000)])
+
+
 def peer_input_snapshot(remote, resume_thread=1, machine=None):
     result = dict(thread=3, controls={}, banks=[])
     remote.select_thread(3)
@@ -1096,6 +1127,7 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                         '<32I', remote.read(registers, 128))])
         result['compute'] = compute
         result['sflt'] = sflt_snapshot(remote)
+        result['processing'] = slave_processing_snapshot(remote)
         compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
             struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
             for channel in range(4)]
@@ -1124,15 +1156,16 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                 context = word(parameters + 0xc)
                 if 0xc1000000 <= context <= 0xc81ffb08:
                     fields = {hex(offset): hex(word(context + offset))
-                              for offset in (0x310, 0x404, 0x4f4)}
+                              for offset in (0x310, 0x404, 0x408, 0x4f4)}
                     job['capture_context'] = dict(address=hex(context), fields=fields,
                                                   referenced_headers=[])
-                    for offset in (0x310, 0x404):
+                    for offset in (0x310, 0x404, 0x408):
                         pointer = int(fields[hex(offset)], 16)
-                        if 0xc1000000 <= pointer <= 0xc81fffc0:
+                        size = 0x68 if offset == 0x408 else 64
+                        if 0xc1000000 <= pointer <= 0xc8200000 - size:
                             job['capture_context']['referenced_headers'].append(dict(
                                 field=hex(offset), address=hex(pointer), words=[hex(value)
-                                    for value in struct.unpack('<16I', remote.read(pointer, 64))]))
+                                    for value in struct.unpack('<' + 'I' * (size // 4), remote.read(pointer, size))]))
                     nested = int(fields['0x4f4'], 16)
                     if 0xc1000000 <= nested <= 0xc81fd480:
                         job['capture_context']['nested'] = dict(address=hex(nested),
@@ -1151,6 +1184,9 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                         active = dict(stage=stage, state=state, column=column,
                             descriptor=hex(descriptor), fields=[hex(value) for value in
                                 struct.unpack('<10I', remote.read(descriptor, 40))])
+                        worker = int(active['fields'][1], 16)
+                        if worker % 4 == 0 and 0xc1000000 <= worker <= 0xc81ffffc:
+                            active['worker'] = task_wait_snapshot(remote, worker, slave=True)
                         methods = int(active['fields'][5], 16)
                         if 0xc1000000 <= methods <= 0xc81fff10:
                             values = struct.unpack('<60I', remote.read(methods, 240))
@@ -2071,6 +2107,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 keep = True
                 if pc in CAPTURE_SLAVE_SFLT_POINTS:
                     record['sflt'] = sflt_snapshot(remote)
+                if pc in CAPTURE_SLAVE_PROCESSING_POINTS:
+                    record['processing'] = slave_processing_snapshot(remote)
                 if skip_statistics and pc in COMPUTE_STATISTICS_SKIP_POINTS:
                     context = remote.get(registers, 'r4')
                     require(context % 4 == 0 and 0xc1000000 <= context and

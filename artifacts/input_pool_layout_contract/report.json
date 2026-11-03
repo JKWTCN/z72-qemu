@@ -53,5 +53,64 @@
     "matching_profiles": true,
     "full_allocation_within_slave_initialization": true,
     "full_allocation_within_master_initialization": false
+  },
+  "still_processing_storage": {
+    "initialization": {
+      "table_offset": 82144,
+      "kind": "zero",
+      "source": 277400896,
+      "destination": 3397386240,
+      "size": 895903744,
+      "handler": 268566664
+    },
+    "base": "0xca800000",
+    "end": "0xffe66800",
+    "profiles": [
+      {
+        "address": "0x101f1588",
+        "header_bytes": 280,
+        "base": "0xca800000",
+        "bytes": 366661632,
+        "unit_bytes": 3459072,
+        "limit": 106,
+        "kind": 1,
+        "alignment_bits": 7,
+        "end": "0xe05ad000"
+      },
+      {
+        "address": "0x101f1678",
+        "header_bytes": 56,
+        "base": "0xe05ad000",
+        "bytes": 165713920,
+        "unit_bytes": 82856960,
+        "limit": 2,
+        "kind": 1,
+        "alignment_bits": 7,
+        "end": "0xea3b6800"
+      },
+      {
+        "address": "0x101f1690",
+        "header_bytes": 104,
+        "base": "0xea3b6800",
+        "bytes": 181764096,
+        "unit_bytes": 90882048,
+        "limit": 0,
+        "kind": 0,
+        "alignment_bits": 7,
+        "end": "0xf510e800"
+      },
+      {
+        "address": "0x101f16a8",
+        "header_bytes": 104,
+        "base": "0xf510e800",
+        "bytes": 181764096,
+        "unit_bytes": 90882048,
+        "limit": 0,
+        "kind": 0,
+        "alignment_bits": 7,
+        "end": "0xffe66800"
+      }
+    ],
+    "limitation": "Native profiles and initialization only; no pixel algorithm or DMA completion"
   }
 }

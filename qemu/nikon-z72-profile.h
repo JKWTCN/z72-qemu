@@ -123,6 +123,9 @@ static const NikonZ72Window nikon_z72_slave_windows[] = {
     /* Separate original zero record, containing the command addresses
      * emitted by 10116B0C. Storage only, without processing completion. */
     {0xC8900000, 0x01E12200, "z72-slave-processing-scratch-pool-lab"},
+    /* Original zero record contains the high-resolution processing pools,
+     * including the live output allocation at EA3B6800 (profile 101F1690). */
+    {0xCA800000, 0x35666800, "z72-slave-still-processing-pools-lab"},
     /* Companion serial-adjacent block beside the console interface; the
      * kernel writes it (observed at +0x560) once the handoff completes. */
     {0x2C0A0000, 0x00001000, "z72-slave-console-companion-lab"},
