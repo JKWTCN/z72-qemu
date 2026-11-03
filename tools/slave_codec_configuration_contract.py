@@ -15,11 +15,13 @@ from analyze.decode_z72 import BASE, require
 from analyze.firmware_structure import analyze_eg, scatter_records
 
 
-def check(image, capture):
+def check(image, capture, request_index=0):
     identity = analyze_eg(image, 'slave')
     records = capture['trace']['records']
-    before = next(row['codec'] for row in records if row['entry'] == 'capture-slave-codec-device-configure')
-    ready = next(row['codec'] for row in records if row['entry'] == 'capture-slave-codec-device-start')
+    configurations = [row['codec'] for row in records if row['entry'] == 'capture-slave-codec-device-configure']
+    starts = [row['codec'] for row in records if row['entry'] == 'capture-slave-codec-device-start']
+    require(0 <= request_index < min(len(configurations), len(starts)), 'Captured codec request index is out of range')
+    before, ready = configurations[request_index], starts[request_index]
     descriptor = int(ready['configuration']['address'], 16)
     handle = int(ready['device']['address'], 16)
     values = [int(word, 16) for word in ready['configuration']['words']]
@@ -90,8 +92,15 @@ def check(image, capture):
     require(not output_writes, 'Native configuration/start wrote compressed output')
     fields = (0x18, 0x1c, 0x28, 0x410, 0x414, 0x418, 0x41c, 0x430, 0x434,
               0x440, 0x458, 0x484, 0x490, 0x494)
-    require(registers[0x458 // 4] * 512 == values[0x68 // 4], 'Observed capacity conversion differs')
+    measuring = values[0x10 // 4] != 0
+    require(registers[0x458 // 4] == (0 if measuring else values[0x68 // 4] // 512),
+            'Observed capacity conversion differs')
+    scale = (values[0x54 // 4] >> 16) & 255
+    require(registers[0x1c // 4] == ((values[0x18 // 4] >> 16) >> scale) and
+            registers[0x18 // 4] == ((values[0x1c // 4] & 0xffff) >> scale),
+            'Native codec header scaling differs')
     return dict(format=1, result='passed', firmware_included=False, slave_sha256=identity['sha256'],
+        request_index=request_index, measuring=measuring, scale=scale,
         configure='0x10095e58', start='0x100960b8', descriptor=hex(descriptor), tables=tables,
         registers={hex(0x24072000 + offset): hex(registers[offset // 4]) for offset in fields},
         output_capacity_bytes=values[0x68 // 4], configuration_writes=configure_writes,
@@ -107,9 +116,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--slave', type=Path, required=True)
     parser.add_argument('--capture-report', type=Path, required=True)
+    parser.add_argument('--request-index', type=int, default=0)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    report = check(args.slave.read_bytes(), json.loads(args.capture_report.read_text(encoding='utf-8')))
+    report = check(args.slave.read_bytes(), json.loads(args.capture_report.read_text(encoding='utf-8')), args.request_index)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print('PASS native slave codec configuration, quantizers, capacity and start writes')

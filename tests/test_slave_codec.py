@@ -83,12 +83,18 @@ def check(qemu):
             def count():
                 return monitor('qom-get', dict(path='/machine/unattached/' + config, property='codec-dma-count'))
 
-            def configure(width=640, height=424, source=0xc8900000, size=capacity):
+            def measured_count():
+                return monitor('qom-get', dict(path='/machine/unattached/' + config, property='codec-measured-count'))
+
+            def configure(width=640, height=424, source=0xc8900000, size=capacity, scale=0, measuring=False):
+                stride = 1664 if width == 1620 else width
+                rows = 1088 if width == 1620 else height
                 write(base + 4, 0x80000000)
-                values = {0: 0x31, 0x18: height, 0x1c: width, 0x28: 0x70f,
-                    0x400: 8, 0x404: 9, 0x408: 0x10000, 0x410: width, 0x414: width,
+                values = {0: 0x31, 0x18: height >> scale, 0x1c: width >> scale, 0x28: 0x70f,
+                    0x400: 8 | scale << 4, 0x404: 0xb if measuring else 9,
+                    0x408: 0x10000, 0x410: stride, 0x414: stride,
                     0x418: width, 0x41c: height, 0x430: source,
-                    0x434: source + width * height, 0x440: output, 0x458: size // 512,
+                    0x434: source + stride * rows, 0x440: output, 0x458: 0 if measuring else size // 512,
                     0x484: 0, 0x490: 0x300000, 0x494: 0x300000}
                 for offset, value in values.items():
                     write(base + offset, value)
@@ -99,10 +105,10 @@ def check(qemu):
 
             def start():
                 write(base + 4, 1)
-                write(base + 0x400, 0x4008)
-                write(base + 0x404, 0x4009)
+                write(base + 0x400, (read(base + 0x400) & ~0xc000) | 0x4000)
+                write(base + 0x404, (read(base + 0x404) & ~0xc000) | 0x4000)
 
-            def verify(width, height, maximum):
+            def verify(width, height, maximum, bright=(8, 8)):
                 length = read(base + 0x20)
                 assert 128 < length <= maximum
                 encoded = data_at(output, length)
@@ -111,7 +117,7 @@ def check(qemu):
                 assert image.size == (width, height) and image.mode == 'RGB'
                 assert image.quantization[0] == quantizers[0] and image.quantization[1] == quantizers[1]
                 assert not image.info.get('progressive', False)
-                for point, expected in (((8, 8), 255), ((width // 2, height // 2), 0), ((width - 8, height - 8), 0)):
+                for point, expected in ((bright, 255), ((width // 2, height // 2), 0), ((width - 8, height - 8), 0)):
                     assert all(abs(value - expected) <= 3 for value in image.getpixel(point)), (point, image.getpixel(point))
                 image.close()
                 return length
@@ -172,8 +178,83 @@ def check(qemu):
             assert count() == 2 and read(base + 0x480) == 0x08001000
             verify(width, height, maximum)
             assert read(output - 4) == 0x12345678 and read(output + maximum) == 0x50607080
+
+            width, height, stride, rows, source = 1620, 1080, 1664, 1088, 0xc8984800
+            second = source + stride * rows
+            command(f'memset {source:#x} {stride * height:#x} 0')
+            command(f'memset {second:#x} {stride * height:#x} 0x80')
+            command(f'memset {source + width:#x} 1 0x7f')
+            command(f'memset {second + width:#x} 1 1')
+
+            def patch(value):
+                for y in range(64):
+                    command(f'memset {source + y * stride:#x} 0x40 {value:#x}')
+
+            patch(255)
+            write(output, 0xa5a5a5a5)
+            write(output + capacity, 0x87654321)
+            configure(width, height, source, scale=2, measuring=True)
+            write(base + 0x458, 1)
+            start()
+            assert count() == 2 and measured_count() == 0 and read(output) == 0xa5a5a5a5
+            for address in (source + (height - 1) * stride + width - 1,
+                            second + (height - 1) * stride + width - 1):
+                configure(width, height, source, scale=2, measuring=True)
+                previous = data_at(address, 1)
+                command(f'memset {address:#x} 1 1')
+                start()
+                assert count() == 2 and measured_count() == 0 and read(base + 0x480) == 0
+                command(f'memset {address:#x} 1 {previous[0]:#x}')
+            configure(width, height, source, scale=2, measuring=True)
+            start()
+            measurement = read(base + 0x20)
+            assert measured_count() == 1 and count() == 2 and measurement > 128
+            assert read(output) == 0xa5a5a5a5 and read(output + capacity) == 0x87654321
+            assert read(base + 0x480) == 0x08001000 and read(base + 0x2c) == 0x80000000
+            start()
+            assert measured_count() == 1
+            patch(0)
+            configure(width, height, source, scale=2, measuring=True)
+            start()
+            assert measured_count() == 2 and count() == 2 and read(base + 0x20) != measurement
+            assert read(output) == 0xa5a5a5a5
+            patch(255)
+            configure(width, height, source, scale=2)
+            start()
+            assert count() == 3 and measured_count() == 2
+            assert verify(405, 270, capacity) == measurement, 'Measured size differs from the same written JPEG'
+            configure(width, height, source)
+            start()
+            assert count() == 4 and measured_count() == 2
+            verify(width, height, capacity)
+            assert data_at(source + width, 1) == b'\x7f' and data_at(second + width, 1) == b'\x01'
+            assert read(output - 4) == 0x12345678 and read(output + capacity) == 0x87654321
+
+            write(output, 0xa5a5a5a5)
+            configure(scale=2, measuring=True)
+            start()
+            measurement = read(base + 0x20)
+            assert measured_count() == 3 and count() == 4 and read(output) == 0xa5a5a5a5
+            configure(scale=2)
+            start()
+            assert count() == 5 and verify(160, 106, capacity, bright=(2, 2)) == measurement
+
+            width, height, source = 160, 120, 0xc8cf8800
+            plane = width * height
+            command(f'memset {source:#x} {plane:#x} 0')
+            command(f'memset {source + plane:#x} {plane:#x} 0x80')
+            for y in range(32):
+                command(f'memset {source + y * width:#x} 0x20 0xff')
+            write(output, 0xa5a5a5a5)
+            configure(width, height, source, measuring=True)
+            start()
+            measurement = read(base + 0x20)
+            assert measured_count() == 4 and count() == 5 and read(output) == 0xa5a5a5a5
+            configure(width, height, source)
+            start()
+            assert count() == 6 and verify(width, height, capacity) == measurement
             monitor('system_reset')
-            assert count() == 0 and read(base + 0x480) == 0 and read(base + 0x2c) == 0
+            assert count() == 0 and measured_count() == 0 and read(base + 0x480) == 0 and read(base + 0x2c) == 0
             assert read(base + 0x100) == 0 and read(base + 4) == 0 and not levels[105 - 32]
         finally:
             if stream is not None:

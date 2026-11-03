@@ -624,6 +624,7 @@ struct NikonZ72BootConfig {
     MemoryRegion codec_ram;
     uint32_t codec_registers[0x600 / 4];
     uint64_t codec_dma_count;
+    uint64_t codec_measured_count;
     MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
     uint32_t compute_mailbox_words[0x400];
@@ -3424,27 +3425,40 @@ static bool codec_encode(NikonZ72BootConfig *s)
     AddressSpace *view = CPU(s->cpu)->as;
     unsigned width = r[0x418 / 4], height = r[0x41c / 4];
     uint32_t first = r[0x430 / 4], second = r[0x434 / 4], output = r[0x440 / 4];
-    uint64_t capacity = (uint64_t)r[0x458 / 4] * 512;
+    bool measuring = (r[0x404 / 4] & 2) != 0;
+    unsigned scale = (r[0x400 / 4] >> 4) & 3;
+    /* A measurement disables output DMA and the native capacity register.
+     * Bound its internal JPEG using the same 16 MiB diagnostic maximum. */
+    uint64_t capacity = measuring ? 0x1000000 : (uint64_t)r[0x458 / 4] * 512;
     unsigned quantizers[2][64];
     bool full = width == 8256 && height == 5504;
+    bool preview = width == 1620 && height == 1080;
+    unsigned stride = preview ? 1664 : width;
+    unsigned rows = preview ? 1088 : height;
+    unsigned out_width = width >> scale, out_height = height >> scale;
 
-    if ((!full && !(width == 640 && height == 424) && !(width == 160 && height == 120)) ||
-        r[0] != 0x31 || r[0x18 / 4] != height || r[0x1c / 4] != width ||
-        r[0x408 / 4] != 0x10000 || r[0x410 / 4] != width || r[0x414 / 4] != width ||
-        (r[0x400 / 4] & ~0xc000) != 8 || (r[0x404 / 4] & ~0xc000) != 9 ||
+    if ((!full && !preview && !(width == 640 && height == 424) && !(width == 160 && height == 120)) ||
+        (scale != 0 && scale != 2) || (measuring && r[0x458 / 4] != 0) ||
+        r[0] != 0x31 || r[0x18 / 4] != out_height || r[0x1c / 4] != out_width ||
+        r[0x408 / 4] != 0x10000 || r[0x410 / 4] != stride || r[0x414 / 4] != stride ||
+        (r[0x400 / 4] & ~0xc000) != (8 | scale << 4) ||
+        (r[0x404 / 4] & ~0xc000) != (measuring ? 0xb : 9) ||
         r[0x490 / 4] != 0x300000 || r[0x494 / 4] != 0x300000 ||
         capacity < 512 || capacity > 0x1000000) {
         return false;
     }
-    size_t plane_bytes = (size_t)width * height;
+    size_t plane_bytes = (size_t)stride * height;
     uint32_t minimum = full ? 0xea3b6800 : 0xc8900000;
     uint64_t limit = full ? 0xffe66800 : 0xca712200;
-    if (first < minimum || (uint64_t)first + plane_bytes != second ||
+    if (first < minimum || (uint64_t)first + stride * rows != second ||
         (uint64_t)second + plane_bytes > limit ||
-        output < 0xca800000 || (uint64_t)output + capacity > 0xffe66800 ||
+        !processing_ram_range(view, first, plane_bytes) ||
+        !processing_ram_range(view, second, plane_bytes)) {
+        return false;
+    }
+    if (!measuring && (output < 0xca800000 || (uint64_t)output + capacity > 0xffe66800 ||
         (output < (uint64_t)second + plane_bytes && first < (uint64_t)output + capacity) ||
-        !processing_ram_range(view, first, 2 * plane_bytes) ||
-        !processing_ram_range(view, output, capacity)) {
+        !processing_ram_range(view, output, capacity))) {
         return false;
     }
     for (unsigned table = 0; table < 2; table++) {
@@ -3457,23 +3471,39 @@ static bool codec_encode(NikonZ72BootConfig *s)
         }
     }
     g_autofree uint8_t *pixels = g_malloc(2 * plane_bytes);
+    g_autofree uint8_t *luma = g_malloc((size_t)out_width * out_height);
     g_autofree uint8_t *encoded = NULL;
     size_t length;
-    if (address_space_read(view, first, MEMTXATTRS_UNSPECIFIED,
-                           pixels, 2 * plane_bytes) != MEMTX_OK) {
+    if (address_space_read(view, first, MEMTXATTRS_UNSPECIFIED, pixels, plane_bytes) != MEMTX_OK ||
+        address_space_read(view, second, MEMTXATTRS_UNSPECIFIED,
+                           pixels + plane_bytes, plane_bytes) != MEMTX_OK) {
         return false;
     }
-    for (size_t offset = 0; offset < plane_bytes; offset++) {
-        if ((pixels[offset] != 0 && pixels[offset] != 255) ||
-            pixels[plane_bytes + offset] != 128) {
-            return false;
+    for (unsigned y = 0; y < height; y++) {
+        for (unsigned x = 0; x < width; x++) {
+            size_t offset = (size_t)y * stride + x;
+            if ((pixels[offset] != 0 && pixels[offset] != 255) ||
+                pixels[plane_bytes + offset] != 128) {
+                return false;
+            }
         }
     }
-    if (!codec_jpeg(pixels, width, height, quantizers, capacity, &encoded, &length) ||
-        address_space_write(view, output, MEMTXATTRS_UNSPECIFIED, encoded, length) != MEMTX_OK) {
+    for (unsigned y = 0; y < out_height; y++) {
+        for (unsigned x = 0; x < out_width; x++) {
+            luma[(size_t)y * out_width + x] = pixels[((size_t)y << scale) * stride + (x << scale)];
+        }
+    }
+    if (!codec_jpeg(luma, out_width, out_height, quantizers, capacity, &encoded, &length)) {
         return false;
     }
-    s->codec_dma_count++;
+    if (measuring) {
+        s->codec_measured_count++;
+    } else {
+        if (address_space_write(view, output, MEMTXATTRS_UNSPECIFIED, encoded, length) != MEMTX_OK) {
+            return false;
+        }
+        s->codec_dma_count++;
+    }
     r[0x20 / 4] = length;
     r[0x2c / 4] |= 0x80000000;
     r[0x480 / 4] |= 0x08001000;
@@ -3819,6 +3849,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->still_thumbnail_command = 0;
     memset(s->codec_registers, 0, sizeof(s->codec_registers));
     s->codec_dma_count = 0;
+    s->codec_measured_count = 0;
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
@@ -3930,8 +3961,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 55,
-    .minimum_version_id = 55,
+    .version_id = 56,
+    .minimum_version_id = 56,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4003,6 +4034,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32(still_thumbnail_command, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(codec_registers, NikonZ72BootConfig, 0x600 / 4),
         VMSTATE_UINT64(codec_dma_count, NikonZ72BootConfig),
+        VMSTATE_UINT64(codec_measured_count, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
@@ -4105,6 +4137,8 @@ static void boot_config_init(Object *obj)
     object_property_add_uint64_ptr(obj, "processing-dma-count", &s->processing_dma_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "codec-dma-count", &s->codec_dma_count,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "codec-measured-count", &s->codec_measured_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-grid-count", &s->processing_grid_count,
                                   OBJ_PROP_FLAG_READ);

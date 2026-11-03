@@ -1196,7 +1196,8 @@ def slave_codec_snapshot(remote):
     result['input_planes'] = []
     for index in range(2):
         stride, address = registers[(0x410 + index * 4) // 4], registers[(0x430 + index * 4) // 4]
-        if ((width, height, stride) in ((8256, 5504, 8256), (640, 424, 640), (160, 120, 160)) and
+        if ((width, height, stride) in ((8256, 5504, 8256), (1620, 1080, 1664),
+                                       (640, 424, 640), (160, 120, 160)) and
                 (0xca800000 <= address and address + stride * height <= 0xffe66800 or
                  0xc8900000 <= address and address + stride * height <= 0xca712200)):
             row = remote.read(address, width)
@@ -1288,6 +1289,8 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                 'qom-get', dict(path=path, property='processing-dma-count'))
             result['codec']['encoded_jobs'] = machine.qmp.command(
                 'qom-get', dict(path=path, property='codec-dma-count'))
+            result['codec']['measured_jobs'] = machine.qmp.command(
+                'qom-get', dict(path=path, property='codec-measured-count'))
         compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
             struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
             for channel in range(4)]
@@ -2273,6 +2276,34 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['transform'] = slave_transform_snapshot(remote)
                 if pc in CAPTURE_SLAVE_CODEC_POINTS:
                     record['codec'] = slave_codec_snapshot(remote)
+                    codec = record['codec']
+                    codec_registers = [int(value, 16) for value in codec['registers']]
+                    output = codec.get('output_prefix')
+                    length = codec_registers[0x20 // 4]
+                    if (pc == 0x10095ade and output and
+                            codec_registers[0x480 // 4] & 0x08001000 == 0x08001000 and
+                            not codec_registers[0x404 // 4] & 2 and 0 < length <= output['capacity']):
+                        payload = remote.read(int(output['address'], 16), length)
+                        require(payload[:2] == b'\xff\xd8' and payload[-2:] == b'\xff\xd9',
+                                'Completed diagnostic codec output lacks JPEG markers')
+                        digest = hashlib.sha256(payload).hexdigest()
+                        destination = machine.args.out.parent / ('codec-' + digest + '.jpg')
+                        destination.parent.mkdir(parents=True, exist_ok=True)
+                        if destination.exists():
+                            require(destination.read_bytes() == payload, 'Codec artifact already has different content')
+                        else:
+                            destination.write_bytes(payload)
+                        from PIL import Image
+                        with Image.open(destination) as frame:
+                            frame.load()
+                            require(frame.size == (codec_registers[0x1c // 4], codec_registers[0x18 // 4]),
+                                    'Decoded native codec output dimensions differ')
+                            record['codec_output'] = dict(file=destination.name, bytes=length, sha256=digest,
+                                decoded=True, width=frame.width, height=frame.height, mode=frame.mode,
+                                pixels=[dict(x=x, y=y, rgb=frame.getpixel((x, y)))
+                                    for x, y in ((0, 0), (frame.width // 2, frame.height // 2),
+                                                 (frame.width - 1, frame.height - 1))],
+                                source='Slave codec RAM at IRQ entry; not an SD-card file')
                     pointer = remote.get(registers, 'r0')
                     if 0xc1000000 <= pointer <= 0xc81fff48:
                         record['codec_argument'] = dict(address=hex(pointer), words=[hex(value) for value in
@@ -2351,7 +2382,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     remote.select_thread(thread)
                     records.append(record)
                     hits[pc] = hits.get(pc, 0) + 1
-                repeat = not keep or hits[pc] < 8
+                repeat = not keep or hits[pc] < (32 if pc in CAPTURE_SLAVE_CODEC_POINTS else 8)
             if thread <= 2 and pc not in slave_points:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in

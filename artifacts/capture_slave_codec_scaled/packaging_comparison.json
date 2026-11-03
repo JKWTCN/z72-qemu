@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "source": "Unmodified SD-card file versus earlier IRQ-entry RAM exports from the same run",
+  "photo_sha256": "894482c3e857abb7d41a991e7e01fa3091a31eb47cb5135dfcb0037d04102575",
+  "photo_decoded": false,
+  "comparisons": [
+    {
+      "ram_jpeg": "codec-21590092498eeb05d90b205a237e9d6b5195f02d7394c7c1bc7a7bcdeeed5393.jpg",
+      "ram_bytes": 3224174,
+      "ram_decoded": true,
+      "dimensions": [
+        8256,
+        5504
+      ],
+      "file_comparison_offset": "0x19400",
+      "differing_bytes": 4984,
+      "first_differing_offsets": [
+        "0x0",
+        "0x1",
+        "0x311d02",
+        "0x311d03"
+      ],
+      "last_differing_offset": "0x31326d",
+      "first_zero_tail_offset": "0x311d02"
+    },
+    {
+      "ram_jpeg": "codec-60527efb5db36b937a5958e4716a6695a77e25cad6e38245e81b193abdc5b378.jpg",
+      "ram_bytes": 66099,
+      "ram_decoded": true,
+      "dimensions": [
+        640,
+        424
+      ],
+      "file_comparison_offset": "0x33c800",
+      "differing_bytes": 1056,
+      "first_differing_offsets": [
+        "0x0",
+        "0x1",
+        "0xfe02",
+        "0xfe03"
+      ],
+      "last_differing_offset": "0x10232",
+      "first_zero_tail_offset": "0xfe02"
+    },
+    {
+      "ram_jpeg": "codec-ceae4140b83db63c07d7694f142ee5bc252919ff4aed6edd4294c4c0d4d28691.jpg",
+      "ram_bytes": 359103,
+      "ram_decoded": true,
+      "dimensions": [
+        1620,
+        1080
+      ],
+      "file_comparison_offset": "0x35cc00",
+      "differing_bytes": 1407,
+      "first_differing_offsets": [
+        "0x0",
+        "0x1",
+        "0x57502",
+        "0x57503"
+      ],
+      "last_differing_offset": "0x57abe",
+      "first_zero_tail_offset": "0x57502"
+    }
+  ],
+  "limitations": [
+    "Offsets locate matching JPEG segments; they do not establish which native routine changed or failed to transfer bytes.",
+    "No repaired JPEG is written."
+  ]
+}

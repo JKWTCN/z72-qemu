@@ -761,6 +761,9 @@ and verifies buffer guards, rejected configurations, late invalid input pixels,
 insufficient capacity, duplicate starts, interrupt masking, both acknowledgement
 conventions, soft reset and machine reset. It uses synthetic descriptors and
 pixels, and cleans up its processes without writing test JPEG files.
+It also compares quarter-size measurement against decoded written output for
+the same pixels and quantizers, verifies input-dependent measurement lengths,
+and checks strided 1620x1080 input with unused row padding.
 It does not prove a native photograph was saved on a card. Stock request evidence
 and the remaining codec modes are recorded in
 [capture processing research](../research/z7ii/capture_release_submit.md).

@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "callback": "0x1012f542",
+  "initial": {
+    "return_value": 0,
+    "pass_count": 0,
+    "measured_result": 0,
+    "measurement_mode": 1,
+    "scale": 2,
+    "quantizer_scale": 8000,
+    "tables": [
+      "02010102030506070101020203070707020202030507080702020304060b0a0802030507080d0d09030407080a0d0e0b06080a0b0d0f0f0c090b0c0c0e0c0d0c",
+      "020203060c0c0c0c020303080c0c0c0c0303070c0c0c0c0c06080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
+    ]
+  },
+  "after_measurement": {
+    "return_value": 0,
+    "pass_count": 1,
+    "measured_result": 32768,
+    "measurement_mode": 0,
+    "scale": 2,
+    "quantizer_scale": 8000,
+    "tables": [
+      "02010102030506070101020203070707020202030507080702020304060b0a0802030507080d0d09030407080a0d0e0b06080a0b0d0f0f0c090b0c0c0e0c0d0c",
+      "020203060c0c0c0c020303080c0c0c0c0303070c0c0c0c0c06080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
+    ]
+  },
+  "host_boundaries": [
+    "Use captured request geometry, size targets and 24-byte quality settings",
+    "Rebase pointers to synthetic RAM; reject access to uncaptured trailing settings",
+    "Supply a synthetic measured result of 0x8000 for the second callback"
+  ],
+  "limitations": [
+    "No hardware scaling, JPEG output, interrupt or saved file is exercised",
+    "A measurement-to-write transition does not prove final convergence for all inputs"
+  ]
+}
