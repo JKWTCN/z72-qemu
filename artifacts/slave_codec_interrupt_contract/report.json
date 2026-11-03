@@ -1,0 +1,228 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "handler": "0x10095ade",
+  "interrupt_id": 105,
+  "status": "0x24072480",
+  "mask": "0x24072484",
+  "substatus": "0x2407202c",
+  "cases": [
+    {
+      "name": "empty",
+      "status": "0x0",
+      "mask": "0xffffffff",
+      "mode": 1,
+      "flags": "0x0",
+      "accumulated": "0x0",
+      "result_90": "0x0",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x0"
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "result-only",
+      "status": "0x8000000",
+      "mask": "0x0",
+      "mode": 1,
+      "flags": "0x1",
+      "accumulated": "0x1",
+      "result_90": "0x12345678",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x8000000"
+        },
+        {
+          "address": "0x2407202c",
+          "value": "0x7fffffff"
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "mode-done-only",
+      "status": "0x1000",
+      "mask": "0x1000",
+      "mode": 1,
+      "flags": "0x2",
+      "accumulated": "0x2",
+      "result_90": "0x0",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x1000"
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "masked-mode-done",
+      "status": "0x8001000",
+      "mask": "0x0",
+      "mode": 1,
+      "flags": "0x1",
+      "accumulated": "0x1",
+      "result_90": "0x12345678",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x8001000"
+        },
+        {
+          "address": "0x2407202c",
+          "value": "0x7fffffff"
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "combined-mode-one",
+      "status": "0x8001000",
+      "mask": "0x1000",
+      "mode": 1,
+      "flags": "0x3",
+      "accumulated": "0x3",
+      "result_90": "0x12345678",
+      "result_94": "0x23456789",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x8001000"
+        },
+        {
+          "address": "0x2407202c",
+          "value": "0x7fffffff"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051401",
+          "descriptor": "0x50001000",
+          "flags": "0x3",
+          "result_90": "0x12345678",
+          "result_94": "0x23456789"
+        }
+      ]
+    },
+    {
+      "name": "mode-zero",
+      "status": "0x8001000",
+      "mask": "0x1000",
+      "mode": 0,
+      "flags": "0x3",
+      "accumulated": "0x1",
+      "result_90": "0x12345678",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x8001000"
+        },
+        {
+          "address": "0x2407202c",
+          "value": "0x7fffffff"
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "combined-bounds",
+      "status": "0x800c000",
+      "mask": "0xc000",
+      "mode": 0,
+      "flags": "0x60001",
+      "accumulated": "0x60001",
+      "result_90": "0x12345678",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x800c000"
+        },
+        {
+          "address": "0x2407202c",
+          "value": "0x7fffffff"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051401",
+          "descriptor": "0x50001000",
+          "flags": "0x60001",
+          "result_90": "0x12345678",
+          "result_94": "0x0"
+        }
+      ]
+    },
+    {
+      "name": "summary-error",
+      "status": "0x20040000",
+      "mask": "0x40000",
+      "mode": 1,
+      "flags": "0x20",
+      "accumulated": "0x0",
+      "result_90": "0x0",
+      "result_94": "0x0",
+      "acknowledgements": [
+        {
+          "address": "0x24072480",
+          "value": "0x20040000"
+        }
+      ],
+      "events": [
+        {
+          "notification": "0x41051401",
+          "descriptor": "0x50001000",
+          "flags": "0x20",
+          "result_90": "0x0",
+          "result_94": "0x0"
+        }
+      ]
+    }
+  ],
+  "callback_cases": [
+    {
+      "flags": "0x3",
+      "result_90": "0x12345678",
+      "request_status": 0,
+      "request_field_48": "0x12345678",
+      "events": [
+        {
+          "object": "0xc1486460",
+          "mask": "0x1"
+        }
+      ]
+    },
+    {
+      "flags": "0x20",
+      "result_90": "0x0",
+      "request_status": 1,
+      "request_field_48": "0x0",
+      "events": [
+        {
+          "object": "0xc1486460",
+          "mask": "0x1"
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Synthetic descriptor, mode, MMIO status and result words",
+    "Record the device callback and execute the separate native service callback",
+    "Record task-event publication instead of executing the kernel"
+  ],
+  "limitations": [
+    "No pixel reads, compressed data, hardware IRQ delivery or saved photograph",
+    "Result-word meaning is not established by this synthetic IRQ check"
+  ]
+}

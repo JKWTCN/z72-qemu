@@ -354,11 +354,24 @@ CAPTURE_SLAVE_TRANSFORM_POINTS = {
     0x1012d5ee: 'capture-slave-thumbnail-wait-return',
     0x1012d69a: 'capture-slave-secondary-thumbnail-wait-return',
 }
+CAPTURE_SLAVE_CODEC_POINTS = {
+    0x1012dacc: 'capture-slave-codec-main-stage',
+    0x1012db72: 'capture-slave-codec-main-request',
+    0x1011600e: 'capture-slave-codec-request-wrapper',
+    0x100b1e6a: 'capture-slave-codec-request-submit',
+    0x100b1d48: 'capture-slave-codec-service-execute',
+    0x10095e58: 'capture-slave-codec-device-configure',
+    0x100960b8: 'capture-slave-codec-device-start',
+    0x100b1e44: 'capture-slave-codec-request-callback',
+    0x100b1e1c: 'capture-slave-codec-request-wait-return',
+    0x1012db76: 'capture-slave-codec-main-return',
+}
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
     **CAPTURE_SLAVE_SFLT_POINTS,
     **CAPTURE_SLAVE_PROCESSING_POINTS,
     **CAPTURE_SLAVE_TRANSFORM_POINTS,
+    **CAPTURE_SLAVE_CODEC_POINTS,
     0x10129faa: 'capture-slave-image-service',
     0x10129e12: 'capture-slave-still-request',
     0x10129e54: 'capture-slave-request-copy-return',
@@ -1165,6 +1178,49 @@ def slave_transform_snapshot(remote):
     return result
 
 
+def slave_codec_snapshot(remote):
+    def words(address, size):
+        return [hex(value) for value in struct.unpack('<' + 'I' * (size // 4), remote.read(address, size))]
+    def ram(address, size):
+        return 0xc1000000 <= address and address + size <= 0xc8200000
+    globals_ = words(0xc10079a0, 0x30)
+    result = dict(globals=globals_, service_task=task_wait_snapshot(remote, 0xc1486460, slave=True),
+                  registers=words(0x24072000, 0x600))
+    registers = [int(value, 16) for value in result['registers']]
+    output, capacity = registers[0x440 // 4], registers[0x458 // 4] * 512
+    if capacity >= 128 and 0xca800000 <= output and output + capacity <= 0xffe66800:
+        result['output_prefix'] = dict(address=hex(output), capacity=capacity,
+                                       bytes=remote.read(output, 128).hex())
+    width, height = registers[0x418 // 4], registers[0x41c // 4]
+    result['input_planes'] = []
+    for index in range(2):
+        stride, address = registers[(0x410 + index * 4) // 4], registers[(0x430 + index * 4) // 4]
+        if ((width, height, stride) in ((8256, 5504, 8256), (640, 424, 640), (160, 120, 160)) and
+                (0xca800000 <= address and address + stride * height <= 0xffe66800 or
+                 0xc8900000 <= address and address + stride * height <= 0xca712200)):
+            row = remote.read(address, width)
+            result['input_planes'].append(dict(plane=index, address=hex(address),
+                width=width, height=height, stride=stride,
+                first_row_sha256=hashlib.sha256(row).hexdigest(),
+                first_row_minimum=min(row), first_row_maximum=max(row)))
+    handle = int(globals_[1], 16)
+    if ram(handle, 16):
+        result['device'] = dict(address=hex(handle), words=words(handle, 16))
+        descriptor = int(result['device']['words'][1], 16)
+        if ram(descriptor, 0xb8):
+            result['configuration'] = dict(address=hex(descriptor), words=words(descriptor, 0xb8))
+            result['tables'] = []
+            for offset in (0x20, 0x28):
+                pointer = int(result['configuration']['words'][offset // 4], 16)
+                if ram(pointer, 64):
+                    result['tables'].append(dict(field=hex(offset), address=hex(pointer),
+                                                  bytes=remote.read(pointer, 64).hex()))
+    request = int(globals_[4], 16)
+    if ram(request, 0x60):
+        result['request'] = dict(address=hex(request), words=words(request, 0x60))
+    return result
+
+
 def peer_input_snapshot(remote, resume_thread=1, machine=None):
     result = dict(thread=3, controls={}, banks=[])
     remote.select_thread(3)
@@ -1225,6 +1281,7 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
         result['sflt'] = sflt_snapshot(remote)
         result['processing'] = slave_processing_snapshot(remote)
         result['transform'] = slave_transform_snapshot(remote)
+        result['codec'] = slave_codec_snapshot(remote)
         if machine is not None:
             result['processing']['completed_frames'] = machine.qmp.command(
                 'qom-get', dict(path=path, property='processing-dma-count'))
@@ -1256,12 +1313,12 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
                 context = word(parameters + 0xc)
                 if 0xc1000000 <= context <= 0xc81ffb08:
                     fields = {hex(offset): hex(word(context + offset))
-                              for offset in (0x310, 0x404, 0x408, 0x40c, 0x410, 0x418, 0x4f4)}
+                              for offset in (0x310, 0x404, 0x408, 0x40c, 0x410, 0x418, 0x41c, 0x4f4)}
                     job['capture_context'] = dict(address=hex(context), fields=fields,
                                                   referenced_headers=[])
-                    for offset in (0x310, 0x404, 0x408, 0x40c, 0x410, 0x418):
+                    for offset in (0x310, 0x404, 0x408, 0x40c, 0x410, 0x418, 0x41c):
                         pointer = int(fields[hex(offset)], 16)
-                        size = 0x68 if offset in (0x408, 0x40c, 0x410, 0x418) else 64
+                        size = 0x68 if offset in (0x408, 0x40c, 0x410, 0x418, 0x41c) else 64
                         if 0xc1000000 <= pointer <= 0xc8200000 - size:
                             job['capture_context']['referenced_headers'].append(dict(
                                 field=hex(offset), address=hex(pointer), words=[hex(value)
@@ -2211,6 +2268,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['processing'] = slave_processing_snapshot(remote)
                 if pc in CAPTURE_SLAVE_TRANSFORM_POINTS:
                     record['transform'] = slave_transform_snapshot(remote)
+                if pc in CAPTURE_SLAVE_CODEC_POINTS:
+                    record['codec'] = slave_codec_snapshot(remote)
+                    pointer = remote.get(registers, 'r0')
+                    if 0xc1000000 <= pointer <= 0xc81fff48:
+                        record['codec_argument'] = dict(address=hex(pointer), words=[hex(value) for value in
+                            struct.unpack('<46I', remote.read(pointer, 0xb8))])
                 if skip_statistics and pc in COMPUTE_STATISTICS_SKIP_POINTS:
                     context = remote.get(registers, 'r4')
                     require(context % 4 == 0 and 0xc1000000 <= context and

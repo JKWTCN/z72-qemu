@@ -1,0 +1,391 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "configure": "0x10095e58",
+  "start": "0x100960b8",
+  "descriptor": "0xc3f21e90",
+  "tables": [
+    {
+      "field": "0x20",
+      "bytes": "01010101020303040101010102040404010101020304040401010102030605040101020404070705020204040507070603040506070808070506060607060706",
+      "source": "Observed source bytes"
+    },
+    {
+      "field": "0x28",
+      "bytes": "01010203060606060101020406060606020204060606060603040606060606060606060606060606060606060606060606060606060606060606060606060606",
+      "source": "Reconstructed from packed MMIO words"
+    }
+  ],
+  "registers": {
+    "0x24072018": "0x1580",
+    "0x2407201c": "0x2040",
+    "0x24072028": "0x70f",
+    "0x24072410": "0x2040",
+    "0x24072414": "0x2040",
+    "0x24072418": "0x2040",
+    "0x2407241c": "0x1580",
+    "0x24072430": "0xf510e800",
+    "0x24072434": "0xf7c64800",
+    "0x24072440": "0xdf52e800",
+    "0x24072458": "0x70ad",
+    "0x24072484": "0xc4d000",
+    "0x24072490": "0x300000",
+    "0x24072494": "0x300000"
+  },
+  "output_capacity_bytes": 14768640,
+  "configuration_writes": [
+    {
+      "address": "0x24072000",
+      "bytes": 4,
+      "value": "0x31"
+    },
+    {
+      "address": "0x24072100",
+      "bytes": 4,
+      "value": "0x1010101"
+    },
+    {
+      "address": "0x24072104",
+      "bytes": 4,
+      "value": "0x2030304"
+    },
+    {
+      "address": "0x24072108",
+      "bytes": 4,
+      "value": "0x1010101"
+    },
+    {
+      "address": "0x2407210c",
+      "bytes": 4,
+      "value": "0x2040404"
+    },
+    {
+      "address": "0x24072110",
+      "bytes": 4,
+      "value": "0x1010102"
+    },
+    {
+      "address": "0x24072114",
+      "bytes": 4,
+      "value": "0x3040404"
+    },
+    {
+      "address": "0x24072118",
+      "bytes": 4,
+      "value": "0x1010102"
+    },
+    {
+      "address": "0x2407211c",
+      "bytes": 4,
+      "value": "0x3060504"
+    },
+    {
+      "address": "0x24072120",
+      "bytes": 4,
+      "value": "0x1010204"
+    },
+    {
+      "address": "0x24072124",
+      "bytes": 4,
+      "value": "0x4070705"
+    },
+    {
+      "address": "0x24072128",
+      "bytes": 4,
+      "value": "0x2020404"
+    },
+    {
+      "address": "0x2407212c",
+      "bytes": 4,
+      "value": "0x5070706"
+    },
+    {
+      "address": "0x24072130",
+      "bytes": 4,
+      "value": "0x3040506"
+    },
+    {
+      "address": "0x24072134",
+      "bytes": 4,
+      "value": "0x7080807"
+    },
+    {
+      "address": "0x24072138",
+      "bytes": 4,
+      "value": "0x5060606"
+    },
+    {
+      "address": "0x2407213c",
+      "bytes": 4,
+      "value": "0x7060706"
+    },
+    {
+      "address": "0x24072140",
+      "bytes": 4,
+      "value": "0x1010203"
+    },
+    {
+      "address": "0x24072144",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072148",
+      "bytes": 4,
+      "value": "0x1010204"
+    },
+    {
+      "address": "0x2407214c",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072150",
+      "bytes": 4,
+      "value": "0x2020406"
+    },
+    {
+      "address": "0x24072154",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072158",
+      "bytes": 4,
+      "value": "0x3040606"
+    },
+    {
+      "address": "0x2407215c",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072160",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072164",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072168",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x2407216c",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072170",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072174",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x24072178",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x2407217c",
+      "bytes": 4,
+      "value": "0x6060606"
+    },
+    {
+      "address": "0x2407200c",
+      "bytes": 4,
+      "value": "0x14"
+    },
+    {
+      "address": "0x24072010",
+      "bytes": 4,
+      "value": "0x3c"
+    },
+    {
+      "address": "0x24072014",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x2407201c",
+      "bytes": 4,
+      "value": "0x2040"
+    },
+    {
+      "address": "0x24072018",
+      "bytes": 4,
+      "value": "0x1580"
+    },
+    {
+      "address": "0x24072420",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072024",
+      "bytes": 4,
+      "value": "0x4"
+    },
+    {
+      "address": "0x24072408",
+      "bytes": 4,
+      "value": "0x10000"
+    },
+    {
+      "address": "0x24072404",
+      "bytes": 4,
+      "value": "0x9"
+    },
+    {
+      "address": "0x24072400",
+      "bytes": 4,
+      "value": "0x8"
+    },
+    {
+      "address": "0x24072450",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072454",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724b0",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724c0",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724c4",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724c8",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724cc",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724d0",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x240724d4",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072410",
+      "bytes": 4,
+      "value": "0x2040"
+    },
+    {
+      "address": "0x24072414",
+      "bytes": 4,
+      "value": "0x2040"
+    },
+    {
+      "address": "0x24072418",
+      "bytes": 4,
+      "value": "0x2040"
+    },
+    {
+      "address": "0x2407241c",
+      "bytes": 4,
+      "value": "0x1580"
+    },
+    {
+      "address": "0x24072430",
+      "bytes": 4,
+      "value": "0xf510e800"
+    },
+    {
+      "address": "0x24072434",
+      "bytes": 4,
+      "value": "0xf7c64800"
+    },
+    {
+      "address": "0x24072440",
+      "bytes": 4,
+      "value": "0xdf52e800"
+    },
+    {
+      "address": "0x24072458",
+      "bytes": 4,
+      "value": "0x70ad"
+    },
+    {
+      "address": "0x240724e0",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072424",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072428",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072028",
+      "bytes": 4,
+      "value": "0x70f"
+    },
+    {
+      "address": "0x24072484",
+      "bytes": 4,
+      "value": "0xc4d000"
+    }
+  ],
+  "start_writes": [
+    {
+      "address": "0x24072004",
+      "bytes": 4,
+      "value": "0x80000001"
+    },
+    {
+      "address": "0x24072400",
+      "bytes": 4,
+      "value": "0x4008"
+    },
+    {
+      "address": "0x24072404",
+      "bytes": 4,
+      "value": "0x4009"
+    }
+  ],
+  "host_boundaries": [
+    "Use the captured descriptor and pre-configuration register state",
+    "Reconstruct the second quantizer from observed packed register words",
+    "Synthetic RAM and MMIO; no pixel input or hardware side effects"
+  ],
+  "limitations": [
+    "Second quantizer replay is not an independent packing check",
+    "No compressed output, device IRQ or saved photograph is produced"
+  ]
+}
