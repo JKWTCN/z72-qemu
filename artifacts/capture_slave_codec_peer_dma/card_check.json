@@ -120,8 +120,17 @@
     "DCIM/100NZ7_2",
     "NIKON/Z_7_2"
   ],
-  "encoded_photo_verified": true,
+  "encoded_photo_verified": false,
   "temporary_card_retained": true,
   "card_path": "D:\\code\\z72-qemu\\.local\\capture-codec-peer-dma-20261103.raw",
-  "scope": "Read-only extraction after VM closure. Original firmware created the complete photo file in the cloned filesystem. Primary JPEG and embedded JPEGs decoded independently. DSP preprocessing and pixels/JPEG hardware remain diagnostic substitutes; submission used a diagnostic caller. Images are local-only and excluded from Git."
+  "scope": "Read-only extraction after VM closure. Original firmware created the complete photo file in the cloned filesystem. Primary JPEG and embedded JPEGs decoded independently. DSP preprocessing and pixels/JPEG hardware remain diagnostic substitutes; submission used a diagnostic caller. Images are local-only and excluded from Git. Subsequent full-pattern checking found the missing left RAW stripe; the original encoded-photo success flag has been corrected.",
+  "jpeg_packaging_verified": true,
+  "diagnostic_pattern_verified": false,
+  "content_validation": {
+    "report": "../capture_raw_dynamic_dma/before_pattern_check.json",
+    "failed_samples": 1914,
+    "left_stripe_failures": 1914,
+    "right_stripe_failures": 0,
+    "finding": "Decoding and encoder-body matching passed, but the left RAW stripe was missing. This is not a complete diagnostic frame."
+  }
 }

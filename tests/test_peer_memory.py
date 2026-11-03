@@ -187,11 +187,19 @@ def run(qemu):
                         'DMA peer aperture leaked into the CPU view')
                 remote.write(0x40100010, struct.pack('<I', 0xe5810000))
                 remote.write(0x40100020, struct.pack('<3I', 0xe2500001, 0x1afffffd, 0xeafffffe))
+
+                def write_word(address, value):
+                    remote.set(pc=0x40100010, cpsr=0xd3, r0=value, r1=address)
+                    remote.command(f'vCont;s:{thread:x}')
+
+                for address, value in ((0x2013d0c0, 0xc0000),
+                                       (0x2013d0e0, 0xf0000),
+                                       (0x2013d100, 0x20000)):
+                    write_word(address, value)
                 for offset, value in ((4, 0x11), (8, 0x11), (0x14, 0x10), (0x18, 0),
                                       (0x1c, 512), (0x20, 512), (0x24, 512), (0x28, 1),
                                       (0x2c, bus + 4), (0x30, target), (0x10, 1)):
-                    remote.set(pc=0x40100010, cpsr=0xd3, r0=value, r1=0x20070040 + offset)
-                    remote.command(f'vCont;s:{thread:x}')
+                    write_word(0x20070040 + offset, value)
                 remote.set(pc=0x40100020, cpsr=0xd3, r0=0x40000)
                 reach(remote, 0x40100028, action=f'vCont;c:{thread:x}')
                 require(remote.read(target - 4, 520) == b'HEAD' + data + b'TAIL' and
@@ -202,7 +210,60 @@ def run(qemu):
                 remote.select_thread(peer)
                 require(remote.read(source, 520) == b'HEAD' + data + b'TAIL',
                         'Peer DMA modified its source')
-            print('PASS peer ownership, RAM gaps, processing pools, slave code-cache and compute program uploads')
+                # Retarget the same bus window to a different peer pool.
+                source -= 0x10000000
+                replacement = data[::-1]
+                remote.write(source + 4, replacement)
+                remote.select_thread(thread)
+                write_word(0x2013d0c0, 0xb0000)
+                write_word(0x20070048, 0x11)
+                write_word(0x20070050, 1)
+                remote.set(pc=0x40100020, cpsr=0xd3, r0=0x40000)
+                reach(remote, 0x40100028, action=f'vCont;c:{thread:x}')
+                require(remote.read(target - 4, 520) == b'HEAD' + replacement + b'TAIL' and
+                        remote.read(0x20070048, 4) == struct.pack('<I', 1),
+                        'DMA continued to use the previous peer backing after retargeting')
+
+            # Reproduce the native left RAW stripe, including real row pitches.
+            thread = 3
+            source, target, bus = 0x62700000, 0xbad0a000, 0x0a700000
+            width, stride, rows = 0x1080, 0x3090, 3
+            data = bytes((index * 37 + 17) & 255 for index in range(width * rows))
+            remote.select_thread(1)
+            remote.write(source - 4, b'HEAD' + data + b'TAIL')
+            remote.write(0xaa700000, b'X' * len(data))
+            remote.select_thread(thread)
+            remote.write(target - 4, b'HEAD' + b'G' * (stride * rows) + b'TAIL')
+            for address, value in ((0x2013d0b8, 0x60000), (0x2013d0d8, 0xf8000),
+                                   (0x2013d0f8, 0x8000)):
+                write_word(address, value)
+            for offset, value in ((4, 0x11), (8, 0x11), (0x14, 0x10), (0x18, 0),
+                                  (0x1c, width), (0x20, stride), (0x24, width),
+                                  (0x28, rows), (0x2c, bus), (0x30, target), (0x10, 1)):
+                write_word(0x20070000 + offset, value)
+            remote.set(pc=0x40100020, cpsr=0xd3, r0=0x40000)
+            reach(remote, 0x40100028, action='vCont;c:3')
+            expected = b'HEAD' + b''.join(data[row * width:(row + 1) * width] +
+                b'G' * (stride - width) for row in range(rows)) + b'TAIL'
+            require(remote.read(target - 4, len(expected)) == expected and
+                    remote.read(0x20070008, 4) == struct.pack('<I', 1),
+                    'Native RAW stripe source, row pitches or right-stripe guards differ')
+            for address, invalid, valid in ((0x2013d0d8, 0, 0xf8000),
+                                            (0x2013d118, 1, 0)):
+                write_word(address, invalid)
+                write_word(0x20070008, 0x11)
+                write_word(0x20070010, 1)
+                remote.set(pc=0x40100020, cpsr=0xd3, r0=0x40000)
+                reach(remote, 0x40100028, action='vCont;c:3')
+                require(remote.read(0x20070008, 4) == struct.pack('<I', 0x10) and
+                        remote.read(target - 4, len(expected)) == expected,
+                        'Disabled or unsupported peer window copied bytes')
+                write_word(address, valid)
+            remote.select_thread(1)
+            require(remote.read(source - 4, len(data) + 8) == b'HEAD' + data + b'TAIL' and
+                    remote.read(0xaa700000, len(data)) == b'X' * len(data),
+                    'RAW DMA changed source bytes or read the software class default')
+            print('PASS peer ownership, RAM gaps, processing pools, uploads and dynamic RAW DMA windows')
         finally:
             if remote is not None:
                 remote.sock.close()

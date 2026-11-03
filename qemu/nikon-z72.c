@@ -633,7 +633,8 @@ struct NikonZ72BootConfig {
     MemoryRegion *root;
     MemoryRegion memory_dma_view;
     MemoryRegion memory_dma_local;
-    MemoryRegion memory_dma_peer;
+    MemoryRegion memory_dma_peer[8];
+    bool memory_dma_ready;
     bool own_file;
     ARMCPU *cpu;
     bool peer_gpio;
@@ -1990,35 +1991,88 @@ static void input_raw14_row(uint8_t *row, unsigned width, unsigned start_x,
     }
 }
 
-/* Domain 2 names the peer image pool. Decode the aperture locally, then
- * access the receiving engine's RAM rather than the sender's CPU view. */
+/* Domain 2 windows are retargeted by native mapping requests. Software
+ * address-class defaults do not describe their current physical backing. */
+static bool transport_remap_window(NikonZ72BootConfig *s, unsigned slot,
+                                   uint32_t *bus, uint32_t *physical,
+                                   uint64_t *span)
+{
+    const uint8_t *entry = s->transport_table + 0xd0b0 + slot * 4;
+    uint32_t target = ldl_le_p(entry);
+    uint32_t mask = ldl_le_p(entry + 0x20);
+    uint32_t base = ldl_le_p(entry + 0x40);
+
+    if (!mask || mask > 0xfffff || target > 0xfffff || base > 0xfffff) {
+        return false;
+    }
+    *span = (uint64_t)(uint32_t)~(mask << 12) + 1;
+    if ((*span & (*span - 1)) || (target & ~mask) || (base & ~mask) ||
+        ldl_le_p(entry + 0x60) || ldl_le_p(entry + 0x80)) {
+        return false;  /* Extended attributes have not been recovered. */
+    }
+    *bus = base << 12;
+    *physical = target << 12;
+    return true;
+}
+
+static void transport_update_memory_dma(NikonZ72BootConfig *s)
+{
+    uint32_t bus[8], physical[8];
+    uint64_t span[8];
+    bool valid[8], overlap[8] = { false };
+
+    if (!s->memory_dma_ready) {
+        return;
+    }
+    for (unsigned slot = 0; slot < 8; slot++) {
+        valid[slot] = transport_remap_window(s, slot, &bus[slot],
+                                             &physical[slot], &span[slot]);
+        /* Recovered peer classes target RAM families from 50000000 up.
+         * Lower device/register windows are unsupported DMA targets; do
+         * not duplicate their MMIO topology into the DMA address space. */
+        valid[slot] = valid[slot] && physical[slot] >= 0x50000000;
+    }
+    for (unsigned first = 0; first < 8; first++) {
+        for (unsigned second = first + 1; second < 8; second++) {
+            if (valid[first] && valid[second] &&
+                bus[first] < (uint64_t)bus[second] + span[second] &&
+                bus[second] < (uint64_t)bus[first] + span[first]) {
+                overlap[first] = overlap[second] = true;
+            }
+        }
+    }
+    memory_region_transaction_begin();
+    for (unsigned slot = 0; slot < 8; slot++) {
+        MemoryRegion *alias = &s->memory_dma_peer[slot];
+        bool enabled = valid[slot] && !overlap[slot];
+
+        memory_region_set_enabled(alias, false);
+        if (enabled) {
+            memory_region_set_alias_offset(alias, physical[slot]);
+            memory_region_set_size(alias, span[slot]);
+            memory_region_set_address(alias, bus[slot]);
+            memory_region_set_enabled(alias, true);
+        }
+    }
+    memory_region_transaction_commit();
+}
+
+/* The primary input's second stripe uses the same peer aperture as DMA. */
 static bool input_primary_remap(NikonZ72BootConfig *s, uint32_t bus,
                                 uint32_t *physical, uint64_t *available)
 {
     unsigned matches = 0;
 
     for (unsigned slot = 0; slot < 8; slot++) {
-        const uint8_t *entry = s->transport_table + 0xd0b0 + slot * 4;
-        uint32_t target = ldl_le_p(entry);
-        uint32_t mask = ldl_le_p(entry + 0x20);
-        uint32_t base = ldl_le_p(entry + 0x40);
+        uint32_t base, target;
         uint64_t span;
-        uint32_t offset_mask;
 
-        if (!mask || mask > 0xfffff || target > 0xfffff || base > 0xfffff) {
+        if (!transport_remap_window(s, slot, &base, &target, &span) ||
+            bus < base || (uint64_t)bus >= (uint64_t)base + span) {
             continue;
         }
-        offset_mask = ~(mask << 12);
-        span = (uint64_t)offset_mask + 1;
-        if ((span & (span - 1)) || (target & ~mask) || (base & ~mask) ||
-            (bus & ~offset_mask) != base << 12) {
-            continue;
-        }
-        if (ldl_le_p(entry + 0x60) || ldl_le_p(entry + 0x80)) {
-            return false;  /* Extended attributes have not been recovered. */
-        }
-        *physical = (target << 12) | (bus & offset_mask);
-        *available = span - (bus & offset_mask);
+        *physical = target + (bus - base);
+        *available = span - (bus - base);
         matches++;
     }
     return matches == 1;
@@ -3658,6 +3712,9 @@ static void transport_write(void *opaque, hwaddr offset, uint64_t value,
     } else {
         stl_le_p(s->transport_table + offset, value);
     }
+    if (offset >= 0xd0b0 && offset < 0xd150) {
+        transport_update_memory_dma(s);
+    }
     if (offset == 0x4128 || offset == 0xc128) {
         /* Stop masks select transmit lanes in bits 0..3 and receive lanes
          * in bits 12..15. With no in-flight lane transaction, the native
@@ -3930,6 +3987,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     controller_update_irqs(s);
     qemu_set_irq(s->peer_ready_irq, 0);
     memset(s->transport_table, 0, sizeof(s->transport_table));
+    transport_update_memory_dma(s);
     if (s->intc) {
         transport_update_irq(s);
     }
@@ -3949,6 +4007,7 @@ static int boot_config_post_load(void *opaque, int version_id)
     controller_update_irqs(s);
     qemu_set_irq(s->peer_ready_irq, s->peer_gpio && s->peer_ready_output);
     transport_update_irq(s);
+    transport_update_memory_dma(s);
     input_update_irqs(s);
     sync_update_irqs(s);
     sd_update_irq(s);
@@ -5222,19 +5281,23 @@ static void nikon_z72_dual_init(MachineState *machine)
         nikon_z72_engine_init(machine, slave_view, nikon_z72_slave_windows,
                           G_N_ELEMENTS(nikon_z72_slave_windows), slave_message,
                           NULL, false, s->slave_boot_image, s->slave_boot_aux);
-    /* Peer address class 7 maps C0000000..DFFFFFFF to DMA bus 20000000.
-     * This aperture overlaps local CPU registers and must exist only in
-     * the memory controller's DMA view, never in either CPU view. */
+    /* Native domain-2 remap registers control the DMA peer apertures.
+     * Keep them out of the CPU view, where the same bus numbers can name
+     * local registers or unrelated RAM. */
     NikonZ72BootConfig *configs[2] = {NIKON_Z72_BOOT_CONFIG(master_config),
                                     NIKON_Z72_BOOT_CONFIG(slave_config)};
     MemoryRegion *peers[2] = {slave_view, master_view};
     for (unsigned engine = 0; engine < 2; engine++) {
         NikonZ72BootConfig *config = configs[engine];
-        memory_region_init_alias(&config->memory_dma_peer, OBJECT(config),
-                                 "z72-memory-dma-peer", peers[engine],
-                                 0xc0000000, 0x20000000);
-        memory_region_add_subregion_overlap(&config->memory_dma_view, 0x20000000,
-                                            &config->memory_dma_peer, 1);
+        for (unsigned slot = 0; slot < 8; slot++) {
+            MemoryRegion *alias = &config->memory_dma_peer[slot];
+            memory_region_init_alias(alias, OBJECT(config),
+                                     "z72-memory-dma-peer", peers[engine], 0, 1);
+            memory_region_set_enabled(alias, false);
+            memory_region_add_subregion_overlap(&config->memory_dma_view, 0,
+                                                alias, 1);
+        }
+        config->memory_dma_ready = true;
     }
     /* Communication initialization uses master bank 6 bit 3 and slave
      * bank 8 bit 10. The board connects the two readiness signals; this

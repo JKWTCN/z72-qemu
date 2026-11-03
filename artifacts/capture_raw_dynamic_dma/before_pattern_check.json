@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "source_report": "../capture_slave_codec_peer_dma/card_check.json",
+  "jpg_sha256": "5e8da3625195d4b309d6fd10c6b2fc978719450829574fbc7119926e67d70f19",
+  "source_geometry": [
+    8288,
+    5520
+  ],
+  "phase": 0,
+  "cell_size": 64,
+  "samples": 11310,
+  "failed_samples": 1914,
+  "left_stripe_failures": 1914,
+  "right_stripe_failures": 0,
+  "maximum_rgb_error": 255,
+  "allowed_rgb_error": 24,
+  "passed": false,
+  "finding": "All incorrect cell centers are in the missing left RAW stripe. JPEG decoding alone did not establish image completeness."
+}

@@ -1,0 +1,565 @@
+{
+  "format": 1,
+  "observation": "Filtered address-domain observation; complete report is retained locally",
+  "scope": "Stopped on the first native CPU read of the peer address table, before the failing RAW copy. Table values are a snapshot, not a fixed DMA mapping. The bridge probe temporarily selected PCIe ATU banks and restored each original selector while CPUs were halted.",
+  "raw_report_sha256": "a5f4c22ff1bec00881e60cf751bf21924a295a8193c7bb330455dce15f1d123e",
+  "local_full_report": ".local/capture-report-archive/capture_raw_bridge_address.json",
+  "boot": {
+    "phase": "running",
+    "ready": true,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    }
+  },
+  "trace": {
+    "observed_seconds": 250.796,
+    "observed_counter_seconds": 1.854408,
+    "memory_watch": {
+      "address": "0xc1014ad4",
+      "bytes": 4,
+      "limit": 1,
+      "observed": 1
+    },
+    "after": {
+      "peer_input": {
+        "peer_address_table": [
+          [
+            "0x4",
+            "0x4000000",
+            "0x0",
+            "0xe6000000",
+            "0x2",
+            "0x0"
+          ],
+          [
+            "0x5",
+            "0x10000000",
+            "0x8000000",
+            "0xa8000000",
+            "0x2",
+            "0x2"
+          ],
+          [
+            "0x6",
+            "0x8000000",
+            "0x18000000",
+            "0x50000000",
+            "0x1",
+            "0x4"
+          ],
+          [
+            "0x7",
+            "0x20000000",
+            "0x20000000",
+            "0xb0000000",
+            "0x2",
+            "0x5"
+          ],
+          [
+            "0x0",
+            "0x10000000",
+            "0x40000000",
+            "0xb0000000",
+            "0x1",
+            "0x7"
+          ]
+        ],
+        "slave_transport_remaps": [
+          [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          [
+            "0xe6000",
+            "0xe8000",
+            "0xa8000",
+            "0xb0000",
+            "0x50000",
+            "0xb0000",
+            "0xc0000",
+            "0xb0000",
+            "0xfe000",
+            "0xfe000",
+            "0xf8000",
+            "0xf8000",
+            "0xf8000",
+            "0xf0000",
+            "0xf0000",
+            "0xf0000",
+            "0x0",
+            "0x2000",
+            "0x8000",
+            "0x10000",
+            "0x18000",
+            "0x20000",
+            "0x30000",
+            "0x40000",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        ],
+        "master_buffer_address_table": [
+          [
+            "0x0",
+            "0xffffffff",
+            "0x0",
+            "0x14000000",
+            "0x0",
+            "0xb5f00000"
+          ],
+          [
+            "0x15e00000",
+            "0x0",
+            "0xb7d00000",
+            "0x18b00000",
+            "0x0",
+            "0xbc100000"
+          ],
+          [
+            "0x19c00000",
+            "0xffffffff",
+            "0x0",
+            "0x30000000",
+            "0x0",
+            "0x50300000"
+          ],
+          [
+            "0x30400000",
+            "0x0",
+            "0x50700000",
+            "0x34600000",
+            "0x0",
+            "0x5f900000"
+          ],
+          [
+            "0x37400000",
+            "0x0",
+            "0xbd200000",
+            "0x3e000000",
+            "0xffffffff",
+            "0x0"
+          ],
+          [
+            "0x50000000",
+            "0x1",
+            "0x0",
+            "0x50200000",
+            "0x1",
+            "0x0"
+          ],
+          [
+            "0x50300000",
+            "0x1",
+            "0x30000000",
+            "0x50700000",
+            "0x1",
+            "0x30400000"
+          ],
+          [
+            "0x54900000",
+            "0x0",
+            "0x0",
+            "0x5f900000",
+            "0x1",
+            "0x34600000"
+          ],
+          [
+            "0x62700000",
+            "0x0",
+            "0x0",
+            "0xaf200000",
+            "0x1",
+            "0x0"
+          ],
+          [
+            "0xafa00000",
+            "0x1",
+            "0x0",
+            "0xb0000000",
+            "0x1",
+            "0x0"
+          ],
+          [
+            "0xb1000000",
+            "0x1",
+            "0x0",
+            "0xb1800000",
+            "0x0",
+            "0x0"
+          ],
+          [
+            "0xb5f00000",
+            "0x1",
+            "0x14000000",
+            "0xb7d00000",
+            "0x1",
+            "0x15e00000"
+          ],
+          [
+            "0xbaa00000",
+            "0x0",
+            "0x0",
+            "0xbb300000",
+            "0x0",
+            "0x0"
+          ],
+          [
+            "0xbc100000",
+            "0x1",
+            "0x18b00000",
+            "0xbd200000",
+            "0x1",
+            "0x37400000"
+          ],
+          [
+            "0xc3e00000",
+            "0x1",
+            "0x0",
+            "0xcc700000",
+            "0x1",
+            "0x0"
+          ]
+        ],
+        "master_source_sections": [
+          {
+            "address": "0x62700000",
+            "descriptor": "0x62714426"
+          },
+          {
+            "address": "0xaa700000",
+            "descriptor": "0xaa714426"
+          }
+        ],
+        "slave_pcie_atu": [
+          {
+            "inbound": false,
+            "index": 0,
+            "words": [
+              "0x4",
+              "0x90000000",
+              "0x2a800000",
+              "0x0",
+              "0x2a80ffff",
+              "0x0",
+              "0x0"
+            ]
+          },
+          {
+            "inbound": false,
+            "index": 1,
+            "words": [
+              "0x0",
+              "0x80000000",
+              "0x2a810000",
+              "0x0",
+              "0x2a8fffff",
+              "0x2a810000",
+              "0x0"
+            ]
+          }
+        ],
+        "master_pcie_atu": []
+      },
+      "primary_input": {
+        "geometry": {
+          "0x20069500": "0x2",
+          "0x20069504": "0xb000000",
+          "0x20069508": "0x15900000",
+          "0x2006950c": "0x1",
+          "0x20069510": "0x1560"
+        },
+        "dma": {
+          "0x8": "0x1080",
+          "0x14": "0x1",
+          "0x18": "0x1",
+          "0x3c": "0x0",
+          "0x40": "0x1",
+          "0x44": "0x0",
+          "0x48": "0x3",
+          "0x50": "0x62700000",
+          "0x60": "0x0"
+        },
+        "second_dma": {
+          "0x8": "0x3090",
+          "0x50": "0x12d0b080",
+          "0x54": "0x0",
+          "0x58": "0x0",
+          "0x5c": "0x0",
+          "0x60": "0x0",
+          "0x64": "0x0",
+          "0x68": "0x0",
+          "0x6c": "0x0"
+        },
+        "buffers": [
+          {
+            "name": "input",
+            "address": "0x62700000",
+            "readable": true,
+            "sample": {
+              "bytes": 4096,
+              "sha256": "37c3c69b78942b6620a1f31aa8d446bbabac9cd2c01548e302deca3dedd57887",
+              "unique_bytes": 2,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "section_descriptor": "0x62714426",
+            "physical_address": "0x62700000"
+          },
+          {
+            "name": "output0",
+            "address": "0xab09e000",
+            "readable": true,
+            "sample": {
+              "bytes": 4096,
+              "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+              "unique_bytes": 1,
+              "minimum": 0,
+              "maximum": 0
+            },
+            "section_descriptor": "0xab014426",
+            "physical_address": "0xab09e000"
+          },
+          {
+            "name": "output1",
+            "address": "0xab1ca000",
+            "readable": true,
+            "sample": {
+              "bytes": 4096,
+              "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+              "unique_bytes": 1,
+              "minimum": 0,
+              "maximum": 0
+            },
+            "section_descriptor": "0xab114426",
+            "physical_address": "0xab1ca000"
+          }
+        ],
+        "address_remap": [
+          {
+            "base": "0x201350b0",
+            "entries": [
+              {
+                "slot": 0,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 1,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 2,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 3,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 4,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 5,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 6,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 7,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              }
+            ]
+          },
+          {
+            "base": "0x2013d0b0",
+            "entries": [
+              {
+                "slot": 0,
+                "target_page": "0xe0000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 1,
+                "target_page": "0xe8000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x8000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 2,
+                "target_page": "0xb8000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x10000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 3,
+                "target_page": "0xc0000",
+                "mask_page": "0xf8000",
+                "aperture_page": "0x18000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 4,
+                "target_page": "0xc0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x20000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 5,
+                "target_page": "0xd0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x30000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 6,
+                "target_page": "0xc0000",
+                "mask_page": "0xf0000",
+                "aperture_page": "0x40000",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              },
+              {
+                "slot": 7,
+                "target_page": "0x0",
+                "mask_page": "0x0",
+                "aperture_page": "0x0",
+                "word_60": "0x0",
+                "word_80": "0x0"
+              }
+            ]
+          }
+        ],
+        "execution_sections": [
+          {
+            "address": "0x10100000",
+            "descriptor": "0xbab0c426",
+            "physical_address": "0xbab00000"
+          },
+          {
+            "address": "0x1020c334",
+            "descriptor": "0xbac0c426",
+            "physical_address": "0xbac0c334"
+          },
+          {
+            "address": "0x1038848a",
+            "descriptor": "0xbad0c426",
+            "physical_address": "0xbad8848a"
+          },
+          {
+            "address": "0x10542038",
+            "descriptor": "0xbaf0c426",
+            "physical_address": "0xbaf42038"
+          },
+          {
+            "address": "0xb26b3924",
+            "descriptor": "0xb2614426",
+            "physical_address": "0xb26b3924"
+          }
+        ]
+      }
+    }
+  }
+}

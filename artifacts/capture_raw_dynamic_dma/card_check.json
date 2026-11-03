@@ -1,0 +1,122 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "card_path": "D:\\code\\z72-qemu\\.local\\capture-raw-dynamic-dma-20261103.raw",
+  "image_bytes": 4294967296,
+  "checker": "Read-only 7-Zip archive integrity and extraction; Pillow complete JPEG decode",
+  "original_files_preserved": true,
+  "temporary_card_retained": true,
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+      "all_zero": false
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+      "all_zero": true
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "a6fe3edf73e2ba574c4d8522d8f1f8c64bc37e6e0269b716f6faefaf70442279",
+      "all_zero": false,
+      "exported_file": "DSC_0001.JPG",
+      "decoded": true,
+      "width": 8256,
+      "height": 5504,
+      "exif_make": "NIKON CORPORATION",
+      "exif_model": "NIKON Z 7_2",
+      "exif_software": "Ver.01.70\u0000\u0000\u0000",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "card_body_offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "card_body_offset": "0x488202",
+          "bytes": 374772
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "card_body_offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "card_body_offset": "0x824a",
+          "bytes": 10942
+        }
+      ],
+      "pattern_check": {
+        "source_geometry": [
+          8288,
+          5520
+        ],
+        "phase": 0,
+        "cell_size": 64,
+        "method": "Every source checkerboard cell center, mapped through the diagnostic nearest-sample scaler",
+        "samples": 11310,
+        "left_stripe_samples": 3828,
+        "right_stripe_samples": 7482,
+        "expected_white_left": 1914,
+        "maximum_rgb_error": 0,
+        "allowed_rgb_error": 24,
+        "failed_samples": 0,
+        "passed": true,
+        "stripe_join": {
+          "samples": 522,
+          "failed_samples": 0,
+          "maximum_rgb_error": 0,
+          "source_columns": [
+            2813,
+            2818
+          ]
+        },
+        "source_to_output": "x = ceil(source_center_x * 8256 / 8288); y = ceil(source_center_y * 5504 / 5520); expected parity from floor(x * 8288 / 8256) and floor(y * 5520 / 5504)"
+      }
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "c8a94177ba7d62acb456fb88ad97f140feb5548d0e45bb857ed4006bc9575cde",
+      "all_zero": false
+    }
+  ],
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "diagnostic_pattern_verified": true,
+  "scope": "Original firmware packaging and card writes after a diagnostic capture call. Synthetic checkerboard RAW input and replacement pixel/JPEG hardware with original DSP preprocessing skipped. No real-world scene or native body shutter submission is claimed. Exported JPG is byte-for-byte from the card; no image repair. Raster files remain local and excluded from Git.",
+  "volume_label": "QEMU VVF.AT"
+}

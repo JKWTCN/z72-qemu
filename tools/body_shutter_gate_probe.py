@@ -368,6 +368,7 @@ CAPTURE_SLAVE_CODEC_POINTS = {
     0x1012db76: 'capture-slave-codec-main-return',
 }
 CAPTURE_SLAVE_COPY_POINTS = {
+    0x1006993e: 'capture-slave-copy-submit',
     0x100616e6: 'capture-slave-copy-bulk-return',
     0x1006172e: 'capture-slave-copy-tail-return',
     0x10069802: 'capture-slave-copy-service-return',
@@ -1245,12 +1246,30 @@ def slave_codec_snapshot(remote):
     return result
 
 
+def peer_windows_snapshot(remote):
+    words = struct.unpack('<40I', remote.read(0x2013d0b0, 160))
+    return [[hex(words[slot + group * 8]) for group in range(5)] for slot in range(8)]
+
+
 def peer_input_snapshot(remote, resume_thread=1, machine=None):
     result = dict(thread=3, controls={}, banks=[])
     remote.select_thread(3)
     try:
         def word(address):
             return int.from_bytes(remote.read(address, 4), 'little')
+        result['peer_address_table'] = [[hex(value) for value in row] for row in
+            struct.iter_unpack('<6I', remote.read(0xc1014ad4, 5 * 24))]
+        result['slave_transport_remaps'] = [[hex(value) for value in
+            struct.unpack('<40I', remote.read(base, 160))] for base in (0x201350b0, 0x2013d0b0)]
+        remote.select_thread(1)
+        result['master_buffer_address_table'] = [[hex(value) for value in row] for row in
+            struct.iter_unpack('<6I', remote.read(0xb2b4145c, 15 * 24))]
+        ttbr = remote.read_register('TTBR0_S')
+        result['master_source_sections'] = []
+        for address in (0x62700000, 0xaa700000):
+            descriptor = word((ttbr & 0xffffc000) + (address >> 20) * 4)
+            result['master_source_sections'].append(dict(address=hex(address), descriptor=hex(descriptor)))
+        remote.select_thread(3)
         result['controls'] = {hex(offset): hex(word(0x20068000 + offset))
                               for offset in (0, 4, 8, 0xc, 0x10, 0x14, 0x18)}
         result['banks'] = [dict(bank=bank, mask=hex(word(0x20068200 + bank * 32)),
@@ -2292,6 +2311,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 keep = True
                 if pc in CAPTURE_SLAVE_COPY_POINTS:
                     keep = hits.get(0x10095ade, 0) > 0
+                    if pc == 0x1006993e:
+                        pointer = remote.get(registers, 'r0')
+                        packet = remote.read(pointer, 0x28)
+                        width, source_pitch, destination_pitch, rows = struct.unpack_from('<4H', packet, 2)
+                        source, destination = struct.unpack_from('<2I', packet, 12)
+                        keep = keep or source < 0x50000000
+                        if keep:
+                            record['dma_request'] = dict(source=hex(source), destination=hex(destination),
+                                width=width, rows=rows, source_pitch=source_pitch,
+                                destination_pitch=destination_pitch,
+                                peer_windows=peer_windows_snapshot(remote))
                     if keep and pc in (0x100616e6, 0x1006172e):
                         record['copy'] = dict(source=hex(remote.get(registers, 'r8')),
                             destination=hex(remote.get(registers, 'r9')),
