@@ -1906,7 +1906,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_capture_events=False, body_input_events=False, body_compute_events=False,
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
-            capture_format_3800=False, body_exposure=None, skip_compute_statistics=False,
+            capture_format_3800=False, body_exposure=None, repeat_body_capture=False, skip_compute_statistics=False,
             skip_still_preprocessing=False):
     with machine.io:
         machine.qmp.command('stop')
@@ -2002,6 +2002,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     controller_step_trigger_sent = False
     def arm_capture_input():
         nonlocal capture_input_path
+        if capture_input_path is not None:
+            return
         paths = ['/machine/unattached/' + name for name in machine.config_names]
         capture_input_path = next(path for path in paths if machine.qmp.command(
             'qom-get', dict(path=path, property='master-role')))
@@ -2072,6 +2074,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         preview_half_tick = None
         preview_full_tick = None
         click = dict(requested=shutter_click, released=False)
+        body_shots = []
+        repeat_check_after = 0
         boundary_frame = 0
         boundary_path = None
         if input_boundary_events:
@@ -2092,13 +2096,34 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     capture_caller.report['caller_returned'] and
                     not capture_caller.report['settings_fixture']['ready']):
                 break
+            if (repeat_body_capture and len(body_shots) == 1 and preview_press_sent and click['released'] and
+                    time.monotonic() >= repeat_check_after):
+                repeat_check_after = time.monotonic() + 1
+                remote.select_thread(1)
+                state = list(remote.read(0xb23f6a80, 2))
+                gate = int.from_bytes(remote.read(0xb1821e84, 4), 'little')
+                with machine.io:
+                    frames = machine.qmp.command('qom-get',
+                        dict(path=capture_input_path, property='primary-input-dma-count'))
+                remote.select_thread(3)
+                queued = int.from_bytes(remote.read(0xc16a58b0, 4), 'little')
+                remote.select_thread(1)
+                if state == [2, 0] and gate == 0 and frames == 1 and queued == 0:
+                    records.append(dict(entry='body-repeat-ready', capture_state=state,
+                        release_gate=gate, primary_frames=frames, still_queue_count=queued,
+                        counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little')))
+                    preview_press_sent = False
+                    preview_half_tick = None
+                    preview_full_tick = None
+                    click = dict(requested=shutter_click, released=False)
             if body_exposure is not None and capture_caller.report['caller_returned'] and not preview_press_sent:
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                 if half_before_full and preview_half_tick is None:
                     machine.set_key(24, 0)
                     preview_half_tick = ticks
-                    records.append(dict(entry='body-short-exposure-half-press', counter_ticks=ticks))
+                    records.append(dict(entry='body-short-exposure-half-press', counter_ticks=ticks,
+                                        shot=len(body_shots) + 1))
                 elif not half_before_full or ticks - preview_half_tick >= before['counter_frequency'] // 2:
                     if capture_focus:
                         arm_capture_input()
@@ -2106,8 +2131,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     preview_press_sent = True
                     preview_full_tick = ticks
                     click['press_ticks'] = ticks
+                    click['shot'] = len(body_shots) + 1
+                    body_shots.append(click)
                     capture_caller.report['body_shutter_used'] = True
                     records.append(dict(entry='body-short-exposure-full-press', counter_ticks=ticks,
+                        shot=len(body_shots),
                         release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
                         half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
                             if half_before_full else None))
@@ -2125,7 +2153,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             counter_start = (preview_full_tick if body_exposure is not None else
                 capture_caller.report['trigger_counter_ticks']
                 if capture_caller and capture_caller.report['triggered'] else None)
-            if capture_counter_seconds is not None and counter_start is not None:
+            if (capture_counter_seconds is not None and counter_start is not None and
+                    (not repeat_body_capture or len(body_shots) == 2)):
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
                 if ticks - counter_start >= (
@@ -3409,7 +3438,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     repeat = not keep or hits[pc] < (32 if pc in (
                         0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
                         0x10360468, 0x103604ca, 0x103eb2e4,
-                        0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else 8)
+                        0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else
+                        16 if repeat_body_capture and pc == 0x103e6e94 else 8)
                 if keep:
                     records.append(record)
                 if mode1_frame_events and pc == 0x1023c5dc and len(mode1_events) == 1:
@@ -3444,6 +3474,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     memory_transfer_trace=memory_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_submit_on_ready else None,
                     body_settings=capture_caller.report if body_exposure is not None else None,
+                    body_repeat_capture=dict(requested=repeat_body_capture, shots=body_shots),
                     capture_wait_idle=capture_wait_idle,
                     capture_focus=capture_focus,
                     compute_statistics_skip=dict(requested=skip_statistics,
@@ -3457,6 +3488,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                  supplied=controller_step_trigger_sent),
                     capture_counter_window=(dict(requested_seconds=capture_counter_seconds,
                         reached=bool(counter_start is not None and
+                            (not repeat_body_capture or len(body_shots) == 2) and
                             after['counter_ticks'] - counter_start >=
                             capture_counter_seconds * before['counter_frequency']))
                         if capture_counter_seconds is not None else None),
@@ -3553,6 +3585,8 @@ def main():
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
     parser.add_argument('--body-exposure', type=int,
                         help='Set local program parameter 0 to 3 and exposure through native APIs before body input')
+    parser.add_argument('--repeat-body-capture', action='store_true',
+                        help='Repeat body capture once after native readiness and the still queue recover')
     capture_formats = parser.add_mutually_exclusive_group()
     capture_formats.add_argument('--capture-jpeg', action='store_true',
                         help='Use the original single-capture format 0x3801 request field')
@@ -3683,6 +3717,9 @@ def main():
     require(args.body_exposure is None or args.application_only and args.shutter_on_ready and
             not args.capture_submit_on_ready and 0 < args.body_exposure <= 0xFFFFFFFF,
             'Body exposure requires readiness-triggered body input and a positive 32-bit property value')
+    require(not args.repeat_body_capture or args.body_exposure is not None and
+            args.capture_focus and args.shutter_click and args.half_before_full,
+            'Repeated body capture requires focused local exposure settings and staged press/release contacts')
     require(not args.capture_jpeg or args.capture_submit_on_ready,
             'Explicit JPEG format requires the diagnostic capture caller')
     require(not args.capture_format_3800 or args.capture_submit_on_ready,
@@ -3832,6 +3869,7 @@ def main():
                                     capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
                                     body_exposure=args.body_exposure,
+                                    repeat_body_capture=args.repeat_body_capture,
                                     capture_jpeg=args.capture_jpeg,
                                     capture_format_3800=args.capture_format_3800,
                                     capture_storage=args.capture_storage,

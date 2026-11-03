@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "repeat_capture_verified": false,
+  "scope": "Two requested captures are not established: only the first photo exists. Read-only FAT and JPEG checks; no host repair.",
+  "first_photo": {
+    "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+    "bytes": 5126646,
+    "sha256": "0fb3ff15df6e7efcc89b528b7243a5dda1d26a3073bcadef23ed8992b413bff2",
+    "width": 8256,
+    "height": 5504,
+    "decoded": true
+  },
+  "temporary_card_retained": false,
+  "removed_temporary_card": ".local\\body-repeat-capture-20261103.raw"
+}
