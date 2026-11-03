@@ -767,3 +767,15 @@ and checks strided 1620x1080 input with unused row padding.
 It does not prove a native photograph was saved on a card. Stock request evidence
 and the remaining codec modes are recorded in
 [capture processing research](../research/z7ii/capture_release_submit.md).
+
+
+`tests/test_sensor_image.py` rejects malformed binary PGM headers, unsupported
+maxval, zero/oversized dimensions, oversized rasters, truncation and trailing
+data before a firmware-free machine starts. The positive scene case in
+`tests/test_primary_input_dma.py` checks fixed nonbinary intensities across
+both full-frame stripes, guards and input restarts. Its first raster bytes
+include whitespace and `#`. `tests/test_still_processing.py` and
+`tests/test_slave_codec.py` additionally verify that intermediate grayscale
+survives transforms, thumbnails and JPEG encoding. Temporary scene files are
+removed by the checks. These are diagnostic image contracts, not physical
+sensor, calibration or original DSP verification.

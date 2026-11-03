@@ -200,8 +200,10 @@ def check(qemu):
             write(base + 0x458, 1)
             start()
             assert count() == 2 and measured_count() == 0 and read(output) == 0xa5a5a5a5
-            for address in (source + (height - 1) * stride + width - 1,
-                            second + (height - 1) * stride + width - 1):
+            invalid_pixels = [second + (height - 1) * stride + width - 1]
+            if color:
+                invalid_pixels.append(source + (height - 1) * stride + width - 1)
+            for address in invalid_pixels:
                 configure(width, height, source, scale=2, measuring=True)
                 previous = data_at(address, 1)
                 command(f'memset {address:#x} 1 1')
@@ -259,6 +261,15 @@ def check(qemu):
             monitor('system_reset')
             assert count() == 0 and measured_count() == 0 and read(base + 0x480) == 0 and read(base + 0x2c) == 0
             assert read(base + 0x100) == 0 and read(base + 4) == 0 and not levels[105 - 32]
+            if not color:
+                configure(width, height, source)
+                command(f'memset {source:#x} {plane:#x} 0x60')
+                command(f'memset {source + plane:#x} {plane:#x} 0x80')
+                start()
+                image = Image.open(io.BytesIO(data_at(output, read(base + 0x20))))
+                image.load()
+                assert count() == 1 and image.getpixel((80, 60)) == (96, 96, 96)
+                image.close()
         finally:
             if stream is not None:
                 stream.close()

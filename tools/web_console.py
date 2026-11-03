@@ -219,6 +219,11 @@ class Machine:
                 CONTROLLER_SHA256, 'Expected the original controller image')
         (ROOT / '.local').mkdir(exist_ok=True)
         self.work = Path(tempfile.mkdtemp(prefix='web-console-', dir=ROOT / '.local'))
+        scene = getattr(self.args, 'sensor_image', None)
+        if scene is not None:
+            require(getattr(self.args, 'frame_generate', False), 'Sensor image requires frame generation')
+            require(scene.stat().st_size <= 0x4001000, 'Sensor image exceeds 64 MiB plus its header')
+            shutil.copyfile(scene, self.work / 'scene.pgm')
         self.wire_port, self.qmp_port = free_port(), free_port()
         original = subprocess.Popen
         work = self.work
@@ -328,6 +333,8 @@ class Machine:
                       if getattr(self.args, 'input_stop_complete', False) else ()) +
                      (('nikon-z72-boot-config.frame-generate=on',)
                       if getattr(self.args, 'frame_generate', False) else ()) +
+                     ((f'nikon-z72-boot-config.sensor-image={work / "scene.pgm"}',)
+                      if scene is not None else ()) +
                      (('nikon-z72-boot-config.frame-notify=on',)
                       if getattr(self.args, 'frame_notify', False) else ()) +
                      (('nikon-z72-boot-config.frame-process=on',)
@@ -1057,6 +1064,8 @@ def main():
     parser.add_argument('--live-view', action='store_true',
                         help='Enable the experimental moving monochrome sensor source '
                              'and native LCD preview processing')
+    parser.add_argument('--sensor-image', type=Path,
+                        help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--controller-actuator', action='store_true',

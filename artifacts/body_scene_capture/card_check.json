@@ -1,0 +1,130 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "card_path": "D:\\code\\z72-qemu\\.local\\body-scene-capture.raw",
+  "temporary_card_retained": true,
+  "filesystem_integrity": true,
+  "source_image_verified": true,
+  "source_image": {
+    "path": "D:\\code\\z72-qemu\\.local\\sensor-scene-input.pgm",
+    "width": 128,
+    "height": 96,
+    "sha256": "d41c360800feaf6af6077a09224b7be49d23390101db7d58e843b21f4aa047aa",
+    "generation": "P5 header followed by level=(x*13+y*29+((x//4)^(y//4))*17)&255 in row order",
+    "unique_levels": 256,
+    "raw_stripes": [
+      {
+        "owner": "master",
+        "address": "0x62700000",
+        "bytes": 4224,
+        "sha256": "042364abc3ae1c3e930a1c21659b0f76ac29852ab9e193596291736f51a851da",
+        "source_row_match": true
+      },
+      {
+        "owner": "slave",
+        "address": "0xbad0b080",
+        "bytes": 8208,
+        "sha256": "2077dc17e23220cb5471a63fbe6c1f78bf04b98b8a7b298827da9a482c20ec38",
+        "source_row_match": true
+      }
+    ]
+  },
+  "body_capture": {
+    "settings_only": true,
+    "capture_api_invoked": false,
+    "body_shutter_used": true
+  },
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 3573689,
+      "sha256": "2649eb31217aef0e7bc1c0b6bacaf6c68383216bdfcc16d9be3b5fde576b3fe1",
+      "exported_file": "DSC_0001.JPG",
+      "decoded": true,
+      "width": 8256,
+      "height": 5504,
+      "exif_make": "NIKON CORPORATION",
+      "exif_model": "NIKON Z 7_2",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x2de800",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x2fc800",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-be2b11f055a506f29388e013dc2163299a6a9d3f7019da983a6105320f518943.jpg",
+          "offset": "0x19402",
+          "bytes": 2904789
+        },
+        {
+          "ram_jpeg": "codec-9db35e19715b97da96849e144f9c739afb50a81647ace3bf8188fde96fedbffd.jpg",
+          "offset": "0x30c802",
+          "bytes": 376759
+        },
+        {
+          "ram_jpeg": "codec-34fb8c74e1a137a695ab50bb8faafcb9b23894439f977eff4e580ad683e521d8.jpg",
+          "offset": "0x2ee802",
+          "bytes": 57209
+        },
+        {
+          "ram_jpeg": "codec-cdab0fa1345002292ac62eb8bd58f61a2529a9a4800a33102b232a90655575c6.jpg",
+          "offset": "0x824a",
+          "bytes": 9567
+        }
+      ],
+      "scene_check": {
+        "method": "Every source PGM cell center in the saved JPEG, decoded independently; source byte raster read with Pillow",
+        "samples": 12288,
+        "failed_samples": 0,
+        "maximum_rgb_error": 0,
+        "allowed_rgb_error": 12,
+        "split_boundary": {
+          "samples": 576,
+          "failed_samples": 0,
+          "maximum_rgb_error": 0,
+          "allowed_rgb_error": 24
+        }
+      }
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "c8a94177ba7d62acb456fb88ad97f140feb5548d0e45bb857ed4006bc9575cde"
+    }
+  ],
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "original_file_preserved": true,
+  "scope": "Original firmware saved the supplied grayscale scene after native body contact capture. DSP preprocessing skipped; diagnostic paired-byte RAW12, resampling and JPEG backend. This does not verify physical Bayer packing, sensor color or calibration. Exported JPG is byte-for-byte from the card; no host image repair. Images remain local."
+}

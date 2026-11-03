@@ -680,6 +680,9 @@ struct NikonZ72BootConfig {
     bool sample_group1;
     /* Sensor frame generation state */
     bool frame_generate;
+    char *scene_path;
+    uint8_t *scene_pixels;
+    unsigned scene_width, scene_height;
     bool frame_process;
     bool jpeg_color_checker;
     bool frame_notify;
@@ -1625,8 +1628,7 @@ static bool image_process_still_frame(NikonZ72BootConfig *s)
     }
     /* Validate the entire source before the first destination write. */
     for (unsigned offset = 0; offset < source_bytes; offset += 3) {
-        if ((raw[offset] != 0 && raw[offset] != 0xff) ||
-            raw[offset + 1] != raw[offset] || raw[offset + 2] != raw[offset]) {
+        if (raw[offset + 1] != raw[offset] || raw[offset + 2] != raw[offset]) {
             return false;
         }
     }
@@ -1929,7 +1931,7 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width * 3 / 2; x += 3) {
             uint8_t *pair = raw + y * stride + x;
-            if ((pair[0] != 0 && pair[0] != 255) || pair[0] != pair[1] || pair[0] != pair[2]) {
+            if (pair[0] != pair[1] || pair[0] != pair[2]) {
                 return;
             }
         }
@@ -1944,7 +1946,7 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
             unsigned sy = 2 + (uint64_t)y * (height - 4) / h;
             for (unsigned x = 0; x < w; x++) {
                 unsigned sx = 2 + (uint64_t)x * (width - 4) / w;
-                pixels[y * row + x] = raw[sy * stride + (sx / 2) * 3] ? 235 : 16;
+                pixels[y * row + x] = 16 + (raw[sy * stride + (sx / 2) * 3] * 219 + 127) / 255;
             }
         }
         if (address_space_write(view, targets[index], MEMTXATTRS_UNSPECIFIED,
@@ -1972,11 +1974,100 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     image_update_irqs(s);
 }
 
-static void input_raw12_row(uint8_t *row, unsigned width, unsigned start_x,
-                            unsigned y, uint64_t phase)
+static bool input_scene_number(const uint8_t **cursor, const uint8_t *end,
+                                unsigned *value)
+{
+    const uint8_t *p = *cursor;
+
+    while (p < end) {
+        if (g_ascii_isspace(*p)) {
+            p++;
+        } else if (*p == '#') {
+            while (p < end && *p != '\n') {
+                p++;
+            }
+        } else {
+            break;
+        }
+    }
+    if (p == end || !g_ascii_isdigit(*p)) {
+        return false;
+    }
+    *value = 0;
+    while (p < end && g_ascii_isdigit(*p)) {
+        unsigned digit = *p++ - '0';
+        if (*value > (16384 - digit) / 10) {
+            return false;
+        }
+        *value = *value * 10 + digit;
+    }
+    *cursor = p;
+    return true;
+}
+
+static bool input_load_scene(NikonZ72BootConfig *s, Error **errp)
+{
+    uint8_t header[4096];
+    unsigned width, height, maximum;
+    g_autofree uint8_t *pixels = NULL;
+    bool valid = false;
+
+    if (!s->scene_path || !s->master_role) {
+        return true;
+    }
+    FILE *file = fopen(s->scene_path, "rb");
+    if (!file) {
+        error_setg_errno(errp, errno, "Cannot open sensor image '%s'", s->scene_path);
+        return false;
+    }
+    size_t prefix = fread(header, 1, sizeof(header), file);
+    const uint8_t *cursor = header + 2, *end = header + prefix;
+    if (prefix < 3 || header[0] != 'P' || header[1] != '5' ||
+        !g_ascii_isspace(header[2]) ||
+        !input_scene_number(&cursor, end, &width) ||
+        !input_scene_number(&cursor, end, &height) ||
+        !input_scene_number(&cursor, end, &maximum) ||
+        !width || !height || maximum != 255 ||
+        (uint64_t)width * height > 0x4000000 ||
+        cursor == end || !g_ascii_isspace(*cursor)) {
+        goto out;
+    }
+    /* Consume only the raster separator: whitespace and '#' are valid pixels. */
+    if (*cursor++ == '\r' && cursor < end && *cursor == '\n') {
+        cursor++;
+    }
+    size_t bytes = (size_t)width * height;
+    pixels = g_malloc(bytes);
+    if (fseek(file, cursor - header, SEEK_SET) ||
+        fread(pixels, 1, bytes, file) != bytes || fgetc(file) != EOF || ferror(file)) {
+        goto out;
+    }
+    s->scene_width = width;
+    s->scene_height = height;
+    s->scene_pixels = g_steal_pointer(&pixels);
+    valid = true;
+out:
+    fclose(file);
+    if (!valid) {
+        error_setg(errp, "Sensor image requires one binary P5 image, maxval 255, "
+                   "dimensions 1..16384 and at most 64 MiB of pixels");
+    }
+    return valid;
+}
+
+static void input_raw12_row(NikonZ72BootConfig *s, uint8_t *row, unsigned width,
+                            unsigned start_x, unsigned y, uint64_t phase,
+                            unsigned frame_width, unsigned frame_height)
 {
     for (unsigned x = 0; x < width; x += 2) {
         uint8_t level = (((start_x + x) / 64 + y / 64 + phase) & 1) ? 0xff : 0;
+        if (s->scene_pixels) {
+            unsigned sx = (uint64_t)(start_x + x) * s->scene_width / frame_width;
+            unsigned sy = (uint64_t)y * s->scene_height / frame_height;
+            level = s->scene_pixels[(size_t)sy * s->scene_width + sx];
+        }
+        /* Paired replicated bytes are the lab raster convention. This does
+         * not establish physical RAW12 nibble order or Bayer interpretation. */
         memset(row + x * 3 / 2, level, 3);
     }
 }
@@ -2125,6 +2216,9 @@ static void input_generate_primary(NikonZ72BootConfig *s)
      * Other profiles and address-group rotation remain unsupported. */
     switch (ldl_le_p(geometry)) {
     case 1:
+        if (s->scene_pixels) {
+            return;  /* Only the diagnostic RAW12 scene path is supported. */
+        }
         first_stride = 4928;
         full_stride = 14512;
         second_length = 9576;
@@ -2219,8 +2313,8 @@ static void input_generate_primary(NikonZ72BootConfig *s)
             input_raw14_row(first_row, 2816, 0, y, s->primary_dma_count);
             input_raw14_row(second_row, 5472, 2816, y, s->primary_dma_count);
         } else {
-            input_raw12_row(first_row, 2816, 0, y, s->primary_dma_count);
-            input_raw12_row(second_row, 5472, 2816, y, s->primary_dma_count);
+            input_raw12_row(s, first_row, 2816, 0, y, s->primary_dma_count, 8288, height);
+            input_raw12_row(s, second_row, 5472, 2816, y, s->primary_dma_count, 8288, height);
         }
         if (address_space_write(view, (hwaddr)first_address + y * first_stride,
                                 MEMTXATTRS_UNSPECIFIED, first_row,
@@ -2281,8 +2375,8 @@ static void input_generate_frame(NikonZ72BootConfig *s)
     height = ldl_le_p(geometry + 8) >> 16;
     stride = ldl_le_p(word);
     /* C 1.70's observed RAW12 profile: zero crop origin, even width and
-     * a 16-byte-aligned row. Full-scale paired samples avoid relying on
-     * unverified nibble order. Other formats remain unsupported. */
+     * a 16-byte-aligned row. Replicated pairs use the diagnostic raster
+     * convention; physical nibble order remains unverified. */
     if (ldl_le_p(geometry) != 6 || (ldl_le_p(geometry + 4) & 0xffff) ||
         (ldl_le_p(geometry + 8) & 0xffff) || !width || (width & 1) ||
         width > 8192 || !height || height > 8192 ||
@@ -2304,7 +2398,7 @@ static void input_generate_frame(NikonZ72BootConfig *s)
     }
     pixels = g_malloc0(length);
     for (unsigned y = 0; y < height; y++) {
-        input_raw12_row(pixels + y * stride, width, 0, y, s->input_dma_count);
+        input_raw12_row(s, pixels + y * stride, width, 0, y, s->input_dma_count, width, height);
     }
     if (address_space_write(view, target, MEMTXATTRS_UNSPECIFIED,
                             pixels, length) == MEMTX_OK) {
@@ -3090,7 +3184,7 @@ static void transfer_update_irq(NikonZ72BootConfig *s)
 
 /* Functional replacement for the observed C1.70 still-transform graph:
  * copy the full diagnostic raster and nearest-sample its 1620x1080 view.
- * The source must be the binary luma/neutral equal-height chroma stimulus.
+ * The source has byte luma and neutral equal-height chroma.
  * This does not implement the graph's color, filter or calibration units. */
 static bool still_transform_frame(NikonZ72BootConfig *s)
 {
@@ -3183,8 +3277,7 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
     }
     /* Validate every input pixel before modifying any output. */
     for (unsigned offset = 0; offset < plane_bytes; offset++) {
-        if ((pixels[offset] != 0 && pixels[offset] != 255) ||
-            pixels[plane_bytes + offset] != 128) {
+        if (pixels[plane_bytes + offset] != 128) {
             return false;
         }
     }
@@ -3335,8 +3428,7 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             unsigned offset = y * stride + x;
-            if ((pixels[offset] != 0 && pixels[offset] != 255) ||
-                pixels[input_bytes + offset] != 128) {
+            if (pixels[input_bytes + offset] != 128) {
                 return false;
             }
         }
@@ -3419,8 +3511,8 @@ static void codec_jpeg_end(j_compress_ptr jpeg)
     dest->length = dest->capacity - dest->parent.free_in_buffer;
 }
 
-/* A bounded baseline JPEG for the lab's binary luma and neutral chroma.
- * Optional blue/yellow false color visualizes that same binary stimulus;
+/* A bounded baseline JPEG for the lab's byte luma and neutral chroma.
+ * Optional blue/yellow false color requires a binary stimulus;
  * it does not decode a Bayer pattern or model native color processing.
  * Quantizers come from the native register file. Three-component 4:2:0,
  * standard Huffman tables and the input-plane interpretation are diagnostic
@@ -3559,7 +3651,7 @@ static bool codec_encode(NikonZ72BootConfig *s)
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             size_t offset = (size_t)y * stride + x;
-            if ((pixels[offset] != 0 && pixels[offset] != 255) ||
+            if ((s->jpeg_color_checker && pixels[offset] != 0 && pixels[offset] != 255) ||
                 pixels[plane_bytes + offset] != 128) {
                 return false;
             }
@@ -4271,6 +4363,7 @@ static void boot_config_finalize(Object *obj)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
 
+    g_free(s->scene_pixels);
     timer_del(s->frame_sync_timer);
     timer_free(s->frame_sync_timer);
     timer_del(s->input_handshake_timer);
@@ -4287,6 +4380,9 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
     /* RAM-block names must stay unique when both engines exist in one
      * machine; the role suffix keeps the dual machine's blocks apart. */
     const char *tag = s->master_role ? "master" : "slave";
+    if (!input_load_scene(s, errp)) {
+        return;
+    }
     if (s->release_config) {
         memory_region_init_io(&s->compute_mailbox, OBJECT(dev), &compute_mailbox_ops,
                               s, "z72-compute-mailbox", 0x1000);
@@ -4532,6 +4628,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
                          display_complete, false),
         DEFINE_PROP_BOOL("input-trace", NikonZ72BootConfig, input_trace, false),
         DEFINE_PROP_BOOL("frame-generate", NikonZ72BootConfig, frame_generate, false),
+        DEFINE_PROP_STRING("sensor-image", NikonZ72BootConfig, scene_path),
         DEFINE_PROP_BOOL("frame-process", NikonZ72BootConfig, frame_process, false),
         DEFINE_PROP_BOOL("jpeg-color-checker", NikonZ72BootConfig, jpeg_color_checker, false),
         DEFINE_PROP_BOOL("aux-image-process", NikonZ72BootConfig, aux_image_process, false),

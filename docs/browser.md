@@ -172,3 +172,24 @@ HTTP 端到端复验：快速点击菜单键经有界保持打开原厂菜单，
 python -B -m unittest checks.test_web_console checks.test_update_store -v
 node --check web/console.js
 ```
+
+
+## 静态灰度场景输入
+
+增加 `--live-view --sensor-image /path/to/scene.pgm`，可用本地灰度图替换
+动态棋盘格。输入要求二进制 PGM（`P5`）、八位灰度、maxval 255。
+宽高各为 1..16384，像素载荷不超过 64 MiB，头部不超过 4096 字节。
+支持数字之间的头部注释和 CRLF；截断、额外像素字节、不支持的格式及
+非法尺寸会使启动失败。
+
+交互台将输入复制到私有运行目录，原文件保持不变。QEMU 在创建实例时
+读入一次，板级复位保留已读数据；修改文件后须重启实例才会重新载入。
+图像按活动 RAW12 几何拉伸并做最近邻采样，每对诊断像素共享一个强度。
+全尺寸两分片使用统一的全局图像坐标。未指定此选项时沿用原有棋盘格。
+RAW14 场景输入、物理 RAW 位打包、Bayer 颜色和校准尚未实现。
+
+此选项只提供像素，不修改固件就绪状态或发布拍摄完成，也不跳过 DSP。
+机身探针可用 `--sensor-image ... --frame-generate` 配合显式的处理跳过
+实验；其写卡结果不代表默认浏览器配置也已具备相同行为。输入图和生成
+照片只保留在本地。定向机身拍摄的场景一致性结果见
+[独立读卡检查](../artifacts/body_scene_capture/card_check.json)。

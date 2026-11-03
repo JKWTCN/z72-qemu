@@ -3555,6 +3555,8 @@ def main():
                         help='Enable the optional command-triggered input stop response')
     parser.add_argument('--frame-generate', action='store_true',
                         help='Enable the experimental RAW12 checkerboard input DMA source')
+    parser.add_argument('--sensor-image', type=Path,
+                        help='Replace the RAW12 checkerboard with an 8-bit binary PGM scene')
     parser.add_argument('--frame-notify', action='store_true',
                         help='Experimentally latch recovered input timing causes after successful DMA')
     parser.add_argument('--reconfigure-watch', type=int, default=0,

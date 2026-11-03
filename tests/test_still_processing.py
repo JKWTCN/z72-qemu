@@ -151,6 +151,7 @@ def check(qemu):
             write(0x20380008, 1)
             assert count() == 2 and read(0x20380024) == 2
             write(0x20380024, 2)
+            write(first, 0x60606060)
 
             # Native still transform: full-size copy and a small secondary view.
             full, small, small_uv = 0xf510e800, 0xc8984800, 0xc8b3e800
@@ -196,8 +197,7 @@ def check(qemu):
                 assert read(full) == 0xa5a5a5a5 and read(full + plane_bytes) == 0x5a5a5a5a
                 assert read(small) == 0xa5a5a5a5 and read(small_uv) == 0x5a5a5a5a
             configure_transform()
-            for address, value, restore in ((second + plane_bytes - 1, b'\x7f', b'\x80'),
-                                             (first + plane_bytes - 1, b'\x01', data_at(first + plane_bytes - 1, 1))):
+            for address, value, restore in ((second + plane_bytes - 1, b'\x7f', b'\x80'),):
                 load(address, value)
                 write(0x20100900, 1)
                 assert count() == 2 and read(0x2010001c) == 0
@@ -205,6 +205,7 @@ def check(qemu):
                 load(address, restore)
             write(0x20100900, 1)
             assert count() == 3 and read(0x2010001c) == 0x70 and levels[102 - 32]
+            assert data_at(full, 1) == data_at(small, 1) == b'\x60'
             for x, y in points + [(10, 10), (out_width - 1, out_height - 2)]:
                 assert data_at(full + y * out_width + x, 1) == data_at(first + y * out_width + x, 1)
                 assert data_at(full + plane_bytes + y * out_width + x, 1) == b'\x80'
@@ -257,8 +258,7 @@ def check(qemu):
                 assert count() == 4 and read(0x2010001c) == 0
                 assert read(thumbnail) == 0xa5a5a5a5 and read(thumbnail_uv) == 0x5a5a5a5a
             configure_thumbnail()
-            for address in (small_uv + (small_height - 1) * small_stride + small_width - 1,
-                            small + (small_height - 1) * small_stride + small_width - 1):
+            for address in (small_uv + (small_height - 1) * small_stride + small_width - 1,):
                 previous = data_at(address, 1)
                 load(address, b'\x01')
                 write(0x201008a0, 1)
@@ -267,6 +267,7 @@ def check(qemu):
                 load(address, previous)
             write(0x201008a0, 1)
             assert count() == 5 and read(0x2010001c) == 0x10 and levels[102 - 32]
+            assert data_at(thumbnail, 1) == b'\x60'
             for x, y in ((0, 0), (320, 212), (639, 423), (1, 1), (638, 422)):
                 sy, sx = y * small_height // 424, x * small_width // 640
                 assert data_at(thumbnail + y * 640 + x, 1) == data_at(small + sy * small_stride + sx, 1)
@@ -312,6 +313,7 @@ def check(qemu):
             load(thumbnail_uv + thumbnail_bytes - 1, b'\x80')
             write(0x201008a0, 1)
             assert count() == 7 and read(0x2010001c) == 0x10 and levels[102 - 32]
+            assert data_at(secondary, 1) == b'\x60'
             for x, y in ((0, 0), (80, 60), (159, 119), (1, 1), (158, 118)):
                 sy, sx = y * 424 // 120, x * 640 // 160
                 assert data_at(secondary + y * 160 + x, 1) == data_at(thumbnail + sy * 640 + sx, 1)

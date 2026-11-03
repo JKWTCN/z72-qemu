@@ -2,13 +2,18 @@
 """Check split RAW12/RAW14 DMA, peer ownership and device-local remapping."""
 import argparse
 import json
+from pathlib import Path
 import re
 import socket
 import subprocess
+import tempfile
 import time
 
 
-def check(qemu):
+SCENE = bytes((10, 32, 35, 255, 64, 96, 128, 160, 192, 224, 0, 255, 35, 10, 32, 128))
+
+
+def check(qemu, scene):
     height = 5520
     for case, (role, enabled, sampling, notifying, paired, linked) in enumerate((
             ('master', True, True, True, True, True), ('master', True, True, False, True, True),
@@ -25,6 +30,8 @@ def check(qemu):
         first_length, full_length = first_stride * height, full_stride * height
         native_full = 0xba220000 if bits == 14 else 0xbad0a000
         rows = (0, 63, 64, 0x2000000 // full_stride, height - 1)
+        if case == 0:
+            rows += (height // 2,)
         peer_guards = {0x88000000 - 4: 0x11223344, 0x88000000 + full_length: 0x55667788,
                        native_full - 4: 0x13572468, native_full + full_length: 0x24681357}
         for full in (0x88000000, native_full):
@@ -52,7 +59,8 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.primary-exposure-sync={"on" if synchronized else "off"}',
             '-global', f'nikon-z72-boot-config.sampling-output-complete={"on" if synchronized else "off"}',
             '-global', f'nikon-z72-boot-config.transport-link={"on" if linked else "off"}',
-            '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders,
+            '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders +
+            (['-global', f'nikon-z72-boot-config.sensor-image={scene}'] if case == 0 else []),
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
         try:
@@ -193,6 +201,9 @@ def check(qemu):
 
                 def expected_row(y, start, width, phase):
                     group, size = (4, 7) if bits == 14 else (2, 3)
+                    if case == 0:
+                        return bytes(SCENE[(y // 1380) * 4 + (start + x) // 2072]
+                                     for x in range(0, width, 2) for _ in range(3))
                     return bytes(255 if ((start + x) // 64 + y // 64 + phase) & 1 else 0
                                  for x in range(0, width, group) for _ in range(size))
 
@@ -327,4 +338,8 @@ def check(qemu):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
-    check(parser.parse_args().qemu)
+    args = parser.parse_args()
+    with tempfile.TemporaryDirectory() as directory:
+        scene = Path(directory) / 'scene.pgm'
+        scene.write_bytes(b'P5\n# gray scene\n4 4\n255\r\n' + SCENE)
+        check(args.qemu, scene)

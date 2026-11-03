@@ -58,6 +58,9 @@ half/full/release contacts without calling a diagnostic capture API. Original
 DSP preprocessing is explicitly skipped; pixels and JPEG hardware use the
 experimental replacement backend. This probe result does not establish the
 same behavior in the default browser-console profile.
+Use `--live-view --sensor-image scene.pgm` to supply a static eight-bit grayscale
+scene. A focused body capture saved that scene as a complete JPEG, independently
+checked against its input; see the [scene card check](artifacts/body_scene_capture/card_check.json).
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production
