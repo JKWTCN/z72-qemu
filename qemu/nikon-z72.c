@@ -925,6 +925,18 @@ static void engine_gpio_input(void *opaque, int line, int level)
     }
 }
 
+/* C1.70 sampling resource 0xa9 reads GPIO word 0x04282028 bit 12.
+ * Keep this external level separate from interrupt inputs 0..15 and from
+ * the independently driven delay-channel capture inputs. */
+static void sampling_gpio_input(void *opaque, int line, int level)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint32_t bit = 1u << 16;
+
+    s->gpio_input_driven |= bit;
+    s->gpio_input_levels = (s->gpio_input_levels & ~bit) | (level ? bit : 0);
+}
+
 /* Optional laboratory peer for the recovered output-101 / input-84
  * handshake. Respond to a selected output rising edge through the GPIO
  * interrupt path. One millisecond is a functional timing choice; this
@@ -2578,6 +2590,9 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     } else if (boot_config_addresses[word->index] == 0x04282018) {
         uint32_t mask = (s->gpio_input_driven >> 9) & 0x7f;
         value = (value & ~mask) | ((s->gpio_input_levels >> 9) & mask);
+    } else if (boot_config_addresses[word->index] == 0x04282028) {
+        uint32_t mask = (s->gpio_input_driven >> 4) & 0x1000;
+        value = (value & ~mask) | ((s->gpio_input_levels >> 4) & mask);
     }
     if (s->controller_connected) {
         hwaddr address = boot_config_addresses[word->index];
@@ -4332,6 +4347,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
     qdev_init_gpio_in_named(DEVICE(obj), controller_pin_input, "controller-input", 3);
     qdev_init_gpio_in_named(DEVICE(obj), engine_gpio_input, "gpio-input", 16);
+    qdev_init_gpio_in_named(DEVICE(obj), sampling_gpio_input, "sampling-input", 1);
     qdev_init_gpio_in_named(DEVICE(obj), input_event, "input-event", 8 * 32);
     qdev_init_gpio_in_named(DEVICE(obj), aux_image_event, "aux-image-event", 8);
     qdev_init_gpio_in_named(DEVICE(obj), sflt_event, "sflt-event", 32);

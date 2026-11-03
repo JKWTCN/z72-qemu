@@ -684,6 +684,92 @@
       "tasks": []
     }
   ],
+  "sampling_gpio": {
+    "resource": "0xa9",
+    "descriptor": "0xb1804994",
+    "register": "0x04282028",
+    "bit": 12,
+    "gpio_reader": "0x10385d76",
+    "sampler_check": "0x102eb8c2",
+    "cases": [
+      {
+        "register": "0x0",
+        "level": 0,
+        "check_result": 1
+      },
+      {
+        "register": "0x800",
+        "level": 0,
+        "check_result": 1
+      },
+      {
+        "register": "0x1000",
+        "level": 1,
+        "check_result": 0
+      },
+      {
+        "register": "0x1800",
+        "level": 1,
+        "check_result": 0
+      },
+      {
+        "register": "0x2000",
+        "level": 0,
+        "check_result": 1
+      },
+      {
+        "register": "0xffffefff",
+        "level": 0,
+        "check_result": 1
+      },
+      {
+        "register": "0xffffffff",
+        "level": 1,
+        "check_result": 0
+      }
+    ]
+  },
+  "signal_recovery": {
+    "function": "0x102e8e70",
+    "cases": [
+      {
+        "level": 0,
+        "event_wait_result": 0,
+        "event_satisfied": false,
+        "result": "0x30000"
+      },
+      {
+        "level": 1,
+        "event_wait_result": 0,
+        "event_satisfied": false,
+        "result": "0x20000"
+      },
+      {
+        "level": 0,
+        "event_wait_result": 1,
+        "event_satisfied": true,
+        "result": "0x10000"
+      },
+      {
+        "level": 1,
+        "event_wait_result": 1,
+        "event_satisfied": true,
+        "result": "0x0"
+      }
+    ],
+    "substituted_boundaries": [
+      "0x102cb65e",
+      "0x102e7cb6",
+      "0x102e7dc8",
+      "0x102e7df4",
+      "0x102e8630",
+      "0x102eb846",
+      "0x103610d2",
+      "0x10361116",
+      "0x103a30f0"
+    ],
+    "scope": "Synthetic GPIO levels and event wait results; original signal, GPIO read and error branches"
+  },
   "host_boundaries": [
     "synthetic MMIO storage",
     "record callback arguments and register writes",

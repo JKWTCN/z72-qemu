@@ -76,6 +76,10 @@ BODY_STATUS_LIST_POINTS = {
     0x1020d3ca: 'body-status-input-classification',
     0x103f350a: 'body-status-operation-submit',
     0x103f15b2: 'body-status-operation-worker',
+    0x10394d06: 'body-status-message-handler',
+    0x102e7e22: 'body-sampling-signal-request',
+    0x102e8d10: 'body-sampling-capture-missing-flag',
+    0x102e8568: 'body-sampling-capture-second-edge',
 }
 BODY_CONFIGURATION_POINTS = {
     0x1052273e: 'body-configuration-submit',
@@ -2955,9 +2959,24 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['status_codes'] = status_codes_snapshot(remote)
                     record['system_input_class'] = remote.read(0xb1818f14, 1)[0]
                     if pc == 0x1035ed5c:
+                        stack = remote.get(registers, 'sp')
                         record['stack_code_candidates'] = [hex(value) for value in
-                            struct.unpack('<16I', remote.read(remote.get(registers, 'sp'), 64))
+                            struct.unpack('<32I', remote.read(stack, 128))
                             if 0x10020000 <= (value & ~1) < 0x12497b7a]
+                        if remote.get(registers, 'lr') == 0x10394cd1:
+                            # C1.70: the caller saves 8 bytes; its caller's frame is 0x40 bytes.
+                            record['status_message_returns'] = {
+                                hex(offset): hex(int.from_bytes(remote.read(stack + offset, 4), 'little'))
+                                for offset in (4, 0x44)}
+                    if pc == 0x10394d06:
+                        pointer = remote.get(registers, 'r1')
+                        if 0xb1800000 <= pointer <= 0xb5effff4:
+                            record['status_message_words'] = [hex(value) for value in
+                                struct.unpack('<3I', remote.read(pointer, 12))]
+                    if pc in (0x102e7e22, 0x102e8d10, 0x102e8568):
+                        record['sampling_capture_fields'] = {
+                            hex(offset): hex(int.from_bytes(remote.read(0xb1868628 + offset, 4), 'little'))
+                            for offset in (0x40, 0x4c, 0x50, 0x54, 0x58, 0xbc, 0xe8, 0xec)}
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 128
                 if pc == ACTION:

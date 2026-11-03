@@ -804,3 +804,17 @@ twelve-channel timing and repetition checks remain in the same batch. It uses
 synthetic firmware-free instructions and removes its temporary run directory.
 This validates the exposed signal contract; physical wiring, migration round
 trips and native repeated photography are outside its scope.
+
+`tests/test_engine_gpio.py --qemu ...` also checks the independent
+`sampling-input` level on both engines: GPIO `0x04282028` bit 12, neighboring
+stored bits, guest-write isolation and a held input across reset. With channel
+6 capture enabled, sampling level changes must not produce capture causes or
+GPIO interrupt causes. Existing interrupt-input and handshake cases remain in
+the same batch. No automatic feedback source is supplied.
+
+`tools/delay_capture_contract.py --master /path/to/master.bin --out ...`
+additionally executes the original sampling GPIO readers with seven register
+values and signal recovery with four level/event-wait combinations. Timer,
+event and timestamp boundaries are synthetic; the original GPIO extraction,
+inversion and error-bit branches execute unchanged. This verifies neither
+physical routing nor native repeated photograph saving.

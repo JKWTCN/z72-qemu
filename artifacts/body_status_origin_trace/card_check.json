@@ -1,0 +1,104 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "temporary_card_retained": false,
+  "temporary_card": ".local\\body-status-origin-trace.raw",
+  "native_key_sequences": [
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 138480503,
+      "shot": 1,
+      "release_ticks": 150534289,
+      "held_counter_seconds": 0.25112054166666664
+    }
+  ],
+  "completed_raw_frames": 1,
+  "final_state": [
+    2,
+    0
+  ],
+  "final_driver_state": 9,
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "a7e6e6c769ac5ff97c53f90c42044e71db53a1f92cf595cca23cea06811a0eac",
+      "width": 8256,
+      "height": 5504,
+      "decoded": true,
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "offset": "0x824a",
+          "bytes": 10942
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "offset": "0x488202",
+          "bytes": 374772
+        }
+      ],
+      "pattern_check": {
+        "samples": 11310,
+        "failed_samples": 0,
+        "maximum_rgb_error": 0
+      }
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "c8a94177ba7d62acb456fb88ad97f140feb5548d0e45bb857ed4006bc9575cde"
+    }
+  ],
+  "original_file_preserved": true,
+  "repeat_capture_verified": false,
+  "scope": "Read-only FAT, complete JPEG/subimage decoding and checker sampling. Original firmware saved the files; no host repair. DSP preprocessing explicitly skipped."
+}

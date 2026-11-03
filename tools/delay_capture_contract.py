@@ -41,6 +41,29 @@ class CaptureProbe(RegionProbe):
         u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
 
 
+class SignalProbe(RegionProbe):
+    """Run the original signal recovery with bounded timer/event boundaries."""
+    def __init__(self, image):
+        super().__init__(image)
+        self.u.mem_map(0x04282000, 0x1000)
+        self.wait_result = 0
+        self.boundaries = []
+
+    def boundary(self, u, address, size, unused):
+        if address not in (0x103610d2, 0x102eb846, 0x102e8630, 0x102cb65e,
+                           0x102e7dc8, 0x102e7cb6, 0x103a30f0, 0x102e7df4,
+                           0x10361116):
+            return super().boundary(u, address, size, unused)
+        self.boundaries.append(hex(address))
+        if address == 0x103a30f0:
+            u.mem_write(u.reg_read(UC_ARM_REG_R0), struct.pack('<2I', 0x12345678, 0))
+        result = self.wait_result if address == 0x10361116 else 0
+        if address == 0x102cb65e:
+            result = 1000
+        u.reg_write(UC_ARM_REG_R0, result)
+        u.reg_write(UC_ARM_REG_PC, u.reg_read(UC_ARM_REG_LR))
+
+
 def check(image):
     native = CaptureProbe(image)
     capabilities, configurations, reads, interrupts = [], [], [], []
@@ -116,10 +139,44 @@ def check(image):
         require(not native.events and not native.tasks, 'Consumed capture wait posted repeatedly')
         sampling.append(dict(state=state, status=hex(status), inhibited=bool(inhibited),
                              events=first_events, tasks=first_tasks))
+    # The sampler also polls a separate GPIO descriptor. Execute both original
+    # readers; changing neighboring bits must not change this input's result.
+    native.u.mem_map(0x04282000, 0x1000)
+    descriptor = 0xb1804994
+    require([native.word(descriptor + offset) for offset in (0, 4, 8)] ==
+            [0xa9, 12, 0x04282028], 'Sampling GPIO descriptor differs')
+    native.u.mem_write(0xb1868664, struct.pack('<I', descriptor))
+    sampling_gpio = []
+    for value in (0, 0x800, 0x1000, 0x1800, 0x2000, 0xffffefff, 0xffffffff):
+        native.u.mem_write(0x04282028, struct.pack('<I', value))
+        level = native.call(0x365d76, descriptor)
+        check_result = native.call(0x2cb8c2)
+        require(level == ((value >> 12) & 1) and check_result == 1 - level,
+                'Original sampling input level or inverted check differs')
+        sampling_gpio.append(dict(register=hex(value), level=level, check_result=check_result))
+    signal = SignalProbe(image)
+    recovery = []
+    for level, wait_result in ((0, 0), (1, 0), (0, 1), (1, 1)):
+        signal.u.mem_write(0xb1868628, bytes(0x300))
+        signal.u.mem_write(0xb1868664, struct.pack('<2I', descriptor, 0xb1803edc))
+        signal.u.mem_write(0x04282028, struct.pack('<I', level << 12))
+        signal.wait_result = wait_result
+        result = signal.call(0x2c8e70, 1)
+        expected = (0x10000 if not level else 0) | (0x20000 if not wait_result else 0)
+        require(result == expected, 'Original signal recovery error bits differ')
+        require(signal.word(0xb1868674) == 0, 'Signal recovery left capture wait armed')
+        recovery.append(dict(level=level, event_wait_result=wait_result,
+                             event_satisfied=bool(wait_result), result=hex(result)))
     return dict(format=1, result='passed', firmware_included=False, master_sha256=MASTER_SHA,
         configure='0x1036e8ea', read='0x1036e930', interrupt='0x1036ea8a',
         capabilities=capabilities, configurations=configurations, reads=reads, interrupts=interrupts,
         sampling_callback='0x102eb778', sampling=sampling,
+        sampling_gpio=dict(resource='0xa9', descriptor=hex(descriptor),
+            register='0x04282028', bit=12, gpio_reader='0x10385d76',
+            sampler_check='0x102eb8c2', cases=sampling_gpio),
+        signal_recovery=dict(function='0x102e8e70', cases=recovery,
+            substituted_boundaries=sorted(set(signal.boundaries)),
+            scope='Synthetic GPIO levels and event wait results; original signal, GPIO read and error branches'),
         host_boundaries=['synthetic MMIO storage', 'record callback arguments and register writes',
                          'supply synthetic sampling state and timestamp; record event and task posts'],
         limitations=['Does not prove external input routing, polarity, physical timing or capture generation',
@@ -134,4 +191,4 @@ if __name__ == '__main__':
     result = check(args.master.read_bytes())
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8', newline='\n')
-    print('PASS original delay capture: capabilities, enable, latch reads and interrupt forwarding')
+    print('PASS original delay capture: capabilities, enable, latch reads, IRQ forwarding and sampling GPIO')

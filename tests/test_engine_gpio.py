@@ -79,6 +79,35 @@ def check(qemu):
             command('irq_intercept_in /machine/unattached/' + gic)
             write(0x0426f008, 0xffff)
             assert read(0x0426f008) == 0
+            # Sampling resource 0xa9 is a polled level, independent of the
+            # interrupt bank and the delay-channel capture inputs.
+            sample_address = 0x04282028
+            sample_bit = 1 << 12
+            write(0x2c011700, 1)
+            write(0x2c011704, 255)
+            write(0x2c011708, 0xffffffff)
+            write(0x2c011710, 1)
+            write(0x2c010700, 6)
+            write(0x2c011700, 0)
+            write(0x2c011000, 1 << 6)
+            command('clock_step 1000000')
+            write(sample_address, 0x18001800)
+            assert read(sample_address) & 0xffff == 0x1800
+            command(f'set_irq_in {path} sampling-input 0 0')
+            assert read(sample_address) & 0xffff == 0x800
+            command(f'set_irq_in {path} sampling-input 0 1')
+            assert read(sample_address) & 0xffff == 0x1800
+            write(sample_address, 0x30002800)
+            assert read(sample_address) & 0xffff == 0x3800
+            command(f'set_irq_in {path} sampling-input 0 1')
+            assert read(0x0426f008) == 0
+            assert read(0x2c010710) == 0  # Channel 6 has no capture cause.
+            monitor('system_reset')
+            assert read(sample_address) == sample_bit
+            assert read(0x0426f008) == 0
+            assert read(0x2c010710) == 0
+            command(f'set_irq_in {path} sampling-input 0 0')
+            assert read(sample_address) == 0
             for line in (range(16) if not handshake else ()):
                 bit = 1 << line
                 irq = 65 + line - 32
@@ -169,7 +198,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS engine GPIO: 16 inputs, interrupt routing and reset; delayed output handshake, source/role gating and request edges')
+    print('PASS engine GPIO: 16 interrupt inputs and sampling level, reset; delayed output handshake, source/role gating and request edges')
 
 
 if __name__ == '__main__':
