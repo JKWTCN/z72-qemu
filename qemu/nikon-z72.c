@@ -32,6 +32,7 @@ struct NikonZ72DualMachine {
     char *controller_firmware;
     bool controller_link;
     bool controller_step_link;
+    bool controller_step_feedback;
     char *master_boot_image;
     char *slave_boot_image;
     char *master_boot_aux;
@@ -57,6 +58,16 @@ static bool dual_controller_step_link_get(Object *obj, Error **errp)
 static void dual_controller_step_link_set(Object *obj, bool value, Error **errp)
 {
     NIKON_Z72_DUAL(obj)->controller_step_link = value;
+}
+
+static bool dual_controller_step_feedback_get(Object *obj, Error **errp)
+{
+    return NIKON_Z72_DUAL(obj)->controller_step_feedback;
+}
+
+static void dual_controller_step_feedback_set(Object *obj, bool value, Error **errp)
+{
+    NIKON_Z72_DUAL(obj)->controller_step_feedback = value;
 }
 
 static char *dual_controller_firmware_get(Object *obj, Error **errp)
@@ -5392,6 +5403,9 @@ static void nikon_z72_dual_init(MachineState *machine)
     if (s->controller_step_link && !s->controller_link) {
         error_setg(&error_fatal, "Controller step link requires the controller link");
     }
+    if (s->controller_step_feedback && !s->controller_step_link) {
+        error_setg(&error_fatal, "Controller step feedback requires the step link");
+    }
     if (s->controller_inputs.flash_data && !s->controller_firmware) {
         error_setg(&error_fatal, "Controller flash data requires a controller firmware image");
     }
@@ -5536,6 +5550,16 @@ static void nikon_z72_dual_init(MachineState *machine)
                 qdev_connect_gpio_out_named(master_config, "controller-step", 0,
                     qdev_get_gpio_in(s->controller_inputs.gpio[6], 8));
             }
+            if (s->controller_step_feedback) {
+                if (master_boot->input_handshake) {
+                    error_setg(&error_fatal,
+                        "Controller step feedback conflicts with the automatic input handshake");
+                }
+                /* Functional connection hypothesis: the native D7 completion
+                 * pulse drives master resource 0x54 through its GPIO path. */
+                qdev_connect_gpio_out(s->controller_inputs.gpio[3], 7,
+                    qdev_get_gpio_in_named(master_config, "gpio-input", 0));
+            }
             static const unsigned ports[] = { 1, 4, 3 }, pins[] = { 14, 3, 12 };
             for (unsigned i = 0; i < 3; i++) {
                 qdev_connect_gpio_out(s->controller_inputs.gpio[ports[i]], pins[i],
@@ -5603,6 +5627,10 @@ static void dual_machine_class_init(ObjectClass *klass, const void *data)
                                   dual_controller_step_link_set);
     object_class_property_set_description(klass, "controller-step-link",
         "Experimental engine handshake output to controller G8 connection");
+    object_class_property_add_bool(klass, "controller-step-feedback", dual_controller_step_feedback_get,
+                                  dual_controller_step_feedback_set);
+    object_class_property_set_description(klass, "controller-step-feedback",
+        "Experimental controller D7 completion output to engine input 0 connection");
     object_class_property_add_bool(klass, "controller-battery-peer",
                                   dual_controller_battery_peer_get,
                                   dual_controller_battery_peer_set);

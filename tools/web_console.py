@@ -322,7 +322,9 @@ class Machine:
                                  f'{work / name}@{address:#x}'
                                  for name, address in auxiliary).replace(',', ',,')) +
                             (('controller-step-link=on',) if
-                             getattr(self.args, 'controller_step_link', False) else ()),
+                             getattr(self.args, 'controller_step_link', False) else ()) +
+                            (('controller-step-feedback=on',) if
+                             getattr(self.args, 'controller_step_feedback', False) else ()),
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
@@ -1075,6 +1077,8 @@ def main():
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',
                         help='Enable the experimental engine handshake to controller G8 connection')
+    parser.add_argument('--controller-step-feedback', action='store_true',
+                        help='Use native controller D7 pulses for the experimental engine GPIO handshake')
     parser.add_argument('--realtime', action='store_true',
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')
@@ -1101,7 +1105,11 @@ def main():
     require(not args.wsl or os.name == 'nt', '--wsl requires Windows')
     if args.live_view:
         for name in LIVE_VIEW_OPTIONS:
+            if name == 'input_handshake' and args.controller_step_feedback:
+                continue
             setattr(args, name, True)
+    require(not args.controller_step_feedback or args.controller_step_link and not args.input_handshake,
+            'Controller step feedback requires the step link and the automatic handshake disabled')
     machine = Machine(args)
     server = None
     try:

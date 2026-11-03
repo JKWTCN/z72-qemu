@@ -1,0 +1,75 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+  "d0": {
+    "resource": "0x30",
+    "slot": "0x20018738",
+    "start": "0x08035204",
+    "stop": "0x08034fa4",
+    "active_field": "0x2001757e",
+    "cases": [
+      {
+        "minimum": 1,
+        "start_hardware": [
+          {
+            "entry": "0x8035e28",
+            "args": [
+              "0x0",
+              "0x60",
+              "0xdead"
+            ]
+          }
+        ],
+        "start_events": [
+          {
+            "object": "0x20017598",
+            "event": "0x400"
+          }
+        ],
+        "nonzero_stop_preserved": true,
+        "zero_stop_cleared": true
+      },
+      {
+        "minimum": 2,
+        "start_hardware": [
+          {
+            "entry": "0x8035e28",
+            "args": [
+              "0x8034d41",
+              "0x640",
+              "0x2"
+            ]
+          }
+        ],
+        "start_events": [],
+        "nonzero_stop_preserved": true,
+        "zero_stop_cleared": true
+      }
+    ]
+  },
+  "d7": {
+    "resource": "0x37",
+    "slot": "0x2001873c",
+    "task": "0x08036748",
+    "high_event": "0x4000",
+    "timer_request": {
+      "callback": "0x80366f5",
+      "control": "0x640",
+      "interval": 100
+    },
+    "callback": "0x080366f4",
+    "clear_event": "0x8000",
+    "callback_posts_task_only": true
+  },
+  "boundaries": [
+    "Synthetic GPIO descriptors and MMIO storage",
+    "Timer scheduling, event posts and history recording are intercepted",
+    "Original phase, GPIO writer, timer callback and task branch instructions execute"
+  ],
+  "limitations": [
+    "Task inputs and timer callback are explicitly invoked in this isolated fixture",
+    "No elapsed-time, physical mechanism or cross-processor wiring is verified"
+  ]
+}

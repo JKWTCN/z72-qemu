@@ -15,7 +15,7 @@ from analyze.decode_z72 import require
 from analyze.qemu_display import Remote
 
 
-def check(qemu, auto_link=False):
+def check(qemu, auto_link=False, step_feedback=False):
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         image = bytearray(0x200)
@@ -36,6 +36,8 @@ def check(qemu, auto_link=False):
         machine = 'nikon-z72-dual-lab,controller-firmware=' + str(firmware)
         if auto_link:
             machine += ',controller-link=on,controller-step-link=on'
+        if step_feedback:
+            machine += ',controller-step-feedback=on'
         command = [qemu, '-M', machine,
                    '-device', f'loader,file={engine},addr=0,cpu-num=0,force-raw=on',
                    '-global', 'nikon-z72-spi.peer-low-byte-first=' + ('on' if auto_link else 'off'),
@@ -44,6 +46,16 @@ def check(qemu, auto_link=False):
         if not auto_link:
             for serial_port in (0, 1):
                 command += ['-device', f'nikon-z72-controller-spi-peer,bus=master-spi{serial_port},controller=/machine/controller/spi{serial_port}']
+        if step_feedback:
+            missing_step = list(command)
+            missing_step[2] = machine.replace(',controller-step-link=on', '')
+            duplicate_source = [*command, '-global', 'nikon-z72-boot-config.input-handshake=on']
+            for invalid, message in ((missing_step, 'requires the step link'),
+                                     (duplicate_source, 'conflicts with the automatic input handshake')):
+                result = subprocess.run(invalid, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10,
+                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+                require(result.returncode != 0 and message in result.stderr.decode(errors='replace'),
+                        'Invalid feedback source configuration was accepted or failed elsewhere')
         remote = process = None
         try:
             with (root / 'qemu.log').open('wb') as log:
@@ -150,6 +162,47 @@ def check(qemu, auto_link=False):
             access(0x40013c14, 0x100)
             access(0x40013c00, 0)
 
+            # The native D7 completion output is a distinct optional source
+            # for master input 0. It follows actual output mode and level.
+            engine_access(0x0426f000, 0xfffe)
+            engine_access(0x0426f014, 1)
+            engine_access(0x0426f010, 0xffff)
+            remote.select_thread(5)
+            access(0x40020c14, 0x80)
+            require(not engine_access(0x04282014) & 0x80 and
+                    not engine_access(0x0426f008) & 1,
+                    'An input-mode latch drove feedback')
+            remote.select_thread(5)
+            access(0x40020c00, 1 << 14)
+            require(bool(engine_access(0x04282014) & 0x80) == step_feedback and
+                    bool(engine_access(0x0426f008) & 1) == step_feedback,
+                    'D7 output enable did not reach the optional feedback input')
+            engine_access(0x0426f010, 1)
+            remote.select_thread(5)
+            access(0x40020c18, 0x80)
+            access(0x40020c18, 1)
+            require(not engine_access(0x0426f008) & 1,
+                    'Held D7 or an unrelated pin repeated feedback')
+            remote.select_thread(5)
+            access(0x40020c18, 0x800000)
+            require(not engine_access(0x04282014) & 0x80 and
+                    not engine_access(0x0426f008) & 1,
+                    'D7 falling edge ignored the selected polarity')
+            engine_access(0x0426f014, 0)
+            remote.select_thread(5)
+            access(0x40020c18, 0x80)
+            require(not engine_access(0x0426f008) & 1,
+                    'Rising feedback bypassed falling-edge selection')
+            remote.select_thread(5)
+            access(0x40020c18, 0x800000)
+            require(bool(engine_access(0x0426f008) & 1) == step_feedback,
+                    'Falling feedback did not reach the selected cause')
+            engine_access(0x0426f010, 1)
+            engine_access(0x0426f014, 1)
+            engine_access(0x0426f000, 0xffff)
+            remote.select_thread(5)
+            access(0x40020c00, 0)
+
             # Clock actual controller requests between serial bytes, including packed halfwords.
             for bits, words, payload in ((8, (0x31, 0x62, 0x93, 0xc4), bytes((0x31, 0x62, 0x93, 0xc4))),
                                          (16, (0x1b72, 0xd4a6), bytes((0x72, 0x1b, 0xa6, 0xd4)) if auto_link
@@ -241,6 +294,14 @@ def check(qemu, auto_link=False):
             remote.select_thread(1)
             require(remote.read(0, len(engine_bytes)) == engine_bytes, 'Controller execution changed engine local memory')
             engine_serial = engine_access(0x2c0a0018)
+            if step_feedback:
+                engine_access(0x0426f014, 1)
+                remote.select_thread(5)
+                access(0x40020c00, access(0x40020c00) | (1 << 14))
+                access(0x40020c18, 0x80)
+                require(engine_access(0x04282014) & 0x80,
+                        'Feedback source was not high before controller reset')
+                engine_access(0x0426f010, 1)
             for thread in range(1, 5):
                 remote.select_thread(thread)
                 remote.set(r4=0x13570000 + thread)
@@ -264,12 +325,21 @@ def check(qemu, auto_link=False):
                     remote.read(0x20002200, 4) == b'keep',
                     'Controller system reset cleared its backup domain or SRAM')
             require(step_level() == auto_link, 'Controller reset changed the engine step output')
+            if step_feedback:
+                require(not engine_access(0x04282014) & 0x80 and not engine_access(0x0426f008) & 1,
+                        'Controller reset retained feedback or invented a rising cause')
             for thread in range(1, 5):
                 remote.select_thread(thread)
                 require(remote.get(remote.regs(), 'r4') == 0x13570000 + thread,
                         'Controller system reset changed an engine CPU')
             require(engine_access(0x2c0a0018) == engine_serial,
                     'Controller system reset changed engine serial state')
+            if step_feedback:
+                remote.select_thread(5)
+                access(0x40020c00, 1 << 14)
+                access(0x40020c18, 0x80)
+                require(engine_access(0x04282014) & 0x80,
+                        'Feedback source was not high before board reset')
             require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK', 'Embedded reset failed')
             remote.select_thread(5)
             require(remote.get(remote.regs(), 'pc') == 0x08000100 and remote.read(0, 8) == image[:8] and
@@ -278,9 +348,12 @@ def check(qemu, auto_link=False):
                 require(not access(0x40021810) & 0x40 and engine_access(0x0426f008) & 0xc == 0,
                         'Reset retained controller acknowledgement or edge state')
                 require(not step_level(), 'Board reset retained the engine step output')
+            if step_feedback:
+                require(not engine_access(0x04282014) & 0x80 and not engine_access(0x0426f008) & 1,
+                        'Board reset retained feedback level or cause')
             require(firmware.read_bytes() == image, 'Embedded test modified its input image')
             print('PASS embedded controller: five cores, private DMA, paced serial bytes/halfwords, local and board reset',
-                  'board-link=' + str(auto_link))
+                  'board-link=' + str(auto_link), 'step-feedback=' + str(step_feedback))
         finally:
             if remote is not None:
                 remote.sock.close()
@@ -295,3 +368,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     check(args.qemu)
     check(args.qemu, True)
+    check(args.qemu, True, True)

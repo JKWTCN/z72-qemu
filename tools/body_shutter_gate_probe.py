@@ -3637,6 +3637,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                  contexts=list(skipped_statistics.values())),
                     still_preprocessing_skip_requested=skip_still_preprocessing,
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
+                    controller_step_feedback=getattr(machine.args, 'controller_step_feedback', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
                     primary_exposure_sync=getattr(machine.args, 'primary_exposure_sync', False),
@@ -3800,6 +3801,8 @@ def main():
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',
                         help='Enable the experimental engine handshake to controller G8 connection')
+    parser.add_argument('--controller-step-feedback', action='store_true',
+                        help='Use native controller D7 pulses for the experimental engine GPIO handshake')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental single-comparison sampling output events')
     parser.add_argument('--primary-exposure-sync', action='store_true',
@@ -3821,6 +3824,8 @@ def main():
     parser.add_argument('--body-system-events', action='store_true',
                         help='Observe system mode input callbacks, notifications and mode requests after preview readiness')
     args = parser.parse_args()
+    require(not args.controller_step_feedback or args.controller_step_link and not args.input_handshake,
+            'Controller step feedback requires the step link and the automatic handshake disabled')
     require(not args.primary_exposure_sync or
             args.sampling_output_complete and args.frame_generate and args.frame_notify,
             'Primary exposure synchronization requires sampling output, pixel generation and notification')

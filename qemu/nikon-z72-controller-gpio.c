@@ -5,6 +5,7 @@
 #include "hw/resettable.h"
 #include "migration/vmstate.h"
 #include "qemu/timer.h"
+#include "target/arm/cpu.h"
 #include "trace.h"
 
 #define TYPE_Z72_CONTROLLER_GPIO "nikon-z72-controller-gpio"
@@ -114,8 +115,11 @@ static MemTxResult gpio_write(void *opaque, hwaddr offset, uint64_t value,
     gpio_update(s);
     outputs = gpio_output_mask(s) & s->registers[5];
     if (outputs != previous) {
+        CPUARMState *env = current_cpu ? &ARM_CPU(current_cpu)->env : NULL;
+
         trace_z72_controller_gpio_transition(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
-            s->iomem.addr, offset, value, previous, outputs);
+            s->iomem.addr, offset, value, previous, outputs,
+            env ? env->regs[15] : 0, env ? env->regs[14] : 0);
     }
     return MEMTX_OK;
 }

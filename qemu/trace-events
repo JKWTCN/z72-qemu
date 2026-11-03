@@ -3,5 +3,5 @@ z72_memory_transfer(uint32_t engine, unsigned channel, uint32_t mode, uint32_t s
 z72_sequence_transfer(uint32_t engine, unsigned channel, uint32_t command, uint32_t length_minus_one, uint32_t source, uint32_t destination, uint32_t source_control, uint32_t destination_control) "engine=0x%x channel=%u command=0x%x length_minus_one=0x%x source=0x%x destination=0x%x controls=0x%x/0x%x"
 
 # nikon-z72-controller-gpio.c
-z72_controller_gpio_transition(int64_t virtual_ns, uint64_t base, uint32_t offset, uint32_t value, uint16_t previous, uint16_t outputs) "virtual_ns=%" PRId64 " base=0x%" PRIx64 " offset=0x%x value=0x%x previous=0x%x outputs=0x%x"
+z72_controller_gpio_transition(int64_t virtual_ns, uint64_t base, uint32_t offset, uint32_t value, uint16_t previous, uint16_t outputs, uint32_t pc, uint32_t lr) "virtual_ns=%" PRId64 " base=0x%" PRIx64 " offset=0x%x value=0x%x previous=0x%x outputs=0x%x pc=0x%x lr=0x%x"
 z72_engine_gpio_latch(int64_t virtual_ns, bool master, uint64_t address, uint32_t value, uint32_t previous, uint32_t latch) "virtual_ns=%" PRId64 " master=%d address=0x%" PRIx64 " value=0x%x previous=0x%x latch=0x%x"

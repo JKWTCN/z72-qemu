@@ -832,3 +832,18 @@ roles, plus disabled-pin controls. The platform probe's explicit shared-path
 selector also uses a selected GPIO write. Native capture regression evidence
 and passive `--trace-controller-gpio` observations are recorded separately in
 [the body capture report](../artifacts/body_gpio_feedback_trace/report.json).
+
+The controller GPIO batch now enables passive writer-context traces. Known
+single-instruction and two-instruction blocks check the architectural PC/LR
+snapshots and held-output suppression, alongside existing pin checks.
+`tools/controller_phase_gpio_contract.py --controller ... --out ...` executes
+the original D0 active gating and D7 task/timer-callback/task sequence against
+synthetic descriptors and intercepted scheduling boundaries. It does not prove
+elapsed time or physical wiring.
+
+The embedded controller batch additionally checks the optional
+`controller-step-feedback` connection in three link/source configurations,
+including output-mode gating, held levels, polarity, acknowledgement, source
+conflicts and existing reset coverage. Original firmware observations are
+separate from these synthetic checks; the fixed-delay source is disabled when
+testing the native controller completion source.
