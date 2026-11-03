@@ -614,6 +614,8 @@ struct NikonZ72BootConfig {
     bool gate_pending;
     MemoryRegion transfer_ram;
     uint8_t transfer_table[0x100];
+    MemoryRegion still_transform_start;
+    uint32_t still_transform_command;
     MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
     uint32_t compute_mailbox_words[0x400];
@@ -3012,6 +3014,152 @@ static void transfer_update_irq(NikonZ72BootConfig *s)
     qemu_set_irq(qdev_get_gpio_in(s->intc, 102 - 32), status != 0);
 }
 
+/* Functional replacement for the observed C1.70 still-transform graph:
+ * copy the full diagnostic raster and nearest-sample its 1620x1080 view.
+ * The source must be the binary luma/neutral equal-height chroma stimulus.
+ * This does not implement the graph's color, filter or calibration units. */
+static bool still_transform_frame(NikonZ72BootConfig *s)
+{
+    enum { WIDTH = 8256, HEIGHT = 5504, SMALL_WIDTH = 1620,
+           SMALL_HEIGHT = 1080, SMALL_STRIDE = 1664, SMALL_ROWS = 1088 };
+    static const unsigned units[] = {0x8a0, 0x9c0, 0x9e0, 0xac0, 0xba0, 0xdc0, 0xde0};
+    static const unsigned scalers[] = {0x9c0, 0x9e0, 0xba0};
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t descriptors[3][52], word[4], parameters[0x3c];
+    uint32_t planes[6];
+    const unsigned plane_bytes = WIDTH * HEIGHT;
+    const unsigned small_bytes = SMALL_STRIDE * SMALL_HEIGHT;
+    uint8_t neutral[SMALL_WIDTH], row[SMALL_WIDTH];
+
+    for (unsigned index = 0; index < ARRAY_SIZE(units); index++) {
+        if (address_space_read(view, 0x20100000 + units[index],
+                               MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK ||
+            ldl_le_p(word) != 1) {
+            return false;
+        }
+    }
+    for (unsigned index = 0; index < 3; index++) {
+        unsigned stride = index == 2 ? SMALL_STRIDE : WIDTH;
+        unsigned geometry = index == 2 ? SMALL_HEIGHT << 16 | SMALL_WIDTH : HEIGHT << 16 | WIDTH;
+        if (address_space_read(view, 0x20100440 + index * 0x40,
+                               MEMTXATTRS_UNSPECIFIED, descriptors[index], 52) != MEMTX_OK) {
+            return false;
+        }
+        for (unsigned offset = 0; offset < 52; offset += 4) {
+            uint32_t expected = offset == 0 ? 0x09000001 : offset == 4 ? 0x10000 :
+                                offset == 0x10 || offset == 0x14 ? stride :
+                                offset == 0x20 ? geometry : 0;
+            if (offset != 0x24 && offset != 0x28 &&
+                ldl_le_p(descriptors[index] + offset) != expected) {
+                return false;
+            }
+        }
+        planes[index * 2] = ldl_le_p(descriptors[index] + 0x24);
+        planes[index * 2 + 1] = ldl_le_p(descriptors[index] + 0x28);
+    }
+    for (unsigned index = 0; index < ARRAY_SIZE(scalers); index++) {
+        uint32_t pointer;
+        if (address_space_read(view, 0x20100010 + scalers[index],
+                               MEMTXATTRS_UNSPECIFIED, word, 4) != MEMTX_OK) {
+            return false;
+        }
+        pointer = ldl_le_p(word);
+        if (pointer < 0xc1000000 || pointer > 0xc81fffc4 ||
+            !processing_ram_range(view, pointer, sizeof(parameters)) ||
+            address_space_read(view, pointer, MEMTXATTRS_UNSPECIFIED,
+                               parameters, sizeof(parameters)) != MEMTX_OK ||
+            ldl_le_p(parameters) != 0x110a0000 ||
+            ldl_le_p(parameters + 0xc) != (index == 2 ? 0x10003 : 0x10002) ||
+            ldl_le_p(parameters + 0x28) != 0x11080040 ||
+            ldl_le_p(parameters + 0x2c) != (index == 2 ? 0x06530000 : 0x203f0000) ||
+            ldl_le_p(parameters + 0x30) != (index == 2 ? 0x04370000 : 0x157f0000) ||
+            ldl_le_p(parameters + 0x34) != (index == 2 ? 0x400040 : 0x800080) ||
+            ldl_le_p(parameters + 0x38) != (index == 2 ? 0x10001 : 0x80008)) {
+            return false;
+        }
+    }
+    if ((uint64_t)planes[0] + plane_bytes != planes[1] ||
+        (uint64_t)planes[2] + plane_bytes != planes[3] ||
+        (uint64_t)planes[4] + SMALL_STRIDE * SMALL_ROWS != planes[5]) {
+        return false;
+    }
+    for (unsigned index = 0; index < ARRAY_SIZE(planes); index++) {
+        unsigned bytes = index < 4 ? plane_bytes : small_bytes;
+        uint32_t minimum = index < 4 ? 0xea3b6800 : 0xc8900000;
+        uint64_t limit = index < 4 ? 0xffe66800 : 0xca712200;
+        if (planes[index] < minimum || (uint64_t)planes[index] + bytes > limit ||
+            !processing_ram_range(view, planes[index], bytes)) {
+            return false;
+        }
+        for (unsigned other = 0; other < index; other++) {
+            unsigned other_bytes = other < 4 ? plane_bytes : small_bytes;
+            if (planes[index] < (uint64_t)planes[other] + other_bytes &&
+                planes[other] < (uint64_t)planes[index] + bytes) {
+                return false;
+            }
+        }
+    }
+    g_autofree uint8_t *pixels = g_malloc(2 * plane_bytes);
+    if (address_space_read(view, planes[0], MEMTXATTRS_UNSPECIFIED,
+                           pixels, 2 * plane_bytes) != MEMTX_OK) {
+        return false;
+    }
+    /* Validate every input pixel before modifying any output. */
+    for (unsigned offset = 0; offset < plane_bytes; offset++) {
+        if ((pixels[offset] != 0 && pixels[offset] != 255) ||
+            pixels[plane_bytes + offset] != 128) {
+            return false;
+        }
+    }
+    if (address_space_write(view, planes[2], MEMTXATTRS_UNSPECIFIED,
+                            pixels, 2 * plane_bytes) != MEMTX_OK) {
+        return false;
+    }
+    memset(neutral, 128, sizeof(neutral));
+    for (unsigned y = 0; y < SMALL_HEIGHT; y++) {
+        unsigned sy = (uint64_t)y * HEIGHT / SMALL_HEIGHT;
+        for (unsigned x = 0; x < SMALL_WIDTH; x++) {
+            row[x] = pixels[sy * WIDTH + (uint64_t)x * WIDTH / SMALL_WIDTH];
+        }
+        if (address_space_write(view, planes[4] + y * SMALL_STRIDE,
+                                MEMTXATTRS_UNSPECIFIED, row, sizeof(row)) != MEMTX_OK ||
+            address_space_write(view, planes[5] + y * SMALL_STRIDE,
+                                MEMTXATTRS_UNSPECIFIED, neutral, sizeof(neutral)) != MEMTX_OK) {
+            return false;
+        }
+    }
+    s->processing_dma_count++;
+    return true;
+}
+
+static uint64_t still_transform_start_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    return s->still_transform_command;
+}
+
+static void still_transform_start_write(void *opaque, hwaddr offset, uint64_t value,
+                                        unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    s->still_transform_command = value;
+    /* The native reverse start loop writes this last, after the other units.
+     * Three scaler results at +0x1c map to resource event bits 0x20/40/80. */
+    if (value == 1 && s->frame_process && s->cpu && !s->master_role &&
+        !(ldl_le_p(s->transfer_table + 0x1c) & 0x70) && still_transform_frame(s)) {
+        stl_le_p(s->transfer_table + 0x1c, ldl_le_p(s->transfer_table + 0x1c) | 0x70);
+        transfer_update_irq(s);
+    }
+}
+
+static const MemoryRegionOps still_transform_start_ops = {
+    .read = still_transform_start_read,
+    .write = still_transform_start_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
 static uint64_t transfer_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72BootConfig *s = opaque;
@@ -3305,6 +3453,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->gate_table, 0, sizeof(s->gate_table));
     s->gate_pending = false;
     memset(s->transfer_table, 0, sizeof(s->transfer_table));
+    s->still_transform_command = 0;
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
@@ -3414,8 +3563,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 52,
-    .minimum_version_id = 52,
+    .version_id = 53,
+    .minimum_version_id = 53,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -3483,6 +3632,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT8_ARRAY(gate_table, NikonZ72BootConfig, 0x1000),
         VMSTATE_BOOL(gate_pending, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transfer_table, NikonZ72BootConfig, 0x100),
+        VMSTATE_UINT32(still_transform_command, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
@@ -3728,6 +3878,10 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                               s, "z72-transfer-control-lab", 0x100);
         memory_region_add_subregion_overlap(root, 0x20100000,
                                             &s->transfer_ram, 1);
+        memory_region_init_io(&s->still_transform_start, OBJECT(dev),
+                              &still_transform_start_ops, s, "z72-still-transform-start", 4);
+        memory_region_add_subregion_overlap(root, 0x20100900,
+                                            &s->still_transform_start, 1);
         /* Register file addressed 0x04280004-relative (single words plus the
          * indexed +0x30/+0x60 arrays), read by the kernel after the handoff.
          * Added below the word registers so exact words keep precedence and

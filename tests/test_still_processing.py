@@ -3,6 +3,7 @@
 import argparse
 import json
 import socket
+import struct
 import subprocess
 import time
 
@@ -111,7 +112,9 @@ def check(qemu):
             write(second, 0x5a5a5a5a)
             write(0x20380008, 1)
             if not enabled or role == 'master':
+                write(0x20100900, 1)
                 assert count() == 0 and read(0x20380024) == 0
+                assert read(0x2010001c) == 0 and read(0x20100900) == 1
                 assert read(first) == 0xa5a5a5a5 and read(second) == 0x5a5a5a5a
                 continue
             assert count() == 1 and read(0x20380024) == 2, (role, count(), hex(read(0x20380024)))
@@ -146,8 +149,86 @@ def check(qemu):
             load(source + stride * height - 3, bytes(3))
             write(0x20380008, 1)
             assert count() == 2 and read(0x20380024) == 2
+            write(0x20380024, 2)
+
+            # Native still transform: full-size copy and a small secondary view.
+            full, small, small_uv = 0xf510e800, 0xc8984800, 0xc8b3e800
+            small_width, small_height, small_stride = 1620, 1080, 1664
+
+            def configure_transform():
+                for index, (pitch, geometry, y_plane, uv_plane) in enumerate((
+                        (out_width, out_height << 16 | out_width, first, second),
+                        (out_width, out_height << 16 | out_width, full, full + plane_bytes),
+                        (small_stride, small_height << 16 | small_width, small, small_uv))):
+                    load(0x20100440 + index * 0x40, struct.pack('<13I',
+                        0x09000001, 0x10000, 0, 0, pitch, pitch, 0, 0, geometry, y_plane, uv_plane, 0, 0))
+                for offset in (0x8a0, 0x9c0, 0x9e0, 0xac0, 0xba0, 0xdc0, 0xde0):
+                    write(0x20100000 + offset, 1)
+                for index, offset in enumerate((0x9c0, 0x9e0, 0xba0)):
+                    pointer = 0xc1001000 + index * 0x100
+                    params = [0x110a0000, 0, 0, 0x10003 if index == 2 else 0x10002,
+                        0, 0, 0, 0, 0, 0, 0x11080040,
+                        0x06530000 if index == 2 else 0x203f0000,
+                        0x04370000 if index == 2 else 0x157f0000,
+                        0x400040 if index == 2 else 0x800080,
+                        0x10001 if index == 2 else 0x80008]
+                    load(pointer, struct.pack('<15I', *params))
+                    write(0x20100010 + offset, pointer)
+
+            configure_transform()
+            write(full, 0xa5a5a5a5)
+            write(full + plane_bytes, 0x5a5a5a5a)
+            command(f'memset {small:#x} {small_stride * 1088:#x} 0xa5')
+            command(f'memset {small_uv:#x} {small_stride * 1088:#x} 0x5a')
+            write(full - 4, 0x11223344)
+            write(full + 2 * plane_bytes, 0x55667788)
+            write(small - 4, 0x12345678)
+            write(small_uv + small_stride * 1088, 0x87654321)
+            for address, value in ((0x201004a4, first), (0x201004e8, small + 16),
+                                   (0x201004e4, 0xca7121f0), (0x201004e0, 0x1000100),
+                                   (0x201009d0, 0xfffffff0), (0x20100ba0, 0),
+                                   (0xc100122c, 0x10000)):
+                configure_transform()
+                write(address, value)
+                write(0x20100900, 1)
+                assert count() == 2 and read(0x2010001c) == 0
+                assert read(full) == 0xa5a5a5a5 and read(full + plane_bytes) == 0x5a5a5a5a
+                assert read(small) == 0xa5a5a5a5 and read(small_uv) == 0x5a5a5a5a
+            configure_transform()
+            for address, value, restore in ((second + plane_bytes - 1, b'\x7f', b'\x80'),
+                                             (first + plane_bytes - 1, b'\x01', data_at(first + plane_bytes - 1, 1))):
+                load(address, value)
+                write(0x20100900, 1)
+                assert count() == 2 and read(0x2010001c) == 0
+                assert read(full) == 0xa5a5a5a5 and read(small) == 0xa5a5a5a5
+                load(address, restore)
+            write(0x20100900, 1)
+            assert count() == 3 and read(0x2010001c) == 0x70 and levels[102 - 32]
+            for x, y in points + [(10, 10), (out_width - 1, out_height - 2)]:
+                assert data_at(full + y * out_width + x, 1) == data_at(first + y * out_width + x, 1)
+                assert data_at(full + plane_bytes + y * out_width + x, 1) == b'\x80'
+            for x, y in ((0, 0), (small_width // 2, small_height // 2), (small_width - 1, small_height - 1)):
+                sy, sx = y * out_height // small_height, x * out_width // small_width
+                assert data_at(small + y * small_stride + x, 1) == data_at(first + sy * out_width + sx, 1)
+                assert data_at(small_uv + y * small_stride + x, 1) == b'\x80'
+            for y in (0, small_height - 1):
+                assert data_at(small + y * small_stride + small_width, small_stride - small_width) == b'\xa5' * 44
+                assert data_at(small_uv + y * small_stride + small_width, small_stride - small_width) == b'\x5a' * 44
+            assert read(small + small_stride * small_height) == 0xa5a5a5a5
+            assert read(small_uv + small_stride * small_height) == 0x5a5a5a5a
+            assert read(full - 4) == 0x11223344 and read(full + 2 * plane_bytes) == 0x55667788
+            assert read(small - 4) == 0x12345678 and read(small_uv + small_stride * 1088) == 0x87654321
+            write(0x20100900, 1)
+            assert count() == 3, 'Pending transform completion accepted another job'
+            write(0x2010001c, 0x30)
+            assert read(0x2010001c) == 0x40 and levels[102 - 32]
+            write(0x2010001c, 0x40)
+            assert not levels[102 - 32]
+            write(0x20100900, 1)
+            assert count() == 4 and read(0x2010001c) == 0x70
             monitor('system_reset')
             assert count() == 0 and read(0x20380024) == 0
+            assert read(0x20100900) == 0 and read(0x2010001c) == 0 and not levels[102 - 32]
         finally:
             if stream is not None:
                 stream.close()
@@ -159,7 +240,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS still raster pixels, plane guards, unsupported jobs, masked completion and reset')
+    print('PASS still rasters and transforms, plane guards, unsupported jobs, completion and reset')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,147 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "start_units": [
+    55,
+    41,
+    62,
+    61,
+    54,
+    53,
+    46,
+    45
+  ],
+  "wait_mask": "0xe0",
+  "cases": [
+    {
+      "status_1c": "0x0",
+      "events": [],
+      "acknowledgements": [
+        {
+          "address": "0x20100018",
+          "value": "0x0"
+        },
+        {
+          "address": "0x2010001c",
+          "value": "0x0"
+        },
+        {
+          "address": "0x20100020",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x10",
+      "events": [
+        {
+          "object": "0xc14861bc",
+          "mask": "0x20"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20100018",
+          "value": "0x0"
+        },
+        {
+          "address": "0x2010001c",
+          "value": "0x10"
+        },
+        {
+          "address": "0x20100020",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x20",
+      "events": [
+        {
+          "object": "0xc14861bc",
+          "mask": "0x40"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20100018",
+          "value": "0x0"
+        },
+        {
+          "address": "0x2010001c",
+          "value": "0x20"
+        },
+        {
+          "address": "0x20100020",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x40",
+      "events": [
+        {
+          "object": "0xc14861bc",
+          "mask": "0x80"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20100018",
+          "value": "0x0"
+        },
+        {
+          "address": "0x2010001c",
+          "value": "0x40"
+        },
+        {
+          "address": "0x20100020",
+          "value": "0x0"
+        }
+      ]
+    },
+    {
+      "status_1c": "0x70",
+      "events": [
+        {
+          "object": "0xc14861bc",
+          "mask": "0x20"
+        },
+        {
+          "object": "0xc14861bc",
+          "mask": "0x40"
+        },
+        {
+          "object": "0xc14861bc",
+          "mask": "0x80"
+        }
+      ],
+      "acknowledgements": [
+        {
+          "address": "0x20100018",
+          "value": "0x0"
+        },
+        {
+          "address": "0x2010001c",
+          "value": "0x70"
+        },
+        {
+          "address": "0x20100020",
+          "value": "0x0"
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Use the observed recipe selectors and a zero sentinel",
+    "Record unit-start calls instead of programming the hardware",
+    "Install the captured resource-0 callbacks in synthetic runtime state",
+    "Record kernel event publication instead of running the kernel"
+  ],
+  "limitations": [
+    "Synthetic MMIO status; no pixel writes or real IRQ delivery",
+    "No proof of completion of the enclosing transform request"
+  ]
+}
