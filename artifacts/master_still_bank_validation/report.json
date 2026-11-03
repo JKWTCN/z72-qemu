@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "binary_sha256": "b578f154f229483fca33f8384107796a017aa4e3a04f4b60aecfb79af4fc77c1",
+  "source_sha256": "c1fbd7688d980cc19d5ba59435e016b66718c71b05712b239c81fa703e5ba36b",
+  "red": {
+    "binary_sha256": "da8a196453de5e7bce4df8a5fed7e81ed06458938f22d1e98c848e783bbd2c82",
+    "master_bank1_processing_count": 0,
+    "master_bank1_pending": "0x0",
+    "result": "Expected failure: master still request produced no raster or completion"
+  },
+  "checks": [
+    {
+      "command": "tests/test_still_processing.py",
+      "passed": true,
+      "configurations": 6
+    },
+    {
+      "command": "tests/test_input_dma.py",
+      "passed": true,
+      "configurations": 6
+    }
+  ],
+  "scope": "Qtest checks of diagnostic RAW12 still rasters, bank-local completion and W1C, masks, reset, bounds, extra ports, unsupported roles and disabled processing; preview processing and cancellation regression. These checks do not establish original-firmware capture or color accuracy."
+}

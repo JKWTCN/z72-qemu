@@ -155,7 +155,15 @@ BODY_SYSTEM_POINTS = {
     0x1020dad2: 'body-system-base-notification',
     0x1020d384: 'body-system-mode-request',
 }
+CAPTURE_MASTER_PROCESSING_POINTS = {
+    0x102c462e: 'capture-master-processing-request',
+    0x102c4632: 'capture-master-processing-request-return',
+    0x10369968: 'capture-master-processing-bank1-interrupt',
+    0x102e43fc: 'capture-master-processing-bank1-callback',
+    0x102e5550: 'capture-master-processing-service-completion',
+}
 CAPTURE_INPUT_POINTS = {
+    **CAPTURE_MASTER_PROCESSING_POINTS,
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
     0x1020a830: 'capture-input-disable-entry',
@@ -939,8 +947,27 @@ def image_service_snapshot(remote):
         service_fields={hex(index * 4): hex(value)
                         for index, value in enumerate(words(0xb18095c4, 24))},
         banks=[dict(base=hex(base), registers={hex(index * 4): hex(value)
-                    for index, value in enumerate(words(base, 256))})
+                    for index, value in enumerate(words(base, 320))})
                for base in (0x20380000, 0x203c0000)])
+
+
+def master_processing_snapshot(remote):
+    result = image_service_snapshot(remote)
+    registers = result['banks'][1]['registers']
+    first, second = (int(registers[hex(offset)], 16) for offset in (0x488, 0x498))
+    plane_bytes = 8256 * 5504
+    if (0xcc700000 <= first and first + 2 * plane_bytes <= 0xffee5400 and
+            second == first + plane_bytes and registers['0x4c8'] == '0x2040'):
+        result['output_planes'] = []
+        for address in (first, second):
+            row = remote.read(address, 8256)
+            result['output_planes'].append(dict(address=hex(address),
+                first_row_sha256=hashlib.sha256(row).hexdigest(),
+                first_row_unique_bytes=len(set(row)), first_row_minimum=min(row),
+                first_row_maximum=max(row),
+                samples=[remote.read(address + offset, 16).hex()
+                         for offset in (0, plane_bytes // 2, plane_bytes - 16)]))
+    return result
 
 
 def input_tail_parameter_snapshot(remote, pointer):
@@ -2671,6 +2698,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
+                if pc in CAPTURE_MASTER_PROCESSING_POINTS:
+                    record['processing'] = master_processing_snapshot(remote)
                 if capture_focus and pc == 0x1023938c:
                     record['peer_input'] = peer_input_snapshot(remote, thread, machine)
                 if capture_caller:

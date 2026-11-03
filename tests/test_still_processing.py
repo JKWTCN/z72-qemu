@@ -11,9 +11,17 @@ import time
 def check(qemu):
     width, height, stride = 8288, 5520, 12432
     out_width, out_height = 8256, 5504
-    source, first, second = 0xbad0a000, 0xea3b6800, 0xecf0c800
     plane_bytes = out_width * out_height
-    for role, enabled in (('slave', True), ('slave', False), ('master', True)):
+    for role, enabled, bank in (('slave', True, 0), ('slave', False, 0),
+                                ('master', True, 0), ('master', True, 1),
+                                ('master', False, 1), ('slave', True, 1)):
+        base = 0x20380000 + bank * 0x40000
+        irq = 99 + bank - 32
+        if role == 'master' and bank == 1:
+            source, first = 0xa6f22000, 0xdd24c800
+        else:
+            source, first = 0xbad0a000, 0xea3b6800
+        second = first + plane_bytes
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -92,9 +100,11 @@ def check(qemu):
                     0x400: 0xa01580, 0x40c: 0x20400048, 0x420: 1, 0x428: 1,
                     0x42c: 2, 0x488: first, 0x498: second, 0x4c8: out_width}
                 for offset, value in values.items():
-                    write(0x20380000 + offset, value)
-                for offset, value in ((0x40, 5), (0x44, 0), (0x48, width << 16 | height)):
-                    write(0x203c0000 + offset, value)
+                    write(base + offset, value)
+                partner = 0x20380000 + (1 - bank) * 0x40000
+                geometry = 1380 << 16 | 918 if role == 'master' and bank == 1 else width << 16 | height
+                for offset, value in ((0x40, 5), (0x44, 0), (0x48, geometry)):
+                    write(partner + offset, value)
 
             points = [(0, 0), (1, 0), (out_width // 2, out_height // 2),
                       (out_width - 1, out_height - 1)]
@@ -110,16 +120,16 @@ def check(qemu):
             configure()
             write(first, 0xa5a5a5a5)
             write(second, 0x5a5a5a5a)
-            write(0x20380008, 1)
-            if not enabled or role == 'master':
+            write(base + 0x8, 1)
+            if not enabled or (role, bank) not in (('slave', 0), ('master', 1)):
                 write(0x20100900, 1)
                 write(0x201008a0, 1)
-                assert count() == 0 and read(0x20380024) == 0
+                assert count() == 0 and read(base + 0x24) == 0
                 assert read(0x2010001c) == 0 and read(0x20100900) == 1
                 assert read(first) == 0xa5a5a5a5 and read(second) == 0x5a5a5a5a
                 continue
-            assert count() == 1 and read(0x20380024) == 2, (role, count(), hex(read(0x20380024)))
-            assert not levels.get(99 - 32, False)
+            assert count() == 1 and read(base + 0x24) == 2, (role, count(), hex(read(base + 0x24)))
+            assert not levels.get(irq, False)
             for x, y in points + [(10, 10), (out_width - 2, 5), (5, out_height - 1)]:
                 offset = (y * height // out_height) * stride + (x * width // out_width // 2) * 3
                 assert data_at(first + y * out_width + x, 1) == (b'\xff' if offset in bright else b'\x00')
@@ -127,31 +137,47 @@ def check(qemu):
                 assert data_at(second + y * out_width, out_width) == b'\x80' * out_width
             assert read(first - 4) == 0x10203040 and read(second + plane_bytes) == 0x50607080
             assert read(source - 4) == 0x12345678 and read(source + stride * height) == 0x87654321
-            write(0x20380008, 1)
+            write(base + 0x8, 1)
             assert count() == 1, 'Pending completion accepted another job'
-            write(0x20380020, 2)
-            assert levels[99 - 32]
-            write(0x20380024, 2)
-            assert not levels[99 - 32]
-            for address, value in ((0x20380048, 0x1000100), (0x20380310, 0xbee85ff0),
-                                   (0x20380488, 0xffe667e0), (0x20380498, first + 16)):
+            write(base + 0x20, 2)
+            assert levels[irq]
+            write(base + 0x24, 1)
+            assert read(base + 0x24) == 2 and levels[irq]
+            write(base + 0x24, 2)
+            assert not levels[irq]
+            source_end = 0xac1c5000 if role == 'master' else 0xbee86000
+            output_end = 0xffee5400 if role == 'master' else 0xffe66800
+            for address, value in ((base + 0x48, 0x1000100), (base + 0x310, source_end - 16),
+                                   (base + 0x488, output_end - 32), (base + 0x498, first + 16),
+                                   (base + 0x314, source), (base + 0x4a8, first)):
                 configure()
                 write(first, 0xa5a5a5a5)
                 write(second, 0x5a5a5a5a)
                 write(address, value)
-                write(0x20380008, 1)
-                assert count() == 1 and read(0x20380024) == 0
+                write(base + 0x8, 1)
+                assert count() == 1 and read(base + 0x24) == 0
                 assert read(first) == 0xa5a5a5a5 and read(second) == 0x5a5a5a5a
+                write(address, 0)
             configure()
             load(source + stride * height - 3, b'\x01\x00\x00')
-            write(0x20380008, 1)
-            assert count() == 1 and read(0x20380024) == 0
+            write(base + 0x8, 1)
+            assert count() == 1 and read(base + 0x24) == 0
             assert read(first) == 0xa5a5a5a5 and read(second) == 0x5a5a5a5a, 'Late invalid pixels partially changed output'
             load(source + stride * height - 3, bytes(3))
-            write(0x20380008, 1)
-            assert count() == 2 and read(0x20380024) == 2
-            write(0x20380024, 2)
+            write(base + 0x8, 1)
+            assert count() == 2 and read(base + 0x24) == 2
+            write(base + 0x24, 2)
             write(first, 0x60606060)
+
+            if role == 'master':
+                assert read(0x20380024) == 0, 'Bank 1 completion changed bank 0'
+                write(base + 0x20, 2)
+                write(base + 8, 1)
+                assert count() == 3 and read(base + 0x24) == 2 and levels[irq]
+                monitor('system_reset')
+                assert count() == 0 and read(base + 8) == 0 and read(base + 0x24) == 0
+                assert not levels.get(irq, False)
+                continue
 
             # Native still transform: full-size copy and a small secondary view.
             full, small, small_uv = 0xf510e800, 0xc8984800, 0xc8b3e800

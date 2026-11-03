@@ -717,9 +717,9 @@ struct NikonZ72BootConfig {
     NikonZ72ConfigWord image_interrupt_words[2];
     uint32_t image_interrupt_masks[2];
     uint32_t image_interrupt_status[2];
-    MemoryRegion image_controls[5];
-    NikonZ72ConfigWord image_control_words[5];
-    uint32_t image_control_values[5];
+    MemoryRegion image_controls[10];
+    NikonZ72ConfigWord image_control_words[10];
+    uint32_t image_control_values[10];
     uint32_t image_drain_requests;
     bool image_draining;
     uint64_t frame_count;
@@ -1589,7 +1589,7 @@ static uint64_t image_control_read(void *opaque, hwaddr offset, unsigned size)
  * an 8-bit luma plane and an equal-height neutral chroma plane are explicit
  * layout/color hypotheses. Accept only the full-scale RAW12 lab stimulus;
  * the camera's color operators and other recipes remain unimplemented. */
-static bool image_process_still_frame(NikonZ72BootConfig *s)
+static bool image_process_still_frame(NikonZ72BootConfig *s, unsigned bank)
 {
     enum { INPUT_WIDTH = 8288, INPUT_HEIGHT = 5520, INPUT_STRIDE = 12432,
            OUTPUT_WIDTH = 8256, OUTPUT_HEIGHT = 5504 };
@@ -1602,25 +1602,35 @@ static bool image_process_still_frame(NikonZ72BootConfig *s)
         {0x4c8, OUTPUT_WIDTH},
     };
     AddressSpace *view = CPU(s->cpu)->as;
-    uint8_t word[4], partner[12], inputs[0x40], targets[0x20];
+    hwaddr base = 0x20380000 + bank * 0x40000;
+    uint8_t word[4], partner[12], inputs[0x40], targets[0x40];
     uint8_t y_row[OUTPUT_WIDTH];
     uint8_t chroma_row[OUTPUT_WIDTH];
     uint32_t source, first, second;
     const unsigned source_bytes = INPUT_STRIDE * INPUT_HEIGHT;
     const unsigned plane_bytes = OUTPUT_WIDTH * OUTPUT_HEIGHT;
+    const uint32_t source_start = s->master_role ? 0x62700000 : 0x83900000;
+    const uint32_t source_end = s->master_role ? 0xac1c5000 : 0xbee86000;
+    const uint32_t output_start = s->master_role ? 0xcc700000 : 0xea3b6800;
+    const uint32_t output_end = s->master_role ? 0xffee5400 : 0xffe66800;
 
-    if (address_space_read(view, 0x203c0040, MEMTXATTRS_UNSPECIFIED,
-                           partner, sizeof(partner)) != MEMTX_OK ||
-        address_space_read(view, 0x20380310, MEMTXATTRS_UNSPECIFIED,
+    /* Slave still processing configures both banks. Master still work uses
+     * bank1 independently while bank0 retains its preview configuration. */
+    if (bank == 0 &&
+        (address_space_read(view, 0x203c0040, MEMTXATTRS_UNSPECIFIED,
+                            partner, sizeof(partner)) != MEMTX_OK ||
+         ldl_le_p(partner) != 5 || ldl_le_p(partner + 4) ||
+         ldl_le_p(partner + 8) != (INPUT_WIDTH << 16 | INPUT_HEIGHT))) {
+        return false;
+    }
+    if (address_space_read(view, base + 0x310, MEMTXATTRS_UNSPECIFIED,
                            inputs, sizeof(inputs)) != MEMTX_OK ||
-        address_space_read(view, 0x20380488, MEMTXATTRS_UNSPECIFIED,
-                           targets, sizeof(targets)) != MEMTX_OK ||
-        ldl_le_p(partner) != 5 || ldl_le_p(partner + 4) ||
-        ldl_le_p(partner + 8) != (INPUT_WIDTH << 16 | INPUT_HEIGHT)) {
+        address_space_read(view, base + 0x488, MEMTXATTRS_UNSPECIFIED,
+                           targets, sizeof(targets)) != MEMTX_OK) {
         return false;
     }
     for (unsigned i = 0; i < ARRAY_SIZE(profile); i++) {
-        if (address_space_read(view, 0x20380000 + profile[i].offset,
+        if (address_space_read(view, base + profile[i].offset,
                                MEMTXATTRS_UNSPECIFIED, word, sizeof(word)) != MEMTX_OK ||
             ldl_le_p(word) != profile[i].value) {
             return false;
@@ -1639,8 +1649,8 @@ static bool image_process_still_frame(NikonZ72BootConfig *s)
     source = ldl_le_p(inputs);
     first = ldl_le_p(targets);
     second = ldl_le_p(targets + 0x10);
-    if (source < 0x83900000 || (uint64_t)source + source_bytes > 0xbee86000 ||
-        first < 0xea3b6800 || (uint64_t)first + 2 * plane_bytes > 0xffe66800 ||
+    if (source < source_start || (uint64_t)source + source_bytes > source_end ||
+        first < output_start || (uint64_t)first + 2 * plane_bytes > output_end ||
         (uint64_t)first + plane_bytes != second ||
         !processing_ram_range(view, source, source_bytes) ||
         !processing_ram_range(view, first, 2 * plane_bytes)) {
@@ -1680,6 +1690,8 @@ static void image_control_write(void *opaque, hwaddr offset,
 {
     NikonZ72ConfigWord *word = opaque;
     NikonZ72BootConfig *s = word->device;
+    unsigned bank = word->index / ARRAY_SIZE(image_control_offsets);
+    unsigned control = word->index % ARRAY_SIZE(image_control_offsets);
     uint8_t prefix[4], source[4];
     AddressSpace *view;
 
@@ -1687,16 +1699,16 @@ static void image_control_write(void *opaque, hwaddr offset,
     if (!s->frame_process || !s->cpu || value != 1) {
         return;
     }
-    if (!s->master_role) {
-        if (word->index == 0 && !s->image_interrupt_status[0] &&
-            image_process_still_frame(s)) {
-            s->image_interrupt_status[0] |= 2;
-            image_update_irqs(s);
-        }
+    if (control == 0 && bank == (s->master_role ? 1 : 0) &&
+        !s->image_interrupt_status[bank] && image_process_still_frame(s, bank)) {
+        s->image_interrupt_status[bank] |= 2;
+        image_update_irqs(s);
+    }
+    if (!s->master_role || bank != 0) {
         return;
     }
     view = CPU(s->cpu)->as;
-    if (word->index == 0) {
+    if (control == 0) {
         if (!s->image_draining) {
             return;
         }
@@ -1718,16 +1730,16 @@ static void image_control_write(void *opaque, hwaddr offset,
                            prefix, 4) != MEMTX_OK || ldl_le_p(prefix) != 0xfc400) {
         return;
     }
-    if (word->index == 1) {
+    if (control == 1) {
         s->image_drain_requests = 0;
         s->image_draining = true;
     } else if (!s->image_draining || !(s->image_drain_requests & 1)) {
         return;
     }
-    if (s->image_drain_requests & (1u << (word->index - 1))) {
+    if (s->image_drain_requests & (1u << (control - 1))) {
         return;
     }
-    s->image_drain_requests |= 1u << (word->index - 1);
+    s->image_drain_requests |= 1u << (control - 1);
     if (s->image_drain_requests == 0xf) {
         s->image_interrupt_status[0] |= 0x14a0000;
         image_update_irqs(s);
@@ -4196,8 +4208,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 57,
-    .minimum_version_id = 57,
+    .version_id = 58,
+    .minimum_version_id = 58,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4253,7 +4265,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT64(processing_grid_count, NikonZ72BootConfig),
         VMSTATE_UINT32_ARRAY(image_interrupt_masks, NikonZ72BootConfig, 2),
         VMSTATE_UINT32_ARRAY(image_interrupt_status, NikonZ72BootConfig, 2),
-        VMSTATE_UINT32_ARRAY(image_control_values, NikonZ72BootConfig, 5),
+        VMSTATE_UINT32_ARRAY(image_control_values, NikonZ72BootConfig, 10),
         VMSTATE_UINT32(image_drain_requests, NikonZ72BootConfig),
         VMSTATE_BOOL(image_draining, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(snapshot_table, NikonZ72BootConfig, 0x800),
@@ -4504,15 +4516,17 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
     const unsigned parameter_first = boot_config_index_of(0x20013000);
     const unsigned release_first = boot_config_index_of(0x04281034);
     if (s->release_config) {
-        for (unsigned index = 0; index < ARRAY_SIZE(image_control_offsets); index++) {
-            s->image_control_words[index] = (NikonZ72ConfigWord) { s, index };
-            memory_region_init_io(&s->image_controls[index], OBJECT(dev),
-                &image_control_ops, &s->image_control_words[index],
-                "z72-image-control-bank0", 4);
-            memory_region_add_subregion_overlap(root,
-                0x20380000 + image_control_offsets[index], &s->image_controls[index], 1);
-        }
         for (unsigned bank = 0; bank < 2; bank++) {
+            for (unsigned control = 0; control < ARRAY_SIZE(image_control_offsets); control++) {
+                unsigned index = bank * ARRAY_SIZE(image_control_offsets) + control;
+                s->image_control_words[index] = (NikonZ72ConfigWord) { s, index };
+                memory_region_init_io(&s->image_controls[index], OBJECT(dev),
+                    &image_control_ops, &s->image_control_words[index],
+                    bank ? "z72-image-control-bank1" : "z72-image-control-bank0", 4);
+                memory_region_add_subregion_overlap(root,
+                    0x20380000 + bank * 0x40000 + image_control_offsets[control],
+                    &s->image_controls[index], 1);
+            }
             s->image_interrupt_words[bank] = (NikonZ72ConfigWord) { s, bank };
             memory_region_init_io(&s->image_interrupts[bank], OBJECT(dev),
                 &image_interrupt_ops, &s->image_interrupt_words[bank],

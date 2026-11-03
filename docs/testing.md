@@ -908,3 +908,18 @@ additional SFLT/RAW cases. SFLT preparation and processing select the value-1
 return branch; RAW value 2 executes the original header update. Other values
 stop before later preconditions or the real service. The body probe checks those
 original branches separately when the explicit full preprocessing bypass is used.
+
+The still raster batch has six configurations, including the native master
+bank1 profile with bank0 retaining preview geometry. It checks both engines'
+rasters and bank-local masked pending, W1C (including unrelated ACK), rejected
+extra input/output slots, pool bounds, invalid final source pixels and reset
+with a pending IRQ. Unsupported role/bank combinations and disabled processing
+leave destinations unchanged. The six input-DMA configurations also pass after
+the control-register mapping change. See the
+[device receipt](../artifacts/master_still_bank_validation/report.json).
+
+The body probe reads image registers through offset `4fc` and can observe the
+master request, bank1 IRQ, native callback and request return. Its row hashes
+are read at those boundaries; they do not supply a result or release a task.
+The boot-config state format is version 58 because both control banks now have
+explicit saved words. Full-machine migration remains unverified.
