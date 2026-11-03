@@ -878,3 +878,10 @@ DMA controls, address bounds and independent peer RAM. The complete batch has
 Snapshot checks distinguish retained single/split destinations and read only the
 owners consistent with the currently supported row layout. None of these checks
 establishes native repeated saving or physical exposure timing.
+
+`tools/capture_input_ready_contract.py` also executes six original metadata
+buffer selector/index cases and sixteen type-availability cases for types 0/80.
+Zero slots remain zero. Modes requiring refresh are classified without supplying
+a refresh result or allocating buffers. The separate native buffer trace records
+both original allocation results and later metadata lookups; a successful lookup
+in that run does not explain the prior null descriptor or prove repeated saving.

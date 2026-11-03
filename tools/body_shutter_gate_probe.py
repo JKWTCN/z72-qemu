@@ -282,6 +282,12 @@ CAPTURE_INPUT_POINTS = {
     0x1022e802: 'capture-processing-ready-input-handler',
     0x10327caa: 'capture-input-metadata-task-routing',
     0x10326e86: 'capture-input-metadata-task',
+    0x1023cc10: 'capture-input-buffer-initialize',
+    0x1023cc28: 'capture-input-buffer-slot310-result',
+    0x1023cc32: 'capture-input-buffer-slot46c-result',
+    0x1023cc44: 'capture-input-buffer-assigned',
+    0x10307fe0: 'capture-input-buffer-availability-return',
+    0x10327108: 'capture-metadata-buffer-lookup-return',
     0x1031cb3a: 'capture-driver-stop-flags-stored',
     0x1024220a: 'capture-input-adapter-command',
     0x102421aa: 'capture-input-adapter-response',
@@ -907,7 +913,7 @@ def image_service_snapshot(remote):
 
 
 def input_tail_parameter_snapshot(remote, pointer):
-    """Read the two original tail-worker conditions without changing them."""
+    """Read original tail conditions and the metadata buffer selection."""
     result = dict(address=hex(pointer))
     if not 0xb2c00000 <= pointer <= 0xb5effb08:
         return result
@@ -915,10 +921,24 @@ def input_tail_parameter_snapshot(remote, pointer):
         return int.from_bytes(remote.read(address, 4), 'little')
     nested = word(pointer + 0x4f4)
     result.update(parameter_2b4=hex(word(pointer + 0x2b4)), nested=hex(nested))
+    selector = word(pointer + 0x30c)
+    slots = {hex(offset): hex(word(pointer + offset)) for offset in (0x310, 0x46c)}
+    selected_offset = '0x310' if selector else '0x46c'
+    result['metadata_buffer'] = dict(selector=selector, slots=slots,
+        selected_offset=selected_offset, selected=slots[selected_offset])
     if 0xb2c00000 <= nested <= 0xb5efd7b4:
         result.update(nested_2844=hex(word(nested + 0x2844)),
                       nested_2848=hex(word(nested + 0x2848)))
     return result
+
+
+def capture_buffer_pool_snapshot(remote):
+    def word(address):
+        return hex(int.from_bytes(remote.read(address, 4), 'little'))
+    return dict(override=word(0xb1888240), types=[dict(kind=kind,
+        enabled=word(0xb26b4b50 + kind * 4),
+        record=[word(0xb1888404 + kind * 16 + offset) for offset in (0, 4, 8, 12)])
+        for kind in (0, 80)])
 
 
 def capture_request_variant_slots_snapshot(remote):
@@ -3461,6 +3481,19 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['metadata_parameters'] = input_tail_parameter_snapshot(remote, pointer)
                         if pc == 0x1032729a:
                             record['stage_descriptor'] = hex(remote.get(registers, 'r0'))
+                    if pc in (0x1023cc10, 0x1023cc28, 0x1023cc32, 0x1023cc44, 0x10327108):
+                        pointer = remote.get(registers, 'r0' if pc == 0x1023cc10 else 'r4')
+                        record['buffer_context'] = input_tail_parameter_snapshot(remote, pointer)
+                        record['buffer_pool'] = capture_buffer_pool_snapshot(remote)
+                        if pc in (0x1023cc28, 0x1023cc32, 0x10327108):
+                            record['descriptor_result'] = hex(remote.get(registers, 'r0'))
+                    if pc == 0x10307fe0:
+                        kind = remote.get(registers, 'r5')
+                        keep = keep and kind in (0, 80) and record['capture_state'][0] >= 6
+                        if keep:
+                            record['buffer_kind'] = kind
+                            record['buffer_available'] = remote.get(registers, 'r4')
+                            record['buffer_pool'] = capture_buffer_pool_snapshot(remote)
                     if pc == 0x103ce51e:
                         packet, length = remote.get(registers, 'r3'), remote.get(registers, 'r2')
                         if length == 20 and 0xb1800000 <= packet <= 0xb5efffec:
@@ -3604,6 +3637,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     repeat = not keep or hits[pc] < (32 if pc in (
                         0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
                         0x10360468, 0x103604ca, 0x103eb2e4,
+                        0x1023cc10, 0x1023cc28, 0x1023cc32, 0x1023cc44, 0x10307fe0, 0x10327108,
                         0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else
                         16 if repeat_body_capture and pc == 0x103e6e94 else 8)
                 if keep:

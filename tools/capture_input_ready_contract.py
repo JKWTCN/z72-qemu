@@ -113,9 +113,39 @@ def probe(image):
             require(native.flags == flags, 'Native constructor input prerequisites differ')
             cases.append(dict(parameter_c0=auxiliary, parameter_c4=selection,
                 context_2b4=extra_context, parameter_dc=extra_output, flags=hex(flags)))
+    selector_cases = []
+    for selector in (0, 1, 7):
+        for index in (0, 1):
+            native.u.mem_write(context + 0x30c, struct.pack('<I', selector))
+            native.u.mem_write(context + 0x310, struct.pack('<2I', native.DATA + 0x7000, 0))
+            native.u.mem_write(context + 0x46c, struct.pack('<2I', native.DATA + 0x8000, 0))
+            value = native.call(0x2117d4, context, index)
+            expected = (native.DATA + (0x7000 if selector else 0x8000)) if index == 0 else 0
+            require(value == expected, 'Native metadata descriptor selection differs')
+            selector_cases.append(dict(selector=selector, index=index, result=hex(value)))
+    availability = []
+    for kind in (0, 80):
+        for override, enabled, record, mode in (
+                (0, 0, (0, 0, 0, 0), 1), (0, 1, (0, 0, 0, 0), 0),
+                (1, 0, (0, 0, 0, 0), 1), (1, 1, (0, 0, 0, 0), 0),
+                (1, 1, (1, 0, 0, 0), 0), (1, 1, (1, 0, 1, 0), 2),
+                (1, 0, (1, 0, 0, 0), 1), (1, 0, (1, 0, 0, 1), 2)):
+            native.u.mem_write(0xb1888240, struct.pack('<I', override))
+            native.u.mem_write(0xb26b4b50 + kind * 4, struct.pack('<I', enabled))
+            native.u.mem_write(0xb1888404 + kind * 16, struct.pack('<4I', *record))
+            result = native.call(0x2e68ba, kind)
+            require(result == mode, 'Native buffer type mode differs')
+            allowed = None if mode == 2 else native.call(0x2e7fb4, kind)
+            require(allowed is None or allowed == int(mode == 0), 'Native buffer availability differs')
+            availability.append(dict(kind=kind, override=override, enabled=enabled,
+                record=list(record), mode=result, allowed=allowed, refresh_required=mode == 2))
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
         notification='0x10327976', routes=routes, constructor='0x10326e86',
         constructor_context_payload_offset='0x20', initial_flag_cases=cases,
+        metadata_buffer=dict(getter='0x102317d4', selector_offset='0x30c',
+            slots=['0x310', '0x46c'], cases=selector_cases,
+            availability_getter='0x103068ba', availability_gate='0x10307fb4',
+            availability_cases=availability),
         upstream=dict(adapter_callback='0x10241fb2', notification='0x03030023',
             adapter_task='0x10241ed8', adapter_event='0x8', forwarded_notification='0x03030003',
             processing_callback='0x10394762', processing_task='0x10397b5c',
@@ -130,6 +160,7 @@ def probe(image):
                          'accept synthetic context validation', 'stop at initial aggregate call'],
         limitations=['Synthetic payload and context; original routing and initial flag selection execute.',
                      'Constructor metadata work after its initial aggregate call is not executed.',
+                     'Buffer modes requiring refresh are classified only; refresh and allocation are not executed.',
                      'Processing notification producer is selected but its body is not executed.',
                      'Completion flag and processing task use distinct objects; their connection is not executed.',
                      'Does not deliver a notification to the running camera or prove a hardware result.'])
