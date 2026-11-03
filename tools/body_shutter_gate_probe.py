@@ -56,6 +56,27 @@ BODY_RELEASE_INPUT_POINTS = {
     0x1022a8b2: 'body-release-mask-clear',
     0x1022cfbc: 'body-release-operation-dispatch',
 }
+BODY_FULL_REQUEST_POINTS = {
+    0x103eda92: 'body-full-capture-route',
+    0x103f53b6: 'body-full-capture-handler',
+    0x103f53ea: 'body-full-processing-condition',
+    0x103f5422: 'body-full-global-subscriber-check',
+    0x1020e568: 'body-full-system-route',
+    0x1020e59a: 'body-full-system-interface-call',
+    0x102473f6: 'body-full-system-state4-handler',
+    0x1024740a: 'body-full-system-mode-result',
+    0x102a6cb2: 'body-full-common-mode-result',
+    0x102a6cce: 'body-full-information-result',
+    0x102a6ce6: 'body-full-property-result',
+    0x102a6cf0: 'body-full-system-busy-result',
+    0x102a6cf6: 'body-full-system-status-callback',
+}
+BODY_STATUS_LIST_POINTS = {
+    0x1035ed5c: 'body-status-list-update',
+    0x1020d3ca: 'body-status-input-classification',
+    0x103f350a: 'body-status-operation-submit',
+    0x103f15b2: 'body-status-operation-worker',
+}
 BODY_CONFIGURATION_POINTS = {
     0x1052273e: 'body-configuration-submit',
     0x10635cf6: 'body-configuration-wrapper',
@@ -1512,6 +1533,16 @@ def controller_release_irq_snapshot(remote, resume_thread=1):
         remote.select_thread(resume_thread)
 
 
+def status_codes_snapshot(remote):
+    size, pointer = struct.unpack('<II', remote.read(0xb187556c, 8))
+    if size == 0x118 and pointer:
+        count = int.from_bytes(remote.read(pointer + 0x110, 4), 'little')
+        if count <= 68:
+            return [hex(x) for x in struct.unpack('<' + 'I' * count,
+                                                  remote.read(pointer, count * 4))]
+    return None
+
+
 def snapshot(remote):
     remote.select_thread(1)
     def word(address):
@@ -1519,13 +1550,7 @@ def snapshot(remote):
     mode = remote.read(0xb1818d28, 2)
     state = remote.read(0xb1821b18, 1)[0]
     handler_object = word(0xb202f728 + state * 4)
-    size, pointer = struct.unpack('<II', remote.read(0xb187556c, 8))
-    codes = None
-    if size == 0x118 and pointer:
-        count = word(pointer + 0x110)
-        if count <= 68:
-            codes = [hex(x) for x in struct.unpack('<' + 'I' * count,
-                                                 remote.read(pointer, count * 4))]
+    codes = status_codes_snapshot(remote)
     notifications = remote.read(0x1094559c, 44 * 8)
     manager = remote.read(0xb1811e40, 28)
     engines = {}
@@ -1667,6 +1692,7 @@ def snapshot(remote):
                     item['value'] = hex(word(address))
                 output_registers[hex(offset)] = item
     return dict(system_mode=mode[0], previous_mode=mode[1],
+        system_input_class=remote.read(0xb1818f14, 1)[0],
         card_admission=card_admission_snapshot(remote),
         processing_controller={hex(index * 4): hex(value) for index, value in enumerate(
             struct.unpack('<17I', remote.read(0x20100000, 68)))},
@@ -1989,7 +2015,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
     if capture_focus:
         armed.update(CAPTURE_SLAVE_INIT_POINTS)
     if repeat_body_capture:
-        armed.update(BODY_RELEASE_INPUT_POINTS)
+        armed.update({address: label for address, label in BODY_RELEASE_INPUT_POINTS.items()
+                      if address != 0x1022cfbc})
+        armed.update(BODY_FULL_REQUEST_POINTS)
     image_work_armed = False
     body_status_armed = False
     body_capture_armed = False
@@ -2089,6 +2117,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         click = dict(requested=shutter_click, released=False)
         body_shots = []
         repeat_check_after = 0
+        repeat_readiness = None
+        repeat_full_wait = None
         boundary_frame = 0
         boundary_path = None
         if input_boundary_events:
@@ -2121,9 +2151,21 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 remote.select_thread(3)
                 queued = int.from_bytes(remote.read(0xc16a58b0, 4), 'little')
                 remote.select_thread(1)
-                if state == [2, 0] and gate == 0 and frames == 1 and queued == 0:
+                input_class = remote.read(0xb1818f14, 1)[0]
+                codes = status_codes_snapshot(remote)
+                readiness = (state, gate, frames, queued, input_class, codes)
+                if readiness != repeat_readiness:
+                    records.append(dict(entry='body-repeat-readiness', capture_state=state,
+                        release_gate=gate, primary_frames=frames, still_queue_count=queued,
+                        system_input_class=input_class, status_codes=codes,
+                        counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little')))
+                    repeat_readiness = readiness
+                # Class 4 routes a full press to status handling rather than capture preparation.
+                if (state == [2, 0] and gate == 0 and frames == 1 and queued == 0 and
+                        input_class in (1, 2) and codes == []):
                     records.append(dict(entry='body-repeat-ready', capture_state=state,
                         release_gate=gate, primary_frames=frames, still_queue_count=queued,
+                        system_input_class=input_class, status_codes=codes,
                         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little')))
                     preview_press_sent = False
                     preview_half_tick = None
@@ -2138,20 +2180,35 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     records.append(dict(entry='body-short-exposure-half-press', counter_ticks=ticks,
                                         shot=len(body_shots) + 1))
                 elif not half_before_full or ticks - preview_half_tick >= before['counter_frequency'] // 2:
-                    if capture_focus:
-                        arm_capture_input()
-                    machine.set_key(25, 0)
-                    preview_press_sent = True
-                    preview_full_tick = ticks
-                    click['press_ticks'] = ticks
-                    click['shot'] = len(body_shots) + 1
-                    body_shots.append(click)
-                    capture_caller.report['body_shutter_used'] = True
-                    records.append(dict(entry='body-short-exposure-full-press', counter_ticks=ticks,
-                        shot=len(body_shots),
-                        release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
-                        half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
-                            if half_before_full else None))
+                    full_ready = True
+                    if repeat_body_capture and len(body_shots) == 1:
+                        input_class = remote.read(0xb1818f14, 1)[0]
+                        codes = status_codes_snapshot(remote)
+                        full_ready = input_class in (1, 2) and codes == []
+                        if not full_ready and (input_class, codes) != repeat_full_wait:
+                            records.append(dict(entry='body-repeat-full-wait', counter_ticks=ticks,
+                                system_input_class=input_class, status_codes=codes))
+                            repeat_full_wait = (input_class, codes)
+                    if full_ready:
+                        if capture_focus:
+                            arm_capture_input()
+                        if repeat_body_capture:
+                            for address, label in BODY_STATUS_LIST_POINTS.items():
+                                if address not in armed:
+                                    remote.breakpoint(address)
+                                armed[address] = label
+                        machine.set_key(25, 0)
+                        preview_press_sent = True
+                        preview_full_tick = ticks
+                        click['press_ticks'] = ticks
+                        click['shot'] = len(body_shots) + 1
+                        body_shots.append(click)
+                        capture_caller.report['body_shutter_used'] = True
+                        records.append(dict(entry='body-short-exposure-full-press', counter_ticks=ticks,
+                            shot=len(body_shots),
+                            release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
+                            half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
+                                if half_before_full else None))
             if capture_focus and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
@@ -2857,12 +2914,52 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 16
                 if pc in BODY_RELEASE_INPUT_POINTS:
-                    record['release_input_control'] = {
-                        hex(offset): hex(value) for offset, value in zip(range(0, 0x100, 4),
-                            struct.unpack('<64I', remote.read(0xb23f7e64, 0x100)))}
-                    record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
+                    if pc == 0x1022aa5c and 0x1022cfbc not in armed:
+                        remote.breakpoint(0x1022cfbc)
+                        armed[0x1022cfbc] = BODY_RELEASE_INPUT_POINTS[0x1022cfbc]
+                    keep = pc != 0x1022cfbc or remote.get(registers, 'r0') == 0x1b
+                    if keep:
+                        record['release_input_control'] = {
+                            hex(offset): hex(value) for offset, value in zip(range(0, 0x100, 4),
+                                struct.unpack('<64I', remote.read(0xb23f7e64, 0x100)))}
+                        record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = not keep if pc == 0x1022cfbc else hits[pc] < 32
+                if pc in BODY_FULL_REQUEST_POINTS:
+                    if keep:
+                        def request_word(address):
+                            return int.from_bytes(remote.read(address, 4), 'little')
+                        interface = request_word(0xb1818d24)
+                        record['full_request_state'] = dict(
+                            capture_header=list(remote.read(0xb23f6ce8, 0x40)),
+                            global_subscriber=hex(request_word(0xb18695ac)),
+                            system_input_class=remote.read(0xb1818f14, 1)[0],
+                            status_codes=status_codes_snapshot(remote),
+                            system_state=list(remote.read(0xb1818d28, 4)),
+                            system_interface=hex(interface),
+                            system_fields={hex(offset): hex(request_word(0xb1818bd0 + offset))
+                                           for offset in (0xac, 0xc4, 0x35c, 0x36c)},
+                            full_input_flags=[hex(value) for value in
+                                struct.unpack('<21I', remote.read(0xb1818f60, 0x54))])
+                        if 0xb1800000 <= interface <= 0xb5effea0:
+                            record['full_request_state']['interface_fields'] = {
+                                hex(offset): hex(request_word(interface + offset))
+                                for offset in (0, 0x4c, 0x54, 0x118)}
+                        if pc == 0x103f53b6:
+                            pointer = remote.get(registers, 'r0')
+                            if 0xb1800000 <= pointer <= 0xb5effffc:
+                                record['full_request_state']['argument'] = hex(request_word(pointer))
+                    hits[pc] = hits.get(pc, 0) + int(keep)
+                    repeat = not keep or hits[pc] < 16
+                if pc in BODY_STATUS_LIST_POINTS:
+                    record['status_codes'] = status_codes_snapshot(remote)
+                    record['system_input_class'] = remote.read(0xb1818f14, 1)[0]
+                    if pc == 0x1035ed5c:
+                        record['stack_code_candidates'] = [hex(value) for value in
+                            struct.unpack('<16I', remote.read(remote.get(registers, 'sp'), 64))
+                            if 0x10020000 <= (value & ~1) < 0x12497b7a]
                     hits[pc] = hits.get(pc, 0) + 1
-                    repeat = hits[pc] < 32
+                    repeat = hits[pc] < 128
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')

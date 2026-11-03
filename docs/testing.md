@@ -787,3 +787,11 @@ immediate operation dispatch, deferred contact flags and release-mask clearing.
 Operation subscribers and one downstream half-press call are intercepted, so
 this contract neither proves hardware readiness nor repeated photograph saving.
 It requires the original master image and is not a firmware-free CI check.
+
+`tools/system_input_class_contract.py --master /path/to/master.bin
+--out /path/to/report.json` executes the original system input classifier with
+seven status/property fixtures, checks surrounding fields, and verifies that
+the status-operation wrapper forwards its callback and the status-list tail.
+This distinguishes capture preparation from status handling. Parameter reads
+and operation submission are isolated boundaries; status production, clearing
+and repeated capture require separate runtime evidence.

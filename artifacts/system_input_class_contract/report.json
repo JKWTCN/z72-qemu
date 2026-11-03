@@ -1,0 +1,99 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "classifier": "0x1020d3b4",
+  "input_class_offset": "0x344",
+  "cases": [
+    {
+      "status_count": 0,
+      "properties": {
+        "0x1b25": 0,
+        "0x1186": 0,
+        "0x168c": 0
+      },
+      "property_queries": [
+        "0x1b25",
+        "0x1186",
+        "0x168c"
+      ],
+      "input_class": 1
+    },
+    {
+      "status_count": 0,
+      "properties": {
+        "0x1b25": 0,
+        "0x1186": 1,
+        "0x168c": 1
+      },
+      "property_queries": [
+        "0x1b25",
+        "0x1186",
+        "0x168c"
+      ],
+      "input_class": 2
+    },
+    {
+      "status_count": 0,
+      "properties": {
+        "0x1b25": 1,
+        "0x1186": 1,
+        "0x3": 1
+      },
+      "property_queries": [
+        "0x1b25",
+        "0x1186",
+        "0x3"
+      ],
+      "input_class": 2
+    },
+    {
+      "status_count": 0,
+      "properties": {
+        "0x1b25": 1,
+        "0x1186": 1,
+        "0x3": 0
+      },
+      "property_queries": [
+        "0x1b25",
+        "0x1186",
+        "0x3"
+      ],
+      "input_class": 1
+    },
+    {
+      "status_count": 1,
+      "properties": {},
+      "property_queries": [],
+      "input_class": 4
+    },
+    {
+      "status_count": 2,
+      "properties": {},
+      "property_queries": [],
+      "input_class": 4
+    },
+    {
+      "status_count": 68,
+      "properties": {},
+      "property_queries": [],
+      "input_class": 4
+    }
+  ],
+  "status_operation_wrapper": "0x10360a06",
+  "status_operation_arguments": [
+    {
+      "value": "0x12345678",
+      "callback": "0x10204d47"
+    }
+  ],
+  "host_boundaries": [
+    "Supply isolated status-list contents at the parameter read boundary",
+    "Supply only the queried scalar properties",
+    "Record status-operation submission without executing it"
+  ],
+  "limitations": [
+    "Does not establish status production or clearing in a running machine",
+    "Does not execute capture preparation or prove repeated photographs"
+  ]
+}
