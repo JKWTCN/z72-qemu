@@ -779,3 +779,11 @@ include whitespace and `#`. `tests/test_still_processing.py` and
 survives transforms, thumbnails and JPEG encoding. Temporary scene files are
 removed by the checks. These are diagnostic image contracts, not physical
 sensor, calibration or original DSP verification.
+
+`tools/capture_release_deferred_contract.py --master /path/to/master.bin
+--out /path/to/report.json` executes the original C1.70 deferred half/full and
+full-release callbacks against eleven isolated mask/flag inputs. It checks
+immediate operation dispatch, deferred contact flags and release-mask clearing.
+Operation subscribers and one downstream half-press call are intercepted, so
+this contract neither proves hardware readiness nor repeated photograph saving.
+It requires the original master image and is not a firmware-free CI check.

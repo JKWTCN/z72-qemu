@@ -1,0 +1,119 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "mask_address": "0xb23f7e70",
+  "active_mask_address": "0xb23f7e6c",
+  "deferred_half_address": "0xb18698ec",
+  "deferred_full_address": "0xb18698f0",
+  "cases": [
+    {
+      "contact": "half-press",
+      "callback": "0x1022aa82",
+      "mask": 0,
+      "operations": [
+        26
+      ],
+      "deferred": 0
+    },
+    {
+      "contact": "half-press",
+      "callback": "0x1022aa82",
+      "mask": 1,
+      "operations": [],
+      "deferred": 1
+    },
+    {
+      "contact": "half-press",
+      "callback": "0x1022aa82",
+      "mask": 2,
+      "operations": [],
+      "deferred": 0
+    },
+    {
+      "contact": "full-press",
+      "callback": "0x1022aa5c",
+      "mask": 0,
+      "operations": [
+        27
+      ],
+      "deferred": 0
+    },
+    {
+      "contact": "full-press",
+      "callback": "0x1022aa5c",
+      "mask": 1,
+      "operations": [],
+      "deferred": 1
+    },
+    {
+      "contact": "full-press",
+      "callback": "0x1022aa5c",
+      "mask": 2,
+      "operations": [],
+      "deferred": 0
+    },
+    {
+      "contact": "full-release",
+      "callback": "0x1022aa24",
+      "mask": 1,
+      "deferred": 0,
+      "active_mask": 1,
+      "remaining_mask": 1,
+      "operations": []
+    },
+    {
+      "contact": "full-release",
+      "callback": "0x1022aa24",
+      "mask": 0,
+      "deferred": 1,
+      "active_mask": 1,
+      "remaining_mask": 1,
+      "operations": []
+    },
+    {
+      "contact": "full-release",
+      "callback": "0x1022aa24",
+      "mask": 0,
+      "deferred": 0,
+      "active_mask": 0,
+      "remaining_mask": 0,
+      "operations": [
+        170,
+        29
+      ]
+    },
+    {
+      "contact": "full-release",
+      "callback": "0x1022aa24",
+      "mask": 0,
+      "deferred": 0,
+      "active_mask": 1,
+      "remaining_mask": 0,
+      "operations": [
+        170,
+        29
+      ]
+    },
+    {
+      "contact": "full-release",
+      "callback": "0x1022aa24",
+      "mask": 0,
+      "deferred": 0,
+      "active_mask": 3,
+      "remaining_mask": 2,
+      "operations": [
+        170
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Isolated RAM masks and flags supplied before each native callback",
+    "Record operation dispatch at 0x1022cfbc without executing subscribers",
+    "Return zero at 0x10350f08 without executing its downstream service"
+  ],
+  "limitations": [
+    "Does not establish native mask production or hardware wiring",
+    "Does not execute capture operations or prove repeated photo saving"
+  ]
+}

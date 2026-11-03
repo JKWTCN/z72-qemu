@@ -45,6 +45,17 @@ AFTER_ACTION = {
     0x1053e598: 'event1-check-result',
     0x1053e62c: 'release-gate-clear-path',
 }
+BODY_RELEASE_INPUT_POINTS = {
+    0x1022aa5c: 'body-full-deferred-callback',
+    0x1022aa64: 'body-full-deferred-mask-check',
+    0x1022aa72: 'body-full-deferred-submit',
+    0x1022aa24: 'body-full-release-deferred-callback',
+    0x1022aa32: 'body-full-release-deferred-mask-check',
+    0x1022aa82: 'body-half-deferred-callback',
+    0x1022a874: 'body-half-release-deferred-callback',
+    0x1022a8b2: 'body-release-mask-clear',
+    0x1022cfbc: 'body-release-operation-dispatch',
+}
 BODY_CONFIGURATION_POINTS = {
     0x1052273e: 'body-configuration-submit',
     0x10635cf6: 'body-configuration-wrapper',
@@ -1977,6 +1988,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                       **ENGINE_ABORT_POINTS})
     if capture_focus:
         armed.update(CAPTURE_SLAVE_INIT_POINTS)
+    if repeat_body_capture:
+        armed.update(BODY_RELEASE_INPUT_POINTS)
     image_work_armed = False
     body_status_armed = False
     body_capture_armed = False
@@ -2843,6 +2856,13 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
                     hits[pc] = hits.get(pc, 0) + 1
                     repeat = hits[pc] < 16
+                if pc in BODY_RELEASE_INPUT_POINTS:
+                    record['release_input_control'] = {
+                        hex(offset): hex(value) for offset, value in zip(range(0, 0x100, 4),
+                            struct.unpack('<64I', remote.read(0xb23f7e64, 0x100)))}
+                    record['engine_release_gpio'] = engine_release_gpio_snapshot(remote, thread)
+                    hits[pc] = hits.get(pc, 0) + 1
+                    repeat = hits[pc] < 32
                 if pc == ACTION:
                     action = int.from_bytes(remote.read(
                         remote.get(registers, 'sp') + 0xc, 4), 'little')
