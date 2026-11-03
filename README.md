@@ -50,8 +50,14 @@ Start the console with `--live-view` to enable the experimental moving RAW12
 source and monochrome processing. Native firmware submits the changing LCD
 background and draws the camera interface; independent paused snapshots verify
 both alternating pixel data and composed images. The current profile starts
-without diagnostic finite-output events. Color, calibration, complete capture
-processing and photo files remain incomplete.
+without diagnostic finite-output events. Sensor color and calibration remain
+unverified. A focused body-shutter probe now verifies a complete 8256×5504
+diagnostic JPEG saved by the original firmware on a private SD-card image.
+It uses native local APIs to select short exposure, then drives the body
+half/full/release contacts without calling a diagnostic capture API. Original
+DSP preprocessing is explicitly skipped; pixels and JPEG hardware use the
+experimental replacement backend. This probe result does not establish the
+same behavior in the default browser-console profile.
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production
@@ -61,8 +67,9 @@ completion and a successful card query. Capture initialization also completes
 successfully. With the processing profile, the application release gate clears.
 The console now supplies the detached lens detection level; this stops the
 reconnection loop and lets the native capture API accept a diagnostic request.
-The body shutter has not yet reached the observed submission entries, and
-capture completion and photo files remain unverified. See
+The focused body run returns to capture-ready state after saving; independent
+card extraction verifies the primary JPEG, three embedded JPEGs and the complete
+checkerboard pattern. See [body capture evidence](artifacts/body_capture_dynamic_dma/card_check.json),
 [capture submission research](research/z7ii/capture_release_submit.md) and
 [notification chain research](research/z7ii/notification_chain.md).
 The steady menu cycle no longer shows the

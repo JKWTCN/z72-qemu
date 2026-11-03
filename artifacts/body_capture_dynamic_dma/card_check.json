@@ -1,0 +1,166 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "card_path": "D:\\code\\z72-qemu\\.local\\body-capture-dynamic-dma-20261103.raw",
+  "image_bytes": 4294967296,
+  "checker": "Read-only 7-Zip integrity/extraction and complete Pillow decode",
+  "original_files_preserved": true,
+  "temporary_card_retained": true,
+  "body_capture_verified": true,
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+      "all_zero": false
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+      "all_zero": true
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "e94567b31cb51bad147dbae080e130be7869b6b36b085aaf9ee0bd0a949df0d9",
+      "all_zero": false,
+      "exported_file": "DSC_0001.JPG",
+      "decoded": true,
+      "width": 8256,
+      "height": 5504,
+      "exif_make": "NIKON CORPORATION",
+      "exif_model": "NIKON Z 7_2",
+      "exif_software": "Ver.01.70\u0000\u0000\u0000",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "card_body_offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "card_body_offset": "0x488202",
+          "bytes": 374772
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "card_body_offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "card_body_offset": "0x824a",
+          "bytes": 10942
+        }
+      ],
+      "pattern_check": {
+        "source_geometry": [
+          8288,
+          5520
+        ],
+        "phase": 0,
+        "cell_size": 64,
+        "samples": 11310,
+        "failed_samples": 0,
+        "maximum_rgb_error": 0,
+        "allowed_rgb_error": 24,
+        "passed": true,
+        "method": "Every source checkerboard cell center mapped through the diagnostic nearest-sample scaler",
+        "stripe_join": {
+          "samples": 522,
+          "failed_samples": 0,
+          "maximum_rgb_error": 0,
+          "source_columns": [
+            2813,
+            2818
+          ]
+        }
+      }
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "c8a94177ba7d62acb456fb88ad97f140feb5548d0e45bb857ed4006bc9575cde",
+      "all_zero": false
+    }
+  ],
+  "capture_proof": {
+    "settings_only": true,
+    "capture_api_invoked": false,
+    "body_shutter_used": true,
+    "full_press_counter_ticks": 140142070,
+    "state_transitions": [
+      {
+        "old": "0x2",
+        "new": "0x6",
+        "counter_ticks": 140221263,
+        "seconds_after_full_press": 0.0016498541666666667
+      },
+      {
+        "old": "0x6",
+        "new": "0x7",
+        "counter_ticks": 146978208,
+        "seconds_after_full_press": 0.14241954166666668
+      },
+      {
+        "old": "0x7",
+        "new": "0x8",
+        "counter_ticks": 147742434,
+        "seconds_after_full_press": 0.15834091666666666
+      },
+      {
+        "old": "0x8",
+        "new": "0x9",
+        "counter_ticks": 165607623,
+        "seconds_after_full_press": 0.5305323541666667
+      },
+      {
+        "old": "0x9",
+        "new": "0xa",
+        "counter_ticks": 165845593,
+        "seconds_after_full_press": 0.5354900625
+      },
+      {
+        "old": "0xa",
+        "new": "0x2",
+        "counter_ticks": 176807967,
+        "seconds_after_full_press": 0.7638728541666666
+      }
+    ],
+    "observed_after_full_press_seconds": 3.0032304583333334,
+    "post_press_window": {
+      "requested_seconds": 3.0,
+      "reached": true
+    }
+  },
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "scope": "Native body half/full/release contacts initiated capture after a settings-only fixture selected short exposure through original local APIs. No diagnostic capture API was invoked. Synthetic RAW source, experimental hardware timing and replacement pixel/JPEG backend; original DSP preprocessing skipped. Original packaging/card writes; no host image repair. Raster files are local-only and excluded from Git."
+}

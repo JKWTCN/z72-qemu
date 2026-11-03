@@ -108,6 +108,10 @@ BODY_COMPUTE_POINTS = {
 }
 BODY_SYSTEM_POINTS = {
     0x1029993e: 'body-system-foreground-input',
+    0x1029995e: 'body-input-selected-handler',
+    0x10299774: 'body-input-handler-policy',
+    0x102997aa: 'body-input-handler-dispatch',
+    0x102997b2: 'body-input-handler-return',
     0x102a6984: 'body-system-base-mode-input',
     0x10245f5e: 'body-system-policy-mode-input',
     0x10247ad0: 'body-system-forward-mode-input',
@@ -3012,6 +3016,19 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         mode_bytes=list(remote.read(root + 0x158, 2)),
                         blocked=[hex(word(root + offset)) for offset in (0x320, 0x324, 0x328)],
                         pending=hex(word(root + 0x32c)))
+                    if pc in (0x1029995e, 0x10299774, 0x102997aa, 0x102997b2):
+                        pointer = remote.get(registers, 'r0' if pc == 0x1029995e else 'r7')
+                        record['input_dispatch'] = dict(handler=hex(pointer),
+                            registration=[hex(value) for value in struct.unpack(
+                                '<20I', remote.read(0xb1811e40, 80))],
+                            policy=[hex(value) for value in struct.unpack(
+                                '<13I', remote.read(0xb1811ea4, 52))])
+                        if 0xb1800000 <= pointer <= 0xb5efffb4:
+                            record['input_dispatch']['handler_words'] = [hex(value) for value in
+                                struct.unpack('<19I', remote.read(pointer, 76))]
+                            record['input_dispatch']['callback'] = hex(word(pointer + 0x44))
+                        if pc == 0x102997b2:
+                            record['input_dispatch']['result'] = remote.get(registers, 'r0')
                     if 0xb1800000 <= mode <= 0xb5effeb0:
                         record['body_system']['mode_fields'] = {
                             hex(offset): hex(word(mode + offset)) for offset in
