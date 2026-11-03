@@ -27,7 +27,7 @@ def prepare(root):
         if not destination.exists() or source.read_bytes() != destination.read_bytes():
             shutil.copyfile(source, destination)
     additions = {
-        'hw/arm/meson.build': "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72.c'))\n",
+        'hw/arm/meson.build': "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: [files('nikon-z72.c'), dependency('libjpeg')])\n",
         'hw/arm/Kconfig': '\nconfig NIKON_Z72_LAB\n    bool\n    depends on TCG && ARM\n    select GENERIC_LOADER\n    select ARM_GIC\n    select ARM_V7M\n    select STM32F2XX_TIMER\n    select OR_IRQ\n    select I2C\n    select SSI\n    select STM32F2XX_USART\n    select SDHCI\n    select SPLIT_IRQ\n',
         'configs/devices/arm-softmmu/default.mak': '\nCONFIG_NIKON_Z72_LAB=y\n',
     }
@@ -47,6 +47,8 @@ def prepare(root):
                         data = data.replace(previous_config, addition, 1)
                         break
         if name == 'hw/arm/meson.build':
+            legacy_board = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72.c'))\n"
+            data = data.replace(legacy_board, addition, 1)
             supply = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-controller-supply.c'))\n"
             if supply.strip() not in data:
                 data += supply

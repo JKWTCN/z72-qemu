@@ -752,3 +752,15 @@ neutral chroma, padding/guards, completion status acknowledgement and reset.
 It exercises the full-scale RAW12 monochrome model with synthetic firmware-free
 descriptors. This does not qualify native live view or photography; see
 [processing contracts and runtime evidence](../research/z7ii/display_output.md).
+
+`tests/test_slave_codec.py --qemu ...` checks the optional slave codec backend.
+Install Pillow for its independent JPEG decoder (`python -m pip install Pillow`);
+the board build also requires the libjpeg development package. The check decodes
+640x424 and 8256x5504 output, compares pixels and nonuniform quantization tables,
+and verifies buffer guards, rejected configurations, late invalid input pixels,
+insufficient capacity, duplicate starts, interrupt masking, both acknowledgement
+conventions, soft reset and machine reset. It uses synthetic descriptors and
+pixels, and cleans up its processes without writing test JPEG files.
+It does not prove a native photograph was saved on a card. Stock request evidence
+and the remaining codec modes are recorded in
+[capture processing research](../research/z7ii/capture_release_submit.md).

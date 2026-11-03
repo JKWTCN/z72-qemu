@@ -245,7 +245,7 @@ python tools/structure_probe.py --master "C:\firmware\eg1840_mas_01700.bin" --sl
 Linux / WSL，Python 3.12+：
 
 ```sh
-sudo apt-get install build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev
+sudo apt-get install build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev libjpeg-dev
 python3 tools/build.py --jobs 4
 python3 tests/test_board.py --qemu .build/build/qemu-system-arm
 python3 tools/boot_probe.py --qemu .build/build/qemu-system-arm --master /path/to/eg1840_mas_01700.bin --slave /path/to/eg1840_sla_01700.bin --destination .local/native-run

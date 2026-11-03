@@ -362,6 +362,7 @@ CAPTURE_SLAVE_CODEC_POINTS = {
     0x100b1d48: 'capture-slave-codec-service-execute',
     0x10095e58: 'capture-slave-codec-device-configure',
     0x100960b8: 'capture-slave-codec-device-start',
+    0x10095ade: 'capture-slave-codec-interrupt',
     0x100b1e44: 'capture-slave-codec-request-callback',
     0x100b1e1c: 'capture-slave-codec-request-wait-return',
     0x1012db76: 'capture-slave-codec-main-return',
@@ -1285,6 +1286,8 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
         if machine is not None:
             result['processing']['completed_frames'] = machine.qmp.command(
                 'qom-get', dict(path=path, property='processing-dma-count'))
+            result['codec']['encoded_jobs'] = machine.qmp.command(
+                'qom-get', dict(path=path, property='codec-dma-count'))
         compute['memory_channels'] = [dict(channel=channel, words=[hex(value) for value in
             struct.unpack('<11I', remote.read(0x04251010 + channel * 0x30, 44))])
             for channel in range(4)]

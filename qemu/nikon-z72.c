@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Z7 II C1.70 instruction laboratory with bounded early boot registers. */
 #include "qemu/osdep.h"
+#include <jpeglib.h>
+#include <jerror.h>
+#include <setjmp.h>
 #include "qemu/cutils.h"
 #include "qemu/timer.h"
 #include "qapi/error.h"
@@ -618,6 +621,9 @@ struct NikonZ72BootConfig {
     uint32_t still_transform_command;
     MemoryRegion still_thumbnail_start;
     uint32_t still_thumbnail_command;
+    MemoryRegion codec_ram;
+    uint32_t codec_registers[0x600 / 4];
+    uint64_t codec_dma_count;
     MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
     uint32_t compute_mailbox_words[0x400];
@@ -3311,6 +3317,211 @@ static const MemoryRegionOps still_thumbnail_start_ops = {
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
+typedef struct NikonZ72JpegError {
+    struct jpeg_error_mgr parent;
+    jmp_buf jump;
+} NikonZ72JpegError;
+
+typedef struct NikonZ72JpegDestination {
+    struct jpeg_destination_mgr parent;
+    uint8_t *bytes;
+    size_t capacity, length;
+} NikonZ72JpegDestination;
+
+static void codec_jpeg_error(j_common_ptr jpeg)
+{
+    NikonZ72JpegError *error = (NikonZ72JpegError *)jpeg->err;
+    longjmp(error->jump, 1);
+}
+
+static void codec_jpeg_begin(j_compress_ptr jpeg)
+{
+    NikonZ72JpegDestination *dest = (NikonZ72JpegDestination *)jpeg->dest;
+    dest->parent.next_output_byte = dest->bytes;
+    dest->parent.free_in_buffer = dest->capacity;
+}
+
+static boolean codec_jpeg_full(j_compress_ptr jpeg)
+{
+    ERREXIT(jpeg, JERR_BUFFER_SIZE);
+    return FALSE;
+}
+
+static void codec_jpeg_end(j_compress_ptr jpeg)
+{
+    NikonZ72JpegDestination *dest = (NikonZ72JpegDestination *)jpeg->dest;
+    dest->length = dest->capacity - dest->parent.free_in_buffer;
+}
+
+/* A bounded baseline JPEG for the lab's binary luma and neutral chroma.
+ * Quantizers come from the native register file. Three-component 4:2:0,
+ * standard Huffman tables and the input-plane interpretation are diagnostic
+ * choices, not a reconstruction of the hardware's bit-exact codec. */
+static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
+                       const unsigned quantizers[2][64], size_t capacity,
+                       uint8_t **bytes, size_t *length)
+{
+    struct CodecContext {
+        struct jpeg_compress_struct jpeg;
+        NikonZ72JpegError error;
+        NikonZ72JpegDestination dest;
+        uint8_t *row;
+    } *context = g_new0(struct CodecContext, 1);
+
+    context->dest.bytes = g_malloc(capacity);
+    context->dest.capacity = capacity;
+    context->row = g_malloc(width * 3);
+    context->jpeg.err = jpeg_std_error(&context->error.parent);
+    context->error.parent.error_exit = codec_jpeg_error;
+    if (setjmp(context->error.jump)) {
+        jpeg_destroy_compress(&context->jpeg);
+        g_free(context->dest.bytes);
+        g_free(context->row);
+        g_free(context);
+        return false;
+    }
+    jpeg_create_compress(&context->jpeg);
+    context->dest.parent.init_destination = codec_jpeg_begin;
+    context->dest.parent.empty_output_buffer = codec_jpeg_full;
+    context->dest.parent.term_destination = codec_jpeg_end;
+    context->jpeg.dest = &context->dest.parent;
+    context->jpeg.image_width = width;
+    context->jpeg.image_height = height;
+    context->jpeg.input_components = 3;
+    context->jpeg.in_color_space = JCS_YCbCr;
+    jpeg_set_defaults(&context->jpeg);
+    jpeg_add_quant_table(&context->jpeg, 0, quantizers[0], 100, TRUE);
+    jpeg_add_quant_table(&context->jpeg, 1, quantizers[1], 100, TRUE);
+    jpeg_start_compress(&context->jpeg, TRUE);
+    while (context->jpeg.next_scanline < height) {
+        unsigned y = context->jpeg.next_scanline;
+        JSAMPROW row = context->row;
+        for (unsigned x = 0; x < width; x++) {
+            row[x * 3] = pixels[(size_t)y * width + x];
+            row[x * 3 + 1] = 128;
+            row[x * 3 + 2] = 128;
+        }
+        jpeg_write_scanlines(&context->jpeg, &row, 1);
+    }
+    jpeg_finish_compress(&context->jpeg);
+    *bytes = context->dest.bytes;
+    *length = context->dest.length;
+    jpeg_destroy_compress(&context->jpeg);
+    g_free(context->row);
+    g_free(context);
+    return true;
+}
+
+static void codec_update_irq(NikonZ72BootConfig *s)
+{
+    qemu_set_irq(qdev_get_gpio_in(s->intc, 105 - 32),
+        (s->codec_registers[0x480 / 4] & s->codec_registers[0x484 / 4]) != 0);
+}
+
+static bool codec_encode(NikonZ72BootConfig *s)
+{
+    uint32_t *r = s->codec_registers;
+    AddressSpace *view = CPU(s->cpu)->as;
+    unsigned width = r[0x418 / 4], height = r[0x41c / 4];
+    uint32_t first = r[0x430 / 4], second = r[0x434 / 4], output = r[0x440 / 4];
+    uint64_t capacity = (uint64_t)r[0x458 / 4] * 512;
+    unsigned quantizers[2][64];
+    bool full = width == 8256 && height == 5504;
+
+    if ((!full && !(width == 640 && height == 424) && !(width == 160 && height == 120)) ||
+        r[0] != 0x31 || r[0x18 / 4] != height || r[0x1c / 4] != width ||
+        r[0x408 / 4] != 0x10000 || r[0x410 / 4] != width || r[0x414 / 4] != width ||
+        (r[0x400 / 4] & ~0xc000) != 8 || (r[0x404 / 4] & ~0xc000) != 9 ||
+        r[0x490 / 4] != 0x300000 || r[0x494 / 4] != 0x300000 ||
+        capacity < 512 || capacity > 0x1000000) {
+        return false;
+    }
+    size_t plane_bytes = (size_t)width * height;
+    uint32_t minimum = full ? 0xea3b6800 : 0xc8900000;
+    uint64_t limit = full ? 0xffe66800 : 0xca712200;
+    if (first < minimum || (uint64_t)first + plane_bytes != second ||
+        (uint64_t)second + plane_bytes > limit ||
+        output < 0xca800000 || (uint64_t)output + capacity > 0xffe66800 ||
+        (output < (uint64_t)second + plane_bytes && first < (uint64_t)output + capacity) ||
+        !processing_ram_range(view, first, 2 * plane_bytes) ||
+        !processing_ram_range(view, output, capacity)) {
+        return false;
+    }
+    for (unsigned table = 0; table < 2; table++) {
+        for (unsigned index = 0; index < 64; index++) {
+            unsigned value = r[(0x100 + table * 64) / 4 + index / 4];
+            quantizers[table][index] = (value >> (24 - (index % 4) * 8)) & 0xff;
+            if (!quantizers[table][index]) {
+                return false;
+            }
+        }
+    }
+    g_autofree uint8_t *pixels = g_malloc(2 * plane_bytes);
+    g_autofree uint8_t *encoded = NULL;
+    size_t length;
+    if (address_space_read(view, first, MEMTXATTRS_UNSPECIFIED,
+                           pixels, 2 * plane_bytes) != MEMTX_OK) {
+        return false;
+    }
+    for (size_t offset = 0; offset < plane_bytes; offset++) {
+        if ((pixels[offset] != 0 && pixels[offset] != 255) ||
+            pixels[plane_bytes + offset] != 128) {
+            return false;
+        }
+    }
+    if (!codec_jpeg(pixels, width, height, quantizers, capacity, &encoded, &length) ||
+        address_space_write(view, output, MEMTXATTRS_UNSPECIFIED, encoded, length) != MEMTX_OK) {
+        return false;
+    }
+    s->codec_dma_count++;
+    r[0x20 / 4] = length;
+    r[0x2c / 4] |= 0x80000000;
+    r[0x480 / 4] |= 0x08001000;
+    codec_update_irq(s);
+    return true;
+}
+
+static uint64_t codec_read(void *opaque, hwaddr offset, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    return s->codec_registers[offset / 4];
+}
+
+static void codec_write(void *opaque, hwaddr offset, uint64_t value, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint32_t *r = s->codec_registers;
+    if (offset == 0x480) {
+        r[offset / 4] &= ~value;
+    } else if (offset == 0x2c) {
+        r[offset / 4] &= value;
+    } else if (offset == 4 && (value & 0x80000000)) {
+        /* Soft reset/stop self-clears the request and leaves results in RAM.
+         * The original completion handler reads them before stopping. */
+        r[1] = value & ~0x80000001;
+        r[0x480 / 4] = 0;
+        r[0x2c / 4] = 0;
+        r[0x488 / 4] = 0;
+    } else {
+        r[offset / 4] = value;
+        if (offset == 0x404 && (value & 0xc000) == 0x4000 &&
+            (r[0x400 / 4] & 0xc000) == 0x4000 && (r[1] & 1) &&
+            !(r[0x480 / 4] & 0x08001000) && !(r[0x2c / 4] & 0x80000000) &&
+            s->frame_process && s->cpu && !s->master_role) {
+            codec_encode(s);
+        }
+    }
+    codec_update_irq(s);
+}
+
+static const MemoryRegionOps codec_ops = {
+    .read = codec_read,
+    .write = codec_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
 static uint64_t transfer_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72BootConfig *s = opaque;
@@ -3606,6 +3817,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->transfer_table, 0, sizeof(s->transfer_table));
     s->still_transform_command = 0;
     s->still_thumbnail_command = 0;
+    memset(s->codec_registers, 0, sizeof(s->codec_registers));
+    s->codec_dma_count = 0;
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
@@ -3658,6 +3871,7 @@ static void boot_config_reset(Object *obj, ResetType type)
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), 0);
         if (s->release_config) {
             transfer_update_irq(s);
+            codec_update_irq(s);
         }
     }
     memset(s->pair_table, 0, sizeof(s->pair_table));
@@ -3705,6 +3919,7 @@ static int boot_config_post_load(void *opaque, int version_id)
         qemu_set_irq(qdev_get_gpio_in(s->intc, 250 - 32), s->gate_pending);
         if (s->release_config) {
             transfer_update_irq(s);
+            codec_update_irq(s);
         }
         if (s->release_config) {
             seq_update_irqs(s);
@@ -3715,8 +3930,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 54,
-    .minimum_version_id = 54,
+    .version_id = 55,
+    .minimum_version_id = 55,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -3786,6 +4001,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT8_ARRAY(transfer_table, NikonZ72BootConfig, 0x100),
         VMSTATE_UINT32(still_transform_command, NikonZ72BootConfig),
         VMSTATE_UINT32(still_thumbnail_command, NikonZ72BootConfig),
+        VMSTATE_UINT32_ARRAY(codec_registers, NikonZ72BootConfig, 0x600 / 4),
+        VMSTATE_UINT64(codec_dma_count, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
@@ -3887,6 +4104,8 @@ static void boot_config_init(Object *obj)
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-dma-count", &s->processing_dma_count,
                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "codec-dma-count", &s->codec_dma_count,
+                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-grid-count", &s->processing_grid_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "aux-image-process-count", &s->aux_image_process_count,
@@ -4039,6 +4258,9 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                               &still_thumbnail_start_ops, s, "z72-still-thumbnail-start", 4);
         memory_region_add_subregion_overlap(root, 0x201008a0,
                                             &s->still_thumbnail_start, 1);
+        memory_region_init_io(&s->codec_ram, OBJECT(dev), &codec_ops, s,
+                              "z72-slave-codec-lab", 0x600);
+        memory_region_add_subregion_overlap(root, 0x24072000, &s->codec_ram, 1);
         /* Register file addressed 0x04280004-relative (single words plus the
          * indexed +0x30/+0x60 arrays), read by the kernel after the handoff.
          * Added below the word registers so exact words keep precedence and

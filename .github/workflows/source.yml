@@ -8,9 +8,9 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev
+          sudo apt-get install -y build-essential ninja-build pkg-config python3-venv clang lld libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev libjpeg-dev
           python3 -m venv .venv
-          .venv/bin/python -m pip install unicorn capstone
+          .venv/bin/python -m pip install unicorn capstone Pillow
       - name: Source and synthetic checks
         run: |
           . .venv/bin/activate
@@ -42,6 +42,7 @@ jobs:
           python tests/test_engine_memory.py --qemu .build/build/qemu-system-arm
           python tests/test_peer_memory.py --qemu .build/build/qemu-system-arm
           python tests/test_still_processing.py --qemu .build/build/qemu-system-arm
+          python tests/test_slave_codec.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_uart.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_timer.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_position.py --qemu .build/build/qemu-system-arm

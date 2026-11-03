@@ -8,6 +8,10 @@ emulation research, GPU implementation, build tools and regression tests.
 Their attribution and GPL notices are retained. Upstream revisions and source
 hashes are recorded in [reference-sources.json](docs/reference-sources.json).
 
+Diagnostic JPEG encoding links to the separately supplied libjpeg implementation.
+This software is based in part on the work of the Independent JPEG Group.
+The libjpeg implementation retains its own license and attribution.
+
 The Z72 machine, firmware input guards and execution experiments target Nikon
 Z7 II C 1.70. They implement a limited instruction laboratory, not a complete
 EXPEED hardware specification.
