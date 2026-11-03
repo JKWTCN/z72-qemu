@@ -220,6 +220,8 @@ CAPTURE_INPUT_POINTS = {
     0x103cc8e8: 'capture-image-tracking-enqueue-mode2',
     0x1022e2e0: 'capture-input-tail-notification',
     0x1022ff42: 'capture-input-tail-worker-parameter-check',
+    0x1022de1a: 'capture-input-tail-queue-before',
+    0x1022de46: 'capture-input-tail-queue-result',
     0x10230052: 'capture-input-tail-driver-notification',
     0x1032ac52: 'capture-input-parameter-clone',
     0x1032ac9a: 'capture-input-parameter-clone-ready',
@@ -956,6 +958,22 @@ def capture_buffer_pool_snapshot(remote):
         enabled=word(0xb26b4b50 + kind * 4),
         record=[word(0xb1888404 + kind * 16 + offset) for offset in (0, 4, 8, 12)])
         for kind in (0, 80)])
+
+
+def input_tail_queue_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    queue = 0xb25ef114
+    node, count = word(queue), word(queue + 8)
+    result = dict(address=hex(queue), pending=hex(word(0xb1887e4c)),
+                  head=hex(node), count=count, contexts=[])
+    for unused in range(min(count, 4)):
+        if not 0xb1800000 <= node <= 0xb5effff4:
+            break
+        pointer = word(node + 8)
+        result['contexts'].append(input_tail_parameter_snapshot(remote, pointer))
+        node = word(node + 4)
+    return result
 
 
 def capture_request_variant_slots_snapshot(remote):
@@ -3504,6 +3522,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['buffer_pool'] = capture_buffer_pool_snapshot(remote)
                         if pc in (0x1023cc28, 0x1023cc32, 0x10327108):
                             record['descriptor_result'] = hex(remote.get(registers, 'r0'))
+                    if pc in (0x1022de1a, 0x1022de46):
+                        record['tail_queue'] = input_tail_queue_snapshot(remote)
+                        record['clear_mask'] = hex(remote.get(registers, 'r7'))
+                        if pc == 0x1022de46:
+                            record['returned_context'] = input_tail_parameter_snapshot(
+                                remote, remote.get(registers, 'r4'))
                     if pc == 0x10307fe0:
                         kind = remote.get(registers, 'r5')
                         keep = keep and kind in (0, 80) and record['capture_state'][0] >= 6
@@ -3655,6 +3679,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
                         0x10360468, 0x103604ca, 0x103eb2e4,
                         0x1023cc10, 0x1023cc28, 0x1023cc32, 0x1023cc44, 0x10307fe0, 0x10327108,
+                        0x1022de1a, 0x1022de46,
                         0x10325304, 0x103262e8, 0x10326546, 0x1026a312) else
                         16 if repeat_body_capture and pc == 0x103e6e94 else 8)
                 if keep:
