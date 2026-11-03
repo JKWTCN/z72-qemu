@@ -28,6 +28,7 @@ def prepare(root):
             shutil.copyfile(source, destination)
     additions = {
         'hw/arm/meson.build': "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: [files('nikon-z72.c'), dependency('libjpeg')])\n",
+        'hw/arm/trace-events': '\n' + (project / 'trace-events').read_text(),
         'hw/arm/Kconfig': '\nconfig NIKON_Z72_LAB\n    bool\n    depends on TCG && ARM\n    select GENERIC_LOADER\n    select ARM_GIC\n    select ARM_V7M\n    select STM32F2XX_TIMER\n    select OR_IRQ\n    select I2C\n    select SSI\n    select STM32F2XX_USART\n    select SDHCI\n    select SPLIT_IRQ\n',
         'configs/devices/arm-softmmu/default.mak': '\nCONFIG_NIKON_Z72_LAB=y\n',
     }
@@ -35,6 +36,23 @@ def prepare(root):
         path = root / name
         previous = path.read_text()
         data = previous
+        if name == 'hw/arm/trace-events':
+            lines = data.splitlines()
+            for event in addition.splitlines():
+                if not event or event.startswith('#'):
+                    continue
+                prefix = event.split('(', 1)[0] + '('
+                indices = [index for index, line in enumerate(lines) if line.startswith(prefix)]
+                if indices:
+                    lines[indices[0]] = event
+                    for index in reversed(indices[1:]):
+                        del lines[index]
+                else:
+                    lines.append(event)
+            data = '\n'.join(lines) + '\n'
+            if data != previous:
+                path.write_text(data)
+            continue
         if name == 'hw/arm/Kconfig':
             if addition.strip() not in data:
                 variants = []

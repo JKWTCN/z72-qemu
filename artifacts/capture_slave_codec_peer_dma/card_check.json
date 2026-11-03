@@ -1,0 +1,127 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "image_bytes": 4294967296,
+  "checker": "7-Zip 24.08 archive integrity test",
+  "exit_code": 0,
+  "filesystem": "FAT16",
+  "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
+  "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
+  "files": [
+    {
+      "name": "PROBE.TXT",
+      "bytes": 20,
+      "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+    },
+    {
+      "name": "NIKON001.DSC",
+      "bytes": 512,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 3884735,
+      "sha256": "5e8da3625195d4b309d6fd10c6b2fc978719450829574fbc7119926e67d70f19",
+      "exported_file": "DSC_0001.JPG",
+      "decoded": true,
+      "width": 8256,
+      "height": 5504,
+      "mode": "RGB",
+      "exif_make": "NIKON CORPORATION",
+      "exif_model": "NIKON Z 7_2",
+      "exif_software": "Ver.01.70\u0000\u0000\u0000",
+      "pixels": [
+        {
+          "x": 0,
+          "y": 0,
+          "rgb": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 4128,
+          "y": 2752,
+          "rgb": [
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "x": 8255,
+          "y": 5503,
+          "rgb": [
+            255,
+            255,
+            255
+          ]
+        }
+      ],
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x32c800",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x34cc00",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-1ebdb7fd2cd7c9a478274c20900a6eaef925d1a76a42864172ea729a4d911cea.jpg",
+          "card_body_offset": "0x824a",
+          "bytes": 11898
+        },
+        {
+          "ram_jpeg": "codec-21590092498eeb05d90b205a237e9d6b5195f02d7394c7c1bc7a7bcdeeed5393.jpg",
+          "card_body_offset": "0x19402",
+          "bytes": 3224172
+        },
+        {
+          "ram_jpeg": "codec-60527efb5db36b937a5958e4716a6695a77e25cad6e38245e81b193abdc5b378.jpg",
+          "card_body_offset": "0x33c802",
+          "bytes": 66097
+        },
+        {
+          "ram_jpeg": "codec-ceae4140b83db63c07d7694f142ee5bc252919ff4aed6edd4294c4c0d4d28691.jpg",
+          "card_body_offset": "0x35cc02",
+          "bytes": 359101
+        }
+      ]
+    },
+    {
+      "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
+      "bytes": 81920,
+      "sha256": "fa569e2360c540e6280e34a4627516770f1a5f34d81d35689334a99cc1013357"
+    }
+  ],
+  "created_directories": [
+    "DCIM",
+    "NIKON",
+    "DCIM/100NZ7_2",
+    "NIKON/Z_7_2"
+  ],
+  "encoded_photo_verified": true,
+  "temporary_card_retained": true,
+  "card_path": "D:\\code\\z72-qemu\\.local\\capture-codec-peer-dma-20261103.raw",
+  "scope": "Read-only extraction after VM closure. Original firmware created the complete photo file in the cloned filesystem. Primary JPEG and embedded JPEGs decoded independently. DSP preprocessing and pixels/JPEG hardware remain diagnostic substitutes; submission used a diagnostic caller. Images are local-only and excluded from Git."
+}

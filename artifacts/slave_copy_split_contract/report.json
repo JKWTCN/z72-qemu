@@ -1,0 +1,153 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+  "native_splitter": "0x10061628",
+  "cases": [
+    {
+      "source": "0xdf52e800",
+      "jpeg_bytes": 3224174,
+      "copy_bytes": 3224176,
+      "supplied_service_result": 0,
+      "native_return": "0x0",
+      "calls": [
+        {
+          "source": "0xdf52e802",
+          "destination": "0xc53b86c2",
+          "width": 32512,
+          "rows": 99,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        },
+        {
+          "source": "0xdf840502",
+          "destination": "0xc56ca3c2",
+          "width": 5488,
+          "rows": 1,
+          "source_pitch": 5488,
+          "destination_pitch": 5488,
+          "timeout": 100
+        }
+      ]
+    },
+    {
+      "source": "0xdf52e800",
+      "jpeg_bytes": 3224174,
+      "copy_bytes": 3224176,
+      "supplied_service_result": 1,
+      "native_return": "0xffffffff",
+      "calls": [
+        {
+          "source": "0xdf52e802",
+          "destination": "0xc53b86c2",
+          "width": 32512,
+          "rows": 99,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        }
+      ]
+    },
+    {
+      "source": "0xe0359c00",
+      "jpeg_bytes": 359103,
+      "copy_bytes": 359104,
+      "supplied_service_result": 0,
+      "native_return": "0x0",
+      "calls": [
+        {
+          "source": "0xe0359c02",
+          "destination": "0xc56fbec2",
+          "width": 32512,
+          "rows": 11,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        },
+        {
+          "source": "0xe03b1102",
+          "destination": "0xc57533c2",
+          "width": 1472,
+          "rows": 1,
+          "source_pitch": 1472,
+          "destination_pitch": 1472,
+          "timeout": 100
+        }
+      ]
+    },
+    {
+      "source": "0xe0359c00",
+      "jpeg_bytes": 359103,
+      "copy_bytes": 359104,
+      "supplied_service_result": 1,
+      "native_return": "0xffffffff",
+      "calls": [
+        {
+          "source": "0xe0359c02",
+          "destination": "0xc56fbec2",
+          "width": 32512,
+          "rows": 11,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        }
+      ]
+    },
+    {
+      "source": "0xe0344200",
+      "jpeg_bytes": 66099,
+      "copy_bytes": 66104,
+      "supplied_service_result": 0,
+      "native_return": "0x0",
+      "calls": [
+        {
+          "source": "0xe0344202",
+          "destination": "0xc56dbac2",
+          "width": 32512,
+          "rows": 2,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        },
+        {
+          "source": "0xe0354002",
+          "destination": "0xc56eb8c2",
+          "width": 1080,
+          "rows": 1,
+          "source_pitch": 1080,
+          "destination_pitch": 1080,
+          "timeout": 100
+        }
+      ]
+    },
+    {
+      "source": "0xe0344200",
+      "jpeg_bytes": 66099,
+      "copy_bytes": 66104,
+      "supplied_service_result": 1,
+      "native_return": "0xffffffff",
+      "calls": [
+        {
+          "source": "0xe0344202",
+          "destination": "0xc56dbac2",
+          "width": 32512,
+          "rows": 2,
+          "source_pitch": 32512,
+          "destination_pitch": 32512,
+          "timeout": 100
+        }
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Use geometry and addresses from the actual completed DMA trace",
+    "Round the JPEG body to eight bytes, as observed in the native copy return trace",
+    "Intercept 0x1006993e to record each descriptor and supply status 0 or 1"
+  ],
+  "limitations": [
+    "No DMA, callbacks, scheduling or actual memory copies are executed",
+    "The forced nonzero case does not prove the status observed in the full machine"
+  ]
+}

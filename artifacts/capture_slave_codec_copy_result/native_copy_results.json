@@ -1,0 +1,193 @@
+{
+  "format": 1,
+  "bulk_returns": [
+    {
+      "source": "0xc96d2200",
+      "destination": "0xc539f2c0",
+      "width": 32512,
+      "rows": 3,
+      "tail_bytes": 5896,
+      "result": "0x1"
+    },
+    {
+      "source": "0xdf52e802",
+      "destination": "0xc53b86c2",
+      "width": 32512,
+      "rows": 99,
+      "tail_bytes": 5488,
+      "result": "0x1"
+    },
+    {
+      "source": "0x2290cd68",
+      "destination": "0xc56cb92e",
+      "width": 408,
+      "rows": 1,
+      "tail_bytes": 0,
+      "result": "0x1"
+    },
+    {
+      "source": "0xc96eb608",
+      "destination": "0xc56cbac0",
+      "width": 32512,
+      "rows": 2,
+      "tail_bytes": 520,
+      "result": "0x1"
+    },
+    {
+      "source": "0xe0344202",
+      "destination": "0xc56dbac2",
+      "width": 32512,
+      "rows": 2,
+      "tail_bytes": 1080,
+      "result": "0x1"
+    },
+    {
+      "source": "0x2290cd68",
+      "destination": "0xc56ebcf3",
+      "width": 464,
+      "rows": 1,
+      "tail_bytes": 0,
+      "result": "0x1"
+    },
+    {
+      "source": "0xc96fb610",
+      "destination": "0xc56ebec0",
+      "width": 32512,
+      "rows": 2,
+      "tail_bytes": 520,
+      "result": "0x1"
+    },
+    {
+      "source": "0xe0359c02",
+      "destination": "0xc56fbec2",
+      "width": 32512,
+      "rows": 11,
+      "tail_bytes": 1472,
+      "result": "0x1"
+    },
+    {
+      "source": "0x2753d840",
+      "destination": "0xc5b9f300",
+      "width": 256,
+      "rows": 320,
+      "tail_bytes": 0,
+      "result": "0x1"
+    }
+  ],
+  "service_returns": [
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    }
+  ],
+  "service_callbacks": {
+    "0x42190c48": 22
+  },
+  "tail_return_count": 0
+}

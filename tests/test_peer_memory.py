@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import require
 from tools.dual_boot_probe import dual_machine
+from tools.smp_boot_probe import reach
 
 
 def run(qemu):
@@ -173,6 +174,34 @@ def run(qemu):
             require(remote.get(regs, 'pc') == 0x10 and
                     remote.get(regs, 'cpsr') & 0x1f == 0x17,
                     'Peer alias filled an unmapped RAM gap')
+            for thread, peer in ((1, 3), (3, 1)):
+                source, target, bus = 0xc8108380, 0xc5b9f300, 0x28108380
+                data = bytes((index * 37 + thread) & 255 for index in range(512))
+                remote.select_thread(peer)
+                remote.write(source, b'HEAD' + data + b'TAIL')
+                remote.select_thread(thread)
+                local = b'L' * 520
+                remote.write(source, local)
+                remote.write(target - 4, b'HEAD' + bytes(512) + b'TAIL')
+                require(remote.command('m28108380,4').startswith('E'),
+                        'DMA peer aperture leaked into the CPU view')
+                remote.write(0x40100010, struct.pack('<I', 0xe5810000))
+                remote.write(0x40100020, struct.pack('<3I', 0xe2500001, 0x1afffffd, 0xeafffffe))
+                for offset, value in ((4, 0x11), (8, 0x11), (0x14, 0x10), (0x18, 0),
+                                      (0x1c, 512), (0x20, 512), (0x24, 512), (0x28, 1),
+                                      (0x2c, bus + 4), (0x30, target), (0x10, 1)):
+                    remote.set(pc=0x40100010, cpsr=0xd3, r0=value, r1=0x20070040 + offset)
+                    remote.command(f'vCont;s:{thread:x}')
+                remote.set(pc=0x40100020, cpsr=0xd3, r0=0x40000)
+                reach(remote, 0x40100028, action=f'vCont;c:{thread:x}')
+                require(remote.read(target - 4, 520) == b'HEAD' + data + b'TAIL' and
+                        remote.read(source, 520) == local and
+                        remote.read(0x20070048, 4) == struct.pack('<I', 1) and
+                        remote.read(0x20070044, 4) == struct.pack('<I', 0x11),
+                        'Peer DMA source, guards, completion or CPU register isolation differs')
+                remote.select_thread(peer)
+                require(remote.read(source, 520) == b'HEAD' + data + b'TAIL',
+                        'Peer DMA modified its source')
             print('PASS peer ownership, RAM gaps, processing pools, slave code-cache and compute program uploads')
         finally:
             if remote is not None:

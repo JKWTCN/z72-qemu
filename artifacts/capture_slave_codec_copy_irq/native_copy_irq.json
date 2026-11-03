@@ -1,0 +1,427 @@
+{
+  "format": 1,
+  "device_callbacks": [
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x1",
+      "error_bytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "event": "0x41050c02",
+      "address": "0xc144d9e8",
+      "status": "0x10",
+      "error_bytes": [
+        0,
+        0
+      ]
+    }
+  ],
+  "device_waits": [
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x82",
+      "queued_kind": 0
+    },
+    {
+      "result": 1,
+      "flags": "0x80",
+      "queued_kind": 0
+    }
+  ],
+  "service_returns": [
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    },
+    {
+      "result": 1,
+      "wait_result": 1,
+      "callback_state": 1
+    }
+  ]
+}

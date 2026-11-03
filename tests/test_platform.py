@@ -53,11 +53,13 @@ class Platform(unittest.TestCase):
     def test_overlay_idempotent_and_version_guarded(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            for name in ('hw/arm/meson.build','hw/arm/Kconfig','configs/devices/arm-softmmu/default.mak'):
+            for name in ('hw/arm/meson.build','hw/arm/Kconfig','hw/arm/trace-events','configs/devices/arm-softmmu/default.mak'):
                 path = root / name
                 path.parent.mkdir(parents=True,exist_ok=True)
                 path.write_text('# upstream\n')
             (root/'VERSION').write_text('10.2.4\n')
+            (root/'hw/arm/trace-events').write_text('# upstream\n' +
+                'z72_memory_transfer(uint32_t engine) "old %x"\n' * 2)
             (root/'hw/arm/Kconfig').write_text('# upstream\n\nconfig NIKON_Z72_LAB\n'
                 '    bool\n    depends on TCG && ARM\n    select GENERIC_LOADER\n')
             prepare(root)
@@ -73,6 +75,10 @@ class Platform(unittest.TestCase):
             self.assertEqual((root/'hw/arm/meson.build').read_text().count("files('nikon-z72-counter.c')"), 1)
             self.assertEqual((root/'hw/arm/nikon-z72-counter.c').read_bytes(),
                              (ROOT/'qemu/nikon-z72-counter.c').read_bytes())
+            trace = (root/'hw/arm/trace-events').read_text()
+            self.assertEqual(trace.count('z72_memory_transfer('), 1)
+            self.assertEqual(trace.count('z72_sequence_transfer('), 1)
+            self.assertNotIn('"old %x"', trace)
             before = {p.relative_to(root):p.read_bytes() for p in root.rglob('*') if p.is_file()}
             prepare(root)
             after = {p.relative_to(root):p.read_bytes() for p in root.rglob('*') if p.is_file()}
@@ -87,7 +93,7 @@ class Platform(unittest.TestCase):
                        '    select ARM_GIC\n    select ARM_V7M\n    select STM32F2XX_TIMER\n'):
             with self.subTest(suffix=suffix), tempfile.TemporaryDirectory() as td:
                 root = Path(td)
-                for name in ('hw/arm/meson.build', 'hw/arm/Kconfig',
+                for name in ('hw/arm/meson.build', 'hw/arm/Kconfig', 'hw/arm/trace-events',
                              'configs/devices/arm-softmmu/default.mak'):
                     path = root / name
                     path.parent.mkdir(parents=True, exist_ok=True)

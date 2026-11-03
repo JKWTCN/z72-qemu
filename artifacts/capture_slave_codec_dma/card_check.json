@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "photo_bytes": 3884735,
+  "photo_sha256": "5dab0eb6044e87472a5806ce5ee230d01a13f4fb6a4f387995542bdeb618da0e",
+  "dimensions": [
+    8256,
+    5504
+  ],
+  "encoded_photo_verified": false,
+  "decode_error": "broken data stream when reading image file",
+  "temporary_card_retained": false,
+  "scope": "Read-only extraction after VM closure; preserve the exported invalid JPEG and the earlier scaled-run card, remove this later temporary clone. No full filesystem integrity claim."
+}

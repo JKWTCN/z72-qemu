@@ -367,12 +367,21 @@ CAPTURE_SLAVE_CODEC_POINTS = {
     0x100b1e1c: 'capture-slave-codec-request-wait-return',
     0x1012db76: 'capture-slave-codec-main-return',
 }
+CAPTURE_SLAVE_COPY_POINTS = {
+    0x100616e6: 'capture-slave-copy-bulk-return',
+    0x1006172e: 'capture-slave-copy-tail-return',
+    0x10069802: 'capture-slave-copy-service-return',
+    0x10069806: 'capture-slave-copy-service-callback',
+    0x100693ae: 'capture-slave-copy-device-callback',
+    0x10069a24: 'capture-slave-copy-device-wait-return',
+}
 CAPTURE_SLAVE_POINTS = {
     **CAPTURE_SLAVE_INIT_POINTS,
     **CAPTURE_SLAVE_SFLT_POINTS,
     **CAPTURE_SLAVE_PROCESSING_POINTS,
     **CAPTURE_SLAVE_TRANSFORM_POINTS,
     **CAPTURE_SLAVE_CODEC_POINTS,
+    **CAPTURE_SLAVE_COPY_POINTS,
     0x10129faa: 'capture-slave-image-service',
     0x10129e12: 'capture-slave-still-request',
     0x10129e54: 'capture-slave-request-copy-return',
@@ -1062,6 +1071,19 @@ def sd_trace_snapshot(machine):
     return dict(counts=counts, events=events, event_limit=256,
         truncated=counts.get('selected', 0) > len(events),
         scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
+
+
+def memory_trace_snapshot(machine):
+    if not getattr(machine.args, 'trace_sd_host', False):
+        return None
+    from collections import deque
+    events, count = deque(maxlen=1024), 0
+    for line in (machine.work / 'qemu.log').open(encoding='utf-8', errors='replace'):
+        if 'z72_memory_transfer ' in line or 'z72_sequence_transfer ' in line:
+            events.append(line[line.index('z72_'):].strip())
+            count += 1
+    return dict(count=count, events=list(events), event_limit=1024, truncated=count > len(events),
+                scope='Latest engine memory DMA metadata only; no buffer contents')
 
 
 def sflt_snapshot(remote):
@@ -2268,6 +2290,30 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7',
                          'r8', 'r9', 'r10', 'r11', 'lr')})
                 keep = True
+                if pc in CAPTURE_SLAVE_COPY_POINTS:
+                    keep = hits.get(0x10095ade, 0) > 0
+                    if keep and pc in (0x100616e6, 0x1006172e):
+                        record['copy'] = dict(source=hex(remote.get(registers, 'r8')),
+                            destination=hex(remote.get(registers, 'r9')),
+                            width=remote.get(registers, 'r5'), rows=remote.get(registers, 'r7'),
+                            tail_bytes=remote.get(registers, 'r6'), result=hex(remote.get(registers, 'r0')))
+                    if keep and pc == 0x10069802:
+                        pointer = remote.get(registers, 'r5')
+                        record['copy_service'] = dict(result=remote.get(registers, 'r4'),
+                                                     wait_result=remote.get(registers, 'r6'))
+                        if 0xc1000000 <= pointer <= 0xc81ffff9:
+                            record['copy_service']['callback_state'] = remote.read(pointer + 6, 1)[0]
+                    if keep and pc == 0x100693ae:
+                        pointer = remote.get(registers, 'r1')
+                        if 0xc1000000 <= pointer <= 0xc81fffe0:
+                            record['copy_device'] = dict(address=hex(pointer),
+                                status=hex(int.from_bytes(remote.read(pointer + 0x18, 4), 'little')),
+                                error_bytes=list(remote.read(pointer + 0x1c, 2)))
+                    if keep and pc == 0x10069a24:
+                        pointer = remote.get(registers, 'sp')
+                        record['copy_wait'] = dict(result=remote.get(registers, 'r0'),
+                            flags=hex(int.from_bytes(remote.read(pointer + 0xc, 4), 'little')),
+                            queued_kind=int.from_bytes(remote.read(pointer + 4, 4), 'little'))
                 if pc in CAPTURE_SLAVE_SFLT_POINTS:
                     record['sflt'] = sflt_snapshot(remote)
                 if pc in CAPTURE_SLAVE_PROCESSING_POINTS:
@@ -2382,7 +2428,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     remote.select_thread(thread)
                     records.append(record)
                     hits[pc] = hits.get(pc, 0) + 1
-                repeat = not keep or hits[pc] < (32 if pc in CAPTURE_SLAVE_CODEC_POINTS else 8)
+                repeat = not keep or hits[pc] < (64 if pc in CAPTURE_SLAVE_COPY_POINTS else
+                                               32 if pc in CAPTURE_SLAVE_CODEC_POINTS else 8)
             if thread <= 2 and pc not in slave_points:
                 record = dict(entry=armed[pc], pc=hex(pc), thread=thread,
                     registers={name: hex(remote.get(registers, name)) for name in
@@ -3347,6 +3394,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             after['peer_input'] = peer_input_snapshot(remote, machine=machine)
         return dict(before=before, records=records, after=after,
                     sd_host_trace=sd_trace_snapshot(machine),
+                    memory_transfer_trace=memory_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_submit_on_ready else None,
                     body_settings=capture_caller.report if body_exposure is not None else None,
                     capture_wait_idle=capture_wait_idle,

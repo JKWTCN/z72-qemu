@@ -1,0 +1,9 @@
+{
+  "format": 1,
+  "photo_bytes": 3884735,
+  "photo_sha256": "9ab572ace95501724d7086afcb0a26cd16c425ca6fd04efb7c6e1a8dca307f76",
+  "encoded_photo_verified": false,
+  "decode_error": "broken data stream when reading image file",
+  "temporary_card_retained": false,
+  "scope": "Read-only extraction after VM closure; no full filesystem integrity claim. Earlier scaled-run card remains retained."
+}

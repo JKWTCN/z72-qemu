@@ -1,0 +1,3920 @@
+{
+  "format": 1,
+  "observation": "native-full-release-application-gate",
+  "scope": "Filtered capture evidence; full raw report and JPEG files remain local-only",
+  "raw_report_sha256": "49e2ac89e5de3d149a6a606f046282f59a60334db9c8b66b6c5d8e30f2dd13cb",
+  "local_full_report": ".local/capture-report-archive/capture_slave_codec_copy_result.json",
+  "boot": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 20,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "sd_attached": true,
+  "sd_snapshot": false,
+  "preserved_card_name": "capture-codec-copy-result-20261103.raw",
+  "icount_shift": 2,
+  "frame_process": true,
+  "trace": {
+    "records": [
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98eb0",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-21590092498eeb05d90b205a237e9d6b5195f02d7394c7c1bc7a7bcdeeed5393.jpg",
+          "bytes": 3224174,
+          "sha256": "21590092498eeb05d90b205a237e9d6b5195f02d7394c7c1bc7a7bcdeeed5393",
+          "decoded": true,
+          "width": 8256,
+          "height": 5504,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "x": 4128,
+              "y": 2752,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            },
+            {
+              "x": 8255,
+              "y": 5503,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152791307,
+        "codec": {
+          "output_prefix": {
+            "address": "0xdf52e800",
+            "capacity": 14768640,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb00430001010101010101010101010101010203020201010203020202030403040404030404040506050404060404040507050606060707070405070807060806070706ffdb00430101010102010203020203060404040606060606060606060606060606060606060606"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98eb8",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-b8a7471be32da34eefbea8459cfbb2b31457eb7713d323a102f319d3ece0c805.jpg",
+          "bytes": 289032,
+          "sha256": "b8a7471be32da34eefbea8459cfbb2b31457eb7713d323a102f319d3ece0c805",
+          "decoded": true,
+          "width": 1620,
+          "height": 1080,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "x": 810,
+              "y": 540,
+              "rgb": [
+                240,
+                240,
+                240
+              ]
+            },
+            {
+              "x": 1619,
+              "y": 1079,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152818038,
+        "codec": {
+          "output_prefix": {
+            "address": "0xe0359c00",
+            "capacity": 568832,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb004300150e1012100d15121112171615191f34221f1d1d1f402e3026344c424f4e4a424948535e78665359715a4849688e6a717c808688865164939e92829c78848681ffdb0043011617171f1b1f3d22223d815649568181818181818181818181818181818181818181"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98eb8",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-1f1e7a4268a9867213ae12d09d3a2788653d276b1dd703f596e13b9b1b465936.jpg",
+          "bytes": 329625,
+          "sha256": "1f1e7a4268a9867213ae12d09d3a2788653d276b1dd703f596e13b9b1b465936",
+          "decoded": true,
+          "width": 1620,
+          "height": 1080,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "x": 810,
+              "y": 540,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            },
+            {
+              "x": 1619,
+              "y": 1079,
+              "rgb": [
+                252,
+                252,
+                252
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152822220,
+        "codec": {
+          "output_prefix": {
+            "address": "0xe0359c00",
+            "capacity": 568832,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb0043000e0a0b0c0b090e0c0c0c100f0e11152317151313152b1f211a23332d3635332d323139405245393c4d3d31324761484d54575b5c5b3744646b63596a525a5b58ffdb0043010f10101513152a17172a583a323a5858585858585858585858585858585858585858"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98eb8",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-ceae4140b83db63c07d7694f142ee5bc252919ff4aed6edd4294c4c0d4d28691.jpg",
+          "bytes": 359103,
+          "sha256": "ceae4140b83db63c07d7694f142ee5bc252919ff4aed6edd4294c4c0d4d28691",
+          "decoded": true,
+          "width": 1620,
+          "height": 1080,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                1,
+                1,
+                1
+              ]
+            },
+            {
+              "x": 810,
+              "y": 540,
+              "rgb": [
+                245,
+                245,
+                245
+              ]
+            },
+            {
+              "x": 1619,
+              "y": 1079,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152826097,
+        "codec": {
+          "output_prefix": {
+            "address": "0xe0359c00",
+            "capacity": 568832,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb0043000a07080908070a0909090c0b0a0c101a11100e0e10201718131a26212827252125242a2f3c332a2d392d2425344735393e4044444429324a4f49424f3c424441ffdb0043010b0c0c100e101f11111f412b252b4141414141414141414141414141414141414141"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98eb8",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-60527efb5db36b937a5958e4716a6695a77e25cad6e38245e81b193abdc5b378.jpg",
+          "bytes": 66099,
+          "sha256": "60527efb5db36b937a5958e4716a6695a77e25cad6e38245e81b193abdc5b378",
+          "decoded": true,
+          "width": 640,
+          "height": 424,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "x": 320,
+              "y": 212,
+              "rgb": [
+                255,
+                255,
+                255
+              ]
+            },
+            {
+              "x": 639,
+              "y": 423,
+              "rgb": [
+                4,
+                4,
+                4
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152846701,
+        "codec": {
+          "output_prefix": {
+            "address": "0xe0344200",
+            "capacity": 88576,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb004300191113161310191614161c1a191e253e28252222254c363a2d3e5a4f5f5d594f575664708f79646a876b56577daa7e879499a0a2a06078b0bcae9cbb8f9da09affdb0043011a1c1c252125492828499a6757679a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-codec-interrupt",
+        "pc": "0x10095ade",
+        "thread": 4,
+        "registers": {
+          "r0": "0x69",
+          "r1": "0xc1903ff0",
+          "r2": "0x80000192",
+          "r3": "0x1a4",
+          "r4": "0xc10079a0",
+          "r5": "0x0",
+          "r6": "0x0",
+          "r7": "0xc3f98ec8",
+          "r8": "0x42191807",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10038c48"
+        },
+        "codec_output": {
+          "file": "codec-1ebdb7fd2cd7c9a478274c20900a6eaef925d1a76a42864172ea729a4d911cea.jpg",
+          "bytes": 11900,
+          "sha256": "1ebdb7fd2cd7c9a478274c20900a6eaef925d1a76a42864172ea729a4d911cea",
+          "decoded": true,
+          "width": 160,
+          "height": 120,
+          "mode": "RGB",
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "rgb": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "x": 80,
+              "y": 60,
+              "rgb": [
+                254,
+                254,
+                254
+              ]
+            },
+            {
+              "x": 159,
+              "y": 119,
+              "rgb": [
+                254,
+                254,
+                254
+              ]
+            }
+          ],
+          "source": "Slave codec RAM at IRQ entry; not an SD-card file"
+        },
+        "counter_ticks": 152869565,
+        "codec": {
+          "output_prefix": {
+            "address": "0xe03e4a00",
+            "capacity": 13824,
+            "bytes": "ffd8ffe000104a46494600010100000100010000ffdb004300030202020202030202020303030304060404030304080606050609080a09090809090a0b0f0c0a0b0e0b09090d110d0e0f0f1010100a0c12131210130f101010ffdb00430103030304030407040407100a090a1010101010101010101010101010101010101010"
+          }
+        }
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153701340
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc96d2200",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153703561
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x1708",
+          "r7": "0x3",
+          "r8": "0xc96d2200",
+          "r9": "0xc539f2c0",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xc96d2200",
+          "destination": "0xc539f2c0",
+          "width": 32512,
+          "rows": 3,
+          "tail_bytes": 5896,
+          "result": "0x1"
+        },
+        "counter_ticks": 153703563
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153733684
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153735723
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153746055
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153748115
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153758836
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153760834
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153771602
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153773572
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153784532
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153786758
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153797604
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153800024
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153810851
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153813093
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153823649
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153826066
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153836924
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153839051
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153849528
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153851524
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153862018
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153864257
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153875519
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153877060
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153887115
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153889201
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x1570",
+          "r7": "0x63",
+          "r8": "0xdf52e802",
+          "r9": "0xc53b86c2",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xdf52e802",
+          "destination": "0xc53b86c2",
+          "width": 32512,
+          "rows": 99,
+          "tail_bytes": 5488,
+          "result": "0x1"
+        },
+        "counter_ticks": 153889203
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153917745
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0x2290cd68",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153919719
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x198",
+          "r6": "0x0",
+          "r7": "0x1",
+          "r8": "0x2290cd68",
+          "r9": "0xc56cb92e",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0x2290cd68",
+          "destination": "0xc56cb92e",
+          "width": 408,
+          "rows": 1,
+          "tail_bytes": 0,
+          "result": "0x1"
+        },
+        "counter_ticks": 153919721
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153952638
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc96eb608",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153954695
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x208",
+          "r7": "0x2",
+          "r8": "0xc96eb608",
+          "r9": "0xc56cbac0",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xc96eb608",
+          "destination": "0xc56cbac0",
+          "width": 32512,
+          "rows": 2,
+          "tail_bytes": 520,
+          "result": "0x1"
+        },
+        "counter_ticks": 153954697
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 153983597
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xe0344202",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 153985541
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x438",
+          "r7": "0x2",
+          "r8": "0xe0344202",
+          "r9": "0xc56dbac2",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xe0344202",
+          "destination": "0xc56dbac2",
+          "width": 32512,
+          "rows": 2,
+          "tail_bytes": 1080,
+          "result": "0x1"
+        },
+        "counter_ticks": 153985543
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 154015375
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0x2290cd68",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 154017805
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x1d0",
+          "r6": "0x0",
+          "r7": "0x1",
+          "r8": "0x2290cd68",
+          "r9": "0xc56ebcf3",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0x2290cd68",
+          "destination": "0xc56ebcf3",
+          "width": 464,
+          "rows": 1,
+          "tail_bytes": 0,
+          "result": "0x1"
+        },
+        "counter_ticks": 154017807
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 154052174
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0xc96fb610",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 154054464
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x208",
+          "r7": "0x2",
+          "r8": "0xc96fb610",
+          "r9": "0xc56ebec0",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xc96fb610",
+          "destination": "0xc56ebec0",
+          "width": 32512,
+          "rows": 2,
+          "tail_bytes": 520,
+          "result": "0x1"
+        },
+        "counter_ticks": 154054466
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 154083997
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0x1",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 154086227
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 154096901
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3aea0",
+          "r8": "0x1",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 154099096
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x7f00",
+          "r6": "0x5c0",
+          "r7": "0xb",
+          "r8": "0xe0359c02",
+          "r9": "0xc56fbec2",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0xe0359c02",
+          "destination": "0xc56fbec2",
+          "width": 32512,
+          "rows": 11,
+          "tail_bytes": 1472,
+          "result": "0x1"
+        },
+        "counter_ticks": 154099098
+      },
+      {
+        "entry": "capture-slave-copy-service-callback",
+        "pc": "0x10069806",
+        "thread": 4,
+        "registers": {
+          "r0": "0x42190c48",
+          "r1": "0x0",
+          "r2": "0x10069807",
+          "r3": "0x0",
+          "r4": "0xc14871a8",
+          "r5": "0xc14871c8",
+          "r6": "0x0",
+          "r7": "0x0",
+          "r8": "0x0",
+          "r9": "0x0",
+          "r10": "0x0",
+          "r11": "0x0",
+          "lr": "0x10071ff3"
+        },
+        "counter_ticks": 164319421
+      },
+      {
+        "entry": "capture-slave-copy-service-return",
+        "pc": "0x10069802",
+        "thread": 4,
+        "registers": {
+          "r0": "0x0",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x0",
+          "r4": "0x1",
+          "r5": "0xc1007aac",
+          "r6": "0x1",
+          "r7": "0xc3f3ae90",
+          "r8": "0x2753d840",
+          "r9": "0x42190c01",
+          "r10": "0x10069807",
+          "r11": "0x0",
+          "lr": "0x100697ff"
+        },
+        "copy_service": {
+          "result": 1,
+          "wait_result": 1,
+          "callback_state": 1
+        },
+        "counter_ticks": 164321651
+      },
+      {
+        "entry": "capture-slave-copy-bulk-return",
+        "pc": "0x100616e6",
+        "thread": 4,
+        "registers": {
+          "r0": "0x1",
+          "r1": "0x0",
+          "r2": "0x60000013",
+          "r3": "0x20",
+          "r4": "0x0",
+          "r5": "0x100",
+          "r6": "0x0",
+          "r7": "0x140",
+          "r8": "0x2753d840",
+          "r9": "0xc5b9f300",
+          "r10": "0x1",
+          "r11": "0xffffffff",
+          "lr": "0x100697ff"
+        },
+        "copy": {
+          "source": "0x2753d840",
+          "destination": "0xc5b9f300",
+          "width": 256,
+          "rows": 320,
+          "tail_bytes": 0,
+          "result": "0x1"
+        },
+        "counter_ticks": 164321653
+      }
+    ],
+    "total_raw_records": 716,
+    "after": {
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x10107078",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x1022e2e4",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a48",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a4c",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "jpeg_encoder": {
+        "current_descriptor": "0x0",
+        "accumulated_flags": "0x0"
+      },
+      "peer_input": {
+        "codec": {
+          "encoded_jobs": 6,
+          "measured_jobs": 7
+        },
+        "still_work": {
+          "queue": "0xc16a58a8",
+          "count": 0,
+          "jobs": []
+        }
+      }
+    },
+    "sd_host_trace": {
+      "counts": {
+        "sdhci_access": 1257,
+        "selected": 8215,
+        "sdhci_send_command": 62,
+        "sdhci_adma_loop": 101,
+        "sdcard_write_block": 7838
+      },
+      "events": [
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xe00"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xe02"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x5c",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xae02"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xae12"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xb010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xbf10"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xe10"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xf10"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD00 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x1aa"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD08 ARG[0x000001aa]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x81a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD55 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x371a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x51300000"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD41 ARG[0x51300000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x29020000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD02 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x2090000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD03 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x31a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD09 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x9090000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD07 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x71b0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xf12"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD55 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x371a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x2"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD06 ARG[0x00000002]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x61a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD16 ARG[0x00000200]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x101a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x3200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD55 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x371a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x8"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD51 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x333a0010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD55 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x371a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD13 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0xd3a0010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xda320500"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD55 ARG[0xda320500]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x371a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD42 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x2a1a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xffffff"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD06 ARG[0x00ffffff]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x63a0010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xfffff1"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD06 ARG[0x00fffff1]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x63a0010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x80fffff1"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD06 ARG[0x80fffff1]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x63a0010"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x28",
+          "value": "0xf16"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD16 ARG[0x00000200]"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x101a0000"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x3200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD17 ARG[0x00000000]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5fa1520, len=512, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x113a0011"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x3f"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD17 ARG[0x0000003f]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x113a0011"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x238"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD17 ARG[0x00000238]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5204220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x113a0011"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x100"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000100]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=30720, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0xc0"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x000000c0]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=32768, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x80"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000080]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=32768, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000040]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=32768, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x268"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000268]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5b9f300, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4d000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000040]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x8000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x13c"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x0000013c]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x27800 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x238"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000238]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5344a60, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x47000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x278"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000278]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5204a20, len=8192, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x278"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000278]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5204a20, len=8192, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4f000 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4f200 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4f400 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4f600 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4f800 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4fa00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4fc00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x4fe00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50000 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50200 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50400 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50600 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50800 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50a00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50c00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x50e00 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x238"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000238]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5344a60, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x47000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000040]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x8000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x13c"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x0000013c]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x27800 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x238"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000238]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5344a60, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x47000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x288"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000288]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5206a20, len=8192, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x288"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000288]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5206a20, len=8192, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51000 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51200 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51400 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51600 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51800 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51a00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51c00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x51e00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52000 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52200 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52400 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52600 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52800 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52a00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52c00 size 0x200"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x52e00 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x238"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000238]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5344a60, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x47000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x40"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x00000040]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x8000 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x13c"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD25 ARG[0x0000013c]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc51e4220, len=512, attr=0x23"
+        },
+        {
+          "event": "sdcard_write_block",
+          "detail": "addr 0x27800 size 0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x193a0027"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x298"
+        },
+        {
+          "event": "sdhci_send_command",
+          "detail": "CMD18 ARG[0x00000298]"
+        },
+        {
+          "event": "sdhci_adma_loop",
+          "detail": "addr=0xc5208a20, len=8192, attr=0x23"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0xc",
+          "value": "0x123a0037"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 16,
+          "offset": "0x4",
+          "value": "0x200"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x58",
+          "value": "0xc5f9f520"
+        },
+        {
+          "event": "sdhci_access",
+          "bits": 32,
+          "offset": "0x8",
+          "value": "0x298"
+        }
+      ],
+      "event_limit": 256,
+      "truncated": true,
+      "scope": "Ordered command, DMA and control metadata only; data-port contents are excluded"
+    },
+    "memory_transfer_trace": {
+      "count": 284,
+      "events": [
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xb18aedc0 width=0x4000 rows=0x4ac pitches=0x0/0x4000 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x1 source=0x0 destination=0xc1017d80 width=0x4000 rows=0x22e pitches=0x0/0x4000 success=1",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x9000 length_minus_one=0x2fffff source=0x10000000 destination=0xc8200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109003 length_minus_one=0x2fffff source=0x10000000 destination=0xc8200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109000 length_minus_one=0x2fffff source=0x10000000 destination=0xc8200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11009000 length_minus_one=0x277ff source=0x10834b54 destination=0x80300000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109003 length_minus_one=0x277ff source=0x10834b54 destination=0x80300000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109000 length_minus_one=0x277ff source=0x10834b54 destination=0x80300000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11009000 length_minus_one=0x3fffff source=0x10300000 destination=0xc8500000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109003 length_minus_one=0x3fffff source=0x10300000 destination=0xc8500000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=0 command=0x11109000 length_minus_one=0x3fffff source=0x10300000 destination=0xc8500000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x9000 length_minus_one=0x46bd3 source=0x12449e00 destination=0xb2bb1080 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x46bd3 source=0x12449e00 destination=0xb2bb1080 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x46bd3 source=0x12449e00 destination=0xb2bb1080 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x2fffff source=0x10200000 destination=0xbac00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x2fffff source=0x10200000 destination=0xbac00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x2fffff source=0x10200000 destination=0xbac00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x9000 length_minus_one=0x5f source=0x132ca100 destination=0xb7f54100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x5f source=0x132ca100 destination=0xb7f54100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x5f source=0x132ca100 destination=0xb7f54100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xff source=0x132ca200 destination=0xb7f54200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xff source=0x132ca200 destination=0xb7f54200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xff source=0x132ca200 destination=0xb7f54200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xbff source=0x132cd700 destination=0xb7f57700 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xbff source=0x132cd700 destination=0xb7f57700 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xbff source=0x132cd700 destination=0xb7f57700 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xbff source=0x132ce400 destination=0xb7f58400 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xbff source=0x132ce400 destination=0xb7f58400 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xbff source=0x132ce400 destination=0xb7f58400 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xeff source=0x132cf100 destination=0xb7f59100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xeff source=0x132cf100 destination=0xb7f59100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xeff source=0x132cf100 destination=0xb7f59100 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x2bff source=0x132d1500 destination=0xb7f5b500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x2bff source=0x132d1500 destination=0xb7f5b500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x2bff source=0x132d1500 destination=0xb7f5b500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x1ff source=0x132d4200 destination=0xb7f5e200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x1ff source=0x132d4200 destination=0xb7f5e200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x1ff source=0x132d4200 destination=0xb7f5e200 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x1ff source=0x132d4500 destination=0xb7f5e500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x1ff source=0x132d4500 destination=0xb7f5e500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x1ff source=0x132d4500 destination=0xb7f5e500 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x57c7f source=0x132e6f00 destination=0xb7f70efc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x57c7f source=0x132e6f00 destination=0xb7f70efc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x57c7f source=0x132e6f00 destination=0xb7f70efc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xbdfff source=0x13e80000 destination=0xb7d00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xbdfff source=0x13e80000 destination=0xb7d00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xbdfff source=0x13e80000 destination=0xb7d00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x5fff source=0x13f3e000 destination=0xb7dbe000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x5fff source=0x13f3e000 destination=0xb7dbe000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x5fff source=0x13f3e000 destination=0xb7dbe000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x1f5f source=0x13f4d9c0 destination=0xb7dcd9c0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x1f5f source=0x13f4d9c0 destination=0xb7dcd9c0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x1f5f source=0x13f4d9c0 destination=0xb7dcd9c0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x9d94f source=0x13f4f920 destination=0xb7dcf920 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x9d94f source=0x13f4f920 destination=0xb7dcf920 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x9d94f source=0x13f4f920 destination=0xb7dcf920 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x3 source=0x13fedffc destination=0xb7e6dffc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x3 source=0x13fedffc destination=0xb7e6dffc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x3 source=0x13fedffc destination=0xb7e6dffc controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x19c3f source=0x134d67f0 destination=0xb7f247f0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x19c3f source=0x134d67f0 destination=0xb7f247f0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x19c3f source=0x134d67f0 destination=0xb7f247f0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0xf source=0x134f1ff0 destination=0xb7f3fff0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0xf source=0x134f1ff0 destination=0xb7f3fff0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0xf source=0x134f1ff0 destination=0xb7f3fff0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x99bf source=0x13f44000 destination=0xb7dc4000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x99bf source=0x13f44000 destination=0xb7dc4000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x99bf source=0x13f44000 destination=0xb7dc4000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11009000 length_minus_one=0x10b2f source=0x134c5cc0 destination=0xb7f13cc0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109003 length_minus_one=0x10b2f source=0x134c5cc0 destination=0xb7f13cc0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=1 command=0x11109000 length_minus_one=0x10b2f source=0x134c5cc0 destination=0xb7f13cc0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x3b1bf source=0x107a4f34 destination=0x0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x3b1bf source=0x107a4f34 destination=0x0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x3b1bf source=0x107a4f34 destination=0x0 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x34237 source=0x107e00f4 destination=0x5000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x34237 source=0x107e00f4 destination=0x5000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x34237 source=0x107e00f4 destination=0x5000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x332ff source=0x1081432c destination=0x3a000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x332ff source=0x1081432c destination=0x3a000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x332ff source=0x1081432c destination=0x3a000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x2cbc7 source=0x1087a92c destination=0x6e000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x2cbc7 source=0x1087a92c destination=0x6e000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x2cbc7 source=0x1087a92c destination=0x6e000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x277ff source=0x122acf40 destination=0x50200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x277ff source=0x122acf40 destination=0x50200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x277ff source=0x122acf40 destination=0x50200000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x57e2f source=0x122d81a0 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x57e2f source=0x122d81a0 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x57e2f source=0x122d81a0 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x69e6f source=0x1232ffd0 destination=0x50080000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x69e6f source=0x1232ffd0 destination=0x50080000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x69e6f source=0x1232ffd0 destination=0x50080000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x3a4f source=0x122d4750 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x3a4f source=0x122d4750 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x3a4f source=0x122d4750 destination=0x50000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x2049ff source=0x120a853c destination=0xb1000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x2049ff source=0x120a853c destination=0xb1000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x2049ff source=0x120a853c destination=0xb1000000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x3f source=0x120a853c destination=0x4008000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x3f source=0x120a853c destination=0x4008000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x3f source=0x120a853c destination=0x4008000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0x3fffff source=0x10500000 destination=0xbaf00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0x3fffff source=0x10500000 destination=0xbaf00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0x3fffff source=0x10500000 destination=0xbaf00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11009000 length_minus_one=0xfffff source=0x10000000 destination=0xbaa00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109003 length_minus_one=0xfffff source=0x10000000 destination=0xbaa00000 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=0 command=0x11109000 length_minus_one=0xfffff source=0x10000000 destination=0xbaa00000 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0x47d00000 destination=0xc6100000 width=0x60 rows=0x3d00 pitches=0x60/0x60 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0x47e6e000 destination=0xc626e000 width=0x38 rows=0x3c00 pitches=0x38/0x38 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0x28108380 destination=0xc5b9f300 width=0x200 rows=0x1 pitches=0x200/0x200 success=0",
+        "z72_memory_transfer engine=0xb1800000 channel=1 mode=0x10 source=0x45b9f300 destination=0xb6e9f340 width=0x7f00 rows=0x40 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=1 mode=0x10 source=0x45d9b300 destination=0xb709b340 width=0x4008 rows=0x1 pitches=0x4008/0x4008 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbec5f200 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xc175d600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf10f200 width=0xf00 rows=0x21c pitches=0x0/0xf00 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf309600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbec5f200 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xc175d600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf10f200 width=0xf00 rows=0x21c pitches=0x0/0xf00 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbec5f200 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xc175d600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x9000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbff44340 width=0x30 rows=0x2a pitches=0x0/0x30 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf7ba5c0 width=0x30 rows=0x2a pitches=0x0/0x30 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf309600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbec5f200 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xc175d600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf10f200 width=0xf00 rows=0x21c pitches=0x0/0xf00 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xbf309600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xb1800000 channel=0 mode=0x1 source=0x0 destination=0xc175d600 width=0xb40 rows=0x1e0 pitches=0x0/0xb40 success=1",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0x42d171c0 destination=0xc19cef40 width=0x300 rows=0x1 pitches=0x300/0x300 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0x42d3be00 destination=0xc19d3ec0 width=0x15c0 rows=0x1 pitches=0x15c0/0x15c0 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0x43c87080 destination=0xc29b9040 width=0x8 rows=0x1750 pitches=0x8/0x8 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=0 mode=0x10 source=0xa700000 destination=0xbad0a000 width=0x1080 rows=0x1590 pitches=0x1080/0x3090 success=0",
+        "z72_sequence_transfer engine=0xc1000000 channel=2 command=0x9000 length_minus_one=0x9127 source=0x423af440 destination=0xc16c3f40 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=2 command=0x11109003 length_minus_one=0x9127 source=0x423af440 destination=0xc16c3f40 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xc1000000 channel=2 command=0x11109000 length_minus_one=0x9127 source=0x423af440 destination=0xc16c3f40 controls=0x30f00/0x30f00",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xc96d2200 destination=0xc539f2c0 width=0x7f00 rows=0x3 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf52e802 destination=0xc53b86c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf56e002 destination=0xc53f7ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf5ad802 destination=0xc54376c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf5ed002 destination=0xc5476ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf62c802 destination=0xc54b66c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf66c002 destination=0xc54f5ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf6ab802 destination=0xc55356c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf6eb002 destination=0xc5574ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf72a802 destination=0xc55b46c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf76a002 destination=0xc55f3ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf7a9802 destination=0xc56336c2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf7e9002 destination=0xc5672ec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xdf828802 destination=0xc56b26c2 width=0x7f00 rows=0x3 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0x2290cd68 destination=0xc56cb92e width=0x198 rows=0x1 pitches=0x198/0x198 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xc96eb608 destination=0xc56cbac0 width=0x7f00 rows=0x2 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xe0344202 destination=0xc56dbac2 width=0x7f00 rows=0x2 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0x2290cd68 destination=0xc56ebcf3 width=0x1d0 rows=0x1 pitches=0x1d0/0x1d0 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xc96fb610 destination=0xc56ebec0 width=0x7f00 rows=0x2 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xe0359c02 destination=0xc56fbec2 width=0x7f00 rows=0x8 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0xe0399402 destination=0xc573b6c2 width=0x7f00 rows=0x3 pitches=0x7f00/0x7f00 success=1",
+        "z72_memory_transfer engine=0xc1000000 channel=1 mode=0x10 source=0x2753d840 destination=0xc5b9f300 width=0x100 rows=0x140 pitches=0x100/0x100 success=0",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa21c00 destination=0x625551ba controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa32a00 destination=0x62565fce controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa00000 destination=0x62533592 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11009000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109003 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00",
+        "z72_sequence_transfer engine=0xb1800000 channel=2 command=0x11109000 length_minus_one=0x10dff source=0xafa10e00 destination=0x625443a6 controls=0x30f00/0x30f00"
+      ],
+      "event_limit": 1024,
+      "truncated": false,
+      "scope": "Latest engine memory DMA metadata only; no buffer contents"
+    },
+    "memory_watch": null,
+    "diagnostic_capture": {
+      "caller_fixture": true,
+      "triggered": true,
+      "caller_entered": true,
+      "caller_returned": true,
+      "body_shutter_used": false,
+      "settings_only": false,
+      "hardware_completion_host_supplied": false,
+      "finish_observation_max_contexts": 4,
+      "request_words": [
+        262656,
+        1,
+        0,
+        0,
+        1
+      ],
+      "format_request": "jpeg",
+      "storage_request": 2,
+      "code_bytes": 352,
+      "code_sha256": "c0c794b151ca2ae9499a698ee19326f6499b3d935533492f473a3ba0119672b1",
+      "settings_fixture": {
+        "program_property": "0x500e",
+        "program_value": 1,
+        "exposure_property": "0x500d",
+        "exposure_value": 1000,
+        "setter": "0x104c8254",
+        "readback_required": true,
+        "program_status": "0x2001",
+        "exposure_status": "0x2001",
+        "final_property_status": "0x2001",
+        "program_readback": 1,
+        "exposure_readback": 1000,
+        "ready": true,
+        "capture_api_invoked": true,
+        "control_mode": {
+          "eligible": 1,
+          "request_status": "0x0",
+          "readback": 1,
+          "notification": "0x40f0004",
+          "notification_status": 0,
+          "request_invoked": true,
+          "notification_received": true
+        }
+      },
+      "resources_before": {
+        "masks": [
+          {
+            "descriptor": "0xb1869898",
+            "capacity": 124,
+            "pointer": "0xb23f7e24",
+            "set_bits": [
+              49,
+              87
+            ]
+          },
+          {
+            "descriptor": "0xb18698a0",
+            "capacity": 124,
+            "pointer": "0xb23f7e34",
+            "set_bits": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              48,
+              50,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120,
+              121,
+              122,
+              123
+            ]
+          },
+          {
+            "descriptor": "0xb18698b0",
+            "capacity": 124,
+            "pointer": "0xb23f7e54",
+            "set_bits": [
+              49,
+              87
+            ]
+          }
+        ],
+        "primary_scratch_intersection": [
+          49,
+          87
+        ],
+        "processing_resource_flags": [
+          1,
+          1
+        ],
+        "ui_reason_byte": 0
+      },
+      "trigger_counter_ticks": 98428885,
+      "control_properties_before_submit": {
+        "0x1b0c": 1,
+        "0x2400": 1
+      },
+      "resources_at_query": {
+        "masks": [
+          {
+            "descriptor": "0xb1869898",
+            "capacity": 124,
+            "pointer": "0xb23f7e24",
+            "set_bits": [
+              49
+            ]
+          },
+          {
+            "descriptor": "0xb18698a0",
+            "capacity": 124,
+            "pointer": "0xb23f7e34",
+            "set_bits": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              48,
+              50,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120,
+              121,
+              122,
+              123
+            ]
+          },
+          {
+            "descriptor": "0xb18698b0",
+            "capacity": 124,
+            "pointer": "0xb23f7e54",
+            "set_bits": [
+              0,
+              1,
+              2,
+              3,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              23,
+              24,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              62,
+              65,
+              66,
+              68,
+              69,
+              70,
+              71,
+              72,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              82,
+              83,
+              84,
+              85,
+              91,
+              92,
+              94,
+              95,
+              96,
+              99,
+              100,
+              101,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              116,
+              122
+            ]
+          }
+        ],
+        "primary_scratch_intersection": [],
+        "processing_resource_flags": [
+          1,
+          1
+        ],
+        "ui_reason_byte": 0,
+        "query_result": 1
+      },
+      "storage_query": {
+        "status": "0x43a0080",
+        "byte_1": 1,
+        "fields": {
+          "0x4": "0x0",
+          "0x44": "0x21",
+          "0x48": "0x21",
+          "0x4c": "0x44a85e",
+          "0x50": "0x44a85e",
+          "0x54": "0x0",
+          "0x58": "0x1"
+        }
+      },
+      "storage_admission": {
+        "status": 33,
+        "flags": "0x0"
+      },
+      "api_status": 0,
+      "completion_payload_at_entry": {
+        "r1": "0x0",
+        "first_word": null
+      },
+      "observed_after_trigger_counter_seconds": 2.002648,
+      "result_words": [
+        0,
+        1,
+        0,
+        0,
+        68157510,
+        0,
+        334500023,
+        0,
+        1
+      ],
+      "api_returned": true,
+      "api_accepted": true,
+      "completion_count": 1,
+      "scratch_restored": true,
+      "callback_restored": true,
+      "scratch_retained_until_vm_close": false
+    },
+    "capture_counter_window": {
+      "requested_seconds": 2.0,
+      "reached": true
+    },
+    "observed_seconds": 337.0,
+    "observed_counter_seconds": 2.72306,
+    "still_preprocessing_skip_requested": true
+  }
+}

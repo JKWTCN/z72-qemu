@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "photo_bytes": 3884735,
+  "photo_sha256": "2a380b0cdfd8794d72707e59689e07468c64a4615e1bb185414752aea39fc9aa",
+  "dimensions": [
+    8256,
+    5504
+  ],
+  "encoded_photo_verified": false,
+  "decode_error": "broken data stream when reading image file",
+  "comparison": {
+    "prior": "../capture_slave_codec_scaled/DSC_0001.JPG",
+    "differing_bytes": 712,
+    "first_differing_offsets": [
+      "0x1694",
+      "0x1695",
+      "0x16a2",
+      "0x16a3",
+      "0x1778",
+      "0x1779",
+      "0x1794",
+      "0x1795",
+      "0x17a2",
+      "0x17a3"
+    ],
+    "last_differing_offset": "0x72a7"
+  },
+  "temporary_card_retained": false,
+  "scope": "Read-only extraction after VM closure; retain the extracted invalid JPEG and earlier card, remove this later temporary clone. This extraction does not constitute a full filesystem integrity test."
+}

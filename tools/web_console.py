@@ -296,7 +296,8 @@ class Machine:
                               f'format=raw,snapshot={"off" if card_copy else "on"}')
             if getattr(self.args, 'trace_sd_host', False):
                 for event in ('sdhci_send_command', 'sdhci_adma', 'sdhci_adma_loop',
-                              'sdhci_access', 'sdcard_write_block'):
+                              'sdhci_access', 'sdcard_write_block', 'z72_memory_transfer',
+                              'z72_sequence_transfer'):
                     card_arguments += ('-trace', f'enable={event}')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',

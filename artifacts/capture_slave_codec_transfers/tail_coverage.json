@@ -1,0 +1,113 @@
+{
+  "format": 1,
+  "scope": "Coverage of two-dimensional memory DMA reads from codec source buffers; other devices and CPU copies excluded",
+  "streams": [
+    {
+      "jpeg": "codec-21590092498eeb05d90b205a237e9d6b5195f02d7394c7c1bc7a7bcdeeed5393.jpg",
+      "bytes": 3224174,
+      "source": "0xdf52e800",
+      "copied_segments": [
+        {
+          "source_offset": "0x2",
+          "destination": "0xc53b86c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x3f802",
+          "destination": "0xc53f7ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x7f002",
+          "destination": "0xc54376c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0xbe802",
+          "destination": "0xc5476ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0xfe002",
+          "destination": "0xc54b66c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x13d802",
+          "destination": "0xc54f5ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x17d002",
+          "destination": "0xc55356c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x1bc802",
+          "destination": "0xc5574ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x1fc002",
+          "destination": "0xc55b46c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x23b802",
+          "destination": "0xc55f3ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x27b002",
+          "destination": "0xc56336c2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x2ba802",
+          "destination": "0xc5672ec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x2fa002",
+          "destination": "0xc56b26c2",
+          "bytes": 97536
+        }
+      ],
+      "source_end": "0x311d02",
+      "uncovered_tail_bytes": 5484
+    },
+    {
+      "jpeg": "codec-60527efb5db36b937a5958e4716a6695a77e25cad6e38245e81b193abdc5b378.jpg",
+      "bytes": 66099,
+      "source": "0xe0344200",
+      "copied_segments": [
+        {
+          "source_offset": "0x2",
+          "destination": "0xc56dbac2",
+          "bytes": 65024
+        }
+      ],
+      "source_end": "0xfe02",
+      "uncovered_tail_bytes": 1073
+    },
+    {
+      "jpeg": "codec-ceae4140b83db63c07d7694f142ee5bc252919ff4aed6edd4294c4c0d4d28691.jpg",
+      "bytes": 359103,
+      "source": "0xe0359c00",
+      "copied_segments": [
+        {
+          "source_offset": "0x2",
+          "destination": "0xc56fbec2",
+          "bytes": 260096
+        },
+        {
+          "source_offset": "0x3f802",
+          "destination": "0xc573b6c2",
+          "bytes": 97536
+        }
+      ],
+      "source_end": "0x57502",
+      "uncovered_tail_bytes": 1469
+    }
+  ]
+}

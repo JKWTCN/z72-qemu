@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import require
-from tools.body_shutter_gate_probe import sd_trace_snapshot
+from tools.body_shutter_gate_probe import sd_trace_snapshot, memory_trace_snapshot
 
 
 def check():
@@ -31,8 +31,21 @@ def check():
         result = sd_trace_snapshot(machine)
         require(len(result['events']) == 256 and result['counts']['selected'] == 300 and
                 result['truncated'], 'SD trace metadata was not bounded')
+        trace.write_text('\n'.join(f'123@456:z72_memory_transfer source=0x{index:x}'
+                                   for index in range(1100)) + '\n' + lines[1], encoding='utf-8')
+        result = memory_trace_snapshot(machine)
+        require(result['count'] == 1100 and len(result['events']) == 1024 and result['truncated'] and
+                result['events'][0] == 'z72_memory_transfer source=0x4c' and
+                result['events'][-1] == 'z72_memory_transfer source=0x44b',
+                'Memory DMA trace did not preserve the latest bounded events')
+        require('deadbeef' not in str(result), 'Memory DMA trace exposed data-port contents')
+        trace.write_text('z72_sequence_transfer command=0x11109003\n' + lines[1], encoding='utf-8')
+        result = memory_trace_snapshot(machine)
+        require(result['count'] == 1 and result['events'] == ['z72_sequence_transfer command=0x11109003'],
+                'Sequence DMA metadata was lost or mixed with data-port contents')
         machine.args.trace_sd_host = False
         require(sd_trace_snapshot(machine) is None, 'Disabled trace did not preserve default behavior')
+        require(memory_trace_snapshot(machine) is None, 'Disabled memory trace did not preserve default behavior')
     print('PASS bounded SD metadata, command ordering and data-port exclusion')
 
 

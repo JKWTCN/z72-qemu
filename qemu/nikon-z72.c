@@ -22,6 +22,7 @@
 #include "target/arm/cpu.h"
 #include "nikon-z72-profile.h"
 #include "nikon-z72-controller.h"
+#include "trace.h"
 
 #define TYPE_NIKON_Z72_DUAL MACHINE_TYPE_NAME("nikon-z72-dual-lab")
 OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72DualMachine, NIKON_Z72_DUAL)
@@ -630,6 +631,9 @@ struct NikonZ72BootConfig {
     uint32_t compute_mailbox_words[0x400];
     bool transfer_reset_completion;
     MemoryRegion *root;
+    MemoryRegion memory_dma_view;
+    MemoryRegion memory_dma_local;
+    MemoryRegion memory_dma_peer;
     bool own_file;
     ARMCPU *cpu;
     bool peer_gpio;
@@ -2971,6 +2975,12 @@ static void seq_write(void *opaque, hwaddr offset, uint64_t value, unsigned size
     if (s->sequencer_completion && size == 4) {
         for (unsigned channel = 0; channel < 4; channel++) {
             hwaddr command = 0x1028 + channel * 0x30;
+            if (offset == command) {
+                const uint8_t *r = s->seq_table + 0x1010 + channel * 0x30;
+                trace_z72_sequence_transfer(s->clear_base, channel, value,
+                    ldl_le_p(r), ldl_le_p(r + 4), ldl_le_p(r + 8),
+                    ldl_le_p(r + 12), ldl_le_p(r + 16));
+            }
             if (offset == command && (value & 0x10000003) == 0x10000003) {
                 uint32_t status = ldl_le_p(s->seq_table + command + 8);
                 bool success = seq_transfer(s, channel);
@@ -5037,7 +5047,17 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
                                 sysbus_mmio_get_region(SYS_BUS_DEVICE(config), 1));
     DeviceState *memory = qdev_new("nikon-z72-memory");
     NikonZ72BootConfig *boot_config = NIKON_Z72_BOOT_CONFIG(config);
-    object_property_set_link(OBJECT(memory), "root", OBJECT(view), &error_fatal);
+    MemoryRegion *memory_view = view;
+    if (shared_message) {
+        memory_region_init(&boot_config->memory_dma_view, OBJECT(config),
+                           "z72-memory-dma-view", UINT64_MAX);
+        memory_region_init_alias(&boot_config->memory_dma_local, OBJECT(config),
+                                 "z72-memory-dma-local", view, 0, UINT64_MAX);
+        memory_region_add_subregion(&boot_config->memory_dma_view, 0,
+                                    &boot_config->memory_dma_local);
+        memory_view = &boot_config->memory_dma_view;
+    }
+    object_property_set_link(OBJECT(memory), "root", OBJECT(memory_view), &error_fatal);
     qdev_prop_set_uint32(memory, "clear-base", boot_config->clear_base);
     qdev_prop_set_uint32(memory, "clear-size", boot_config->clear_size);
     qdev_prop_set_bit(memory, "fail", boot_config->memory_init_error);
@@ -5202,6 +5222,20 @@ static void nikon_z72_dual_init(MachineState *machine)
         nikon_z72_engine_init(machine, slave_view, nikon_z72_slave_windows,
                           G_N_ELEMENTS(nikon_z72_slave_windows), slave_message,
                           NULL, false, s->slave_boot_image, s->slave_boot_aux);
+    /* Peer address class 7 maps C0000000..DFFFFFFF to DMA bus 20000000.
+     * This aperture overlaps local CPU registers and must exist only in
+     * the memory controller's DMA view, never in either CPU view. */
+    NikonZ72BootConfig *configs[2] = {NIKON_Z72_BOOT_CONFIG(master_config),
+                                    NIKON_Z72_BOOT_CONFIG(slave_config)};
+    MemoryRegion *peers[2] = {slave_view, master_view};
+    for (unsigned engine = 0; engine < 2; engine++) {
+        NikonZ72BootConfig *config = configs[engine];
+        memory_region_init_alias(&config->memory_dma_peer, OBJECT(config),
+                                 "z72-memory-dma-peer", peers[engine],
+                                 0xc0000000, 0x20000000);
+        memory_region_add_subregion_overlap(&config->memory_dma_view, 0x20000000,
+                                            &config->memory_dma_peer, 1);
+    }
     /* Communication initialization uses master bank 6 bit 3 and slave
      * bank 8 bit 10. The board connects the two readiness signals; this
      * wiring is inferred from the complementary firmware startup paths. */

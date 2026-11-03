@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #include "qemu/osdep.h"
 #include "qemu/timer.h"
+#include "qemu/log.h"
 #include "qapi/error.h"
 #include "hw/sysbus.h"
 #include "hw/irq.h"
 #include "hw/qdev-properties.h"
 #include "hw/resettable.h"
 #include "system/address-spaces.h"
+#include "trace.h"
 
 #define TYPE_Z72_MEMORY "nikon-z72-memory"
 OBJECT_DECLARE_SIMPLE_TYPE(Z72Memory, Z72_MEMORY)
@@ -112,8 +114,18 @@ static bool memory_transfer(Z72Memory *s, unsigned channel)
 static void memory_complete(Z72Memory *s, unsigned channel)
 {
     unsigned base = channel * 16;
+    bool success = memory_transfer(s, channel);
+    uint32_t *r = s->registers + base;
+    trace_z72_memory_transfer(s->clear_base, channel, r[5], r[11], r[12],
+                              r[9], r[10], r[7], r[8], success);
+    if (!success) {
+        qemu_log_mask(LOG_GUEST_ERROR,
+            "z72 memory transfer rejected: channel=%u mode=0x%x fill=0x%x "
+            "source=0x%x destination=0x%x pitches=0x%x/0x%x width=0x%x rows=0x%x\n",
+            channel, r[5], r[6], r[11], r[12], r[7], r[8], r[9], r[10]);
+    }
     s->pending[channel] = false;
-    s->registers[base + 2] |= memory_transfer(s, channel) ? 1 : 0x10;
+    s->registers[base + 2] |= success ? 1 : 0x10;
     memory_irqs(s);
 }
 

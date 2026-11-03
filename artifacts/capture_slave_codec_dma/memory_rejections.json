@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "source": "QEMU guest-error diagnostics captured before VM work cleanup",
+  "events": [
+    {
+      "message": "z72 memory transfer rejected: channel=1 mode=0x10 fill=0x0 source=0x28108380 destination=0xc5b9f300 pitches=0x200/0x200 width=0x200 rows=0x1",
+      "count": 1
+    },
+    {
+      "message": "z72 memory transfer rejected: channel=0 mode=0x10 fill=0x0 source=0xa700000 destination=0xbad0a000 pitches=0x1080/0x3090 width=0x1080 rows=0x1590",
+      "count": 1
+    },
+    {
+      "message": "z72 memory transfer rejected: channel=1 mode=0x10 fill=0x0 source=0x2753d840 destination=0xc5b9f300 pitches=0x100/0x100 width=0x100 rows=0x140",
+      "count": 1
+    }
+  ]
+}
