@@ -38,10 +38,10 @@ def check(qemu):
             devices.sort(key=lambda name: int(re.search(r'\d+', name)[0]))
             require(len(devices) == 2, 'Expected two delay devices')
 
-            def signal(thread, line, level):
+            def signal(thread, line, level, name='capture-event'):
                 role = 0 if thread == 1 else 1
                 wire.sendall((f'set_irq_in /machine/unattached/{devices[role]} '
-                              f'capture-event {line} {level}\n').encode())
+                              f'{name} {line} {level}\n').encode())
                 require(stream.readline().strip() == b'OK', 'Capture event command failed')
 
             def access(thread, address, value=None):
@@ -268,6 +268,71 @@ def check(qemu):
                     require(access(thread, b + 0x14) == 0 and access(thread, b + 0x18) == 0,
                             'Channel reset retained capture latches')
 
+                    # A continuous virtual signal supplies both capture edges.
+                    def level(value):
+                        signal(thread, channel - 5, value, 'capture-level')
+                    access(thread, b + 0x10, 1)
+                    access(thread, a, 0)
+                    access(thread, b, 0)
+                    access(thread, 0x2c011000, 1 << channel)
+                    run(0.002)
+                    before = access(thread, b + 0xc)
+                    level(1)
+                    rising = access(thread, b + 0x14)
+                    require(before <= rising <= access(thread, b + 0xc) and rising > 0 and
+                            access(thread, b + 0x18) == 0 and access(thread, a + 0x10) == 2,
+                            'Signal rise did not select the first capture latch')
+                    require(not pending(thread, channel) and access(peer, b + 0x14) == 0,
+                            'Masked signal capture raised IRQ or crossed engines')
+                    run(0.002)
+                    level(1)
+                    require(access(thread, b + 0x14) == rising,
+                            'Held signal overwrote the first capture latch')
+                    level(0)
+                    falling = access(thread, b + 0x18)
+                    require(falling > rising and access(thread, a + 0x10) == 6,
+                            'Signal fall did not select the second capture latch')
+                    access(thread, a, 6)
+                    require(pending(thread, channel), 'Signal capture lost its pending IRQ')
+                    acknowledge(thread, channel, 2)
+                    require(access(thread, a + 0x10) == 4 and pending(thread, channel),
+                            'Signal capture acknowledgement cleared both causes')
+                    acknowledge(thread, channel, 4)
+                    access(thread, b + 0x10, 0)
+                    level(1)
+                    access(thread, b + 0x10, 1)
+                    level(1)
+                    require(access(thread, a + 0x10) == 0 and access(thread, b + 0x14) == rising,
+                            'Enabling signal capture invented an edge')
+                    level(0)
+                    require(access(thread, a + 0x10) == 4, 'Signal history ignored a falling edge')
+                    acknowledge(thread, channel, 4)
+                    access(thread, a + 8, 0x20)
+                    level(1)
+                    access(thread, a + 8, 0)
+                    level(1)
+                    require(access(thread, a + 0x10) == 0, 'Alternate mode invented a signal edge')
+                    level(0)
+                    acknowledge(thread, channel, 4)
+                    access(thread, 0x2c011000, 0)
+                    level(1)
+                    access(thread, 0x2c011000, 1 << channel)
+                    level(1)
+                    require(access(thread, a + 0x10) == 0, 'Starting a counter invented a signal edge')
+                    access(thread, b, 1)
+                    access(thread, b, 0)
+                    level(1)
+                    require(access(thread, a + 0x10) == 0 and access(thread, b + 0x14) == 0,
+                            'Channel reset forgot the held external signal')
+                    run(0.002)
+                    level(0)
+                    require(access(thread, b + 0x18) > 0 and access(thread, a + 0x10) == 4,
+                            'Channel reset prevented a new signal edge')
+                    acknowledge(thread, channel, 4)
+                    access(thread, 0x2c011000, 0)
+                    level(1)  # Keep the external input high through board reset.
+                    access(thread, b, 1)
+
             # Channel reset clears the preset and holds the count at zero.
             access(1, 0x2c011000, 0x200)
             access(1, 0x2c011a00, 1)
@@ -284,6 +349,16 @@ def check(qemu):
                         'Reset retained delay enables')
             run(0.15)
             require(access(1, 0x2c010910) == 0, 'Reset left an armed timer running')
+            for thread in (1, 3):
+                a, b = 0x2c010600, 0x2c011600
+                access(thread, 0x2c010004, 1)
+                access(thread, b + 4, 255)
+                access(thread, b + 8, 0xffffffff)
+                access(thread, b + 0x10, 1)
+                access(thread, 0x2c011000, 1 << 5)
+                signal(thread, 0, 1, 'capture-level')
+                require(access(thread, a + 0x10) == 0 and access(thread, b + 0x14) == 0,
+                        'Board reset invented a held signal edge')
             print('PASS delay counters: deadlines, 12 IRQs, repetitions, dual captures, masks, W1C, reset and isolation')
         finally:
             if stream is not None:

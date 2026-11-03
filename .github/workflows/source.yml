@@ -23,6 +23,7 @@ jobs:
           python tests/test_board.py --qemu .build/build/qemu-system-arm
           python tests/test_interrupts.py --qemu .build/build/qemu-system-arm --destination .local/interrupt-check
           python tests/test_counter.py --qemu .build/build/qemu-system-arm --destination .local/counter-check
+          python tests/test_delay_counter.py --qemu .build/build/qemu-system-arm
           python tests/test_smp.py --qemu .build/build/qemu-system-arm --destination .local/smp-check
           python tests/test_dual_interrupts.py --qemu .build/build/qemu-system-arm --destination .local/dual-interrupt-check
           python tests/test_uart.py --qemu .build/build/qemu-system-arm --destination .local/uart-check

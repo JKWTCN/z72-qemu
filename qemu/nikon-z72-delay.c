@@ -33,6 +33,7 @@ struct NikonZ72Delay {
     MemoryRegion iomem;
     uint32_t regs[WORDS];
     uint8_t capture_levels[4];
+    uint8_t capture_pin_levels[2];
     Z72DelayChannel channels[CHANNELS];
 };
 
@@ -81,22 +82,39 @@ static void delay_stop(Z72DelayChannel *ch)
     timer_del(ch->timer);
 }
 
-static void delay_capture(void *opaque, int line, int level)
+static void delay_latch_capture(NikonZ72Delay *s, unsigned channel, unsigned latch)
 {
-    NikonZ72Delay *s = opaque;
-    unsigned channel = 5 + line / 2;
-    unsigned latch = line % 2;
-    bool rising = level && !s->capture_levels[line];
     Z72DelayChannel *ch = &s->channels[channel];
 
-    s->capture_levels[line] = !!level;
-    /* Explicit event inputs, not recovered physical pins or polarity. The
-     * alternate mode selected by A+8 bit 5 has no established semantics. */
-    if (rising && ch->clocked && (REG(s, B(channel) + 0x10) & 1) &&
+    /* The alternate mode selected by A+8 bit 5 has no established semantics. */
+    if (ch->clocked && (REG(s, B(channel) + 0x10) & 1) &&
         !(REG(s, A(channel) + 8) & 0x20)) {
         REG(s, B(channel) + 0x14 + latch * 4) = delay_count(ch);
         REG(s, A(channel) + 0x10) |= 2u << latch;
         delay_irq(ch);
+    }
+}
+
+static void delay_capture(void *opaque, int line, int level)
+{
+    NikonZ72Delay *s = opaque;
+    bool rising = level && !s->capture_levels[line];
+
+    s->capture_levels[line] = !!level;
+    if (rising) {
+        delay_latch_capture(s, 5 + line / 2, line % 2);
+    }
+}
+
+static void delay_capture_level(void *opaque, int line, int level)
+{
+    NikonZ72Delay *s = opaque;
+
+    if (s->capture_pin_levels[line] != !!level) {
+        s->capture_pin_levels[line] = !!level;
+        /* Virtual signal convention: rise selects latch 0, fall latch 1.
+         * Physical routing and electrical polarity remain unverified. */
+        delay_latch_capture(s, 5 + line, level ? 0 : 1);
     }
 }
 
@@ -239,6 +257,7 @@ static void delay_reset(Object *obj, ResetType type)
 
     memset(s->regs, 0, sizeof(s->regs));
     memset(s->capture_levels, 0, sizeof(s->capture_levels));
+    /* Preserve external signal levels: reset does not release a held input. */
     for (unsigned i = 0; i < CHANNELS; i++) {
         delay_clear_channel(&s->channels[i]);
     }
@@ -269,12 +288,13 @@ static const VMStateDescription delay_channel_vmstate = {
 
 static const VMStateDescription delay_vmstate = {
     .name = TYPE_NIKON_Z72_DELAY,
-    .version_id = 2,
-    .minimum_version_id = 2,
+    .version_id = 3,
+    .minimum_version_id = 3,
     .post_load = delay_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(regs, NikonZ72Delay, WORDS),
         VMSTATE_UINT8_ARRAY(capture_levels, NikonZ72Delay, 4),
+        VMSTATE_UINT8_ARRAY(capture_pin_levels, NikonZ72Delay, 2),
         VMSTATE_STRUCT_ARRAY(channels, NikonZ72Delay, CHANNELS, 1,
                              delay_channel_vmstate, Z72DelayChannel),
         VMSTATE_END_OF_LIST()
@@ -289,6 +309,7 @@ static void delay_init(Object *obj)
                           TYPE_NIKON_Z72_DELAY, 0x2000);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
     qdev_init_gpio_in_named(DEVICE(s), delay_capture, "capture-event", 4);
+    qdev_init_gpio_in_named(DEVICE(s), delay_capture_level, "capture-level", 2);
     for (unsigned i = 0; i < CHANNELS; i++) {
         Z72DelayChannel *ch = &s->channels[i];
         ch->owner = s;

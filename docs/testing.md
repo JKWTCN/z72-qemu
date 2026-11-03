@@ -795,3 +795,12 @@ the status-operation wrapper forwards its callback and the status-list tail.
 This distinguishes capture preparation from status handling. Parameter reads
 and operation submission are isolated boundaries; status production, clearing
 and repeated capture require separate runtime evidence.
+
+`tests/test_delay_counter.py --qemu ...` also exercises continuous capture
+signals on both engines: rising/falling latch selection, held levels, masked
+IRQs, independent acknowledgement, disabled/stopped/alternate-mode history,
+and held inputs across channel and machine reset. The original pulse capture,
+twelve-channel timing and repetition checks remain in the same batch. It uses
+synthetic firmware-free instructions and removes its temporary run directory.
+This validates the exposed signal contract; physical wiring, migration round
+trips and native repeated photography are outside its scope.
