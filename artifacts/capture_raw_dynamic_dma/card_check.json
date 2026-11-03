@@ -105,7 +105,8 @@
           ]
         },
         "source_to_output": "x = ceil(source_center_x * 8256 / 8288); y = ceil(source_center_y * 5504 / 5520); expected parity from floor(x * 8288 / 8256) and floor(y * 5520 / 5504)"
-      }
+      },
+      "repository_file": "DCIM/100NZ7_2/DSC_0001.JPG"
     },
     {
       "name": "DCIM/100NZ7_2/NC_FLLST.DAT",
@@ -117,6 +118,16 @@
   "mbr_sha256": "f813df94732ae52126e86c1a7bbe18c9d6a06c8989542d858b5ed3b23dc717ef",
   "partition_boot_sha256": "619851dcef4153ff08be730bf3cfa9245f7d4b08b4ab71edde68a98d5b5650fe",
   "diagnostic_pattern_verified": true,
-  "scope": "Original firmware packaging and card writes after a diagnostic capture call. Synthetic checkerboard RAW input and replacement pixel/JPEG hardware with original DSP preprocessing skipped. No real-world scene or native body shutter submission is claimed. Exported JPG is byte-for-byte from the card; no image repair. Raster files remain local and excluded from Git.",
-  "volume_label": "QEMU VVF.AT"
+  "scope": "Original firmware packaging and card writes after a diagnostic capture call. Synthetic checkerboard RAW input and replacement pixel/JPEG hardware with original DSP preprocessing skipped. No real-world scene or native body shutter submission is claimed. Exported JPG is byte-for-byte from the card; no image repair. At the user's request, this one original monochrome SD-card JPEG is retained in Git and referenced from the memory-transfer report. Other raster files remain excluded.",
+  "volume_label": "QEMU VVF.AT",
+  "repository_export": {
+    "source": "SD filesystem DCIM/100NZ7_2/DSC_0001.JPG",
+    "file": "DCIM/100NZ7_2/DSC_0001.JPG",
+    "method": "7-Zip filesystem extraction, preserving the original path and filename",
+    "bytes": 5126646,
+    "sha256": "a6fe3edf73e2ba574c4d8522d8f1f8c64bc37e6e0269b716f6faefaf70442279",
+    "byte_identical_to_card": true,
+    "reencoded": false,
+    "original_exif_and_embedded_jpegs_preserved": true
+  }
 }

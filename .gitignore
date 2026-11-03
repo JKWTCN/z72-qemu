@@ -48,5 +48,8 @@ qemu-*.tar.xz
 *.[sS][vV][gG]
 *.log
 
+# Original SD-card JPEG retained for the documented monochrome capture.
+!/artifacts/capture_raw_dynamic_dma/DCIM/100NZ7_2/DSC_0001.JPG
+
 # Editor settings
 .vscode/
