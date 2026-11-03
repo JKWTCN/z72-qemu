@@ -278,6 +278,8 @@ static const hwaddr boot_config_addresses[] = {
     0x04282000, 0x04282004, 0x04282008, 0x0428200c,
     0x04282010, 0x04282014, 0x04282018, 0x0428201c,
     0x04282020, 0x04282024, 0x04282028,
+    /* Additional PDR words referenced by GPIO resources 0xbb..0xe6. */
+    0x04282030, 0x04282034, 0x04282038,
     0x04282100, 0x04282104, 0x04282108, 0x0428210c,
     0x04282110, 0x04282114, 0x04282118, 0x0428211c,
     0x04282120, 0x04282124, 0x04282128, 0x0428212c,
@@ -2825,6 +2827,19 @@ static void boot_config_write(void *opaque, hwaddr offset,
             return;
         }
     }
+    /* C1.70's GPIO writer selects low-half PDR latch bits with the upper
+     * halfword, including the three additional descriptor-backed words. */
+    if (address >= 0x04282000 && address <= 0x04282038) {
+        uint32_t mask = (uint32_t)value >> 16;
+        uint32_t previous = *stored;
+
+        *stored = (*stored & ~mask) | ((uint32_t)value & mask);
+        if (*stored != previous) {
+            trace_z72_engine_gpio_latch(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+                s->master_role, address, value, previous, *stored);
+        }
+        return;
+    }
     *stored = value;
     if ((address >= 0x20060000 && address <= 0x20060028) ||
         (address >= 0x200630d0 && address <= 0x20063134)) {
@@ -4151,8 +4166,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 56,
-    .minimum_version_id = 56,
+    .version_id = 57,
+    .minimum_version_id = 57,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),

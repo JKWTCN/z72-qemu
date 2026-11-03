@@ -76,6 +76,23 @@ def check(qemu):
             def pin(line, level):
                 command(f'set_irq_in {path} gpio-input {line} {level}')
 
+            # PDR command masks select low-half latch bits. Selection bits
+            # are not readback data; an unselected low bit changes nothing.
+            for address in range(0x04282000, 0x0428203c, 4):
+                write(address, 0xffffffff)
+                assert read(address) == 0xffff, (hex(address), hex(read(address)))
+                write(address, 0x00f00050)
+                assert read(address) == 0xff5f
+                write(address, 0xabcd)
+                assert read(address) == 0xff5f
+                write(address, 0x000f0000)
+                assert read(address) == 0xff50
+                write(address, 0xff000000)
+                assert read(address) == 0x50
+                write(address, 0x000f0005)
+                assert read(address) == 0x55
+            monitor('system_reset')
+            assert all(read(address) == 0 for address in range(0x04282000, 0x0428203c, 4))
             command('irq_intercept_in /machine/unattached/' + gic)
             write(0x0426f008, 0xffff)
             assert read(0x0426f008) == 0

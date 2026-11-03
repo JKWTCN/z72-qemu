@@ -1,0 +1,302 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "source_revision": "21013d8 plus masked PDR latches and passive GPIO transition tracing",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "42572e77c984458031581a83907761bb4ec4c1fa9e06777ef16083eea04c4535",
+    "sources": {
+      "qemu/nikon-z72.c": "4318f4e796a4224d219431e3b2f52d18710a794eadc22e183fb4778e3dec941a",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "efdf308622ee3344dde0179ab137acb4d80f30c8b43e41c919e5dad14134e6b7",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "ef7fd5d63557f625b254976ecff44be06975b9d1f3900dfef0db0c6d77c4526f",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "106e91f58fa2c4c3f8ef87f2c770c4f67aa673f51584dc454cb8515c2473619a",
+      "qemu/trace-events": "412841db820c5c0ead31a6c99c385e51680f5ae2113f1f3882ac07c53efb492c",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ]
+  },
+  "baseline": {
+    "binary_sha256": "93ba3be501a51b2e54d3ce8f174f20984dee98298052cb548386a79741109664",
+    "result": "The first selected-write readback test failed: PDR retained the high selection halfword"
+  },
+  "checks": [
+    "15 descriptor-backed PDR words on both engine roles",
+    "upper-half selection with low-half set/clear, unselected data ignored, neighboring bits preserved",
+    "selection mask is not retained as register data; reset clears latches",
+    "all prior interrupt inputs, sampling input, request handshake, source/role gating and reset cases",
+    "embedded controller board-link enabled and disabled scenarios"
+  ],
+  "test_sources": {
+    "tests/test_engine_gpio.py": "f04016367e7f8964b56d074150b70f1208b7b05f1440662cadac63ebc779f382",
+    "tests/test_controller_embedded.py": "ddb026544c2c80f69a456df192c2d2963ab28eb70431c43741ba79b7bdf130ab",
+    "tools/library_boot_probe.py": "25d0dcb6c70d6be31bc8a6ab071a81265b6ed17d85b9520c2e7d3d63488091e9",
+    "tools/platform_boot_probe.py": "93425fad28f0f8e29f88e95a5e1c735fb1c9d3740601833bc7ca3ee43918a725"
+  },
+  "native_bounded": {
+    "library": {
+      "result": "passed",
+      "scenarios": [
+        {
+          "role": "master",
+          "scenario": "stock",
+          "initializer_completed": true,
+          "caller_stack_restored": true,
+          "fault_status": "0x808",
+          "fault_address": "0x4281138",
+          "pdr_readback": [
+            "0x0",
+            "0x80",
+            "0x0",
+            "0x0",
+            "0x123",
+            "0x1",
+            "0x0",
+            "0x8",
+            "0x8000",
+            "0x10",
+            "0x0",
+            "0x2"
+          ]
+        },
+        {
+          "role": "master",
+          "scenario": "pin-disabled",
+          "initializer_completed": false,
+          "caller_stack_restored": null,
+          "fault_status": "0x808",
+          "fault_address": "0x4280030"
+        },
+        {
+          "role": "slave",
+          "scenario": "stock",
+          "initializer_completed": true,
+          "caller_stack_restored": true,
+          "fault_status": "0x808",
+          "fault_address": "0x4281138",
+          "pdr_readback": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        },
+        {
+          "role": "slave",
+          "scenario": "pin-disabled",
+          "initializer_completed": false,
+          "caller_stack_restored": null,
+          "fault_status": "0x808",
+          "fault_address": "0x4280030"
+        }
+      ],
+      "raw_report_sha256": "6deff8dd463b465968f3ca70113322479ac880646ee14f849427f2bc84c1d50f",
+      "local_full_report": ".local\\capture-report-archive\\gpio-masked-native-library.json"
+    },
+    "platform": {
+      "result": "passed",
+      "scenarios": [
+        {
+          "role": "master",
+          "scenario": "stock",
+          "stores": 360,
+          "polls": 48,
+          "returns": [
+            {
+              "offset": 936,
+              "result": 0
+            },
+            {
+              "offset": 944,
+              "result": 0
+            },
+            {
+              "offset": 956,
+              "result": 0
+            },
+            {
+              "offset": 48580,
+              "result": 0
+            }
+          ],
+          "stock_page_table_preserved": true,
+          "temporary_stack_restored": true
+        },
+        {
+          "role": "master",
+          "scenario": "blocked-group-start",
+          "stores": 359,
+          "polls": 48,
+          "returns": [
+            {
+              "offset": 936,
+              "result": 0
+            },
+            {
+              "offset": 944,
+              "result": 16384
+            },
+            {
+              "offset": 956,
+              "result": 0
+            },
+            {
+              "offset": 48580,
+              "result": 0
+            }
+          ],
+          "stock_page_table_preserved": true,
+          "temporary_stack_restored": true
+        },
+        {
+          "role": "slave",
+          "scenario": "stock",
+          "stores": 360,
+          "polls": 48,
+          "returns": [
+            {
+              "offset": 1004,
+              "result": 0
+            },
+            {
+              "offset": 1012,
+              "result": 0
+            },
+            {
+              "offset": 1024,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stock_page_table_preserved": true,
+          "temporary_stack_restored": true
+        },
+        {
+          "role": "slave",
+          "scenario": "blocked-group-start",
+          "stores": 359,
+          "polls": 48,
+          "returns": [
+            {
+              "offset": 1004,
+              "result": 0
+            },
+            {
+              "offset": 1012,
+              "result": 16384
+            },
+            {
+              "offset": 1024,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stock_page_table_preserved": true,
+          "temporary_stack_restored": true
+        },
+        {
+          "role": "slave",
+          "scenario": "shared-path",
+          "stores": 360,
+          "polls": 48,
+          "returns": [
+            {
+              "offset": 968,
+              "result": 0
+            },
+            {
+              "offset": 976,
+              "result": 0
+            },
+            {
+              "offset": 988,
+              "result": 0
+            },
+            {
+              "offset": 48656,
+              "result": 0
+            }
+          ],
+          "stock_page_table_preserved": true,
+          "temporary_stack_restored": true
+        }
+      ],
+      "raw_report_sha256": "ca12fbf7f32c1416c5e724647bc9f23aed5429f6f4413dc0448a7eb26b4c426f",
+      "local_full_report": ".local\\capture-report-archive\\gpio-masked-native-platform.json"
+    }
+  },
+  "original_writer_contract": "../gpio_masked_write_contract/report.json",
+  "native_capture_reference": "../body_gpio_feedback_trace/report.json",
+  "migration": {
+    "version": 57,
+    "minimum_version": 57,
+    "reason": "PDR readback semantics and mapped-word state layout changed",
+    "roundtrip_verified": false
+  },
+  "limitations": [
+    "Native bounded startup is not complete camera startup or photography",
+    "No automatic sampling feedback or delay capture source is supplied",
+    "Physical pull, pin direction and external routing remain separate from PDR latches",
+    "Remote CI was not run"
+  ],
+  "intermediate": {
+    "binary_sha256": "d570a26b5003ef15d920c0b107fcf93622a432970402babbb244d6c160177de2",
+    "result": "Masked readback passed the first twelve PDR words, then failed at unmapped 0x04282030 with readback 0; the three additional descriptor-backed words were subsequently mapped"
+  },
+  "commands": [
+    "python tests/test_engine_gpio.py --qemu /path/to/qemu-system-arm",
+    "python tests/test_controller_embedded.py --qemu /path/to/qemu-system-arm",
+    "python tools/library_boot_probe.py --master /path/to/master.bin --slave /path/to/slave.bin --qemu /path/to/qemu-system-arm --destination /path/to/private/library",
+    "python tools/platform_boot_probe.py --master /path/to/master.bin --slave /path/to/slave.bin --qemu /path/to/qemu-system-arm --destination /path/to/private/platform"
+  ]
+}

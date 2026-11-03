@@ -1127,6 +1127,25 @@ def memory_trace_snapshot(machine):
                 scope='Latest engine memory DMA metadata only; no buffer contents')
 
 
+def controller_gpio_trace_snapshot(machine):
+    if not getattr(machine.args, 'trace_controller_gpio', False):
+        return None
+    from collections import deque
+    events, counts = deque(maxlen=4096), {}
+    for line in (machine.work / 'qemu.log').open(encoding='utf-8', errors='replace'):
+        match = re.search(r'(z72_controller_gpio_transition|z72_engine_gpio_latch) (.*)', line)
+        if not match:
+            continue
+        event, detail = match.groups()
+        values = {key: int(value, 0) for key, value in re.findall(
+            r'(\w+)=(0x[0-9a-f]+|\d+)', detail)}
+        counts[event] = counts.get(event, 0) + 1
+        events.append(dict(event=event, **values))
+    return dict(counts=counts, events=list(events), event_limit=4096,
+                truncated=sum(counts.values()) > len(events),
+                scope='Controller output transitions and engine GPIO latch changes at virtual nanoseconds; no assumed wiring')
+
+
 def sflt_snapshot(remote):
     # Called with a slave thread selected. The service's +0xc holds the
     # current request while its native worker waits for device completion.
@@ -3608,6 +3627,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         return dict(before=before, records=records, after=after,
                     sd_host_trace=sd_trace_snapshot(machine),
                     memory_transfer_trace=memory_trace_snapshot(machine),
+                    controller_gpio_trace=controller_gpio_trace_snapshot(machine),
                     diagnostic_capture=capture_caller.report if capture_submit_on_ready else None,
                     body_settings=capture_caller.report if body_exposure is not None else None,
                     body_repeat_capture=dict(requested=repeat_body_capture, shots=body_shots),
@@ -3682,6 +3702,8 @@ def main():
     parser.add_argument('--sd-card', type=Path)
     parser.add_argument('--trace-sd-host', action='store_true',
                         help='Record bounded SD command/DMA metadata; keep raw traces private')
+    parser.add_argument('--trace-controller-gpio', action='store_true',
+                        help='Record controller output and engine GPIO latch transitions with virtual time')
     parser.add_argument('--display-complete', action='store_true')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')

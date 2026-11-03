@@ -304,6 +304,9 @@ class Machine:
                               'sdhci_access', 'sdcard_write_block', 'z72_memory_transfer',
                               'z72_sequence_transfer'):
                     card_arguments += ('-trace', f'enable={event}')
+        if getattr(self.args, 'trace_controller_gpio', False):
+            for event in ('z72_controller_gpio_transition', 'z72_engine_gpio_latch'):
+                card_arguments += ('-trace', f'enable={event}')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',
             icount=None if self.args.realtime else

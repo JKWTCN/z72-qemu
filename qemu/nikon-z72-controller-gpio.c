@@ -4,6 +4,8 @@
 #include "hw/irq.h"
 #include "hw/resettable.h"
 #include "migration/vmstate.h"
+#include "qemu/timer.h"
+#include "trace.h"
 
 #define TYPE_Z72_CONTROLLER_GPIO "nikon-z72-controller-gpio"
 OBJECT_DECLARE_SIMPLE_TYPE(Z72ControllerGPIO, Z72_CONTROLLER_GPIO)
@@ -96,9 +98,12 @@ static MemTxResult gpio_write(void *opaque, hwaddr offset, uint64_t value,
                              unsigned size, MemTxAttrs attrs)
 {
     Z72ControllerGPIO *s = opaque;
+    uint16_t previous, outputs;
+
     if (!gpio_register(offset, size) || offset == 0x10) {
         return MEMTX_ERROR;
     }
+    previous = gpio_output_mask(s) & s->registers[5];
     if (offset == 0x18) {
         /* Apply reset bits then set bits to the output latch. */
         s->registers[5] = ((s->registers[5] & ~(value >> 16)) | value) & 0xffff;
@@ -107,6 +112,11 @@ static MemTxResult gpio_write(void *opaque, hwaddr offset, uint64_t value,
                                   value & 0xffff : value;
     }
     gpio_update(s);
+    outputs = gpio_output_mask(s) & s->registers[5];
+    if (outputs != previous) {
+        trace_z72_controller_gpio_transition(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+            s->iomem.addr, offset, value, previous, outputs);
+    }
     return MEMTX_OK;
 }
 

@@ -1,0 +1,452 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "writer": "0x10385d50",
+  "cases": [
+    {
+      "resource": "0x0",
+      "register": "0x4282000",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x0",
+      "register": "0x4282000",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xe",
+      "register": "0x4282000",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0xe",
+      "register": "0x4282000",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0xf",
+      "register": "0x4282004",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0xf",
+      "register": "0x4282004",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x1e",
+      "register": "0x4282004",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x1e",
+      "register": "0x4282004",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x1f",
+      "register": "0x4282008",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x1f",
+      "register": "0x4282008",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x2e",
+      "register": "0x4282008",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x2e",
+      "register": "0x4282008",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x2f",
+      "register": "0x428200c",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x2f",
+      "register": "0x428200c",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x3e",
+      "register": "0x428200c",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x3e",
+      "register": "0x428200c",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x3f",
+      "register": "0x4282010",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x3f",
+      "register": "0x4282010",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x4c",
+      "register": "0x4282010",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x4c",
+      "register": "0x4282010",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x4d",
+      "register": "0x4282014",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x4d",
+      "register": "0x4282014",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x5c",
+      "register": "0x4282014",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x5c",
+      "register": "0x4282014",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x5d",
+      "register": "0x4282018",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x5d",
+      "register": "0x4282018",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x6c",
+      "register": "0x4282018",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x6c",
+      "register": "0x4282018",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x6d",
+      "register": "0x428201c",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x6d",
+      "register": "0x428201c",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x7c",
+      "register": "0x428201c",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x7c",
+      "register": "0x428201c",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x7d",
+      "register": "0x4282020",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x7d",
+      "register": "0x4282020",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x8c",
+      "register": "0x4282020",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x8c",
+      "register": "0x4282020",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x8d",
+      "register": "0x4282024",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x8d",
+      "register": "0x4282024",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0x9c",
+      "register": "0x4282024",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0x9c",
+      "register": "0x4282024",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0x9d",
+      "register": "0x4282028",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0x9d",
+      "register": "0x4282028",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xac",
+      "register": "0x4282028",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0xac",
+      "register": "0x4282028",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0xad",
+      "register": "0x428202c",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0xad",
+      "register": "0x428202c",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xba",
+      "register": "0x428202c",
+      "pin": 13,
+      "level": 0,
+      "command": "0x20000000"
+    },
+    {
+      "resource": "0xba",
+      "register": "0x428202c",
+      "pin": 13,
+      "level": 1,
+      "command": "0x20002000"
+    },
+    {
+      "resource": "0xbb",
+      "register": "0x4282030",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0xbb",
+      "register": "0x4282030",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xc6",
+      "register": "0x4282030",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0xc6",
+      "register": "0x4282030",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0xc7",
+      "register": "0x4282034",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0xc7",
+      "register": "0x4282034",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xd6",
+      "register": "0x4282034",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0xd6",
+      "register": "0x4282034",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    },
+    {
+      "resource": "0xd7",
+      "register": "0x4282038",
+      "pin": 0,
+      "level": 0,
+      "command": "0x10000"
+    },
+    {
+      "resource": "0xd7",
+      "register": "0x4282038",
+      "pin": 0,
+      "level": 1,
+      "command": "0x10001"
+    },
+    {
+      "resource": "0xe6",
+      "register": "0x4282038",
+      "pin": 15,
+      "level": 0,
+      "command": "0x80000000"
+    },
+    {
+      "resource": "0xe6",
+      "register": "0x4282038",
+      "pin": 15,
+      "level": 1,
+      "command": "0x80008000"
+    }
+  ],
+  "sampling_startup": {
+    "register": "0x04282028",
+    "pin": 12,
+    "startup_words": [
+      "0x0",
+      "0x6f7b",
+      "0x0",
+      "0x88c0",
+      "0x8000"
+    ],
+    "latch": false,
+    "direction": false,
+    "pull_enabled": false,
+    "pull_select": false
+  },
+  "boundaries": [
+    "Synthetic MMIO stores record the original writer commands",
+    "Original startup table is decoded; full native startup is verified separately"
+  ],
+  "limitations": [
+    "No electrical or external signal source is supplied",
+    "Direction and pull words are reported, not a physical pin model"
+  ]
+}

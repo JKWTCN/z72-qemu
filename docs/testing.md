@@ -818,3 +818,17 @@ values and signal recovery with four level/event-wait combinations. Timer,
 event and timestamp boundaries are synthetic; the original GPIO extraction,
 inversion and error-bit branches execute unchanged. This verifies neither
 physical routing nor native repeated photograph saving.
+
+The engine GPIO batch also checks all fifteen descriptor-backed PDR words:
+selected set/clear, unselected data, neighboring latch retention, low-half
+readback and reset. The three additional words at `0x04282030/34/38` expose
+PDR latches only. `tools/gpio_register_contract.py --master ... --out ...`
+executes sixty original selected-pin writes and reports the sampling input's
+startup direction and pull settings. These checks do not supply external
+feedback or implement electrical pin resolution.
+
+The native pin initializer probe checks masked PDR readback on both firmware
+roles, plus disabled-pin controls. The platform probe's explicit shared-path
+selector also uses a selected GPIO write. Native capture regression evidence
+and passive `--trace-controller-gpio` observations are recorded separately in
+[the body capture report](../artifacts/body_gpio_feedback_trace/report.json).

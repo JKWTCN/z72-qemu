@@ -44,13 +44,13 @@ def library_table(image, structure, role):
 
 
 def pin_words(words):
-    """Spread the recovered groups over the five configuration banks."""
+    """Return bank readback after the initializer's full-selection PDR writes."""
     expected = {}
     for bank in range(5):
         for group in range(PIN_GROUP_COUNT):
             value = words[group * 5 + bank]
             if bank == 0:
-                value |= PIN_FIRST_WORD_MASK
+                value &= 0xffff
             expected[PIN_BASE + bank * PIN_BANK_STRIDE + group * 4] = value
     return expected
 

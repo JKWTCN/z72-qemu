@@ -103,7 +103,8 @@ def main():
             assumptions=['Two execution cores per isolated role; original reset and startup task.',
                 'Original images preloaded; no register, instruction, table or handshake patches.',
                 'Instruction-count virtual clock prevents host-speed timer starvation.',
-                'Pin words are passive storage; no pin, pad or electrical behavior is modeled.',
+                'PDR words implement masked output latches; other pin banks retain stored configuration.',
+                'No additional external pin, pad or electrical source is supplied.',
                 'Controller-chain words disabled to retain the recorded pin-group boundary.',
                 'Release-path storage disabled to retain the recorded boundary.',
                 'Existing experimental console, platform, memory and counter contracts remain in use.'])

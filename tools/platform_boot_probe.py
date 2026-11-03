@@ -26,7 +26,7 @@ def trace_platform(remote, structure, image, scenario):
     blocked = scenario == 'blocked-group-start'
     trace_early(remote, structure, image, 'stock')
     if shared:
-        remote.write(0x0428202C, struct.pack('<I', 4))
+        remote.write(0x0428202C, struct.pack('<I', 0x00040004))
     entries, returns, poll = platform_calls(role, shared)
     expected = platform_writes(role, shared)
     if blocked:
