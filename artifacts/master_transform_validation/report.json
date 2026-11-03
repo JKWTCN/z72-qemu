@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "binary_sha256": "7c711a69c148c2fe51fa5778fc5ba3042017ff5eb3ba80d5a40276d50556e3c4",
+  "source_sha256": "5b8317d7770cf68ab14a865073c528fb13432e7af9ca933a46f76e3bd9755e79",
+  "red": {
+    "binary_sha256": "b578f154f229483fca33f8384107796a017aa4e3a04f4b60aecfb79af4fc77c1",
+    "failed_assertion": "Master full transform expected processing count 3 and transfer pending 0x70; old model rejects master-role execution."
+  },
+  "checks": [
+    {
+      "command": "tests/test_still_processing.py",
+      "passed": true,
+      "configurations": 6
+    }
+  ],
+  "scope": "Finite diagnostic full-size Y/neutral-chroma copy and 1620x1080 view in the master and slave address spaces. Pixel samples, source/destination guards, row/row-count padding, overlapping planes, invalid geometry and parameters, foreign parameter memory, invalid final chroma, pending completion, partial W1C and reset with both image and transfer IRQs pending. No claim of factory color/filter/calibration accuracy."
+}

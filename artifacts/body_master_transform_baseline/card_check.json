@@ -1,0 +1,154 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "temporary_card_retained": false,
+  "completed_raw_frames": 2,
+  "native_key_sequences": [
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 153407193,
+      "shot": 1,
+      "release_ticks": 165479870,
+      "held_counter_seconds": 0.25151410416666664
+    },
+    {
+      "requested": true,
+      "released": true,
+      "press_ticks": 207951966,
+      "shot": 2,
+      "release_ticks": 219970698,
+      "held_counter_seconds": 0.25039025
+    }
+  ],
+  "jpeg_count": 1,
+  "second_raw_row": {
+    "owner": "master",
+    "cpu": 0,
+    "address": "0xa6f22000",
+    "bytes": 12432,
+    "sha256": "ce6cfbcb68770de4eaa7ad0414e14808a2d7f68ec86e85c12f884decba4fc060",
+    "unique_bytes": 2,
+    "minimum": 0,
+    "maximum": 255,
+    "expected_phase": 1,
+    "matched": true
+  },
+  "repeat_capture_verified": false,
+  "final_capture_state": [
+    2,
+    0
+  ],
+  "final_driver_state": 9,
+  "core_faults": [
+    {
+      "thread": 1,
+      "pc": "0x1010707c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x1022e2e4",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a4c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "files": [
+    {
+      "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+      "bytes": 5126646,
+      "sha256": "ff94beefc41a05892f5eb4c2a367595fdde7881ce227bc51a81039f3cfade3b6",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "decoded": true
+        },
+        {
+          "offset": "0x458c00",
+          "width": 640,
+          "height": 424,
+          "decoded": true
+        },
+        {
+          "offset": "0x478200",
+          "width": 1620,
+          "height": 1080,
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "ram_jpeg": "codec-0f1665d4b207692ab9cf4edc14be05385590de30c44eb5cba2baa538378736b0.jpg",
+          "offset": "0x824a",
+          "bytes": 10942
+        },
+        {
+          "ram_jpeg": "codec-375cadcb99fa5cf0d6b229fa2cedf5bfcf3943109428d5d61de7b7d917d3b380.jpg",
+          "offset": "0x468c02",
+          "bytes": 62546
+        },
+        {
+          "ram_jpeg": "codec-5f8a33069cc1171f115f86ffb8156879851cf109709947dc84692266913fb6ce.jpg",
+          "offset": "0x19402",
+          "bytes": 4453901
+        },
+        {
+          "ram_jpeg": "codec-89bd78ff602bf20e65a7d744da595ad7b7790fadf38889cd2e0602341879e9f7.jpg",
+          "offset": "0x488202",
+          "bytes": 374772
+        }
+      ],
+      "checker_phase": 0,
+      "checker_centers": 11310,
+      "checker_errors": 0,
+      "export": "artifacts\\body_master_transform_baseline\\DSC_0001.JPG"
+    }
+  ],
+  "probe_txt": {
+    "bytes": 20,
+    "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+    "unchanged": true
+  }
+}

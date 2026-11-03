@@ -169,18 +169,13 @@ def check(qemu):
             write(base + 0x24, 2)
             write(first, 0x60606060)
 
-            if role == 'master':
-                assert read(0x20380024) == 0, 'Bank 1 completion changed bank 0'
-                write(base + 0x20, 2)
-                write(base + 8, 1)
-                assert count() == 3 and read(base + 0x24) == 2 and levels[irq]
-                monitor('system_reset')
-                assert count() == 0 and read(base + 8) == 0 and read(base + 0x24) == 0
-                assert not levels.get(irq, False)
-                continue
-
             # Native still transform: full-size copy and a small secondary view.
-            full, small, small_uv = 0xf510e800, 0xc8984800, 0xc8b3e800
+            if role == 'master':
+                full, small, small_uv = 0xed650800, 0xbd284800, 0xbd43e800
+                parameter_base, scratch_end = 0xb2c01000, 0xc3dcb400
+            else:
+                full, small, small_uv = 0xf510e800, 0xc8984800, 0xc8b3e800
+                parameter_base, scratch_end = 0xc1001000, 0xca712200
             small_width, small_height, small_stride = 1620, 1080, 1664
 
             def configure_transform():
@@ -193,7 +188,7 @@ def check(qemu):
                 for offset in (0x8a0, 0x9c0, 0x9e0, 0xac0, 0xba0, 0xdc0, 0xde0):
                     write(0x20100000 + offset, 1)
                 for index, offset in enumerate((0x9c0, 0x9e0, 0xba0)):
-                    pointer = 0xc1001000 + index * 0x100
+                    pointer = parameter_base + index * 0x100
                     params = [0x110a0000, 0, 0, 0x10003 if index == 2 else 0x10002,
                         0, 0, 0, 0, 0, 0, 0x11080040,
                         0x06530000 if index == 2 else 0x203f0000,
@@ -212,10 +207,13 @@ def check(qemu):
             write(full + 2 * plane_bytes, 0x55667788)
             write(small - 4, 0x12345678)
             write(small_uv + small_stride * 1088, 0x87654321)
+            foreign_parameters = 0xc1001000 if role == 'master' else 0xb2c01000
+            load(foreign_parameters, data_at(parameter_base, 0x3c))
             for address, value in ((0x201004a4, first), (0x201004e8, small + 16),
-                                   (0x201004e4, 0xca7121f0), (0x201004e0, 0x1000100),
+                                   (0x201004e4, scratch_end - 16), (0x201004e0, 0x1000100),
                                    (0x201009d0, 0xfffffff0), (0x20100ba0, 0),
-                                   (0xc100122c, 0x10000)):
+                                   (0x201009d0, foreign_parameters),
+                                   (parameter_base + 0x22c, 0x10000)):
                 configure_transform()
                 write(address, value)
                 write(0x20100900, 1)
@@ -230,7 +228,8 @@ def check(qemu):
                 assert read(full) == 0xa5a5a5a5 and read(small) == 0xa5a5a5a5
                 load(address, restore)
             write(0x20100900, 1)
-            assert count() == 3 and read(0x2010001c) == 0x70 and levels[102 - 32]
+            assert count() == 3 and read(0x2010001c) == 0x70 and levels[102 - 32], (
+                role, count(), hex(read(0x2010001c)))
             assert data_at(full, 1) == data_at(small, 1) == b'\x60'
             for x, y in points + [(10, 10), (out_width - 1, out_height - 2)]:
                 assert data_at(full + y * out_width + x, 1) == data_at(first + y * out_width + x, 1)
@@ -255,6 +254,19 @@ def check(qemu):
             write(0x20100900, 1)
             assert count() == 4 and read(0x2010001c) == 0x70
             write(0x2010001c, 0x70)
+
+            if role == 'master':
+                assert read(0x20380024) == 0, 'Bank 1 completion changed bank 0'
+                write(base + 0x20, 2)
+                write(base + 8, 1)
+                assert count() == 5 and read(base + 0x24) == 2 and levels[irq]
+                write(0x20100900, 1)
+                assert count() == 6 and read(0x2010001c) == 0x70 and levels[102 - 32]
+                monitor('system_reset')
+                assert count() == 0 and read(base + 8) == 0 and read(base + 0x24) == 0
+                assert read(0x20100900) == 0 and read(0x2010001c) == 0
+                assert not levels.get(irq, False) and not levels[102 - 32]
+                continue
 
             thumbnail, thumbnail_uv = 0xc8900000, 0xc8942400
             thumbnail_bytes = 640 * 424

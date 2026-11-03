@@ -923,3 +923,13 @@ master request, bank1 IRQ, native callback and request return. Its row hashes
 are read at those boundaries; they do not supply a result or release a task.
 The boot-config state format is version 58 because both control banks now have
 explicit saved words. Full-machine migration remains unverified.
+
+The full still-transform checks now also exercise the master frame and scratch
+pools with native-sized full and 1620x1080 views. The same six configurations
+check foreign parameter memory, aliasing planes, invalid final chroma, untouched
+row padding and inactive rows, partial transfer W1C and reset with both image
+and transform IRQs pending. See the
+[transform device receipt](../artifacts/master_transform_validation/report.json).
+The body probe records either engine's transform context, selected program,
+parameter blocks and pixel rows; original callbacks and wait returns remain
+independent observations.

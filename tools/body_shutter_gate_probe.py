@@ -162,8 +162,14 @@ CAPTURE_MASTER_PROCESSING_POINTS = {
     0x102e43fc: 'capture-master-processing-bank1-callback',
     0x102e5550: 'capture-master-processing-service-completion',
 }
+CAPTURE_MASTER_TRANSFORM_POINTS = {
+    0x102c4cc2: 'capture-master-transform-dispatch',
+    0x102c4cd4: 'capture-master-transform-wait-return',
+    0x102c2394: 'capture-master-transform-callback',
+}
 CAPTURE_INPUT_POINTS = {
     **CAPTURE_MASTER_PROCESSING_POINTS,
+    **CAPTURE_MASTER_TRANSFORM_POINTS,
     0x1020aafc: 'capture-input-enable-entry',
     0x1020ab00: 'capture-input-enable-return',
     0x1020a830: 'capture-input-disable-entry',
@@ -1298,18 +1304,20 @@ def slave_processing_snapshot(remote):
     return result
 
 
-def slave_transform_snapshot(remote):
+def transform_snapshot(remote, slave=True):
     def words(address, size):
         return [hex(value) for value in struct.unpack('<' + 'I' * (size // 4), remote.read(address, size))]
-    context, slots = 0xc16beb94, 0xc16a21b0
+    context, slots = (0xc16beb94, 0xc16a21b0) if slave else (0xb23a7a98, 0xb238af30)
+    lower, limit = (0xc1000000, 0xc8200000) if slave else (0xb1800000, 0xb5f00000)
     result = dict(context=hex(context), fields={hex(offset): words(context + offset, 4)[0]
         for offset in (0x748, 0x74c, 0x750, 0x784, 0x788, 0x79c, 0x7a0, 0x7a4, 0x7a8)},
         source_header=words(context + 0x18, 0x68),
-        service_task=task_wait_snapshot(remote, 0xc14841b0, slave=True),
-        execution_task=task_wait_snapshot(remote, 0xc1486190, slave=True),
-        execution_words=words(0xc1486190, 0x48),
-        service_words=words(0xc10078ec, 0xf0),
-        processing_registers=words(0x20100000, 0x3000))
+        processing_registers=words(0x20100000, 0x3000 if slave else 0x1000))
+    if slave:
+        result.update(service_task=task_wait_snapshot(remote, 0xc14841b0, slave=True),
+            execution_task=task_wait_snapshot(remote, 0xc1486190, slave=True),
+            execution_words=words(0xc1486190, 0x48),
+            service_words=words(0xc10078ec, 0xf0))
     result['planes'] = []
     registers = result['processing_registers']
     for index in range(3):
@@ -1323,8 +1331,10 @@ def slave_transform_snapshot(remote):
         for plane in range(2):
             address = int(registers[(offset + 0x24 + plane * 4) // 4], 16)
             span = stride * height
-            if not (0xea3b6800 <= address and address + span <= 0xffe66800 or
-                    0xc8900000 <= address and address + span <= 0xca712200):
+            if not ((0xea3b6800 if slave else 0xcc700000) <= address and
+                    address + span <= (0xffe66800 if slave else 0xffee5400) or
+                    (0xc8900000 if slave else 0xbd200000) <= address and
+                    address + span <= (0xca712200 if slave else 0xc3dcb400)):
                 continue
             row = remote.read(address, width)
             result['planes'].append(dict(port=index + 1, plane=plane, address=hex(address),
@@ -1338,18 +1348,18 @@ def slave_transform_snapshot(remote):
         result['slot'] = dict(address=hex(slot), mode=(slot - slots) // 0x1d8,
                               words=words(slot, 0x1d8))
         program = int(result['slot']['words'][0x40 // 4], 16)
-        if 0xc1000000 <= program <= 0xc81fffe8:
+        if lower <= program <= limit - 0x18:
             data = remote.read(program, 0x18)
             entries, count = struct.unpack_from('<I', data)[0], data[4]
             result['program'] = dict(address=hex(program), header=data.hex(), count=count, operations=[])
-            if 0 < count <= 32 and 0xc1000000 <= entries and entries + count * 16 <= 0xc8200000:
+            if 0 < count <= 32 and lower <= entries and entries + count * 16 <= limit:
                 data = remote.read(entries, count * 16)
                 for index in range(count):
                     row = data[index * 16:index * 16 + 16]
                     pointer = struct.unpack_from('<I', row, 12)[0]
                     operation = dict(index=index, address=hex(entries + index * 16),
                         selector_bytes=list(row[:8]), words=[hex(value) for value in struct.unpack('<4I', row)])
-                    if 0xc1000000 <= pointer <= 0xc81fff60:
+                    if lower <= pointer <= limit - 0xa0:
                         operation['parameters'] = dict(address=hex(pointer), words=words(pointer, 0xa0))
                     result['program']['operations'].append(operation)
     return result
@@ -1476,7 +1486,7 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
         result['compute'] = compute
         result['sflt'] = sflt_snapshot(remote)
         result['processing'] = slave_processing_snapshot(remote)
-        result['transform'] = slave_transform_snapshot(remote)
+        result['transform'] = transform_snapshot(remote)
         result['codec'] = slave_codec_snapshot(remote)
         if machine is not None:
             result['processing']['completed_frames'] = machine.qmp.command(
@@ -1855,6 +1865,7 @@ def snapshot(remote):
         processing_bank_jobs=[processing_worker_snapshot(remote, task)
                               for task in (0xb1d52600, 0xb1d52648)],
         image_service=image_service_snapshot(remote),
+        master_transform=transform_snapshot(remote, slave=False),
         jpeg_encoder=dict(current_descriptor=hex(word(0xb1801eb8)),
                           accumulated_flags=hex(word(0xb1801eb0))),
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
@@ -2583,7 +2594,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc in CAPTURE_SLAVE_PROCESSING_POINTS:
                     record['processing'] = slave_processing_snapshot(remote)
                 if pc in CAPTURE_SLAVE_TRANSFORM_POINTS:
-                    record['transform'] = slave_transform_snapshot(remote)
+                    record['transform'] = transform_snapshot(remote)
                 if pc in CAPTURE_SLAVE_CODEC_POINTS:
                     record['codec'] = slave_codec_snapshot(remote)
                     codec = record['codec']
@@ -2700,6 +2711,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                ('r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'lr')})
                 if pc in CAPTURE_MASTER_PROCESSING_POINTS:
                     record['processing'] = master_processing_snapshot(remote)
+                if pc in CAPTURE_MASTER_TRANSFORM_POINTS:
+                    record['transform'] = transform_snapshot(remote, slave=False)
                 if capture_focus and pc == 0x1023938c:
                     record['peer_input'] = peer_input_snapshot(remote, thread, machine)
                 if capture_caller:

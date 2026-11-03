@@ -3269,6 +3269,8 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
     uint32_t planes[6];
     const unsigned plane_bytes = WIDTH * HEIGHT;
     const unsigned small_bytes = SMALL_STRIDE * SMALL_HEIGHT;
+    const uint32_t parameter_start = s->master_role ? 0xb1800000 : 0xc1000000;
+    const uint32_t parameter_end = s->master_role ? 0xb5f00000 : 0xc8200000;
     uint8_t neutral[SMALL_WIDTH], row[SMALL_WIDTH];
 
     if (s->still_thumbnail_command != 1) {
@@ -3307,7 +3309,7 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
             return false;
         }
         pointer = ldl_le_p(word);
-        if (pointer < 0xc1000000 || pointer > 0xc81fffc4 ||
+        if (pointer < parameter_start || pointer > parameter_end - sizeof(parameters) ||
             !processing_ram_range(view, pointer, sizeof(parameters)) ||
             address_space_read(view, pointer, MEMTXATTRS_UNSPECIFIED,
                                parameters, sizeof(parameters)) != MEMTX_OK ||
@@ -3328,8 +3330,12 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
     }
     for (unsigned index = 0; index < ARRAY_SIZE(planes); index++) {
         unsigned bytes = index < 4 ? plane_bytes : small_bytes;
-        uint32_t minimum = index < 4 ? 0xea3b6800 : 0xc8900000;
-        uint64_t limit = index < 4 ? 0xffe66800 : 0xca712200;
+        uint32_t minimum = index < 4 ?
+            (s->master_role ? 0xcc700000 : 0xea3b6800) :
+            (s->master_role ? 0xbd200000 : 0xc8900000);
+        uint64_t limit = index < 4 ?
+            (s->master_role ? 0xffee5400 : 0xffe66800) :
+            (s->master_role ? 0xc3dcb400 : 0xca712200);
         if (planes[index] < minimum || (uint64_t)planes[index] + bytes > limit ||
             !processing_ram_range(view, planes[index], bytes)) {
             return false;
@@ -3387,7 +3393,7 @@ static void still_transform_start_write(void *opaque, hwaddr offset, uint64_t va
     s->still_transform_command = value;
     /* The native reverse start loop writes this last, after the other units.
      * Three scaler results at +0x1c map to resource event bits 0x20/40/80. */
-    if (value == 1 && s->frame_process && s->cpu && !s->master_role &&
+    if (value == 1 && s->frame_process && s->cpu &&
         !(ldl_le_p(s->transfer_table + 0x1c) & 0x70) && still_transform_frame(s)) {
         stl_le_p(s->transfer_table + 0x1c, ldl_le_p(s->transfer_table + 0x1c) | 0x70);
         transfer_update_irq(s);
