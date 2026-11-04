@@ -25,6 +25,19 @@ def resource_header_image():
     return bytes(image)
 
 
+def resource_timing_image():
+    """Declare finite nonzero timing rows; other resource data remains experimental."""
+    image = bytearray(resource_header_image())
+    for group in (1, 7, 10):
+        for subtype in range(4):
+            row = 0xbe0c0 + group * 64 + subtype * 16
+            struct.pack_into('<H', image, row + 2, 4096)
+            struct.pack_into('<H', image, row + 6, 586)
+            image[row + 11] = 1
+            struct.pack_into('<H', image, row + 12, 72)
+    return bytes(image)
+
+
 def processing_resource_image():
     """Supply group 23's storage trailer with a zero experimental payload."""
     image = bytearray(0xe0000)
@@ -37,7 +50,11 @@ def main():
     parser.add_argument('--destination', type=Path, required=True)
     parser.add_argument('--resource-header', action='store_true',
                         help='Also create an experimental group-32 header with a zero body')
+    parser.add_argument('--sensor-timing-profile', action='store_true',
+                        help='With --resource-header, declare nonzero experimental timing rows for groups 1/7/10')
     args = parser.parse_args()
+    if args.sensor_timing_profile and not args.resource_header:
+        parser.error('--sensor-timing-profile requires --resource-header')
     args.destination.mkdir(parents=True, exist_ok=False)
     primary, secondary = parameter_images()
     (args.destination / 'group17.bin').write_bytes(primary)
@@ -45,13 +62,14 @@ def main():
     groups = [dict(file='group17.bin', address='0x132c0000', size=len(primary)),
               dict(file='group18.bin', address='0x132e0000', size=len(secondary))]
     if args.resource_header:
-        resource = resource_header_image()
+        resource = resource_timing_image() if args.sensor_timing_profile else resource_header_image()
         (args.destination / 'group32.bin').write_bytes(resource)
         groups.append(dict(file='group32.bin', address='0x13e80000', size=len(resource),
-                           header_only=True, resource_contents_validated=False))
+                           header_only=not args.sensor_timing_profile, resource_contents_validated=False))
     (args.destination / 'parameters.json').write_text(json.dumps(dict(
         format=1, experimental=True, factory_calibration=False,
         firmware_version='C 1.70',
+        sensor_timing_profile=args.sensor_timing_profile,
         storage_groups=groups,
         sampling_delay=81, sensor_limit_codes=[1120, 1120, 1120],
         power_limit_codes=dict(steady=70, initial=75)), indent=2) + '\n',

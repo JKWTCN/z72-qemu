@@ -1139,3 +1139,14 @@ The separate [native observation](../research/z7ii/sensor_serial.md) records six
 empty resource programs and two built-in lists under the current explicit
 resource-header input. It establishes neither physical sensor acceptance nor
 electronic exposure timing; DSP preprocessing remains explicitly skipped.
+
+`tools/sensor_timing_contract.py --master <C1.70-master> --out .local/timing-contract.json`
+executes 24 original timing calculations across zero and nonzero resource inputs,
+one duration-dependent count and six timer-packet cases. It checks all supported
+subtypes for groups 1/7/10, query results, minus-one load encoding, duration
+increments, metadata and unchanged source objects. Opaque timer-record consumers
+are intercepted; physical timing and capture gating are outside this contract.
+The optional `--sensor-timing-profile` is covered separately by the
+[original-firmware comparison](../research/z7ii/sensor_timing.md). Generator CLI
+checks preserve the default header and reject the profile without its required
+header option before creating output. Temporary CLI outputs are cleaned.

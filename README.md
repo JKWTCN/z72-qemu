@@ -80,6 +80,10 @@ or original DSP execution.
 With `--virtual-lens`, file-backed scenes also use the iris's actual interpolated
 position for a per-frame relative light factor. This functional response does
 not establish electronic exposure timing, shutter/ISO gain or depth of field.
+Optional `--sensor-timing-profile` supplies explicit nonzero resource timing
+rows through the original loader. It retains native count arithmetic and leaves
+the default input unchanged; see the [timing input contract](research/z7ii/sensor_timing.md).
+It does not establish physical sensor calibration or electronic integration.
 Cold playback now decodes the native 4:2:2 photo and samples its JPEG texture
 into the original 1024×682 LCD background. A focused run completed with zero
 graphics failures; the existing grayscale viewer shows the diagnostic photo

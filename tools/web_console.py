@@ -28,7 +28,7 @@ from analyze.update_container import master_member
 from analyze.upgrade_signature import verify_update
 from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
-from tools.create_lab_parameters import parameter_images, resource_header_image, processing_resource_image
+from tools.create_lab_parameters import parameter_images, resource_header_image, resource_timing_image, processing_resource_image
 from tools.dual_boot_probe import dual_machine
 from tools.lcd_preview import lcd_rgb
 
@@ -267,8 +267,10 @@ class Machine:
         auxiliary[9], auxiliary[12] = 8, 0xc9
         (work / 'primary.bin').write_bytes(primary)
         (work / 'aux.bin').write_bytes(auxiliary)
+        resource = (resource_timing_image() if getattr(self.args, 'sensor_timing_profile', False)
+                    else resource_header_image())
         for name, data in zip(('group17.bin', 'group18.bin', 'group32.bin'),
-                              (*parameter_images(), resource_header_image())):
+                              (*parameter_images(), resource)):
             (work / name).write_bytes(data)
         auxiliary = BOOT_AUXILIARY
         if getattr(self.args, 'processing_resource_header', False):
@@ -1141,6 +1143,8 @@ def main():
                              'and native LCD preview processing (default: enabled)')
     parser.add_argument('--sensor-image', type=Path,
                         help='Use an 8-bit binary PGM/PPM scene for the functional RAW12 input')
+    parser.add_argument('--sensor-timing-profile', action='store_true',
+                        help='Supply explicit nonzero experimental resource timing rows; not physical sensor calibration')
     parser.add_argument('--virtual-lens', action='store_true',
                         help='Attach an experimental normal-family 50 mm F2.8 lens')
     parser.add_argument('--virtual-body-vr', action='store_true',

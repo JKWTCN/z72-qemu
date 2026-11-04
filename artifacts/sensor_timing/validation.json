@@ -1,0 +1,828 @@
+{
+  "schema": 1,
+  "result": "passed-native-explicit-resource-timing-comparison",
+  "source_revision": "860dd71-plus-recorded-source-delta",
+  "contract_source_sha256": "c2ba7fc53257695791c58ca5ff51d847e65999fc1b119ae642d0200592738d34",
+  "runs": [
+    {
+      "profile": false,
+      "resource_sha256": "8ee0130fe49a1dddceed7a8e3ada934bcde95e44c5481076ae737b1591a4a3b9",
+      "source_sha256": {
+        "tools/create_lab_parameters.py": "685b19d8807bea664095b24864fa990f4e0648cbc43127bc53cd29bddaeff0b0",
+        ".local/sensor-timing/observer.py": "080f10fe3e57febc9a479bb73a65479f9b5999bade8eb520e40a1fef21066741",
+        "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+        "qemu/trace-events": "e0326efb3c455339e3e5ff15838f41ebaaf1d70410ae34b7708d09578404b154",
+        "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+        "qemu/nikon-z72.c": "827f949926c972a942e42a389241f226332892d012079fe07ad8b91451b948d7",
+        "tools/body_shutter_gate_probe.py": "52ae1cc211f118f9474c8f8dd987d0c257db9adcbf232120f5adec88c07ca749",
+        "tools/web_console.py": "dffe90deb1d678117cca18033362cb9e9baa98fe0afc5e62317ad017f76fb3f0",
+        "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+      },
+      "qemu_binary_sha256": "dced480692a936e977dc4bcab868403cb8f84cf93597adac79021ede4057b8ef",
+      "arguments": [
+        "--qemu",
+        "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+        "--wsl",
+        "--master",
+        "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+        "--slave",
+        "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+        "--controller",
+        "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+        "--sd-card",
+        "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+        "--trace-sd-host",
+        "--display-complete",
+        "--frame-phase",
+        "--input-stop-complete",
+        "--frame-generate",
+        "--frame-notify",
+        "--frame-process",
+        "--processing-resource-header",
+        "--aux-image-process",
+        "--controller-step-link",
+        "--controller-actuator",
+        "--sampling-output-complete",
+        "--shutter-on-ready",
+        "--half-before-full",
+        "--shutter-click",
+        "--application-only",
+        "--body-exposure",
+        "1000",
+        "--capture-focus",
+        "--capture-counter-seconds",
+        "1",
+        "--skip-still-preprocessing",
+        "--icount-shift",
+        "2",
+        "--watch",
+        "900",
+        "--out",
+        "D:\\code\\z72-qemu\\.local\\capture-report-archive\\sensor_timing_zero\\report.json",
+        "--controller-step-feedback",
+        "--trace-controller-gpio",
+        "--body-silent",
+        "--sample-group1",
+        "--sensor-image",
+        "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+        "--nvme-card",
+        "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+        "--virtual-lens",
+        "--body-fnumber",
+        "800"
+      ],
+      "timing_returns": [
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 181502142,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 183181167,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 186078101,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 211141691,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 214595542,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 2,
+          "count": 2,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 214746614,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 216565787,
+          "duration_query_formula_us": 0
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "counter_ticks": 218224869,
+          "duration_query_formula_us": 0
+        }
+      ],
+      "timer_builder_entries": [
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "entry": "sensor-duration-packet",
+          "counter_ticks": 186134305
+        },
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 197909417
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 0,
+          "period": 0,
+          "overhead": 0,
+          "entry": "sensor-duration-packet",
+          "counter_ticks": 213091875
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 2,
+          "count": 2,
+          "period": 0,
+          "overhead": 0,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 214758437
+        }
+      ],
+      "observed_events": 52,
+      "per_point_hit_limit": 8,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "primary_frames": 1,
+      "primary_scene": {
+        "aperture": 256,
+        "factor_q16": 26008
+      },
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x10111158",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x1022e2e4",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a48",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a64",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "preprocessing": {
+        "requested": true,
+        "contexts": [
+          {
+            "context": "0xc19d3ec0",
+            "nested": "0xc29b9040",
+            "address": "0xc29bbbbc",
+            "previous": 0,
+            "supplied": 2,
+            "native_clear_observed": true,
+            "preprocessing_inputs": [
+              {
+                "address": "0xc29bbbb9",
+                "offset": "0x2b79",
+                "previous": 0,
+                "supplied": 1
+              },
+              {
+                "address": "0xc29bbbbb",
+                "offset": "0x2b7b",
+                "previous": 0,
+                "supplied": 2
+              }
+            ],
+            "sflt_skip_observed": true,
+            "raw_compute_skip_observed": true,
+            "result_halfwords": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "iris_raw_timing": {
+        "request_ns": 3702196988,
+        "raw_ns": 3728885108,
+        "arrival_ns": 3762196988,
+        "position": 256,
+        "factor_q16": 26008,
+        "raw_before_arrival_ns": 33311880
+      },
+      "evidence": {
+        "report.json": {
+          "bytes": 8763237,
+          "sha256": "9b09e5ab6d8c812c1ae7ce2d34c6b10a6fa313d607edcb4c8bfba74c86e1c0df"
+        },
+        "conditions.json": {
+          "bytes": 6770,
+          "sha256": "789f848f31bbf8b5e5a86e81421f2bacb31db7a6bbdb87add30ccfde27d3deb5"
+        },
+        "timing-events.jsonl": {
+          "bytes": 57128,
+          "sha256": "eac4d12d1e268e13eb0a35eb6e149369070c74f69fe480f6a44fe5425742ea45"
+        },
+        "source-observer.py": {
+          "bytes": 2191,
+          "sha256": "080f10fe3e57febc9a479bb73a65479f9b5999bade8eb520e40a1fef21066741"
+        },
+        "qemu.log": {
+          "bytes": 490232,
+          "sha256": "19557f48de30f989d4dff3393c4048a314c98af836fac76eeebfb7205cc8bd52"
+        },
+        "cleanup.json": {
+          "bytes": 1873,
+          "sha256": "3c51a293b1bf41c78d7b409500740b121c8489f6423db3fe6215c3db18679ab7"
+        }
+      },
+      "cleanup": {
+        "codec_files": [
+          {
+            "name": "codec-005edcc27c8cde774277727df0f278ef2b74dfe5ed095db3bd3a528fa138efcf.jpg",
+            "bytes": 23996,
+            "sha256": "005edcc27c8cde774277727df0f278ef2b74dfe5ed095db3bd3a528fa138efcf"
+          },
+          {
+            "name": "codec-1beac83b14fe3a80e3a1fa1c70d05e942f5e36f0e514a96b3b4390b200d6cf90.jpg",
+            "bytes": 25904,
+            "sha256": "1beac83b14fe3a80e3a1fa1c70d05e942f5e36f0e514a96b3b4390b200d6cf90"
+          },
+          {
+            "name": "codec-6ad7c66e8929dc145f1b105488ef63e9b2a0364a95b78da9637550c3f8ecdc88.jpg",
+            "bytes": 19483,
+            "sha256": "6ad7c66e8929dc145f1b105488ef63e9b2a0364a95b78da9637550c3f8ecdc88"
+          },
+          {
+            "name": "codec-85839cd88f124002deb861dc81d84963f45bffb5709697d0bd41a44e9f289e1d.jpg",
+            "bytes": 94966,
+            "sha256": "85839cd88f124002deb861dc81d84963f45bffb5709697d0bd41a44e9f289e1d"
+          },
+          {
+            "name": "codec-aa85188b838047219097eb58b9cab32cc441983096f463ba8f819aa69e82cb03.jpg",
+            "bytes": 7941,
+            "sha256": "aa85188b838047219097eb58b9cab32cc441983096f463ba8f819aa69e82cb03"
+          },
+          {
+            "name": "codec-b3d1da2837c3fe22b02fc9b6b62baa6f2c998388633794ff2874e29474ebd12e.jpg",
+            "bytes": 21914,
+            "sha256": "b3d1da2837c3fe22b02fc9b6b62baa6f2c998388633794ff2874e29474ebd12e"
+          },
+          {
+            "name": "codec-b67951a094a34da5dc77385d1328835234dc201c67846c330416e4d35adc71d4.jpg",
+            "bytes": 26183,
+            "sha256": "b67951a094a34da5dc77385d1328835234dc201c67846c330416e4d35adc71d4"
+          },
+          {
+            "name": "codec-f38dd4e4001a7ddd7f59cbdaa89c02a51856b98cbdb4f63e5d95cf2d8621ea9a.jpg",
+            "bytes": 1081081,
+            "sha256": "f38dd4e4001a7ddd7f59cbdaa89c02a51856b98cbdb4f63e5d95cf2d8621ea9a"
+          }
+        ],
+        "intermediate_codec_files_removed": true,
+        "no_persistent_card_created": true,
+        "temporary_vm_work_removed": true
+      }
+    },
+    {
+      "profile": true,
+      "resource_sha256": "670522d79de462921df7e8323b7642ea5f478435ab17c4367727d3617390b972",
+      "source_sha256": {
+        "tools/create_lab_parameters.py": "239f18a41a70d9543cdaf42d36a62db6dcc363ad0bb85bedc556342bc08f834e",
+        ".local/sensor-timing/observer-profile.py": "f299571aebccb7bf94943ef4d80dee15349dbca8f4f5e0fc22da970747716132",
+        "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+        "qemu/trace-events": "e0326efb3c455339e3e5ff15838f41ebaaf1d70410ae34b7708d09578404b154",
+        "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+        "qemu/nikon-z72.c": "827f949926c972a942e42a389241f226332892d012079fe07ad8b91451b948d7",
+        "tools/body_shutter_gate_probe.py": "06a8cb62e87aa270a1be205d5927ed244459dc55b7fad4152aa882e381be896c",
+        "tools/web_console.py": "c568a5742cbe034259ca297deed0ee683865ff983fe840374b4da31fcd59ede0",
+        "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+      },
+      "qemu_binary_sha256": "dced480692a936e977dc4bcab868403cb8f84cf93597adac79021ede4057b8ef",
+      "arguments": [
+        "--qemu",
+        "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+        "--wsl",
+        "--master",
+        "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+        "--slave",
+        "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+        "--controller",
+        "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+        "--sd-card",
+        "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+        "--trace-sd-host",
+        "--display-complete",
+        "--frame-phase",
+        "--input-stop-complete",
+        "--frame-generate",
+        "--frame-notify",
+        "--frame-process",
+        "--processing-resource-header",
+        "--aux-image-process",
+        "--controller-step-link",
+        "--controller-actuator",
+        "--sampling-output-complete",
+        "--shutter-on-ready",
+        "--half-before-full",
+        "--shutter-click",
+        "--application-only",
+        "--body-exposure",
+        "1000",
+        "--capture-focus",
+        "--capture-counter-seconds",
+        "1",
+        "--skip-still-preprocessing",
+        "--icount-shift",
+        "2",
+        "--watch",
+        "900",
+        "--out",
+        "D:\\code\\z72-qemu\\.local\\capture-report-archive\\sensor_timing_profile\\report.json",
+        "--controller-step-feedback",
+        "--trace-controller-gpio",
+        "--body-silent",
+        "--sample-group1",
+        "--sensor-image",
+        "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+        "--nvme-card",
+        "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+        "--sensor-timing-profile",
+        "--virtual-lens",
+        "--body-fnumber",
+        "800"
+      ],
+      "timing_returns": [
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 292,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 199963438,
+          "duration_query_formula_us": 16611
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 292,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 200428226,
+          "duration_query_formula_us": 16611
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 292,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 201778095,
+          "duration_query_formula_us": 16611
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 2,
+          "bias": 2,
+          "count": 294,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 202086206,
+          "duration_query_formula_us": 16725
+        },
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 2324,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 204106637,
+          "duration_query_formula_us": 132209
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 229346407,
+          "duration_query_formula_us": 33336
+        },
+        {
+          "mode": 11,
+          "subtype": 3,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 231345204,
+          "duration_query_formula_us": 33336
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "counter_ticks": 231472341,
+          "duration_query_formula_us": 33336
+        }
+      ],
+      "timer_builder_entries": [
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 2,
+          "bias": 0,
+          "count": 292,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 200441115
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 2,
+          "bias": 2,
+          "count": 294,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 202098102
+        },
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 2324,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-duration-packet",
+          "counter_ticks": 204167070
+        },
+        {
+          "mode": 5,
+          "subtype": 0,
+          "helper_selection": 7,
+          "bias": 0,
+          "count": 2324,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 216320920
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-duration-packet",
+          "counter_ticks": 229855658
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 231484737
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 2,
+          "count": 588,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 236923813
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 238358069
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 2,
+          "count": 588,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 243297824
+        },
+        {
+          "mode": 11,
+          "subtype": 0,
+          "helper_selection": 4,
+          "bias": 0,
+          "count": 586,
+          "period": 4096,
+          "overhead": 1000,
+          "entry": "sensor-base-packet",
+          "counter_ticks": 245089701
+        }
+      ],
+      "observed_events": 58,
+      "per_point_hit_limit": 8,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "primary_frames": 1,
+      "primary_scene": {
+        "aperture": 247,
+        "factor_q16": 26904
+      },
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x10120800",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x103bde42",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a68",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a50",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "preprocessing": {
+        "requested": true,
+        "contexts": [
+          {
+            "context": "0xc19d3ec0",
+            "nested": "0xc29b9040",
+            "address": "0xc29bbbbc",
+            "previous": 0,
+            "supplied": 2,
+            "native_clear_observed": true,
+            "preprocessing_inputs": [
+              {
+                "address": "0xc29bbbb9",
+                "offset": "0x2b79",
+                "previous": 0,
+                "supplied": 1
+              },
+              {
+                "address": "0xc29bbbbb",
+                "offset": "0x2b7b",
+                "previous": 0,
+                "supplied": 2
+              }
+            ],
+            "sflt_skip_observed": true,
+            "raw_compute_skip_observed": true,
+            "result_halfwords": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "iris_raw_timing": {
+        "request_ns": 4071569784,
+        "raw_ns": 4097325492,
+        "arrival_ns": 4131569784,
+        "position": 247,
+        "factor_q16": 26904,
+        "raw_before_arrival_ns": 34244292
+      },
+      "evidence": {
+        "report.json": {
+          "bytes": 8966579,
+          "sha256": "91a355c6ed47d7c526135c7dfac80dea955ca56c2bb318c6eba08087074baf04"
+        },
+        "conditions.json": {
+          "bytes": 6813,
+          "sha256": "720a8e479402a0748a36da8bb4dad08cfa6461387ce9cabf14d4df34cfda178b"
+        },
+        "timing-events.jsonl": {
+          "bytes": 63115,
+          "sha256": "52f6a3ec9f2674e8ecc964c21481ab72ed5e5275634b7badbef14e556c51df4b"
+        },
+        "source-observer-profile.py": {
+          "bytes": 2243,
+          "sha256": "f299571aebccb7bf94943ef4d80dee15349dbca8f4f5e0fc22da970747716132"
+        },
+        "qemu.log": {
+          "bytes": 608688,
+          "sha256": "4e37bb8e6ea40adcd38f2e8adcac3168a66f72bb34e1ee467ebbd728bd2a7428"
+        },
+        "cleanup.json": {
+          "bytes": 1873,
+          "sha256": "1cd0994504714fa51b12dff5744563d78c441ebbb3a2e388af88fdf9b4f132ae"
+        }
+      },
+      "cleanup": {
+        "codec_files": [
+          {
+            "name": "codec-5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556.jpg",
+            "bytes": 1080848,
+            "sha256": "5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556"
+          },
+          {
+            "name": "codec-666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302.jpg",
+            "bytes": 19670,
+            "sha256": "666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302"
+          },
+          {
+            "name": "codec-9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c.jpg",
+            "bytes": 26482,
+            "sha256": "9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c"
+          },
+          {
+            "name": "codec-a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45.jpg",
+            "bytes": 7724,
+            "sha256": "a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45"
+          },
+          {
+            "name": "codec-b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133.jpg",
+            "bytes": 95319,
+            "sha256": "b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133"
+          },
+          {
+            "name": "codec-c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539.jpg",
+            "bytes": 21919,
+            "sha256": "c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539"
+          },
+          {
+            "name": "codec-cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69.jpg",
+            "bytes": 26115,
+            "sha256": "cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69"
+          },
+          {
+            "name": "codec-d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b.jpg",
+            "bytes": 24010,
+            "sha256": "d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b"
+          }
+        ],
+        "intermediate_codec_files_removed": true,
+        "no_persistent_card_created": true,
+        "temporary_vm_work_removed": true
+      }
+    }
+  ],
+  "limitations": [
+    "Only bounded F8/silent capture observations; other modes and later calls are not established.",
+    "The original return fields and builder inputs are observed; duration_query_formula_us is derived, not a timed integration measurement.",
+    "Explicit finite timing values, empty serial programs and other zero parameters are not factory calibration.",
+    "RAW still precedes virtual iris arrival in both runs; sensor integration and readout gating remain unimplemented.",
+    "Original DSP preprocessing is explicitly skipped; persistent save and playback were not repeated."
+  ]
+}

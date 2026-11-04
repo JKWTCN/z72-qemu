@@ -1,0 +1,318 @@
+{
+  "schema": 1,
+  "result": "passed-original-resource-timing-contract",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "profile": {
+    "source": "tools/create_lab_parameters.py:resource_timing_image",
+    "bytes": 1572864,
+    "sha256": "670522d79de462921df7e8323b7642ea5f478435ab17c4367727d3617390b972",
+    "groups": [
+      1,
+      7,
+      10
+    ],
+    "subtypes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "period": 4096,
+    "fallback_count": 586,
+    "metadata": 1,
+    "overhead_parameter": 72
+  },
+  "calculations": [
+    {
+      "profile": false,
+      "mode": 5,
+      "group": 1,
+      "subtype": 0,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 5,
+      "group": 1,
+      "subtype": 1,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 5,
+      "group": 1,
+      "subtype": 2,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 5,
+      "group": 1,
+      "subtype": 3,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 11,
+      "group": 7,
+      "subtype": 0,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 11,
+      "group": 7,
+      "subtype": 1,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 11,
+      "group": 7,
+      "subtype": 2,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 11,
+      "group": 7,
+      "subtype": 3,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 14,
+      "group": 10,
+      "subtype": 0,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 14,
+      "group": 10,
+      "subtype": 1,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 14,
+      "group": 10,
+      "subtype": 2,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": false,
+      "mode": 14,
+      "group": 10,
+      "subtype": 3,
+      "period": 0,
+      "count": 0,
+      "overhead": 0,
+      "duration_us": 0
+    },
+    {
+      "profile": true,
+      "mode": 5,
+      "group": 1,
+      "subtype": 0,
+      "period": 4096,
+      "count": 586,
+      "overhead": 1000,
+      "duration_us": 33336
+    },
+    {
+      "profile": true,
+      "mode": 5,
+      "group": 1,
+      "subtype": 1,
+      "period": 4096,
+      "count": 586,
+      "overhead": 1000,
+      "duration_us": 33336
+    },
+    {
+      "profile": true,
+      "mode": 5,
+      "group": 1,
+      "subtype": 2,
+      "period": 4096,
+      "count": 586,
+      "overhead": 1000,
+      "duration_us": 33336
+    },
+    {
+      "profile": true,
+      "mode": 5,
+      "group": 1,
+      "subtype": 3,
+      "period": 4096,
+      "count": 586,
+      "overhead": 1000,
+      "duration_us": 33336
+    },
+    {
+      "profile": true,
+      "mode": 11,
+      "group": 7,
+      "subtype": 0,
+      "period": 4096,
+      "count": 292,
+      "overhead": 1000,
+      "duration_us": 16611
+    },
+    {
+      "profile": true,
+      "mode": 11,
+      "group": 7,
+      "subtype": 1,
+      "period": 4096,
+      "count": 292,
+      "overhead": 1000,
+      "duration_us": 16611
+    },
+    {
+      "profile": true,
+      "mode": 11,
+      "group": 7,
+      "subtype": 2,
+      "period": 4096,
+      "count": 292,
+      "overhead": 1000,
+      "duration_us": 16611
+    },
+    {
+      "profile": true,
+      "mode": 11,
+      "group": 7,
+      "subtype": 3,
+      "period": 4096,
+      "count": 292,
+      "overhead": 1000,
+      "duration_us": 16611
+    },
+    {
+      "profile": true,
+      "mode": 14,
+      "group": 10,
+      "subtype": 0,
+      "period": 4096,
+      "count": 16,
+      "overhead": 1000,
+      "duration_us": 910
+    },
+    {
+      "profile": true,
+      "mode": 14,
+      "group": 10,
+      "subtype": 1,
+      "period": 4096,
+      "count": 16,
+      "overhead": 1000,
+      "duration_us": 910
+    },
+    {
+      "profile": true,
+      "mode": 14,
+      "group": 10,
+      "subtype": 2,
+      "period": 4096,
+      "count": 16,
+      "overhead": 1000,
+      "duration_us": 910
+    },
+    {
+      "profile": true,
+      "mode": 14,
+      "group": 10,
+      "subtype": 3,
+      "period": 4096,
+      "count": 16,
+      "overhead": 1000,
+      "duration_us": 910
+    }
+  ],
+  "dynamic_count": 2324,
+  "dynamic_duration_us": 132209,
+  "packets": [
+    {
+      "profile": false,
+      "duration_us": null,
+      "period_load": 65535,
+      "count_load": 4294967295,
+      "duration_increment": 0
+    },
+    {
+      "profile": false,
+      "duration_us": 0,
+      "period_load": 65535,
+      "count_load": 4294967295,
+      "duration_increment": 0
+    },
+    {
+      "profile": false,
+      "duration_us": 7383,
+      "period_load": 65535,
+      "count_load": 4294967295,
+      "duration_increment": 0
+    },
+    {
+      "profile": true,
+      "duration_us": null,
+      "period_load": 4095,
+      "count_load": 291,
+      "duration_increment": 0
+    },
+    {
+      "profile": true,
+      "duration_us": 0,
+      "period_load": 4095,
+      "count_load": 291,
+      "duration_increment": 0
+    },
+    {
+      "profile": true,
+      "duration_us": 7383,
+      "period_load": 4095,
+      "count_load": 421,
+      "duration_increment": 130
+    }
+  ],
+  "limitations": [
+    "Finite experimental row values, not recovered factory calibration or physical sensor timing.",
+    "Original timing and load arithmetic executes; three opaque timer-record consumers are intercepted.",
+    "Serial programs remain empty; this contract does not establish integration start, IRQ timing or DMA gating."
+  ]
+}

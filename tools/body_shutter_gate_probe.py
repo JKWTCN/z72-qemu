@@ -4178,6 +4178,8 @@ def main():
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
                         help='Replace the RAW12 checkerboard with an 8-bit binary PGM/PPM scene')
+    parser.add_argument('--sensor-timing-profile', action='store_true',
+                        help='Supply explicit nonzero experimental resource timing rows; not physical sensor calibration')
     parser.add_argument('--virtual-body-vr', action='store_true',
                         help='Attach the finite body VR communication memory model; sensors and actuators remain absent')
     parser.add_argument('--virtual-lens', action='store_true',
@@ -4578,6 +4580,7 @@ def main():
                                     **({} if args.playback else body_options)))
         report['native_lcd_before'] = initial_lcd
         report['processing_resource_header'] = args.processing_resource_header
+        report['sensor_timing_profile'] = args.sensor_timing_profile
         if args.trace_capture_resource_boot:
             report['capture_resource_boot_writes'] = machine.resource_boot_writes
         if args.trace_capture_compute_boot:
