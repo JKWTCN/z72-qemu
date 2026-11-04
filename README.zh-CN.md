@@ -43,6 +43,11 @@ JPEG 硬件使用替代后端；不能据此声称默认浏览器交互台已具
 交互台还支持 `--live-view --sensor-image scene.pgm` 提供静态八位灰度
 场景；同一场景经定向机身拍摄保存为完整 JPG，已独立核对输入一致性，见
 [场景读卡检查](artifacts/body_scene_capture/card_check.json)。
+冷启动回放现可解码原厂保存的 4:2:2 照片，并将 JPEG 纹理采样到原厂
+1024×682 LCD 背景。定向观察完整结束，绘图失败为零；现有灰度查看器可见
+诊断照片及原厂界面，见[回放验证](artifacts/playback_native_texture_verified/validation.json)
+及 [JPEG 回放研究](research/z7ii/jpeg_decode.md)。物理扫描、校准彩色及所有
+回放控件尚未由此验证。
 菜单关闭后的重开
 （采集状态 `0x3f` 门控）、拍摄画面 `Card`/`Err` 计数背后的存储槽
 状态、菜单文字语义、完整捕获处理与部分通知的自然产出

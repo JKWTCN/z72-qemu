@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "result": "incomplete",
+  "process_exit_code": 1,
+  "full_report_written": false,
+  "lcd_capture_written": false,
+  "error": "GDB read timed out in final card-admission snapshot; connection reset during breakpoint cleanup",
+  "live_observation": {
+    "source": "Live checkpoint inspection retained in the tool transcript; temporary checkpoint was removed by VM cleanup",
+    "background_counter_ticks": 93359449,
+    "lcd_planes_before": [
+      "0xcbf33000",
+      "0xcbfdd800"
+    ],
+    "lcd_planes_after": [
+      "0xcc18b000",
+      "0xcc235800"
+    ],
+    "graphics_unsupported_log_count": 0
+  },
+  "scope": "Incomplete observation; no final fault-register or LCD-pixel claim"
+}

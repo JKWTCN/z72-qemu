@@ -284,7 +284,8 @@ static void nikon_rgb_yuv(const uint8_t *p, uint8_t *yuv)
     yuv[2] = CLAMP(((112*p[0] - 94*p[1] - 18*p[2] + 128) >> 8) + 128, 0, 255);
 }
 
-/* 105: Y + full-height interleaved UV; 106/107: Y0,Y1,U,V.
+/* Texture0d: JPEG full-range Y + full-height interleaved UV.
+ * 105: limited-range Y + full-height interleaved UV; 106/107: Y0,Y1,U,V.
  * 107 has a separately addressed alpha plane, optionally packed4-bit.
  * Conversion uses a functional BT.601 matrix, not Nikon's programmable LUT. */
 static void nikon_gpu_pixel_read(const uint8_t *a, const uint8_t *b, unsigned fmt,
@@ -292,7 +293,12 @@ static void nikon_gpu_pixel_read(const uint8_t *a, const uint8_t *b, unsigned fm
 {
     if (fmt == 0 || fmt == 0x100) { memcpy(p, a + i*4, 4); return; }
     if (fmt == 0x18) { p[0] = p[1] = p[2] = 255; p[3] = a[i]; return; }
-    if (fmt == 0x105) {
+    if (fmt == 0x0d) {
+        int y = a[i], u = (int)b[i & ~1ULL] - 128, v = (int)b[(i & ~1ULL)+1] - 128;
+        p[0] = CLAMP((65536*y + 91881*v + 32768) >> 16, 0, 255);
+        p[1] = CLAMP((65536*y - 22554*u - 46802*v + 32768) >> 16, 0, 255);
+        p[2] = CLAMP((65536*y + 116130*u + 32768) >> 16, 0, 255);
+    } else if (fmt == 0x105) {
         nikon_yuv_rgb(a[i], b[i & ~1ULL], b[(i & ~1ULL)+1], p);
     } else {
         const uint8_t *q = a + (i & ~1ULL)*2;
@@ -351,7 +357,7 @@ static bool nikon_gpu_draw(NikonGPU *g, const uint32_t *r, NikonGPUPath *p)
      * geometry at682 instead left six zero Y/UV rows (decoded as green). */
     unsigned y_bias = logical_h-h;
     uint64_t bytes = (uint64_t)w*h*bpp, second_bytes = (uint64_t)w*h/((dfmt == 0x107 && alpha4) ? 2 : 1);
-    uint64_t texbytes = (uint64_t)tw*th*(fmt == 0x18 || fmt == 0x105 ? 1 : fmt == 0x106 || fmt == 0x107 ? 2 : 4);
+    uint64_t texbytes = (uint64_t)tw*th*(fmt == 0x18 || fmt == 0x0d || fmt == 0x105 ? 1 : fmt == 0x106 || fmt == 0x107 ? 2 : 4);
     g_autofree uint8_t *dst = NULL, *dst2 = NULL, *tex = NULL, *tex2 = NULL;
     g_autofree uint8_t *pair_rgba = NULL, *pair_dirty = NULL;
     if (!p || !p->valid || (dfmt && dfmt != 0x105 && dfmt != 0x106 && dfmt != 0x107) ||
@@ -362,9 +368,10 @@ static bool nikon_gpu_draw(NikonGPU *g, const uint32_t *r, NikonGPUPath *p)
     double matrix[9];
     if (mode != 8) {
         if (!tw || !th || tw > 4096 || th > 4096 ||
-            (fmt != 0 && fmt != 0x100 && fmt != 0x18 && fmt != 0x105 && fmt != 0x106 && fmt != 0x107) ||
+            (fmt != 0 && fmt != 0x100 && fmt != 0x18 && fmt != 0x0d && fmt != 0x105 && fmt != 0x106 && fmt != 0x107) ||
+            (fmt == 0x0d && r[0x156] != 0x001b000d) ||
             !nikon_gpu_range(g, r[0x155], texbytes, false)) { return false; }
-        if (fmt == 0x105 || fmt == 0x107) {
+        if (fmt == 0x0d || fmt == 0x105 || fmt == 0x107) {
             if ((tw & 1) || !nikon_gpu_range(g, r[0x15a], (uint64_t)tw*th, false)) { return false; }
             tex2 = g_malloc((size_t)tw*th); nikon_gpu_read(g, r[0x15a], tex2, (size_t)tw*th);
         }

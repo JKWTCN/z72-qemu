@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "normal_observer_completed": true,
+  "report": {
+    "path": "artifacts/playback_native_texture_verified/report.json",
+    "bytes": 128124,
+    "sha256": "70ad580fea728f767601fd64a26a0a1487dc615a4afb7eaecd3f0168431c6559"
+  },
+  "run_conditions": {
+    "path": "artifacts/playback_native_texture_verified/run_conditions.json",
+    "bytes": 6590,
+    "sha256": "e82aecd35aca559088a589b9ee39f905b487605764531e97130087723ec0c461"
+  },
+  "source_photo": {
+    "path": "artifacts/body_codec_422/DSC_0001.JPG",
+    "bytes": 5160027,
+    "sha256": "0c1d946e47b8c74bebf27042f14ead6d6f01458da0632ccd7dceacf38ba70906",
+    "fixture_photo_unchanged_after_runs": true,
+    "host_prepared_fat_fixture": true
+  },
+  "renderer": {
+    "path": "qemu/nikon-gpu.h",
+    "bytes": 29961,
+    "sha256": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1"
+  },
+  "tests": {
+    "path": "artifacts/native_jpeg_texture_validation/report.json",
+    "bytes": 4620,
+    "sha256": "7919259a1738b784cb1848633b14c861267ab239f0f10bf60bf6b240cd68d590"
+  },
+  "observed_counter_seconds": 6.644102,
+  "application_index": 2,
+  "graphics": {
+    "successful_uploads": 122,
+    "render_requests": 0,
+    "rendered_commands": 170,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3418025984,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3419422720
+  },
+  "core_faults": [
+    {
+      "DFAR_S": "0x0",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x0",
+      "IFSR_S": "0x0"
+    },
+    {
+      "DFAR_S": "0x0",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x0",
+      "IFSR_S": "0x0"
+    },
+    {
+      "DFAR_S": "0x0",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x0",
+      "IFSR_S": "0x0"
+    },
+    {
+      "DFAR_S": "0x0",
+      "IFAR_S": "0x0",
+      "DFSR_S": "0x0",
+      "IFSR_S": "0x0"
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "lcd": {
+    "width": 1024,
+    "height": 682,
+    "planes": [
+      "0xcc18b000",
+      "0xcc235800"
+    ],
+    "luminance_bytes": 698368,
+    "luminance_sha256": "50ad4217d6ad16bfa06c80cb363b7f61c64643f9a36954919d53cb368db6d346",
+    "minimum": 16,
+    "maximum": 235,
+    "unique_bytes": 135
+  },
+  "comparison_capture": {
+    "path": "artifacts/playback_texture_present/lcd_capture.json",
+    "bytes": 955,
+    "sha256": "7246988977e87ba5316ace80d52af491c91ed5ff99e2ee56fb269c3566dd0e3c"
+  },
+  "luminance_matches_comparison_capture": true,
+  "png_origin": "Earlier retained guest, same build and unchanged card fixture; the final normal observer produced a matching full luminance digest but did not capture a PNG",
+  "scope": "Native cold playback of an existing diagnostic checkerboard photo through decode, graphics sampling and LCD buffer selection. Existing grayscale viewer only; no physical scanout, calibrated color, every playback control or natural-scene capture claim"
+}

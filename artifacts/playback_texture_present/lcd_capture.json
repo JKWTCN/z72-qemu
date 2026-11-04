@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "origin": "Existing QEMU guest retained after stopping an observer blocked on a nested host lock; new read-only monitor connection",
+  "guest_pc": "0x104497ea",
+  "native_lcd_registers": true,
+  "host_supplied_pixels": false,
+  "counter_ticks_before": 93353947,
+  "counter_ticks_after": 93353947,
+  "width": 1024,
+  "height": 682,
+  "stride": 1024,
+  "luminance_address": "0xcc18b000",
+  "chroma_address": "0xcc235800",
+  "luminance_bytes": 698368,
+  "luminance_sha256": "50ad4217d6ad16bfa06c80cb363b7f61c64643f9a36954919d53cb368db6d346",
+  "minimum": 16,
+  "maximum": 235,
+  "unique_bytes": 135,
+  "png": {
+    "path": ".local/playback-texture-rescued-lcd.png",
+    "bytes": 222576,
+    "sha256": "1737a194f07a4439fbfe13a7664b23962182e3212edff7b129778ac2e95d5e90"
+  },
+  "scope": "Original LCD planes and UI composed by the existing grayscale viewer while the virtual clock is stopped; no hardware scanout or calibrated-color claim"
+}

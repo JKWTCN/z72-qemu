@@ -132,5 +132,48 @@ int main(void) {
     g_array_set_size(p->edges,0);p->regs[0x5a]=1;
     nikon_gpu_flatten(p);CHECK(!p->valid);
     nikon_gpu_path_free(p);
+    /* Native JPEG playback samples two planes with descriptor001b000d.
+     * Neutral full-range luma must remain unchanged in an RGBA target;
+     * the two colored pairs also distinguish it from limited-range105. */
+    p=rectangle(2,false,0x100);
+    memset(r,0,sizeof(r)); memset(memory,0xa5,sizeof(memory));
+    r[0x1a3]=(6<<16)|8; r[0xc0]=7<<16; r[0xc1]=5<<16;
+    r[0x184]=2; r[0x1a4]=0xa1001000;
+    r[0x152]=r[0x158]=(8<<16)|6; r[0x153]=7;
+    r[0x155]=0xa1003000; r[0x15a]=0xa1003030; r[0x156]=0x001b000d;
+    r[0x10c]=0x3c0000; r[0x110]=0x3c5555; r[0x114]=0x3f0000;
+    static const uint8_t levels[]={0,16,73,73,198,198,235,255};
+    static const uint8_t colors[][3]={{32,64,224},{240,208,32}};
+    for(unsigned y=0;y<6;y++) {
+        memcpy(memory+0x3000+y*8,levels,8);
+        memcpy(memory+0x3030+y*8,(uint8_t[]){128,128,213,99,35,158,128,128},8);
+    }
+    uint8_t source_copy[96]; memcpy(source_copy,memory+0x3000,sizeof(source_copy));
+    CHECK(nikon_gpu_draw(&g,r,p));
+    for(unsigned i=0;i<48;i++) {
+        unsigned x=i%8;
+        for(unsigned c=0;c<3;c++) {
+            unsigned expected=x>=2 && x<6?colors[(x-2)/2][c]:levels[x];
+            CHECK(abs((int)memory[0x1000+i*4+c]-(int)expected)<=1);
+        }
+        CHECK(memory[0x1000+i*4+3]==255);
+    }
+    CHECK(memory[0xfff]==0xa5 && memory[0x10c0]==0xa5);
+    CHECK(!memcmp(source_copy,memory+0x3000,sizeof(source_copy)));
+    memcpy(saved,memory+0x1000,192);
+    r[0x15a]=0; CHECK(!nikon_gpu_draw(&g,r,p));
+    r[0x15a]=0xa100fff0; CHECK(!nikon_gpu_draw(&g,r,p));
+    r[0x15a]=0xa1003030; r[0x152]=(7<<16)|6; CHECK(!nikon_gpu_draw(&g,r,p));
+    r[0x152]=(8<<16)|6; r[0x156]=0x001a000d; CHECK(!nikon_gpu_draw(&g,r,p));
+    CHECK(!memcmp(saved,memory+0x1000,192));
+    /* The native LCD target uses limited-range YUV, not RGBA. */
+    r[0x156]=0x001b000d; r[0x1a2]=0x105; r[0x1b5]=0xa1001030;
+    memset(memory+0x1000,0xa5,192);
+    CHECK(nikon_gpu_draw(&g,r,p));
+    CHECK(memory[0x1000]==16 && memory[0x1001]==30);
+    CHECK(memory[0x1002]==78 && memory[0x1003]==78);
+    CHECK(memory[0x1006]==218 && memory[0x1007]==235);
+    CHECK(memory[0x1000+96]==0xa5 && !memcmp(source_copy,memory+0x3000,sizeof(source_copy)));
+    nikon_gpu_path_free(p);
     printf("PASS %u synthetic renderer checks\n",checks); return 0;
 }

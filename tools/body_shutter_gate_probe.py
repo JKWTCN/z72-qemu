@@ -553,6 +553,15 @@ AFTER_PLAYBACK = {
     0x103be756: 'playback-jpeg-start',
     0x103bdfea: 'playback-jpeg-interrupt',
     0x103be7e6: 'playback-jpeg-header',
+    0x103c651e: 'playback-jpeg-service-callback',
+    0x103c6550: 'playback-jpeg-service-event',
+    0x103c69b8: 'playback-jpeg-worker-wait',
+    0x103c6a00: 'playback-jpeg-worker-wait-return',
+    0x103c69be: 'playback-jpeg-worker-result',
+    0x103c69c6: 'playback-jpeg-worker-unlocked',
+    0x104482d8: 'playback-background-wrapper',
+    0x104497ea: 'playback-background-return',
+    0x1046e250: 'playback-output-addresses',
     0x103f25ec: 'operation18-api',
     0x103ef386: 'operation18-task-request',
     0x103e7312: 'capture-mode-request',
@@ -1419,6 +1428,28 @@ def decode_snapshot(remote, descriptor=None):
                     width=width, height=height, stride=stride, active_bytes=len(pixels),
                     active_sha256=hashlib.sha256(pixels).hexdigest(),
                     minimum=min(pixels), maximum=max(pixels), unique_bytes=len(set(pixels))))
+    return result
+
+
+def playback_pipeline_snapshot(remote):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    result = dict(service_words=[hex(value) for value in
+        struct.unpack('<8I', remote.read(0xb1809588, 32))],
+        event_words=[hex(value) for value in struct.unpack('<8I', remote.read(0xb1d527dc, 32))],
+        display=display_delivery_snapshot(remote.read))
+    request = word(0xb180959c)
+    if 0xb1800000 <= request <= 0xb5efffcc:
+        result['decode_request'] = dict(address=hex(request),
+            words=[hex(value) for value in struct.unpack('<13I', remote.read(request, 52))],
+            status=remote.read(request + 0x2c, 1)[0],
+            dimensions=list(struct.unpack('<2H', remote.read(request + 0x2e, 4))))
+    frame = word(0xb18095a0)
+    if 0xb1800000 <= frame <= 0xb5efffe4:
+        result['message'] = dict(address=hex(frame), words=[hex(value) for value in
+            struct.unpack('<7I', remote.read(frame, 28))])
+    result['service_task'] = task_wait_snapshot(remote, 0xb1809594)
+    result['worker_task'] = task_wait_snapshot(remote, 0xb1d527e4)
     return result
 
 
@@ -2472,8 +2503,9 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             if (capture_focus or playback) and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                checkpoint = machine.work / ('playback-checkpoint.json' if playback else
-                                             'capture-focus-checkpoint.json')
+                checkpoint = (machine.args.out.parent / 'playback-checkpoint.json' if playback else
+                              machine.work / 'capture-focus-checkpoint.json')
+                checkpoint.parent.mkdir(parents=True, exist_ok=True)
                 temporary = checkpoint.with_suffix('.tmp')
                 temporary.write_text(json.dumps(dict(incomplete=True, before=before,
                     records=records, diagnostic_capture=capture_caller.report if capture_caller else None,
@@ -2508,6 +2540,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 remote.sock.settimeout(15)
                 remote.interrupt()
                 continue
+            remote.sock.settimeout(15)
             match = re.search(r'thread:([0-9a-f]+);', reply)
             require(match is not None, 'Missing stop thread')
             thread = int(match[1], 16)
@@ -3078,6 +3111,27 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             repeat = hits[pc] < 32
                             record['jpeg_decode'] = decode_snapshot(remote,
                                 remote.get(registers, 'r1') if pc == 0x103be5f0 else None)
+                            if pc == 0x103be756:
+                                owner = playback_pipeline_snapshot(remote).get('message')
+                                if owner:
+                                    callback = int(owner['words'][3], 16)
+                                    if callback & 1 and 0x10020000 <= callback < 0x12497b7a:
+                                        callback &= ~1
+                                        if callback not in armed:
+                                            remote.breakpoint(callback)
+                                            armed[callback] = 'playback-jpeg-owner-completion'
+                        if pc in (0x103c651e, 0x103c6550, 0x103c69b8, 0x103c6a00,
+                                  0x103c69be, 0x103c69c6, 0x104482d8, 0x104497ea, 0x1046e250) or (
+                                  playback and armed.get(pc) == 'playback-jpeg-owner-completion'):
+                            hits[pc] = hits.get(pc, 0) + 1
+                            repeat = hits[pc] < 16
+                            record['playback_pipeline'] = playback_pipeline_snapshot(remote)
+                            if pc == 0x103c69be:
+                                from tools.graphics_boot_probe import graphics_observation
+                                record['graphics'] = graphics_observation(remote)
+                            if pc == 0x103c6a00:
+                                record['stack_words'] = [hex(value) for value in struct.unpack(
+                                    '<18I', remote.read(remote.get(registers, 'sp'), 72))]
                     if pc == 0x10321a4c:
                         callback_hits += int(keep)
                         record['notification'] = hex(remote.get(registers, 'r0'))
@@ -3955,6 +4009,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             else:
                 del armed[pc]
         after = snapshot(remote)
+        if playback:
+            from tools.graphics_boot_probe import graphics_observation
+            after['playback_pipeline'] = playback_pipeline_snapshot(remote)
+            after['graphics'] = graphics_observation(remote)
+            after['graphics_diagnostics'] = [line.strip() for line in
+                (machine.work / 'qemu.log').read_text(encoding='utf-8', errors='replace').splitlines()
+                if any(tag in line for tag in ('Z72_GRAPHICS_UNSUPPORTED',
+                    'Z72_GRAPHICS_FORMAT', 'Z72_GRAPHICS_PLANES', 'Z72_GPU_PATH_OPCODE'))][-64:]
         if body_compute_events:
             after['master_compute'] = master_compute_snapshot(remote)
         if capture_focus:

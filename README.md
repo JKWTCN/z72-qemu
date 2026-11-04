@@ -61,6 +61,12 @@ same behavior in the default browser-console profile.
 Use `--live-view --sensor-image scene.pgm` to supply a static eight-bit grayscale
 scene. A focused body capture saved that scene as a complete JPEG, independently
 checked against its input; see the [scene card check](artifacts/body_scene_capture/card_check.json).
+Cold playback now decodes the native 4:2:2 photo and samples its JPEG texture
+into the original 1024×682 LCD background. A focused run completed with zero
+graphics failures; the existing grayscale viewer shows the diagnostic photo
+and original interface. See [playback evidence](artifacts/playback_native_texture_verified/validation.json)
+and [JPEG playback research](research/z7ii/jpeg_decode.md). This does not establish
+physical scanout, calibrated color or every playback control.
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production

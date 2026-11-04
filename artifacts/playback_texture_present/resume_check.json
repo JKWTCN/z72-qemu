@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "guest_resumed": true,
+  "observation_counter_ticks": 746410958,
+  "counter_frequency": 48000000,
+  "elapsed_camera_seconds": 13.605354395833333,
+  "application": {
+    "index": 0,
+    "requested": 5,
+    "state": 2
+  },
+  "core_faults": [
+    {
+      "thread": 1,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "graphics": {
+    "successful_uploads": 122,
+    "render_requests": 0,
+    "rendered_commands": 170,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3418025984,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3419422720
+  },
+  "scope": "Retained guest resumed after the frozen LCD sample, then observed in its original idle application; no further input or completion events supplied"
+}

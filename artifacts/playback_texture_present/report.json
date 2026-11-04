@@ -1,0 +1,85 @@
+{
+  "format": 1,
+  "observation": "read-only native playback capture from retained guest",
+  "firmware_included": false,
+  "original_observer_completed": false,
+  "observer_stop_reason": "Nested non-reentrant host lock in private screenshot wrapper; QEMU itself was retained",
+  "source_run_conditions": "artifacts/playback_texture_present/run_conditions.json",
+  "camera_counter_ticks": 93353947,
+  "application": {
+    "index": 2,
+    "requested": 5,
+    "state": 2
+  },
+  "core_faults": [
+    {
+      "thread": 1,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "graphics": {
+    "successful_uploads": 122,
+    "render_requests": 0,
+    "rendered_commands": 170,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3418025984,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3419422720
+  },
+  "lcd_capture": "artifacts/playback_texture_present/lcd_capture.json",
+  "rescue_script_sha256": "71e85baca7512909ec9379fb49b6f52aabba9d5d30f75c482bb516440295b137",
+  "qemu_log_archive": {
+    "path": ".local/capture-report-archive/playback_texture_present-qemu.log",
+    "bytes": 667477,
+    "sha256": "5ed39b4a5d22d3bad6ab27f2eff25c81c477a0879319c4243a1c4456cd71e775"
+  },
+  "graphics_diagnostics": [],
+  "rescue_script_archive": {
+    "path": ".local/capture-report-archive/playback-texture-present-readonly-capture.py",
+    "bytes": 3607,
+    "sha256": "71e85baca7512909ec9379fb49b6f52aabba9d5d30f75c482bb516440295b137"
+  },
+  "original_observer_checkpoint_archive": {
+    "path": ".local/capture-report-archive/playback_texture_present-interrupted.json",
+    "sha256": "f26e516bbac0c54b921d5a80bc95007eec4af9829c15c30ed91171123b1898f5"
+  }
+}
