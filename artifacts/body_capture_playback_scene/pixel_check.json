@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "source_photo_sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+  "embedded_offset": "0x310000",
+  "jpeg_size": [
+    1620,
+    1080
+  ],
+  "native_decode_counter_ticks": 247998789,
+  "planes": [
+    {
+      "register": "0x430",
+      "address": "0xdb5b6500",
+      "width": 1620,
+      "height": 1080,
+      "stride": 1632,
+      "active_bytes": 1749600,
+      "active_sha256": "7a61b7fa380eabed29d2d3cfd90894ef0fb03fd4b9d564cbe4a9e5958ec974ba",
+      "minimum": 0,
+      "maximum": 255,
+      "unique_bytes": 256
+    },
+    {
+      "register": "0x434",
+      "address": "0xdb764a00",
+      "width": 1620,
+      "height": 1080,
+      "stride": 1632,
+      "active_bytes": 1749600,
+      "active_sha256": "b655f885b851ba0de06ce56bd1abcf5a53dcd4f8459e605c0b2c3793163de307",
+      "minimum": 128,
+      "maximum": 128,
+      "unique_bytes": 1
+    }
+  ],
+  "independent_plane_sha256": [
+    "7a61b7fa380eabed29d2d3cfd90894ef0fb03fd4b9d564cbe4a9e5958ec974ba",
+    "b655f885b851ba0de06ce56bd1abcf5a53dcd4f8459e605c0b2c3793163de307"
+  ],
+  "reference_decode": "Pillow directly in YCbCr mode, without RGB conversion",
+  "exact_all_active_pixels_match": true,
+  "same_guest_capture_and_playback": true,
+  "scope": "Entire active decoded Y and interleaved CbCr planes read through the native JPEG completion, after native card save in the same guest"
+}

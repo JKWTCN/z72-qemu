@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "result": "passed",
+  "checks": [
+    {
+      "seconds": 9,
+      "repeat_body_capture": false,
+      "result": "rejected",
+      "reason": "Post-capture playback time out of bounds"
+    },
+    {
+      "seconds": 3601,
+      "repeat_body_capture": false,
+      "result": "rejected",
+      "reason": "Post-capture playback time out of bounds"
+    },
+    {
+      "seconds": -1,
+      "repeat_body_capture": false,
+      "result": "rejected",
+      "reason": "Post-capture playback time out of bounds"
+    },
+    {
+      "seconds": 240,
+      "repeat_body_capture": true,
+      "result": "rejected",
+      "reason": "Post-capture playback requires one focused body shot, released contacts and a private card copy"
+    },
+    {
+      "seconds": 240,
+      "repeat_body_capture": false,
+      "result": "accepted before machine construction"
+    },
+    {
+      "seconds": 0,
+      "repeat_body_capture": false,
+      "result": "accepted before machine construction"
+    }
+  ],
+  "scope": "Argument validation only; machine construction replaced with a sentinel, no guest execution"
+}

@@ -67,6 +67,10 @@ graphics failures; the existing grayscale viewer shows the diagnostic photo
 and original interface. See [playback evidence](artifacts/playback_native_texture_verified/validation.json)
 and [JPEG playback research](research/z7ii/jpeg_decode.md). This does not establish
 physical scanout, calibrated color or every playback control.
+The body probe's optional `--playback-after-capture SECONDS` also verifies one
+static grayscale scene capture followed by playback in the same guest, with
+native card creation and no host card edits between stages; see the
+[combined validation](artifacts/body_capture_playback_scene/validation.json).
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production

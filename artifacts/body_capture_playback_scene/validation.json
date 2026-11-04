@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "observer_completed": true,
+  "same_guest_capture_and_playback": true,
+  "guest_reboot_between_stages": false,
+  "host_card_edits_between_stages": false,
+  "source_photo_sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+  "capture_counter_seconds": 3.57572,
+  "playback_counter_seconds": 6.586578,
+  "capture_recovered": true,
+  "body_shutter": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 140320243,
+    "shot": 1,
+    "release_ticks": 152485035,
+    "held_counter_seconds": 0.25343316666666665
+  },
+  "playback_key": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 236550783,
+    "release_ticks": 249139269,
+    "held_counter_seconds": 0.262260125
+  },
+  "final_application_index": 2,
+  "jpeg_decoded_counts": [
+    {
+      "master": true,
+      "completed": 1
+    },
+    {
+      "master": false,
+      "completed": 0
+    }
+  ],
+  "graphics": {
+    "successful_uploads": 1134,
+    "render_requests": 0,
+    "rendered_commands": 2139,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3410653184,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3412049920
+  },
+  "lcd": {
+    "width": 1024,
+    "height": 682,
+    "planes": [
+      "0xcc18b000",
+      "0xcc235800"
+    ],
+    "byte_count": 698368,
+    "sha256": "5e8eea4b006e4f7d47f5bcc9a2542d915e9e6cbf5c591be92c78fdf8a66b39f9",
+    "unique_bytes": 220,
+    "minimum": 16,
+    "maximum": 235
+  },
+  "lcd_changed_from_capture": true,
+  "decoded_planes_match_card_preview": true,
+  "all_observed_faults_zero": true,
+  "checker_script_sha256": "f3d275376f0faeed44235d19a68e79899851a726d9af60502a9497c603d8fe1e",
+  "scope": "One focused static grayscale scene capture and subsequent native hot playback. Explicit exposure/silent settings, preprocessing bypass and experimental image/codec/graphics hardware remain; no default-browser, calibrated color or full playback-controls claim",
+  "report": {
+    "path": "artifacts/body_capture_playback_scene/report.json",
+    "bytes": 393669,
+    "sha256": "f38739c4b6e3d31eabaad596bb63272378c3961b946a3457e29c789f6f4e27a9"
+  },
+  "full_report_archive": {
+    "path": ".local/capture-report-archive/body_capture_playback_scene.json",
+    "bytes": 10505903,
+    "sha256": "9c5860a6f51c9277eb2a903cea02fe50c7ad258b407d0332cfa38b3f45402ab9"
+  },
+  "run_conditions": {
+    "path": "artifacts/body_capture_playback_scene/run_conditions.json",
+    "bytes": 6661,
+    "sha256": "d7ce3ab7e7736b0a0f02da5835fb3fcfcc569c394b4634944249d2eac7d02dba"
+  },
+  "card_check": {
+    "path": "artifacts/body_capture_playback_scene/card_check.json",
+    "bytes": 4252,
+    "sha256": "545b1e7b6e8f8e7d8a1dfc384795f3fb8ee0a8ad3c6309624ba8934eb1a71a33"
+  },
+  "pixel_check": {
+    "path": "artifacts/body_capture_playback_scene/pixel_check.json",
+    "bytes": 1442,
+    "sha256": "dd0e0ed71841d85ae4f54bb4da948f5bf25308d81a7080c919b83f3474f7c3d9"
+  },
+  "argument_check": {
+    "path": "artifacts/body_capture_playback_scene/argument_check.json",
+    "bytes": 1098,
+    "sha256": "7ecee8418f6e326d8e48f42983e680eb56407179de274bf86403a7f127d63421"
+  },
+  "checker_archive": {
+    "path": ".local/capture-report-archive/body-capture-playback-scene-check.py",
+    "bytes": 7187,
+    "sha256": "f3d275376f0faeed44235d19a68e79899851a726d9af60502a9497c603d8fe1e"
+  },
+  "stage_boundary": {
+    "capture_after_ticks": 236511816,
+    "playback_before_ticks": 236550783
+  },
+  "temporary_card_retained": true,
+  "cleanup": {
+    "result": "blocked",
+    "action": "Remove only the newly created temporary card .local/body_capture_playback_scene.raw",
+    "reason": "Automatic approval policy rejected the exact absolute-path cleanup command; no more specific reason provided",
+    "original_card_and_photo_export_preserved": true
+  }
+}

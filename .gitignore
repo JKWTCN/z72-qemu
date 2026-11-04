@@ -47,6 +47,7 @@ qemu-*.tar.xz
 *.[hH][eE][iI][cC]
 *.[sS][vV][gG]
 *.log
+/artifacts/**/playback-checkpoint.json
 
 # Editor settings
 .vscode/

@@ -953,3 +953,20 @@ color-checker case remains. See the
 The body probe captures master IRQ 105 at `103bdfea`, original measurement
 wait returns, input row hashes and completed codec RAM streams for comparison
 with the eventual card files. Other JPEG register interfaces are separate.
+
+The body probe also accepts `--playback-after-capture SECONDS` (10..3600;
+default 0 disables). It requires one focused body capture with local exposure
+settings, shutter release and a persistent private card copy. After the capture
+observation ends, it checks native capture state `(2,0)`, driver state 9, an
+empty status list, released contacts and the shooting foreground. If these
+conditions hold, the same guest receives a short playback key press. The
+separate playback window uses this option's duration; `--watch` remains the
+initial capture observation limit. No reboot or host card edits occur between
+the stages. Unready capture records a reason and leaves playback unstarted.
+
+`trace` retains the initial capture observation; `playback_after_capture.trace`
+contains the later native playback callbacks, display state and graphics
+counts. `final_application`, `jpeg_decoded_counts` and `native_lcd_after` describe
+the final playback state when that stage starts. Explicit scene, exposure,
+silent mode and preprocessing diagnostic settings retain their own scope;
+this option does not enable them in the default browser profile.

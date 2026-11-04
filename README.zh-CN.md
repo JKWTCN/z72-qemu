@@ -48,6 +48,9 @@ JPEG 硬件使用替代后端；不能据此声称默认浏览器交互台已具
 诊断照片及原厂界面，见[回放验证](artifacts/playback_native_texture_verified/validation.json)
 及 [JPEG 回放研究](research/z7ii/jpeg_decode.md)。物理扫描、校准彩色及所有
 回放控件尚未由此验证。
+机身探针的可选 `--playback-after-capture SECONDS` 还验证了一次静态灰度场景
+拍摄后在同一虚拟机中回放，文件由原厂写卡，阶段之间没有宿主改卡，见
+[组合验证](artifacts/body_capture_playback_scene/validation.json)。
 菜单关闭后的重开
 （采集状态 `0x3f` 门控）、拍摄画面 `Card`/`Err` 计数背后的存储槽
 状态、菜单文字语义、完整捕获处理与部分通知的自然产出

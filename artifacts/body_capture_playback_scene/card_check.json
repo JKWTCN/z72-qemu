@@ -1,0 +1,125 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "photo": {
+    "path": "artifacts/body_capture_playback_scene/DSC_0001.JPG",
+    "bytes": 3656721,
+    "sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+    "jpeg_images": [
+      {
+        "offset": "0x0",
+        "width": 8256,
+        "height": 5504,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x8248",
+        "width": 160,
+        "height": 120,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x2f2000",
+        "width": 640,
+        "height": 424,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x310000",
+        "width": 1620,
+        "height": 1080,
+        "sampling": "4:2:2",
+        "decoded": true
+      }
+    ],
+    "matching_ram_bodies": [
+      {
+        "file": "codec-09ad0a5516da5bdd12489f945d17545d55b87f2d87b1fccf2a3f38b7a7027e83.jpg",
+        "sha256": "09ad0a5516da5bdd12489f945d17545d55b87f2d87b1fccf2a3f38b7a7027e83",
+        "body_offset": "0x824a",
+        "body_bytes": 9618
+      },
+      {
+        "file": "codec-40faf1cdd626b7c977a75e40eb4231b3d8d9ce7e4e896a0af1958ee6a764c78e.jpg",
+        "sha256": "40faf1cdd626b7c977a75e40eb4231b3d8d9ce7e4e896a0af1958ee6a764c78e",
+        "body_offset": "0x320002",
+        "body_bytes": 379919
+      },
+      {
+        "file": "codec-5892ad7673f4a3c7014866c884851edb5da3e0ccf28ffc4d107cf6230adb26c9.jpg",
+        "sha256": "5892ad7673f4a3c7014866c884851edb5da3e0ccf28ffc4d107cf6230adb26c9",
+        "body_offset": "0x19402",
+        "body_bytes": 2984819
+      },
+      {
+        "file": "codec-c2bb40b50cd0bcecb39c0c2f16fa8f7444da9e88e12a7a4537fe7a459f4d63e9.jpg",
+        "sha256": "c2bb40b50cd0bcecb39c0c2f16fa8f7444da9e88e12a7a4537fe7a459f4d63e9",
+        "body_offset": "0x302002",
+        "body_bytes": 57199
+      }
+    ]
+  },
+  "other_encoder_candidates": [
+    {
+      "file": "codec-6fc9a2c50c53d518dc3a298d9c6f3e1c86ef4aca66be81c2474238ead8efba72.jpg",
+      "sha256": "6fc9a2c50c53d518dc3a298d9c6f3e1c86ef4aca66be81c2474238ead8efba72",
+      "bytes": 202470
+    },
+    {
+      "file": "codec-96f4f7c766cf623fda04f913a00520009d0bc8c3ef8f61b6a16e48a3528b2868.jpg",
+      "sha256": "96f4f7c766cf623fda04f913a00520009d0bc8c3ef8f61b6a16e48a3528b2868",
+      "bytes": 348372
+    },
+    {
+      "file": "codec-a11fc8ed855c6901569a1d40f0d87876351882eda55fc302ce8cdf86662f9481.jpg",
+      "sha256": "a11fc8ed855c6901569a1d40f0d87876351882eda55fc302ce8cdf86662f9481",
+      "bytes": 49565
+    },
+    {
+      "file": "codec-b308f85ffc208ab2b8e07419d74e066da730d981d4c5f5ab6f0867e971df3ba9.jpg",
+      "sha256": "b308f85ffc208ab2b8e07419d74e066da730d981d4c5f5ab6f0867e971df3ba9",
+      "bytes": 299758
+    },
+    {
+      "file": "codec-b65e25df63eb91643ec9fb4561fee17f0e457727170399d17d073ad76cd036ba.jpg",
+      "sha256": "b65e25df63eb91643ec9fb4561fee17f0e457727170399d17d073ad76cd036ba",
+      "bytes": 40145
+    },
+    {
+      "file": "codec-ffe261de6764345ea35f60550f3b5e3fb32296e48ba09813cd2e862a8635b622.jpg",
+      "sha256": "ffe261de6764345ea35f60550f3b5e3fb32296e48ba09813cd2e862a8635b622",
+      "bytes": 247207
+    }
+  ],
+  "source_scene": {
+    "path": ".local/capture-playback-scene.pgm",
+    "bytes": 12334,
+    "sha256": "d41c360800feaf6af6077a09224b7be49d23390101db7d58e843b21f4aa047aa",
+    "width": 128,
+    "height": 96,
+    "generation": "P5 header followed by level=(x*13+y*29+((x//4)^(y//4))*17)&255 in row order"
+  },
+  "scene_check": {
+    "method": "Every 128x96 source cell center in the independently decoded saved primary JPEG",
+    "samples": 12288,
+    "failed_samples": 0,
+    "maximum_rgb_error": 0,
+    "allowed_rgb_error": 12,
+    "split_boundary": {
+      "samples": 576,
+      "failed_samples": 0,
+      "maximum_rgb_error": 0,
+      "allowed_rgb_error": 24
+    }
+  },
+  "probe_txt_preserved": true,
+  "probe_txt_sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+  "host_card_edits_between_stages": false,
+  "photo_reencoded": false,
+  "scope": "Stopped-guest FAT integrity, native saved file and source scene validation; unchanged original source card"
+}
