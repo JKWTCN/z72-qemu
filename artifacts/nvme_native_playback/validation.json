@@ -1,0 +1,277 @@
+{
+  "format": 1,
+  "date": "2026-11-05",
+  "scope": "Original C 1.70 cold startup and playback key, with an NVMe image containing native saved photos and a separate empty SD fixture; temporary write overlays; existing console frame timing; no settings caller or preprocessing bypass.",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "e4f047753dc6ffb8b26973073be4b46019552603eb51649f252978726f335ada",
+    "sources": {
+      "qemu/nikon-z72.c": "4bb1f350959d3e8bab6453d28d4181261570f50e040b15dae4366f8a374dac18",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "1a9c39cd8cc48e0e004621d704f448034d7a17c779a46d17374cdb71103d3d6d",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "f97d37db039bcd429a17829532a6bb2258e01f91e20d4d67d7ba25c31d3d29ec",
+      "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    }
+  },
+  "report_archive": {
+    "path": ".local/capture-report-archive/nvme_native_playback/report.json",
+    "bytes": 538276,
+    "sha256": "8772cd8d2197826004e4dc0cd168123b511e73afcba43d4e2542d5f2d79d55c8"
+  },
+  "storage_archive": {
+    "path": ".local/capture-report-archive/nvme_native_playback/storage_observation.json",
+    "bytes": 17185,
+    "sha256": "ccd4ccf0c8ab7cf1b8767131be2327722e1bd06fcd67c02215bcd5d4a1d65c61"
+  },
+  "native_trace_archive": {
+    "path": ".local/capture-report-archive/nvme_native_playback-qemu.log",
+    "bytes": 480679,
+    "sha256": "23ff5c9cfc8d3948607467a52e9215385946d4f78034c2a1f19eaddf3b2fc441"
+  },
+  "validator_archive": {
+    "path": ".local/capture-report-archive/validate-nvme-playback.py",
+    "bytes": 5526,
+    "sha256": "1f2356d845b47796a33314f42280009173cf73e9cbd86a1e1480ea2325d69b54"
+  },
+  "commands": {
+    "admin": 12,
+    "io": 787,
+    "completions": 799,
+    "cq_acknowledgements": 799
+  },
+  "all_native_cq_statuses_successful": true,
+  "native_ps0_request_successful": true,
+  "boot_application": 3,
+  "final_application": 2,
+  "playback_key": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 65036653,
+    "release_ticks": 77261424,
+    "held_counter_seconds": 0.2546827291666667
+  },
+  "sampled_cores": [
+    {
+      "thread": 1,
+      "pc": "0x1010707c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a68",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a50",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "jpeg_decoded_counts": [
+    {
+      "master": true,
+      "completed": 1
+    },
+    {
+      "master": false,
+      "completed": 0
+    }
+  ],
+  "nvme_blockstats": {
+    "unmap_operations": 0,
+    "unmap_merged": 0,
+    "failed_zone_append_operations": 0,
+    "flush_total_time_ns": 0,
+    "wr_highest_offset": 0,
+    "wr_total_time_ns": 0,
+    "failed_wr_operations": 0,
+    "failed_rd_operations": 0,
+    "wr_merged": 0,
+    "wr_bytes": 0,
+    "timed_stats": [],
+    "failed_unmap_operations": 0,
+    "zone_append_merged": 0,
+    "failed_flush_operations": 0,
+    "account_invalid": true,
+    "rd_total_time_ns": 842756783,
+    "invalid_unmap_operations": 0,
+    "flush_operations": 0,
+    "wr_operations": 0,
+    "unmap_bytes": 0,
+    "rd_merged": 0,
+    "rd_bytes": 4672512,
+    "unmap_total_time_ns": 0,
+    "invalid_flush_operations": 0,
+    "account_failed": true,
+    "idle_time_ns": 68237290305,
+    "zone_append_total_time_ns": 0,
+    "zone_append_operations": 0,
+    "rd_operations": 787,
+    "zone_append_bytes": 0,
+    "invalid_zone_append_operations": 0,
+    "invalid_wr_operations": 0,
+    "invalid_rd_operations": 0
+  },
+  "sd_blockstats": {
+    "unmap_operations": 0,
+    "unmap_merged": 0,
+    "failed_zone_append_operations": 0,
+    "flush_total_time_ns": 0,
+    "wr_highest_offset": 348160,
+    "wr_total_time_ns": 0,
+    "failed_wr_operations": 0,
+    "failed_rd_operations": 0,
+    "wr_merged": 0,
+    "wr_bytes": 0,
+    "timed_stats": [],
+    "failed_unmap_operations": 0,
+    "zone_append_merged": 0,
+    "failed_flush_operations": 0,
+    "account_invalid": true,
+    "rd_total_time_ns": 0,
+    "invalid_unmap_operations": 0,
+    "flush_operations": 0,
+    "wr_operations": 0,
+    "unmap_bytes": 0,
+    "rd_merged": 0,
+    "rd_bytes": 0,
+    "unmap_total_time_ns": 0,
+    "invalid_flush_operations": 0,
+    "account_failed": true,
+    "zone_append_total_time_ns": 0,
+    "zone_append_operations": 0,
+    "rd_operations": 0,
+    "zone_append_bytes": 0,
+    "invalid_zone_append_operations": 0,
+    "invalid_wr_operations": 0,
+    "invalid_rd_operations": 0
+  },
+  "graphics": {
+    "successful_uploads": 118,
+    "render_requests": 0,
+    "rendered_commands": 164,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3418025984,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3419422720
+  },
+  "lcd": {
+    "width": 1024,
+    "height": 682,
+    "sampled_plane": "0xcc18b000",
+    "byte_count": 698368,
+    "sha256": "76ef09aa48d41c1fdea89f6b201b3c952a1504639ab912fc7ef991cb2f48e178",
+    "unique_bytes": 220,
+    "minimum": 16,
+    "maximum": 235
+  },
+  "regression_history": [
+    {
+      "stage": "INTx acknowledgement",
+      "evidence": {
+        "path": ".local/capture-report-archive/nvme_irq_boundary/storage_observation.json",
+        "bytes": 19395,
+        "sha256": "0d97a0ea5777131c867c2dfa1816d9fb669516da496b8f3a6b58ec0a343238c7"
+      },
+      "observation": "Successful Identify CQE at B5F21000 (DW3 00010000), PCI command 0106 and CSTS 1, but PHY24 bit28 stayed high and no CQ acknowledgement. Actual instructions 10517046/48 and 10517058/5a prove read/write-same acknowledgement. GIC read timed out; no GIC-register claim."
+    },
+    {
+      "stage": "Missing I/O availability register",
+      "evidence": {
+        "path": ".local/capture-report-archive/nvme_first_abort/storage_observation.json",
+        "bytes": 11973,
+        "sha256": "ff14e732d8e8883ba790071289ca53371ad72b2721397adf469a031b5b8f5b94"
+      },
+      "observation": "Read-only stop at the original data-abort vector: LR 1051772a identifies the LDR at 10517722 from PHY210. Native read/write dispatch at 1049d7c0/1049d800 requires a nonzero result. The modeled guard now derives from active transport and native CSTS."
+    },
+    {
+      "stage": "Power Management",
+      "evidence": {
+        "path": ".local/capture-report-archive/nvme_native_io/storage_observation.json",
+        "bytes": 16354,
+        "sha256": "4401e404a1118c662748e5995fa0987b92ee2ecbe5199973e2b3463e73303611"
+      },
+      "observation": "Before finite PS0 support, original startup reached shooting and read 507392 NVMe bytes, but the later feature02 PS0 request returned CQ status410e. The current run completes it successfully through the native controller."
+    }
+  ],
+  "limits": [
+    "Native NVMe photo saving and persistent NVMe export are not verified; this run made no block writes",
+    "LCD contents are sampled and hashed; no independent pixel comparison to the source photo was performed in this run",
+    "PHY210 encoding, timing, masking and reset bindings include documented functional assumptions",
+    "No hotplug, non-operational power state, in-flight cancellation or two-running-engine DMA isolation verification",
+    "Full local reports and runtime traces are archived outside Git; no firmware or images are included"
+  ]
+}

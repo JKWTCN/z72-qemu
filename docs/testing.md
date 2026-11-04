@@ -1003,3 +1003,16 @@ its previous profile; a round trip without body exposure keeps the existing
 to bound playback and return. The full trace remains under `shutter_after_return`.
 See the [post-return saved-file validation](../artifacts/playback_return_body_save/validation.json)
 for a native second JPEG, preserved first photo and independent scene checks.
+
+The optional master NVMe host has a firmware-free queue test:
+
+```sh
+python tests/test_nvme_host.py --qemu .build/build/qemu-system-arm
+```
+
+It submits native Identify and I/O commands through the firmware-derived
+configuration/BAR windows, verifies DMA and backing-file bytes, and exercises
+INTx, MSI-X, cancellation and reset. An unknown selected backend must fail
+initialization. See the [host contract and scope](../research/z7ii/nvme_host.md).
+The browser and body probe accept `--nvme-card` with a temporary write overlay;
+`--capture-card-copy` continues to refer to the SD image.

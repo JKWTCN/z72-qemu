@@ -307,6 +307,13 @@ class Machine:
         if getattr(self.args, 'trace_controller_gpio', False):
             for event in ('z72_controller_gpio_transition', 'z72_engine_gpio_latch'):
                 card_arguments += ('-trace', f'enable={event}')
+        nvme_card = getattr(self.args, 'nvme_card', None)
+        if nvme_card is not None:
+            require(nvme_card.is_file(), 'NVMe card image does not exist')
+            nvme_path = nvme_card.resolve().as_posix().replace(',', ',,')
+            card_globals += ('nikon-z72-boot-config.nvme-drive=console-nvme',)
+            card_arguments += ('-drive', f'if=none,id=console-nvme,file={nvme_path},'
+                               'format=raw,snapshot=on')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',
             icount=None if self.args.realtime else
@@ -1073,6 +1080,8 @@ def main():
                              'and native LCD preview processing')
     parser.add_argument('--sensor-image', type=Path,
                         help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
+    parser.add_argument('--nvme-card', type=Path,
+                        help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--sample-group1', action='store_true',

@@ -727,6 +727,8 @@ struct NikonZ72BootConfig {
     uint64_t frame_count;
     uint32_t input_last_read;
     bool pcie_link;
+    char *nvme_drive;
+    DeviceState *nvme_host;
     bool auto_sample_level;
     uint32_t sample_lines;
     /* Bounded access trace over the sampling-synchronization and
@@ -4266,7 +4268,7 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->dbi_viewport = 0;
     s->sd_irq_level = false;
     sd_update_irq(s);
-    if (s->sd_host && s->release_config) {
+    if (s->sd_host && s->release_config && !s->nvme_host) {
         memset(memory_region_get_ram_ptr(&s->sd_config_ram), 0, 0x2000);
     }
     memset(s->input_levels, 0, sizeof(s->input_levels));
@@ -4621,6 +4623,7 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
     /* RAM-block names must stay unique when both engines exist in one
      * machine; the role suffix keeps the dual machine's blocks apart. */
     const char *tag = s->master_role ? "master" : "slave";
+    bool nvme = s->master_role && s->nvme_drive;
     if (!input_load_scene(s, errp)) {
         return;
     }
@@ -4636,12 +4639,30 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         memory_region_init_io(&s->sflt_ram, OBJECT(dev), &sflt_ops, s,
                               "z72-sflt", 0x1000);
         memory_region_add_subregion_overlap(root, 0x20203000, &s->sflt_ram, 1);
-        /* Configuration readback and banked translation descriptors only;
-         * this block does not create a link, an endpoint or DMA completion. */
-        memory_region_init_io(&s->dbi_ram, OBJECT(dev), &dbi_ops, s,
-                              "z72-pcie-configuration", 0x1000);
-        memory_region_add_subregion(root, 0x2a900000, &s->dbi_ram);
-        if (s->sd_host) {
+        if (nvme) {
+            static const hwaddr ports[] = {0x2a900000, 0x2a800000, 0x2a810000, 0x2b200000};
+            s->nvme_host = qdev_new("nikon-z72-nvme-host");
+            object_property_add_child(OBJECT(dev), "nvme-host", OBJECT(s->nvme_host));
+            qdev_prop_set_string(s->nvme_host, "drive", s->nvme_drive);
+            object_property_set_link(OBJECT(s->nvme_host), "memory", OBJECT(root), &error_fatal);
+            if (!sysbus_realize_and_unref(SYS_BUS_DEVICE(s->nvme_host), errp)) {
+                return;
+            }
+            for (unsigned i = 0; i < G_N_ELEMENTS(ports); i++) {
+                memory_region_add_subregion(root, ports[i],
+                    sysbus_mmio_get_region(SYS_BUS_DEVICE(s->nvme_host), i));
+            }
+            sysbus_connect_irq(SYS_BUS_DEVICE(s->nvme_host), 0,
+                               qdev_get_gpio_in(s->intc, 243 - 32));
+            sysbus_connect_irq(SYS_BUS_DEVICE(s->nvme_host), 1,
+                               qdev_get_gpio_in(s->intc, 246 - 32));
+        } else {
+            /* Passive configuration readback without an endpoint or DMA. */
+            memory_region_init_io(&s->dbi_ram, OBJECT(dev), &dbi_ops, s,
+                                  "z72-pcie-configuration", 0x1000);
+            memory_region_add_subregion(root, 0x2a900000, &s->dbi_ram);
+        }
+        if (s->sd_host && !nvme) {
             DeviceState *sd = qdev_new("generic-sdhci");
 
             sd->id = g_strdup_printf("z72-sd-%s", tag);
@@ -4762,9 +4783,13 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
         qdev_prop_set_uint32(s->timer, "line", s->timer_line);
         qdev_prop_set_uint32(s->timer, "tick-us", s->timer_tick_us);
         qdev_prop_set_bit(s->timer, "tick-enabled", s->timer_tick);
-        qdev_prop_set_bit(s->timer, "pcie-clock", s->sd_host);
+        qdev_prop_set_bit(s->timer, "pcie-clock", s->sd_host && !nvme);
         object_property_add_child(OBJECT(dev), "z72-timer", OBJECT(s->timer));
         sysbus_realize_and_unref(SYS_BUS_DEVICE(s->timer), &error_fatal);
+        if (nvme) {
+            sysbus_connect_irq(SYS_BUS_DEVICE(s->nvme_host), 2,
+                               qdev_get_gpio_in_named(s->timer, "card-present", 0));
+        }
         memory_region_add_subregion(root, 0x2B000000,
                                     sysbus_mmio_get_region(
                                         SYS_BUS_DEVICE(s->timer), 0));
@@ -4794,6 +4819,10 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
             continue;
         }
         if (!s->release_config && i >= release_first) {
+            continue;
+        }
+        if (nvme && boot_config_addresses[i] >= 0x2b200000 &&
+            boot_config_addresses[i] < 0x2b200400) {
             continue;
         }
         if (boot_config_addresses[i] >= 0x20060000 &&
@@ -4880,6 +4909,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("sample-group1", NikonZ72BootConfig, sample_group1, false),
         DEFINE_PROP_BOOL("pcie-link", NikonZ72BootConfig, pcie_link, false),
         DEFINE_PROP_BOOL("sd-host", NikonZ72BootConfig, sd_host, false),
+        DEFINE_PROP_STRING("nvme-drive", NikonZ72BootConfig, nvme_drive),
         DEFINE_PROP_UINT32("sample-lines", NikonZ72BootConfig, sample_lines, 0),
         DEFINE_PROP_LINK("intc", NikonZ72BootConfig, intc, TYPE_DEVICE, DeviceState *),
         DEFINE_PROP_BOOL("stage-config", NikonZ72BootConfig, stage_config, true),

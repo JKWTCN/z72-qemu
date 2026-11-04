@@ -4112,6 +4112,8 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--sd-card', type=Path)
+    parser.add_argument('--nvme-card', type=Path,
+                        help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--trace-sd-host', action='store_true',
                         help='Record bounded SD command/DMA metadata; keep raw traces private')
     parser.add_argument('--trace-controller-gpio', action='store_true',

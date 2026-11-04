@@ -41,7 +41,15 @@ struct NikonZ72Timer {
     uint32_t tick_us;
     bool enabled;
     bool pcie_clock;
+    bool card_connected, card_present;
 };
+
+static void z72_card_input(void *opaque, int line, int level)
+{
+    NikonZ72Timer *s = opaque;
+    s->card_connected = true;
+    s->card_present = level != 0;
+}
 
 static void z72_timer_update_line(NikonZ72Timer *s)
 {
@@ -79,6 +87,12 @@ static void z72_timer_expire(void *opaque)
 static uint64_t z72_timer_read(void *opaque, hwaddr offset, unsigned size)
 {
     NikonZ72Timer *s = opaque;
+    if (s->card_connected && offset == Z72_TIMER_STATUS && size == 4) {
+        uint32_t value;
+        memcpy(&value, s->storage + Z72_TIMER_STATUS, 4);
+        /* Route3 samples raw bit2 and filtered bit10 before training. */
+        return (value & ~0x404u) | (s->card_present ? 0x404 : 0);
+    }
     if (s->pcie_clock && offset == Z72_TIMER_STATUS && size == 4) {
         uint32_t value, request;
         memcpy(&value, s->storage + Z72_TIMER_STATUS, 4);
@@ -150,12 +164,14 @@ static void z72_timer_reset(Object *obj, ResetType type)
 
 static const VMStateDescription z72_timer_vmstate = {
     .name = TYPE_NIKON_Z72_TIMER,
-    .version_id = 1,
+    .version_id = 2,
     .minimum_version_id = 1,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT8_ARRAY(storage, NikonZ72Timer, Z72_TIMER_BLOCK),
         VMSTATE_UINT32(pending, NikonZ72Timer),
         VMSTATE_UINT32(armed, NikonZ72Timer),
+        VMSTATE_BOOL_V(card_connected, NikonZ72Timer, 2),
+        VMSTATE_BOOL_V(card_present, NikonZ72Timer, 2),
         VMSTATE_END_OF_LIST()
     },
 };
@@ -194,6 +210,7 @@ static void z72_timer_init(Object *obj)
                           TYPE_NIKON_Z72_TIMER, Z72_TIMER_BLOCK);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
     s->tick = timer_new_ns(QEMU_CLOCK_VIRTUAL, z72_timer_expire, s);
+    qdev_init_gpio_in_named(DEVICE(s), z72_card_input, "card-present", 1);
 }
 
 static void z72_timer_class_init(ObjectClass *oc, const void *data)
