@@ -30,6 +30,7 @@ from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.create_lab_parameters import parameter_images, resource_header_image, processing_resource_image
 from tools.dual_boot_probe import dual_machine
+from tools.lcd_preview import lcd_rgb
 
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
@@ -844,13 +845,7 @@ class Machine:
         return encoded
 
     def lcd_png(self):
-        """Preview channel 1 background and native UI in grayscale.
-
-        Only the observed equal-size format-6 overlay is decoded: each
-        four-byte group starts with two luminance samples, with alpha in
-        a separate byte plane. Color conversion and hardware scanout
-        latching are not yet modeled by this read-only register snapshot.
-        """
+        """Read coherent channel-1 Y/UV and format-6 YYUV+A8 UI planes."""
         now = time.monotonic()
         if self.lcd_cache and now - self.lcd_cache[0] < self.lcd_interval:
             return self.lcd_cache[1]
@@ -864,39 +859,33 @@ class Machine:
                 width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
                 if not (0 < width <= 4096 and 0 < height <= 4096):
                     raise ValueError('Display output geometry is not configured')
+                format_ = self._words(0x20144200, 1)[0] & 31
+                if format_ not in (0, 4) or width & 1 or format_ == 4 and height & 1:
+                    raise ValueError('Unsupported display background format or geometry')
 
-                def plane(address_register, stride_register, minimum_stride):
+                def plane(address_register, stride_register, minimum_stride, rows=height):
                     address = self._words(address_register, 1)[0]
                     stride = self._words(stride_register, 1)[0]
                     if not (minimum_stride <= stride <= 16384 and
-                            0xb0000000 <= address <= 0xf0000000 - stride * height):
+                            0xb0000000 <= address <= 0xf0000000 - stride * rows):
                         raise ValueError('Display output plane is not configured')
-                    return bytes(self._bytes(address, stride * height)), stride
+                    return bytes(self._bytes(address, stride * rows)), stride
 
-                luminance, stride = plane(0x20144210, 0x20144240, width)
+                luminance = plane(0x20144210, 0x20144240, width)
+                chroma = plane(0x20144220, 0x20144250, width,
+                               height // 2 if format_ == 4 else height)
                 overlay = alpha = None
                 if self._words(0x20146110, 1)[0] & 1:
                     if (self._words(0x20146200, 1)[0] & 31 != 6 or
                             self._words(0x20146400, 1)[0] != geometry or width & 1):
                         raise ValueError('Unsupported display overlay format or geometry')
-                    overlay, overlay_stride = plane(0x20146440, 0x20146500, width * 2)
-                    alpha, alpha_stride = plane(0x201464c0, 0x20146540, width)
+                    overlay = plane(0x20146440, 0x20146500, width * 2)
+                    alpha = plane(0x201464c0, 0x20146540, width)
             finally:
                 if running:
                     self.qmp.command('cont')
-        rows = bytearray(width * height * 3)
-        for row in range(height):
-            for column in range(width):
-                value = luminance[row * stride + column]
-                if overlay is not None:
-                    foreground = overlay[row * overlay_stride + (column // 2) * 4 + column % 2]
-                    opacity = alpha[row * alpha_stride + column]
-                    value = (foreground * opacity + value * (255 - opacity) + 127) // 255
-                # The observed native black/white levels are 16/235.
-                value = max(0, min(255, ((value - 16) * 255 + 109) // 219))
-                pixel = (row * width + column) * 3
-                rows[pixel:pixel + 3] = bytes((value, value, value))
-        data = b'P6\n%d %d\n255\n' % (width, height) + bytes(rows)
+        rows = lcd_rgb(width, height, format_, luminance, chroma, overlay, alpha)
+        data = b'P6\n%d %d\n255\n' % (width, height) + rows
         encoded = ppm_to_png(data)
         self.lcd_cache = (time.monotonic(), encoded)
         return encoded

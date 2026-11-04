@@ -501,7 +501,7 @@ footer {
   border:1px solid #252727;
   image-rendering:pixelated
 }
-/* LCD output observation card: the native display-output luminance plane */
+/* LCD output observation card: background and native interface composition */
 .lcd-viewer {
   grid-column:1;
   margin-top:0

@@ -1032,3 +1032,11 @@ parameters and results. Its previous `B5F00000` buffer overlaps native NVMe
 Identify data. The zero-occupancy check and conditional scratch restoration
 remain in place; caller code and the original resource-8 callback keep their
 existing locations and behavior.
+
+`python tests/test_lcd_preview.py` checks the browser's RGB LCD preview without
+firmware: NV16/NV12 chroma rows, independent pitches, YYUV+A8 per-pixel alpha,
+black/white endpoints, and 2,000 pixels against an independent floating-point
+color reference. It rejects unsupported layouts and truncated planes, checks
+PNG caching, and verifies that successful or failed reads preserve a paused
+VM or resume one that the snapshot paused. The native menu HTTP observation
+is recorded separately in [the color-preview receipt](../artifacts/lcd_color_preview/validation.json).
