@@ -1,0 +1,454 @@
+{
+  "schema": 1,
+  "result": "passed-native-color-jpeg-save-and-playback",
+  "card_check": {
+    "schema": 1,
+    "result": "passed-native-color-jpeg-save-and-playback",
+    "scope": "Original native settings and body contacts; explicit DSP preprocessing skip. Functional RGGB/RAW12, reconstruction, scaling and codecs; no physical sensor color or original ISP claim.",
+    "photo": {
+      "path": ".local/capture-report-archive/color_body_save/DSC_0001.JPG",
+      "bytes": 1489370,
+      "sha256": "be769bee10695d5f83edff78b47c9355046c19d6d1f49960b47eabb755ef5250",
+      "card_path": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "sampling": "4:2:2",
+          "decoded": true,
+          "rgb_samples": 432,
+          "maximum_rgb_error": 1,
+          "allowed_rgb_error": 10
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "sampling": "4:2:2",
+          "decoded": true,
+          "rgb_samples": 432,
+          "maximum_rgb_error": 8,
+          "allowed_rgb_error": 10
+        },
+        {
+          "offset": "0x12a000",
+          "width": 640,
+          "height": 424,
+          "sampling": "4:2:2",
+          "decoded": true,
+          "rgb_samples": 432,
+          "maximum_rgb_error": 1,
+          "allowed_rgb_error": 10
+        },
+        {
+          "offset": "0x141800",
+          "width": 1620,
+          "height": 1080,
+          "sampling": "4:2:2",
+          "decoded": true,
+          "rgb_samples": 432,
+          "maximum_rgb_error": 1,
+          "allowed_rgb_error": 10
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "name": "codec-141987a347d1be5b060510ed250f8246a4eb01eadddf22140a542a3f8dd587d4.jpg",
+          "bytes": 1117131,
+          "sha256": "141987a347d1be5b060510ed250f8246a4eb01eadddf22140a542a3f8dd587d4",
+          "body_offset": "0x19402"
+        },
+        {
+          "name": "codec-743bde8194f5b9a94106922f5c1dc1217478846beb9d0f68e6f4f375ff35f6fb.jpg",
+          "bytes": 30562,
+          "sha256": "743bde8194f5b9a94106922f5c1dc1217478846beb9d0f68e6f4f375ff35f6fb",
+          "body_offset": "0x13a002"
+        },
+        {
+          "name": "codec-7d68d6fbf00464c44d46cd47c19e9c8be85f8be67c9aa7f2ae48fd2456fcf568.jpg",
+          "bytes": 8927,
+          "sha256": "7d68d6fbf00464c44d46cd47c19e9c8be85f8be67c9aa7f2ae48fd2456fcf568",
+          "body_offset": "0x824a"
+        },
+        {
+          "name": "codec-dd5805c059cab7b1f11b30eb462d829a057922631af2aea6ce216e55b761a651.jpg",
+          "bytes": 106970,
+          "sha256": "dd5805c059cab7b1f11b30eb462d829a057922631af2aea6ce216e55b761a651",
+          "body_offset": "0x151802"
+        }
+      ]
+    },
+    "source_scene": {
+      "path": ".local/color-pipeline/scene.ppm",
+      "sha256": "e492d8513d497b36da8495fe89ec7b3a45a665bd4f3890b891108bcdfed4162c",
+      "width": 128,
+      "height": 96,
+      "format": "P6 RGB",
+      "palette": [
+        [
+          224,
+          32,
+          48
+        ],
+        [
+          32,
+          208,
+          64
+        ],
+        [
+          32,
+          64,
+          224
+        ],
+        [
+          224,
+          192,
+          32
+        ],
+        [
+          192,
+          48,
+          192
+        ],
+        [
+          32,
+          192,
+          208
+        ],
+        [
+          32,
+          32,
+          32
+        ],
+        [
+          224,
+          224,
+          224
+        ]
+      ]
+    },
+    "source_card_unchanged": true,
+    "source_card_sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+    "primary_frames": 1,
+    "same_guest_playback": true,
+    "sampled_engine_faults_zero": true,
+    "nvme_bytes_written": 1616384,
+    "nvme_successful_completions": 396,
+    "lens": {
+      "runtime": "phase=0 offset=0/258 command=20:00 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 00 04 00\naperture=0 target=0 aperture-pending=0 aperture-generation=0\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=303 completed=303\n1f headers=1 completed=1\n20 headers=366 completed=366\n21 headers=1 completed=1\n24 headers=2 completed=2\n27 headers=1 completed=1\na0 headers=4 completed=4\na3 headers=1 completed=1\n",
+      "completed": 684,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 10108,
+      "aperture-position": 0,
+      "aperture-target": 0,
+      "aperture-pending": false,
+      "aperture-generation": 0,
+      "focus-position": 0,
+      "focus-target": 0,
+      "focus-pending": false,
+      "focus-generation": 0,
+      "policy_state": 0,
+      "policy_target": {
+        "numerator": 576,
+        "denominator": 192
+      },
+      "last_submitted_target": {
+        "numerator": 576,
+        "denominator": 192
+      }
+    },
+    "body_vr": {
+      "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d4:00 sensor-connected=0 actuator-connected=0",
+      "frames": 201,
+      "completed": 79,
+      "rejected": 122,
+      "truncated": 0,
+      "reads": 5,
+      "writes": 0,
+      "configuration-generation": 1
+    },
+    "native_build": {
+      "qemu_version": "10.2.4",
+      "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+      "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+      "binary_sha256": "ed023cfc8d6802938e1ecab10b6f193063b15ba5e755b30d5eaaf92660d60adf",
+      "sources": {
+        "qemu/nikon-z72.c": "fbbf9235eceeb666f1689f87a6d007b833744c0466d7df57bf6f5af7c5548f2f",
+        "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+        "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+        "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+        "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+        "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+        "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+        "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+        "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+        "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+        "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+        "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+        "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+        "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+        "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+        "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+        "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+        "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+        "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+        "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+        "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+        "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+        "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+        "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+        "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+        "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+        "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+        "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+        "qemu/nikon-z72-lens.c": "a7daa7e1daae7c49b7254ff939c94c6d1702d47b19660ebaa527f8c5a9f9ca94",
+        "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+        "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+        "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+      },
+      "configure": [
+        "--target-list=arm-softmmu",
+        "--without-default-devices",
+        "--disable-docs",
+        "--disable-tools",
+        "--disable-user",
+        "--disable-werror",
+        "--disable-gtk",
+        "--disable-sdl",
+        "--disable-vnc",
+        "--disable-opengl",
+        "--disable-guest-agent",
+        "--disable-slirp",
+        "--disable-rust",
+        "--disable-debug-info"
+      ],
+      "prepared_nvme_sources": {
+        "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+        "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+      }
+    },
+    "native_source_sha256": {
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+      "qemu/nikon-z72.c": "fbbf9235eceeb666f1689f87a6d007b833744c0466d7df57bf6f5af7c5548f2f",
+      "tools/body_shutter_gate_probe.py": "aaf31bed8a482f1d4d1da7e65358ffaa70060376ffff171c71815f930af7b6cf",
+      "tools/web_console.py": "dffe90deb1d678117cca18033362cb9e9baa98fe0afc5e62317ad017f76fb3f0",
+      "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+    },
+    "preprocessing": {
+      "requested": true,
+      "contexts": [
+        {
+          "context": "0xc19d3ec0",
+          "nested": "0xc29b9040",
+          "address": "0xc29bbbbc",
+          "previous": 0,
+          "supplied": 2,
+          "native_clear_observed": true,
+          "preprocessing_inputs": [
+            {
+              "address": "0xc29bbbb9",
+              "offset": "0x2b79",
+              "previous": 0,
+              "supplied": 1
+            },
+            {
+              "address": "0xc29bbbbb",
+              "offset": "0x2b7b",
+              "previous": 0,
+              "supplied": 2
+            }
+          ],
+          "sflt_skip_observed": true,
+          "raw_compute_skip_observed": true,
+          "result_halfwords": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "final_component": {
+    "passed": true,
+    "binary_sha256": "a776459ce8cf84489f8874ec20aab225eede2c41a19cbf8e58427758ba9a3c36",
+    "source_sha256": {
+      "qemu/nikon-z72.c": "ac087dec9533a1dcef40a9ed87082e464f7dc0ed4595e2752384db16f6158275",
+      "tests/test_color_preview.py": "26c31592359cfb506c9e14bd048466110fdb33d25fcf35a4e424eba7e78e3c50",
+      "tests/test_slave_codec.py": "a410cfcfd647591227c8271305e3a29f79db955978a607a82bd18c3793de62af"
+    },
+    "tests": [
+      {
+        "test": "test_color_preview.py",
+        "exit_code": 0,
+        "output": "PASS P6 RAW RAM, NV12, odd-width JPEG chroma from guest RAM, bounds, stop and reset"
+      },
+      {
+        "test": "test_slave_codec.py",
+        "exit_code": 0,
+        "output": "PASS JPEG encoding, staged decoding, color pixels, quantizers, bounds, rejected jobs, IRQ acknowledgement and reset"
+      }
+    ],
+    "earlier_initial_color_batch": [
+      "test_sensor_image.py",
+      "test_primary_input_dma.py (15 existing configurations and one P6 split)",
+      "test_input_dma.py",
+      "test_still_processing.py",
+      "test_slave_codec.py",
+      "test_color_preview.py (before odd-width JPEG case)"
+    ]
+  },
+  "native_final_source_difference": "Only three JPEG chroma row-size expressions round odd widths up to complete Cb/Cr pairs. Native saved outputs all have even width, where the expressions are identical; the final binary is separately checked with odd-width encoding and guest-RAM chroma changes.",
+  "native_source_revision": "c51eda9 plus functional P6 color pipeline",
+  "native_arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--trace-sd-host",
+    "--display-complete",
+    "--frame-phase",
+    "--input-stop-complete",
+    "--frame-generate",
+    "--frame-notify",
+    "--frame-process",
+    "--processing-resource-header",
+    "--aux-image-process",
+    "--controller-step-link",
+    "--controller-actuator",
+    "--sampling-output-complete",
+    "--shutter-on-ready",
+    "--half-before-full",
+    "--shutter-click",
+    "--application-only",
+    "--body-exposure",
+    "1000",
+    "--capture-focus",
+    "--capture-counter-seconds",
+    "2",
+    "--skip-still-preprocessing",
+    "--icount-shift",
+    "2",
+    "--watch",
+    "900",
+    "--out",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\color_body_save\\report.json",
+    "--controller-step-feedback",
+    "--trace-controller-gpio",
+    "--body-silent",
+    "--sample-group1",
+    "--sensor-image",
+    "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+    "--playback-after-capture",
+    "240",
+    "--nvme-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--capture-nvme-copy",
+    "D:\\code\\z72-qemu\\.local\\color_body_save.raw",
+    "--virtual-lens"
+  ],
+  "evidence": {
+    "report.json": {
+      "bytes": 10672785,
+      "sha256": "e4662951c3b9a31f2b9be28ce4749a3a0e99facf8e0e9fae70a67b5ca60fafc9"
+    },
+    "conditions.json": {
+      "bytes": 6777,
+      "sha256": "e39128eb317f8e0403e294ec323110a75d2ce2048d1289c29d6f094b75f0593d"
+    },
+    "storage_observation.json": {
+      "bytes": 8587,
+      "sha256": "16e86f16e756a7891bd8ed22f6e2cc7f8d6533c8088958567621fe20c6866991"
+    },
+    "qemu.log": {
+      "bytes": 756281,
+      "sha256": "d64a8f75ca889876db481712d5e23566232dc95f6da8807e8883d9d74d0db356"
+    },
+    "card-checker.py": {
+      "bytes": 5292,
+      "sha256": "2c0608ff3c86f2afa5300b33ead08ff60f1685985162dfd0c919d16efaa8698e"
+    },
+    "cleanup.json": {
+      "bytes": 2769,
+      "sha256": "bdd83565033d5a4758e87ac58968124280733924c24d915374ec2bb1dbbfeed1"
+    }
+  },
+  "cleanup": {
+    "card": {
+      "name": "color_body_save.raw",
+      "bytes": 4294967296,
+      "sha256": "3f4e3a468620bc74373cea15bd9d2c85fab9199c9750fe29876899787c7080bf"
+    },
+    "codec_files": [
+      {
+        "name": "codec-141987a347d1be5b060510ed250f8246a4eb01eadddf22140a542a3f8dd587d4.jpg",
+        "bytes": 1117131,
+        "sha256": "141987a347d1be5b060510ed250f8246a4eb01eadddf22140a542a3f8dd587d4"
+      },
+      {
+        "name": "codec-5705d2ef956dcf0a4136bd12529f510459f0e292797df16f6facc95647a7ceab.jpg",
+        "bytes": 21152,
+        "sha256": "5705d2ef956dcf0a4136bd12529f510459f0e292797df16f6facc95647a7ceab"
+      },
+      {
+        "name": "codec-62f4e92db8ee2a4c15b278ac213f831f56861955b4fe107eee998755d7ec590a.jpg",
+        "bytes": 23062,
+        "sha256": "62f4e92db8ee2a4c15b278ac213f831f56861955b4fe107eee998755d7ec590a"
+      },
+      {
+        "name": "codec-743bde8194f5b9a94106922f5c1dc1217478846beb9d0f68e6f4f375ff35f6fb.jpg",
+        "bytes": 30562,
+        "sha256": "743bde8194f5b9a94106922f5c1dc1217478846beb9d0f68e6f4f375ff35f6fb"
+      },
+      {
+        "name": "codec-7d68d6fbf00464c44d46cd47c19e9c8be85f8be67c9aa7f2ae48fd2456fcf568.jpg",
+        "bytes": 8927,
+        "sha256": "7d68d6fbf00464c44d46cd47c19e9c8be85f8be67c9aa7f2ae48fd2456fcf568"
+      },
+      {
+        "name": "codec-99ca121aa31cc1d69888b52944d758dcff45dbfd9c408ade63c02ecf95e1a8ae.jpg",
+        "bytes": 106278,
+        "sha256": "99ca121aa31cc1d69888b52944d758dcff45dbfd9c408ade63c02ecf95e1a8ae"
+      },
+      {
+        "name": "codec-9f372dd01c860cc19434fbc2f0f7ac87c6df300ae052715c497fe1fb7bf4d90f.jpg",
+        "bytes": 26985,
+        "sha256": "9f372dd01c860cc19434fbc2f0f7ac87c6df300ae052715c497fe1fb7bf4d90f"
+      },
+      {
+        "name": "codec-a04b06a45daa36a044cc7912592f363b184180d0481b12b546dacb33b5f92906.jpg",
+        "bytes": 25069,
+        "sha256": "a04b06a45daa36a044cc7912592f363b184180d0481b12b546dacb33b5f92906"
+      },
+      {
+        "name": "codec-b6793b5a398c464a860f47f728f4dd995896927366dacc8080b4a3f1c848f087.jpg",
+        "bytes": 28555,
+        "sha256": "b6793b5a398c464a860f47f728f4dd995896927366dacc8080b4a3f1c848f087"
+      },
+      {
+        "name": "codec-dd5805c059cab7b1f11b30eb462d829a057922631af2aea6ce216e55b761a651.jpg",
+        "bytes": 106970,
+        "sha256": "dd5805c059cab7b1f11b30eb462d829a057922631af2aea6ce216e55b761a651"
+      },
+      {
+        "name": "codec-e16ae86f2ce038ede4136190518c8afe076045e9e0c7e7e978ef0b3074790742.jpg",
+        "bytes": 30592,
+        "sha256": "e16ae86f2ce038ede4136190518c8afe076045e9e0c7e7e978ef0b3074790742"
+      }
+    ],
+    "temporary_card_removed": true,
+    "intermediate_codec_files_removed": true,
+    "exported_color_photo_preserved": true,
+    "earlier_requested_photos_unchanged": true,
+    "temporary_vm_work_removed": true
+  }
+}

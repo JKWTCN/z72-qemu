@@ -11,6 +11,7 @@ import time
 
 
 SCENE = bytes((10, 32, 35, 255, 64, 96, 128, 160, 192, 224, 0, 255, 35, 10, 32, 128))
+COLOR_SCENE = bytes(channel for value in SCENE for channel in (value, 255 - value, value ^ 0x55))
 
 
 def linear_case(command, monitor, read, write, data_at, path, active, notifying, paired, bits):
@@ -93,7 +94,7 @@ def linear_case(command, monitor, read, write, data_at, path, active, notifying,
     assert count() == 0 and read(0x20068210) == 0
 
 
-def check(qemu, scene, first_case=0):
+def check(qemu, scene, first_case=0, color_scene=False):
     height = 5520
     for case, (role, enabled, sampling, notifying, paired, linked) in enumerate((
             ('master', True, True, True, True, True), ('master', True, True, False, True, True),
@@ -108,7 +109,7 @@ def check(qemu, scene, first_case=0):
             ('slave', True, True, True, False, False),
             ('master', False, True, True, False, False),
             ('master', True, False, True, False, False))):
-        if case < first_case:
+        if (color_scene and case != 0) or case < first_case:
             continue
         bits = 14 if case in (8, 10) else 12
         geometry_mode = 1 if bits == 14 else 2
@@ -299,6 +300,13 @@ def check(qemu, scene, first_case=0):
                 def expected_row(y, start, width, phase):
                     group, size = (4, 7) if bits == 14 else (2, 3)
                     if case == 0:
+                        if color_scene:
+                            row = bytearray()
+                            for x in range(0, width, 2):
+                                values = [COLOR_SCENE[((y // 1380) * 4 + (start + x + i) // 2072) * 3 +
+                                          ((1 + i) if y & 1 else i)] for i in range(2)]
+                                row.extend((*values, (values[0] >> 4) | (values[1] & 0xf0)))
+                            return row
                         return bytes(SCENE[(y // 1380) * 4 + (start + x) // 2072]
                                      for x in range(0, width, 2) for _ in range(3))
                     return bytes(255 if ((start + x) // 64 + y // 64 + phase) & 1 else 0
@@ -440,3 +448,5 @@ if __name__ == '__main__':
         scene = Path(directory) / 'scene.pgm'
         scene.write_bytes(b'P5\n# gray scene\n4 4\n255\r\n' + SCENE)
         check(args.qemu, scene)
+        scene.write_bytes(b'P6\n# color scene\n4 4\n255\r\n' + COLOR_SCENE)
+        check(args.qemu, scene, color_scene=True)

@@ -4173,7 +4173,7 @@ def main():
     parser.add_argument('--frame-generate', action='store_true',
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
-                        help='Replace the RAW12 checkerboard with an 8-bit binary PGM scene')
+                        help='Replace the RAW12 checkerboard with an 8-bit binary PGM/PPM scene')
     parser.add_argument('--virtual-body-vr', action='store_true',
                         help='Attach the finite body VR communication memory model; sensors and actuators remain absent')
     parser.add_argument('--virtual-lens', action='store_true',

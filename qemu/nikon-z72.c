@@ -704,7 +704,7 @@ struct NikonZ72BootConfig {
     bool frame_generate;
     char *scene_path;
     uint8_t *scene_pixels;
-    unsigned scene_width, scene_height;
+    unsigned scene_width, scene_height, scene_channels;
     bool frame_process;
     bool jpeg_color_checker;
     bool frame_notify;
@@ -1595,10 +1595,47 @@ static uint64_t image_control_read(void *opaque, hwaddr offset, unsigned size)
     return word->device->image_control_values[word->index];
 }
 
+/* P6 selects a functional RGGB RAW12 encoding for both engine domains.
+ * This is an explicit input contract, not recovered sensor packing. */
+static bool input_color_profile(NikonZ72BootConfig *s)
+{
+    return s->scene_channels == 3 ||
+           (s->peer && s->peer->scene_channels == 3);
+}
+
+static unsigned input_raw12_sample(const uint8_t *raw, unsigned stride,
+                                    unsigned x, unsigned y)
+{
+    const uint8_t *pair = raw + (size_t)y * stride + x / 2 * 3;
+    unsigned value = (pair[x & 1] << 4) | ((pair[2] >> ((x & 1) * 4)) & 15);
+
+    return (value * 255 + 2047) / 4095;
+}
+
+/* Nearest 2x2 reconstruction and full-range JPEG YCbCr are functional
+ * arithmetic. Real demosaicing, white balance and calibration are absent. */
+static void input_raw12_color(const uint8_t *raw, unsigned stride,
+                               unsigned x, unsigned y, uint8_t color[3])
+{
+    x &= ~1u;
+    y &= ~1u;
+    unsigned r = input_raw12_sample(raw, stride, x, y);
+    unsigned g = (input_raw12_sample(raw, stride, x + 1, y) +
+                  input_raw12_sample(raw, stride, x, y + 1) + 1) / 2;
+    unsigned b = input_raw12_sample(raw, stride, x + 1, y + 1);
+
+    color[0] = (19595 * r + 38470 * g + 7471 * b + 32768) >> 16;
+    color[1] = CLAMP((8388608 - 11059 * (int)r - 21709 * (int)g +
+                       32768 * (int)b + 32768) >> 16, 0, 255);
+    color[2] = CLAMP((8388608 + 32768 * (int)r - 27439 * (int)g -
+                       5329 * (int)b + 32768) >> 16, 0, 255);
+}
+
 /* Diagnostic raster for C1.70's observed paired still recipe. Geometry,
  * addresses, pitches and plane spacing are native. Nearest RAW sampling,
- * an 8-bit luma plane and an equal-height neutral chroma plane are explicit
- * layout/color hypotheses. Accept only the full-scale RAW12 lab stimulus;
+ * an 8-bit luma plane and an equal-height Cb/Cr plane are explicit
+ * layout/color hypotheses. P5 retains the replicated-byte grayscale input;
+ * P6 selects the functional RGGB encoding and horizontal chroma averaging;
  * the camera's color operators and other recipes remain unimplemented. */
 static bool image_process_still_frame(NikonZ72BootConfig *s, unsigned bank)
 {
@@ -1673,7 +1710,7 @@ static bool image_process_still_frame(NikonZ72BootConfig *s, unsigned bank)
         return false;
     }
     /* Validate the entire source before the first destination write. */
-    for (unsigned offset = 0; offset < source_bytes; offset += 3) {
+    for (unsigned offset = 0; !input_color_profile(s) && offset < source_bytes; offset += 3) {
         if (raw[offset + 1] != raw[offset] || raw[offset + 2] != raw[offset]) {
             return false;
         }
@@ -1683,7 +1720,20 @@ static bool image_process_still_frame(NikonZ72BootConfig *s, unsigned bank)
         unsigned sy = (uint64_t)y * INPUT_HEIGHT / OUTPUT_HEIGHT;
         for (unsigned x = 0; x < OUTPUT_WIDTH; x++) {
             unsigned sx = (uint64_t)x * INPUT_WIDTH / OUTPUT_WIDTH;
-            y_row[x] = raw[sy * INPUT_STRIDE + sx / 2 * 3];
+            if (input_color_profile(s)) {
+                uint8_t color[3];
+                input_raw12_color(raw, INPUT_STRIDE, sx, sy, color);
+                y_row[x] = color[0];
+                if (!(x & 1)) {
+                    unsigned next = (uint64_t)(x + 1) * INPUT_WIDTH / OUTPUT_WIDTH;
+                    uint8_t other[3];
+                    input_raw12_color(raw, INPUT_STRIDE, next, sy, other);
+                    chroma_row[x] = (color[1] + other[1] + 1) / 2;
+                    chroma_row[x + 1] = (color[2] + other[2] + 1) / 2;
+                }
+            } else {
+                y_row[x] = raw[sy * INPUT_STRIDE + sx / 2 * 3];
+            }
         }
         if (address_space_write(view, first + y * OUTPUT_WIDTH,
                                 MEMTXATTRS_UNSPECIFIED, y_row, sizeof(y_row)) != MEMTX_OK ||
@@ -1767,9 +1817,10 @@ static const MemoryRegionOps image_control_ops = {
 
 /* Functional scalar grids for the observed bank0 recipe. The three
  * 16-bit views and pitches are native descriptors. Nearest sampling of
- * RAW12 codes, identical scalar planes and paired RAW12 output for channel2
+ * RAW12 codes, identical scalar planes and paired grayscale output for channel2
  * are explicit algorithm/layout hypotheses, not the camera's metering or
- * calibration operators. The caller has validated full-scale RAW pairs. */
+ * calibration operators. P6 uses reconstructed luma; P5 keeps its legacy
+ * binary-grid arithmetic. */
 static bool image_generate_grids(NikonZ72BootConfig *s, const uint8_t *raw,
                                  uint32_t width, uint32_t height, uint32_t stride,
                                  const uint8_t *addresses, unsigned slot)
@@ -1825,11 +1876,23 @@ static bool image_generate_grids(NikonZ72BootConfig *s, const uint8_t *raw,
         unsigned sy = 2 + (uint64_t)y * (height - 4) / 40;
         for (unsigned x = 0; x < 60; x++) {
             unsigned sx = 2 + (uint64_t)x * (width - 4) / 60;
-            stw_le_p(scalar_row + x * 2, raw[sy * stride + sx / 2 * 3] ? 4095 : 0);
+            uint8_t color[3];
+            unsigned value = raw[sy * stride + sx / 2 * 3] ? 4095 : 0;
+            if (input_color_profile(s)) {
+                input_raw12_color(raw, stride, sx, sy, color);
+                value = (color[0] * 4095 + 127) / 255;
+            }
+            stw_le_p(scalar_row + x * 2, value);
         }
         for (unsigned x = 0; x < 60; x += 2) {
             unsigned sx = 2 + (uint64_t)x * (width - 4) / 60;
-            memset(packed_row + x * 3 / 2, raw[sy * stride + sx / 2 * 3], 3);
+            uint8_t color[3];
+            unsigned level = raw[sy * stride + sx / 2 * 3];
+            if (input_color_profile(s)) {
+                input_raw12_color(raw, stride, sx, sy, color);
+                level = color[0];
+            }
+            memset(packed_row + x * 3 / 2, level, 3);
         }
         for (unsigned plane = 0; plane < 4; plane++) {
             const uint8_t *data = plane == 3 ? packed_row : scalar_row;
@@ -1845,7 +1908,7 @@ static bool image_generate_grids(NikonZ72BootConfig *s, const uint8_t *raw,
 }
 
 /* The three observed output units feed DMA channels 3..5. The bounded
- * monochrome raster substitutes for their color/resize operators; report
+ * functional raster substitutes for their color/resize operators; report
  * each unit only after that raster has actually reached RAM. This accepts
  * the recovered recipe, not arbitrary processing descriptors or software
  * callback/event fields in the descriptor's final words. */
@@ -1914,11 +1977,12 @@ static uint32_t image_output_results(NikonZ72BootConfig *s,
     return results;
 }
 
-/* Functional monochrome preview for the observed C1.70 stream profile.
+/* Functional preview for the observed C1.70 stream profile.
  * The 40000000 DMA operand is treated as an internal input stream here;
  * it is not read as a guest RAM pointer. Crop/nearest scaling and NV12 are
- * explicit model assumptions. Accept only full-scale RAW12 pairs, whose
- * packing is unambiguous, and retain the firmware's destination ownership. */
+ * explicit model assumptions. P6 selects functional RGGB reconstruction;
+ * other inputs retain replicated-byte grayscale and neutral chroma.
+ * Retain the firmware's destination ownership. */
 static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
                                 uint32_t width, uint32_t height, uint32_t stride)
 {
@@ -1976,7 +2040,7 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     if (address_space_read(view, source, MEMTXATTRS_UNSPECIFIED, raw, raw_length) != MEMTX_OK) {
         return;
     }
-    for (unsigned y = 0; y < height; y++) {
+    for (unsigned y = 0; !input_color_profile(s) && y < height; y++) {
         for (unsigned x = 0; x < width * 3 / 2; x += 3) {
             uint8_t *pair = raw + y * stride + x;
             if (pair[0] != pair[1] || pair[0] != pair[2]) {
@@ -1994,7 +2058,18 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
             unsigned sy = 2 + (uint64_t)y * (height - 4) / h;
             for (unsigned x = 0; x < w; x++) {
                 unsigned sx = 2 + (uint64_t)x * (width - 4) / w;
-                pixels[y * row + x] = 16 + (raw[sy * stride + (sx / 2) * 3] * 219 + 127) / 255;
+                uint8_t color[3];
+                unsigned level = raw[sy * stride + (sx / 2) * 3];
+                if (input_color_profile(s)) {
+                    input_raw12_color(raw, stride, sx, sy, color);
+                    level = color[0];
+                    /* Explicit nearest chroma decimation for the NV12 view. */
+                    if (!(x & 1) && !(y & 1)) {
+                        pixels[y_length + y / 2 * row + x] = 16 + (color[1] * 224 + 127) / 255;
+                        pixels[y_length + y / 2 * row + x + 1] = 16 + (color[2] * 224 + 127) / 255;
+                    }
+                }
+                pixels[y * row + x] = 16 + (level * 219 + 127) / 255;
             }
         }
         if (address_space_write(view, targets[index], MEMTXATTRS_UNSPECIFIED,
@@ -2016,7 +2091,7 @@ static void input_process_frame(NikonZ72BootConfig *s, uint32_t source,
     stl_le_p(s->transfer_table + 0x20, ldl_le_p(s->transfer_table + 0x20) | complete);
     transfer_update_irq(s);
     /* Native IRQ99 -> 0x102e468a -> 0x42190805. Input was read and
-     * monochrome output was written. This is the functional raster model,
+     * raster output was written. This is the functional raster model,
      * not a claim that statistics or calibration operators were executed. */
     s->image_interrupt_status[0] |= 0x1002;
     image_update_irqs(s);
@@ -2056,7 +2131,7 @@ static bool input_scene_number(const uint8_t **cursor, const uint8_t *end,
 static bool input_load_scene(NikonZ72BootConfig *s, Error **errp)
 {
     uint8_t header[4096];
-    unsigned width, height, maximum;
+    unsigned width, height, maximum, channels;
     g_autofree uint8_t *pixels = NULL;
     bool valid = false;
 
@@ -2070,13 +2145,14 @@ static bool input_load_scene(NikonZ72BootConfig *s, Error **errp)
     }
     size_t prefix = fread(header, 1, sizeof(header), file);
     const uint8_t *cursor = header + 2, *end = header + prefix;
-    if (prefix < 3 || header[0] != 'P' || header[1] != '5' ||
+    channels = prefix >= 2 && header[1] == '6' ? 3 : 1;
+    if (prefix < 3 || header[0] != 'P' || (header[1] != '5' && header[1] != '6') ||
         !g_ascii_isspace(header[2]) ||
         !input_scene_number(&cursor, end, &width) ||
         !input_scene_number(&cursor, end, &height) ||
         !input_scene_number(&cursor, end, &maximum) ||
         !width || !height || maximum != 255 ||
-        (uint64_t)width * height > 0x4000000 ||
+        (uint64_t)width * height * channels > 0x4000000 ||
         cursor == end || !g_ascii_isspace(*cursor)) {
         goto out;
     }
@@ -2084,20 +2160,26 @@ static bool input_load_scene(NikonZ72BootConfig *s, Error **errp)
     if (*cursor++ == '\r' && cursor < end && *cursor == '\n') {
         cursor++;
     }
-    size_t bytes = (size_t)width * height;
+    size_t bytes = (size_t)width * height * channels;
     pixels = g_malloc(bytes);
     if (fseek(file, cursor - header, SEEK_SET) ||
         fread(pixels, 1, bytes, file) != bytes || fgetc(file) != EOF || ferror(file)) {
         goto out;
     }
+    if (channels == 3 && s->jpeg_color_checker) {
+        fclose(file);
+        error_setg(errp, "P6 scene input cannot be combined with JPEG false color");
+        return false;
+    }
     s->scene_width = width;
     s->scene_height = height;
+    s->scene_channels = channels;
     s->scene_pixels = g_steal_pointer(&pixels);
     valid = true;
 out:
     fclose(file);
     if (!valid) {
-        error_setg(errp, "Sensor image requires one binary P5 image, maxval 255, "
+        error_setg(errp, "Sensor image requires one binary P5/P6 image, maxval 255, "
                    "dimensions 1..16384 and at most 64 MiB of pixels");
     }
     return valid;
@@ -2112,6 +2194,21 @@ static void input_raw12_row(NikonZ72BootConfig *s, uint8_t *row, unsigned width,
         if (s->scene_pixels) {
             unsigned sx = (uint64_t)(start_x + x) * s->scene_width / frame_width;
             unsigned sy = (uint64_t)y * s->scene_height / frame_height;
+            if (s->scene_channels == 3) {
+                for (unsigned i = 0; i < 2; i++) {
+                    unsigned channel = (y & 1) ? (i ? 2 : 1) : (i ? 1 : 0);
+                    sx = (uint64_t)(start_x + x + i) * s->scene_width / frame_width;
+                    unsigned sample = s->scene_pixels[((size_t)sy * s->scene_width + sx) * 3 + channel];
+                    unsigned value = (sample << 4) | (sample >> 4);
+                    row[x * 3 / 2 + i] = value >> 4;
+                    if (!i) {
+                        row[x * 3 / 2 + 2] = value & 15;
+                    } else {
+                        row[x * 3 / 2 + 2] |= (value & 15) << 4;
+                    }
+                }
+                continue;
+            }
             level = s->scene_pixels[(size_t)sy * s->scene_width + sx];
         }
         /* Paired replicated bytes are the lab raster convention. This does
@@ -3267,7 +3364,7 @@ static void transfer_update_irq(NikonZ72BootConfig *s)
 
 /* Functional replacement for the observed C1.70 still-transform graph:
  * copy the full diagnostic raster and nearest-sample its 1620x1080 view.
- * The source has byte luma and neutral equal-height chroma.
+ * The source has byte luma and equal-height interleaved Cb/Cr.
  * This does not implement the graph's color, filter or calibration units. */
 static bool still_transform_frame(NikonZ72BootConfig *s)
 {
@@ -3282,7 +3379,7 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
     const unsigned small_bytes = SMALL_STRIDE * SMALL_HEIGHT;
     const uint32_t parameter_start = s->master_role ? 0xb1800000 : 0xc1000000;
     const uint32_t parameter_end = s->master_role ? 0xb5f00000 : 0xc8200000;
-    uint8_t neutral[SMALL_WIDTH], row[SMALL_WIDTH];
+    uint8_t chroma[SMALL_WIDTH], row[SMALL_WIDTH];
 
     if (s->still_thumbnail_command != 1) {
         return false;
@@ -3365,7 +3462,7 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
         return false;
     }
     /* Validate every input pixel before modifying any output. */
-    for (unsigned offset = 0; offset < plane_bytes; offset++) {
+    for (unsigned offset = 0; !input_color_profile(s) && offset < plane_bytes; offset++) {
         if (pixels[plane_bytes + offset] != 128) {
             return false;
         }
@@ -3374,16 +3471,20 @@ static bool still_transform_frame(NikonZ72BootConfig *s)
                             pixels, 2 * plane_bytes) != MEMTX_OK) {
         return false;
     }
-    memset(neutral, 128, sizeof(neutral));
+    memset(chroma, 128, sizeof(chroma));
     for (unsigned y = 0; y < SMALL_HEIGHT; y++) {
         unsigned sy = (uint64_t)y * HEIGHT / SMALL_HEIGHT;
         for (unsigned x = 0; x < SMALL_WIDTH; x++) {
             row[x] = pixels[sy * WIDTH + (uint64_t)x * WIDTH / SMALL_WIDTH];
+            if (input_color_profile(s) && !(x & 1)) {
+                unsigned sx = (uint64_t)x * WIDTH / SMALL_WIDTH & ~1u;
+                memcpy(chroma + x, pixels + plane_bytes + sy * WIDTH + sx, 2);
+            }
         }
         if (address_space_write(view, planes[4] + y * SMALL_STRIDE,
                                 MEMTXATTRS_UNSPECIFIED, row, sizeof(row)) != MEMTX_OK ||
             address_space_write(view, planes[5] + y * SMALL_STRIDE,
-                                MEMTXATTRS_UNSPECIFIED, neutral, sizeof(neutral)) != MEMTX_OK) {
+                                MEMTXATTRS_UNSPECIFIED, chroma, sizeof(chroma)) != MEMTX_OK) {
             return false;
         }
     }
@@ -3521,7 +3622,7 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
     for (unsigned y = 0; y < height; y++) {
         for (unsigned x = 0; x < width; x++) {
             unsigned offset = y * stride + x;
-            if (pixels[input_bytes + offset] != 128) {
+            if (!input_color_profile(s) && pixels[input_bytes + offset] != 128) {
                 return false;
             }
         }
@@ -3531,6 +3632,11 @@ static bool still_thumbnail_frame(NikonZ72BootConfig *s)
         unsigned sy = (uint64_t)y * height / out_height;
         for (unsigned x = 0; x < out_width; x++) {
             thumbnail[y * out_width + x] = pixels[sy * stride + (uint64_t)x * width / out_width];
+            if (input_color_profile(s) && !(x & 1)) {
+                unsigned sx = (uint64_t)x * width / out_width & ~1u;
+                memcpy(thumbnail + output_bytes + y * out_width + x,
+                       pixels + input_bytes + sy * stride + sx, 2);
+            }
         }
     }
     if (address_space_write(view, planes[2], MEMTXATTRS_UNSPECIFIED,
@@ -3604,13 +3710,14 @@ static void codec_jpeg_end(j_compress_ptr jpeg)
     dest->length = dest->capacity - dest->parent.free_in_buffer;
 }
 
-/* A bounded baseline JPEG for the lab's byte luma and neutral chroma.
+/* A bounded baseline JPEG for byte luma and interleaved 4:2:2 chroma.
  * Optional blue/yellow false color requires a binary stimulus;
  * it does not decode a Bayer pattern or model native color processing.
  * Quantizers come from the native register file. Mode 1 uses 4:2:2, matching
  * the decoder mode requested by native playback. Standard Huffman tables
  * and the input-plane interpretation remain laboratory choices. */
-static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
+static bool codec_jpeg(const uint8_t *pixels, const uint8_t *chroma,
+                       unsigned width, unsigned height,
                        const unsigned quantizers[2][64], bool color_checker,
                        size_t capacity,
                        uint8_t **bytes, size_t *length)
@@ -3662,8 +3769,9 @@ static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
                 memcpy(row + x * 3, palette[!!level], 3);
             } else {
                 row[x * 3] = level;
-                row[x * 3 + 1] = 128;
-                row[x * 3 + 2] = 128;
+                size_t uv = (size_t)y * ROUND_UP(width, 2) + (x & ~1u);
+                row[x * 3 + 1] = chroma ? chroma[uv] : 128;
+                row[x * 3 + 2] = chroma ? chroma[uv + 1] : 128;
             }
         }
         jpeg_write_scanlines(&context->jpeg, &row, 1);
@@ -3874,6 +3982,8 @@ static bool codec_encode(NikonZ72BootConfig *s)
     }
     g_autofree uint8_t *pixels = g_malloc(2 * plane_bytes);
     g_autofree uint8_t *luma = g_malloc((size_t)out_width * out_height);
+    g_autofree uint8_t *chroma = input_color_profile(s) ?
+                                g_malloc((size_t)ROUND_UP(out_width, 2) * out_height) : NULL;
     g_autofree uint8_t *encoded = NULL;
     size_t length;
     if (address_space_read(view, first, MEMTXATTRS_UNSPECIFIED, pixels, plane_bytes) != MEMTX_OK ||
@@ -3885,7 +3995,7 @@ static bool codec_encode(NikonZ72BootConfig *s)
         for (unsigned x = 0; x < width; x++) {
             size_t offset = (size_t)y * stride + x;
             if ((s->jpeg_color_checker && pixels[offset] != 0 && pixels[offset] != 255) ||
-                pixels[plane_bytes + offset] != 128) {
+                (!chroma && pixels[plane_bytes + offset] != 128)) {
                 return false;
             }
         }
@@ -3893,9 +4003,13 @@ static bool codec_encode(NikonZ72BootConfig *s)
     for (unsigned y = 0; y < out_height; y++) {
         for (unsigned x = 0; x < out_width; x++) {
             luma[(size_t)y * out_width + x] = pixels[((size_t)y << scale) * stride + (x << scale)];
+            if (chroma && !(x & 1)) {
+                memcpy(chroma + (size_t)y * ROUND_UP(out_width, 2) + x,
+                       pixels + plane_bytes + ((size_t)y << scale) * stride + (x << scale), 2);
+            }
         }
     }
-    if (!codec_jpeg(luma, out_width, out_height, quantizers, s->jpeg_color_checker,
+    if (!codec_jpeg(luma, chroma, out_width, out_height, quantizers, s->jpeg_color_checker,
                     capacity, &encoded, &length)) {
         return false;
     }

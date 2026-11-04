@@ -1140,7 +1140,7 @@ def main():
                         help='Enable the experimental moving monochrome sensor source '
                              'and native LCD preview processing (default: enabled)')
     parser.add_argument('--sensor-image', type=Path,
-                        help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
+                        help='Use an 8-bit binary PGM/PPM scene for the functional RAW12 input')
     parser.add_argument('--virtual-lens', action='store_true',
                         help='Attach an experimental normal-family 50 mm F2.8 lens')
     parser.add_argument('--virtual-body-vr', action='store_true',

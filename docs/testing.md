@@ -769,16 +769,29 @@ and the remaining codec modes are recorded in
 [capture processing research](../research/z7ii/capture_release_submit.md).
 
 
-`tests/test_sensor_image.py` rejects malformed binary PGM headers, unsupported
+`tests/test_sensor_image.py` rejects malformed binary PGM/PPM headers, unsupported
 maxval, zero/oversized dimensions, oversized rasters, truncation and trailing
 data before a firmware-free machine starts. The positive scene case in
 `tests/test_primary_input_dma.py` checks fixed nonbinary intensities across
-both full-frame stripes, guards and input restarts. Its first raster bytes
+both full-frame stripes, guards and input restarts; its additional P6 case
+checks RGGB channel order and packed low nibbles across the same engine split.
+Its first grayscale raster bytes
 include whitespace and `#`. `tests/test_still_processing.py` and
 `tests/test_slave_codec.py` additionally verify that intermediate grayscale
 survives transforms, thumbnails and JPEG encoding. Temporary scene files are
 removed by the checks. These are diagnostic image contracts, not physical
 sensor, calibration or original DSP verification.
+
+`tests/test_color_preview.py --qemu ...` checks a P6 scene in actual RAW RAM
+and all three NV12 preview destinations against an independent BT.601 reference.
+It also checks late invalid-plane rejection, untouched destination gaps, row
+padding, buffer guards, stopped input and reset. The input-format batch rejects
+truncated/oversized RGB payloads and P6 combined with JPEG false color. The
+same color check encodes an odd-width 405x270 JPEG, then changes guest chroma
+RAM and verifies the independently decoded output changes while the source
+scene remains fixed. This also exercises the complete final chroma pair.
+The [color scene contract](../research/z7ii/color_scene.md) describes the separate
+functional encoding and the native save/playback validation boundary.
 
 `tools/capture_release_deferred_contract.py --master /path/to/master.bin
 --out /path/to/report.json` executes the original C1.70 deferred half/full and
