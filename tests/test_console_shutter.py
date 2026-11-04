@@ -19,6 +19,8 @@ class ShutterTests(unittest.TestCase):
         self.machine.held = set()
         self.machine.key_events = {}
         self.machine.next_key_ticks = {}
+        self.machine.dial_events = [deque(), deque()]
+        self.machine.next_dial_ticks = [0, 0]
         self.machine.requested_keys = set()
         self.machine.gpio_names = [f'gpio{i}' for i in range(8)]
         self.commands = []

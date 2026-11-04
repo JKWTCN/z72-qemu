@@ -2,6 +2,8 @@
 
 [浏览器交互台](docs/browser.md)支持实时画面、按住输入、键盘快捷键与重启。
 使用 `tools/web_console.py` 指定三份固件后，打开 `http://127.0.0.1:8666` 即可操作。
+页面还提供模式选择和主、副拨盘；原厂 M 模式快门的双向调整已验证，
+其余模式与镜头相关边界见[曝光输入](research/z7ii/exposure_inputs.md)。
 
 [English](README.md) · [架构](docs/architecture.md) · [开发状态](docs/porting.md) · [固件](docs/firmware.md) · [测试](docs/testing.md) · [发布](docs/publication.md) · [研究索引](research/README.md)
 

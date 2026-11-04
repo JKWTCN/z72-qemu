@@ -98,6 +98,7 @@ const shortcuts = {KeyM: 9, KeyP: 8, Enter: 3, KeyX: 0, KeyF: 24, Space: 25, Arr
 function shortcut(event, down) {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.code === 'Escape' && down) { if (!event.repeat) releaseAll(); return; }
+  if (event.target.closest('input,select,textarea,[contenteditable="true"]')) return;
   if ((event.code === 'Enter' || event.code === 'Space') && event.target.closest('button,summary')) return;
   const pin = shortcuts[event.code];
   if (pin !== undefined) {
@@ -107,6 +108,14 @@ function shortcut(event, down) {
 }
 document.addEventListener('keydown', event => shortcut(event, true));
 document.addEventListener('keyup', event => shortcut(event, false));
+document.querySelectorAll('[data-dial]').forEach(button => {
+  button.onclick = () => {
+    if (available) send('/dial', {index: Number(button.dataset.dial), step: Number(button.dataset.step)});
+  };
+});
+$('mode-position').onchange = () => {
+  if (available) send('/mode', {position: Number($('mode-position').value)});
+};
 window.addEventListener('blur', releaseAll);
 window.addEventListener('pagehide', releaseAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
@@ -351,6 +360,11 @@ async function status() {
       failed: '启动失败', stopped: '已停止'})[state.phase] || '连接中';
     $('connection').className = `pill ${state.phase}`;
     document.querySelectorAll('[data-pin]').forEach(button => { button.disabled = !available; });
+    document.querySelectorAll('[data-dial]').forEach(button => { button.disabled = !available; });
+    $('mode-position').disabled = !available;
+    if (state.mode_position !== undefined && document.activeElement !== $('mode-position')) {
+      $('mode-position').value = String(state.mode_position);
+    }
     $('release').disabled = !available;
     $('restart').disabled = restarting;
     paintUpdate(state);

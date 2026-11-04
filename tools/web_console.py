@@ -38,6 +38,8 @@ MENU_PIN = 9
 SHUTTER_HALF = 24
 SHUTTER_FULL = 25
 SHUTTER_CONTACTS = (1, 13)  # Controller port G: body half/full contacts.
+DIAL_CONTACTS = ((5, 11, 14), (4, 7, 13))  # Port, high bit, low bit.
+MODE_COUNTS = (115, 473, 975, 1506, 2057, 2604, 3136, 3747)
 MENU_APPLICATION = 1
 ENGINE_ENTRY = 0x10020000
 # Original controller shoulder-panel state: the channel-8 snapshot copy, the
@@ -140,6 +142,9 @@ class Machine:
         self.requested_keys = set()
         self.key_events = {}
         self.next_key_ticks = {}
+        self.dial_events = [deque(), deque()]
+        self.next_dial_ticks = [0, 0]
+        self.mode_position = 0
         self.key_deadline = 0
         self.started_at = None
         self.menu_open_pending = False
@@ -371,7 +376,8 @@ class Machine:
                       if getattr(self.args, 'primary_exposure_sync', False) else ()) +
                      card_globals +
                      tuple(f'nikon-z72-controller-adc.channel{c}={v}'
-                           for c, v in ((0, 1800), (1, 3001), (3, 3001))),
+                           for c, v in ((0, 1800), (1, 3001),
+                                        (2, MODE_COUNTS[self.mode_position]), (3, 3001))),
             extra_arguments=card_arguments,
             process_factory=Launcher)
         self.gdb_port = self.remote.sock.getpeername()[1]
@@ -386,8 +392,11 @@ class Machine:
                           key=lambda item: int(re.search(r'\d+', item)[0]))
 
         gpios, configs = children('nikon-z72-controller-gpio'), children('nikon-z72-boot-config')
+        adcs = children('nikon-z72-controller-adc')
         self.gpio_names, self.config_names = gpios, configs
-        require(len(gpios) == 8 and len(configs) == 2, 'Missing controller or engine inputs')
+        require(len(gpios) == 8 and len(configs) == 2 and len(adcs) == 1,
+                'Missing controller or engine inputs')
+        self.adc_name = adcs[0]
         # G0 is the active-low lens detection input. There is no lens peer
         # attached to this laboratory machine.
         for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1), (6, 0, 1),
@@ -395,6 +404,8 @@ class Machine:
                                   (6, SHUTTER_CONTACTS[0], 1),
                                   (6, SHUTTER_CONTACTS[1], 1)):
             self._qtest(f'set_irq_in /machine/unattached/{gpios[index]} unnamed-gpio-in {pin} {level}')
+        for index in range(2):
+            self._drive_dial(index, 3)
         self._boot_dance()
 
     def _boot_dance(self):
@@ -697,6 +708,43 @@ class Machine:
             self._ready()
             self._set_key_locked(pin, level)
 
+    def set_mode(self, position):
+        require(type(position) is int and 0 <= position < len(MODE_COUNTS),
+                'Invalid mode position')
+        with self.io:
+            self._ready()
+            self._qtest(f'set_irq_in /machine/unattached/{self.adc_name} '
+                        f'channel-in 2 {MODE_COUNTS[position]}')
+            self.mode_position = position
+
+    def set_dial(self, index, step):
+        require(type(index) is int and index in (0, 1) and
+                type(step) is int and step in (-1, 1), 'Invalid dial input')
+        with self.io:
+            self._ready()
+            events = self.dial_events[index]
+            require(len(events) <= 28, 'Dial queue is full')
+            if not events:
+                ticks, frequency = self._key_clock()
+                self.next_dial_ticks[index] = ticks + (frequency + 19) // 20
+            events.extend((2, 0, 1, 3) if step > 0 else (1, 0, 2, 3))
+
+    def _drive_dial(self, index, state):
+        port, high, low = DIAL_CONTACTS[index]
+        for pin, level in ((high, state >> 1), (low, state & 1)):
+            self._qtest(f'set_irq_in /machine/unattached/{self.gpio_names[port]} '
+                        f'unnamed-gpio-in {pin} {level}')
+
+    def _advance_dials(self):
+        if not any(self.dial_events):
+            return
+        ticks, frequency = self._key_clock()
+        for index, events in enumerate(self.dial_events):
+            if events and ticks >= self.next_dial_ticks[index]:
+                self._drive_dial(index, events.popleft())
+                ticks, frequency = self._key_clock()
+                self.next_dial_ticks[index] = ticks + (frequency + 19) // 20
+
     def _drive_key(self, pin, level):
         if pin < SHUTTER_HALF:
             self._qtest(f'set_irq_in /machine/peripheral/keys pins {pin} {level}')
@@ -795,6 +843,11 @@ class Machine:
             self._release()
 
     def _release(self):
+        for index, events in enumerate(self.dial_events):
+            if events:
+                self._drive_dial(index, 3)
+                events.clear()
+        self.next_dial_ticks = [0, 0]
         self.key_events.clear()
         self.next_key_ticks.clear()
         self.requested_keys.clear()
@@ -825,6 +878,7 @@ class Machine:
                             self._release()
                         else:
                             self._advance_keys()
+                            self._advance_dials()
                     except (OSError, ValueError, RuntimeError) as error:
                         self.error = str(error)
                         try:
@@ -914,7 +968,8 @@ class Machine:
             state['execution'] = self.qmp.command('query-status')['status']
             words = self._words(APP_MANAGER, 5)
             state.update(ready=words[0] == 1, index=words[4] & 255,
-                         held=sorted(self.held))
+                         held=sorted(self.held), mode_position=self.mode_position,
+                         dial_pending=[bool(events) for events in self.dial_events])
             # The version record at the image entry window is what the booted
             # image carries; it evidences which stored firmware executes.
             record = self._words(ENGINE_ENTRY + 0x20, 3)
@@ -957,6 +1012,9 @@ class Machine:
         self.requested_keys.clear()
         self.key_events.clear()
         self.next_key_ticks.clear()
+        for events in self.dial_events:
+            events.clear()
+        self.next_dial_ticks = [0, 0]
 
     def close(self):
         self.shutdown.set()
@@ -1029,6 +1087,10 @@ def make_handler(machine):
                 if self.path == '/key':
                     pin, level = request.get('pin'), request.get('level')
                     machine.set_key(pin, level)
+                elif self.path == '/mode':
+                    machine.set_mode(request.get('position'))
+                elif self.path == '/dial':
+                    machine.set_dial(request.get('index'), request.get('step'))
                 elif self.path == '/release':
                     machine.release()
                 elif self.path == '/heartbeat':

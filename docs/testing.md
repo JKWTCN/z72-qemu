@@ -1040,3 +1040,12 @@ color reference. It rejects unsupported layouts and truncated planes, checks
 PNG caching, and verifies that successful or failed reads preserve a paused
 VM or resume one that the snapshot paused. The native menu HTTP observation
 is recorded separately in [the color-preview receipt](../artifacts/lcd_color_preview/validation.json).
+
+`python tests/test_adc_inputs.py --qemu <qemu-system-arm>` checks runtime analog
+inputs with native qtest: updates alone do not convert, invalid levels retain
+the source, a started conversion owns its sample, and reset preserves the external
+input. `python -m unittest discover -s tests -p 'test_console_*.py'` covers dial
+phase duration, both directions, independent queues, cancellation, bounds and
+HTTP validation alongside the body contacts. The original mode/dial execution
+and actual setting changes are recorded in
+[the exposure-input receipt](../artifacts/exposure_inputs/validation.json).

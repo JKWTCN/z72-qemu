@@ -484,6 +484,21 @@ footer {
     animation:none
   }
 }
+/* Exposure input controls */
+.exposure-controls {
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:8px;
+  align-items:center;
+  margin:16px 0
+}
+.exposure-controls select {
+  grid-column:span 2;
+  padding:8px;
+  color:inherit;
+  background:#171919;
+  border:1px solid #454747
+}
 /* Shoulder panel observation card */
 .shoulder {
   border:1px solid #252727;

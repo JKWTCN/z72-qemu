@@ -1,0 +1,451 @@
+{
+  "format": 1,
+  "date": "2026-11-05",
+  "result": "passed-mode-inputs-and-native-M-shutter-adjustment",
+  "source_revision": "1ceeb9f plus runtime ADC input and browser mode/dial controls",
+  "scope": "Default live view with separate snapshot SD and NVMe cards; HTTP mode ADC and quadrature contacts only; no native API caller or firmware setting writes",
+  "build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "fac1e800df0b85804a8cbfded1c2b06f3cedc5b155f8e6c7f1a8b17bd0ece6ae",
+    "sources": {
+      "qemu/nikon-z72.c": "4bb1f350959d3e8bab6453d28d4181261570f50e040b15dae4366f8a374dac18",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "3139f38f9a9dfa77e1257db465b4315a278a31d81251b3d8d2503310603cdf30",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "f97d37db039bcd429a17829532a6bb2258e01f91e20d4d67d7ba25c31d3d29ec",
+      "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    }
+  },
+  "options": {
+    "display_complete": true,
+    "input_handshake": true,
+    "frame_phase": true,
+    "input_stop_complete": true,
+    "frame_generate": true,
+    "frame_notify": true,
+    "frame_process": true,
+    "aux_image_process": true,
+    "live_view": true,
+    "auto_menu": false,
+    "controller_step_link": false,
+    "controller_step_feedback": false,
+    "controller_actuator": false,
+    "sample_group1": false
+  },
+  "source_card": {
+    "path": ".local/fs-card-20261023.raw",
+    "bytes": 4294967296,
+    "sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8"
+  },
+  "media": {
+    "sd_snapshot": true,
+    "nvme_snapshot": true
+  },
+  "stages": [
+    {
+      "stage": "shooting",
+      "counter": 45365350,
+      "input_count": 115,
+      "controller_mode": 0,
+      "tv_av": [
+        312,
+        24
+      ],
+      "dial_totals": [
+        0,
+        0
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 2,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 24,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "mode-M",
+      "counter": 84232992,
+      "input_count": 1506,
+      "controller_mode": 3,
+      "tv_av": [
+        312,
+        24
+      ],
+      "dial_totals": [
+        0,
+        0
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 570,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "dial-M",
+      "counter": 108480198,
+      "input_count": 1506,
+      "controller_mode": 3,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -1,
+        0
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 880,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "mode-A",
+      "counter": 135716849,
+      "input_count": 975,
+      "controller_mode": 2,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -1,
+        0
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 1409,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "dial-A",
+      "counter": 160560300,
+      "input_count": 975,
+      "controller_mode": 2,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -1,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 1558,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "mode-S",
+      "counter": 187400281,
+      "input_count": 473,
+      "controller_mode": 1,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -1,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 1837,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "dial-S",
+      "counter": 211900086,
+      "input_count": 473,
+      "controller_mode": 1,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -2,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 1998,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "mode-P",
+      "counter": 239197290,
+      "input_count": 115,
+      "controller_mode": 0,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -2,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 2282,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "dial-P",
+      "counter": 263673392,
+      "input_count": 115,
+      "controller_mode": 0,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -3,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 2470,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "return-M",
+      "counter": 290647631,
+      "input_count": 1506,
+      "controller_mode": 3,
+      "tv_av": [
+        304,
+        24
+      ],
+      "dial_totals": [
+        -3,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 3056,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    },
+    {
+      "stage": "positive-M",
+      "counter": 314679677,
+      "input_count": 1506,
+      "controller_mode": 3,
+      "tv_av": [
+        312,
+        24
+      ],
+      "dial_totals": [
+        -2,
+        -1
+      ],
+      "capture": [
+        2,
+        0
+      ],
+      "driver": 9,
+      "status_codes": [],
+      "storage_guard": 0,
+      "graphics": {
+        "rendered-commands": 3366,
+        "failed-requests": 0,
+        "unsupported-commands": 0
+      }
+    }
+  ],
+  "checks": {
+    "build": "passed",
+    "console_input_tests": 10,
+    "prior_status_and_auto_menu_tests": 3,
+    "adc_qtest": "passed: passive updates, bounds, sample ownership and reset",
+    "adc_register_regression": "passed: completion on/off, resolution, alignment, IRQ, cancellation and precise faults",
+    "javascript_syntax": "passed"
+  },
+  "native_claims": {
+    "M_negative_tv": [
+      312,
+      304
+    ],
+    "M_positive_tv": [
+      304,
+      312
+    ],
+    "Av_observed": 24,
+    "mode_LCD_visual_inspection": {
+      "M-after-dial": "M",
+      "A-after-dial": "A",
+      "S-after-dial": "A",
+      "P-after-dial": "A",
+      "M-positive": "M"
+    }
+  },
+  "limits": [
+    "No lens peer in this run; P/S inputs decoded but LCD remains A, and aperture did not change",
+    "Mode midpoint counts and dial contact cadence are explicit virtual input choices, not physical measurements",
+    "No photo save or all-context menu-dial behavior established by this run"
+  ],
+  "evidence": [
+    {
+      "path": ".local/capture-report-archive/mode_dial_cards/observation.json",
+      "bytes": 19737,
+      "sha256": "ac500f39d29a9ebfbdefc9c3eb01b6208ffb0b5cd93f2bdb6a431a9e387e4781"
+    },
+    {
+      "path": ".local/capture-report-archive/observe-mode-dial-cards.py",
+      "bytes": 6368,
+      "sha256": "856175711928c96bd54a0612e5585b095879d77cbe64e24ff6896821794f2547"
+    }
+  ],
+  "code": [
+    {
+      "path": "qemu/nikon-z72-controller-adc.c",
+      "bytes": 8736,
+      "sha256": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59"
+    },
+    {
+      "path": "tools/web_console.py",
+      "bytes": 59139,
+      "sha256": "1c8a3bc0c8d802ed37cf81c92ae6f1760daf1613b362f9559577bc430aa3127f"
+    },
+    {
+      "path": "web/console.js",
+      "bytes": 17236,
+      "sha256": "b7fbdca2094550c2341c99d381447a881c854f81ca1bb0fbd6d01bfebc5f9c07"
+    },
+    {
+      "path": "web/index.html",
+      "bytes": 7141,
+      "sha256": "dc051816729847fbe3565503109b8c4a86c80038446bb2f210f260d69f8d7481"
+    },
+    {
+      "path": "tests/test_adc_inputs.py",
+      "bytes": 4494,
+      "sha256": "da8c120822afd272d0d4d5855a79a6d5e81d7aa8ab7d84bfc6f834ecb2745afc"
+    },
+    {
+      "path": "tests/test_console_dials.py",
+      "bytes": 5212,
+      "sha256": "7fa050de730819460181849228877f38796bdb648dd85fab7cfb973e8fc59c4f"
+    }
+  ]
+}

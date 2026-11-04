@@ -49,6 +49,22 @@
           <button class="key" data-pin="24" disabled><span>半按快门</span><span class="key-detail">按住 <kbd>F</kbd></span></button>
           <button class="key" data-pin="25" disabled><span>全按快门</span><span class="key-detail">按住 <kbd>Space</kbd></span></button>
         </div>
+        <div class="exposure-controls">
+          <label for="mode-position">拍摄模式</label>
+          <select id="mode-position" disabled>
+            <option value="0">P</option><option value="1">S</option>
+            <option value="2">A</option><option value="3">M</option>
+            <option value="4">U3</option><option value="5">U2</option>
+            <option value="6">U1</option><option value="7">AUTO</option>
+          </select>
+          <span>主拨盘</span>
+          <button class="secondary" data-dial="0" data-step="-1" disabled aria-label="主拨盘减一格">−</button>
+          <button class="secondary" data-dial="0" data-step="1" disabled aria-label="主拨盘加一格">+</button>
+          <span>副拨盘</span>
+          <button class="secondary" data-dial="1" data-step="-1" disabled aria-label="副拨盘减一格">−</button>
+          <button class="secondary" data-dial="1" data-step="1" disabled aria-label="副拨盘加一格">+</button>
+        </div>
+        <p class="hint">模式与参数以相机画面为准。部分调节取决于当前模式和连接的镜头。</p>
         <div class="navigation" aria-label="方向键">
           <button class="key up" data-pin="5" aria-label="向上" disabled>↑</button>
           <button class="key left" data-pin="6" aria-label="向左" disabled>←</button>

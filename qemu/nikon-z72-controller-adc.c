@@ -6,6 +6,7 @@
 #include "hw/qdev-properties.h"
 #include "hw/resettable.h"
 #include "migration/vmstate.h"
+#include "qemu/log.h"
 #include "qemu/timer.h"
 
 #define TYPE_Z72_CONTROLLER_ADC "nikon-z72-controller-adc"
@@ -28,6 +29,16 @@ struct Z72ControllerADC {
     uint16_t channels[19];
     bool completion;
 };
+
+static void adc_input(void *opaque, int channel, int level)
+{
+    Z72ControllerADC *s = opaque;
+    if (level < 0 || level > 4095) {
+        qemu_log_mask(LOG_GUEST_ERROR, "z72 ADC: input outside twelve bits: %d\n", level);
+        return;
+    }
+    s->channels[channel] = level;
+}
 
 static void adc_irq(Z72ControllerADC *s)
 {
@@ -231,6 +242,7 @@ static void adc_init(Object *obj)
     memory_region_init_io(&s->iomem, obj, &adc_ops, s, TYPE_Z72_CONTROLLER_ADC, 0x400);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
     sysbus_init_irq(SYS_BUS_DEVICE(s), &s->irq);
+    qdev_init_gpio_in_named(DEVICE(obj), adc_input, "channel-in", 19);
     for (unsigned i = 0; i < 3; i++) {
         s->banks[i].owner = s;
         s->banks[i].timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, adc_complete, &s->banks[i]);
