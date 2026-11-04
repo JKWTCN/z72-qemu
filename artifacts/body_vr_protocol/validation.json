@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "qualification": "Static original-member reconstruction and consumer inspection; no RX execution or guest-produced SPI4 reply verified.",
+  "inputs": {
+    "member": {
+      "name": "vr1840_010100.bin",
+      "size": 838664,
+      "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2"
+    },
+    "flash_image": {
+      "size": 819200,
+      "sha256": "f2d0911995bed08284165aced2926468624437fad69507a72ae6420ef9a6236f",
+      "matches_member_pages": true
+    },
+    "master": {
+      "name": "eg1840_mas_01700.bin",
+      "size": 38239098,
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe"
+    }
+  },
+  "container": {
+    "records": 3201,
+    "base": 4293918720,
+    "limit": 4294737920,
+    "pages": 3200,
+    "filled_pages": 495,
+    "header_words": [
+      4,
+      256,
+      1,
+      0
+    ]
+  },
+  "architecture": {
+    "family": "RX",
+    "exact_mcu_part": null,
+    "previous_FR_classification_withdrawn": true,
+    "evidence": [
+      "Continuous bootstrap and relocated application control flow",
+      "COPY and ZERO consumers agree with their original tables",
+      "Relocated interrupt and DTC vector targets agree with application addresses"
+    ],
+    "instruction_reference": {
+      "document": "R01US0071EJ0100",
+      "revision": "1.00",
+      "date": "2013-11-12",
+      "url": "https://www.renesas.com/en/document/mas/rx-family-rxv2-instruction-set-architecture-users-manual-software"
+    }
+  },
+  "bootstrap": {
+    "entry": "0xfff00010",
+    "copy_table": "0xfff00c00",
+    "copy_record_count": 13,
+    "copy_records": [
+      {
+        "source": "0xfff027dc",
+        "end": "0xfff029b8",
+        "destination": "0x160f4"
+      },
+      {
+        "source": "0xfff025ce",
+        "end": "0xfff027dc",
+        "destination": "0x112d2"
+      },
+      {
+        "source": "0xfff02564",
+        "end": "0xfff025cd",
+        "destination": "0x10f4a"
+      },
+      {
+        "source": "0xfff02240",
+        "end": "0xfff02564",
+        "destination": "0x114e0"
+      },
+      {
+        "source": "0xfff021ee",
+        "end": "0xfff02240",
+        "destination": "0x10fb4"
+      },
+      {
+        "source": "0xfff01400",
+        "end": "0xfff021ee",
+        "destination": "0x10000"
+      },
+      {
+        "source": "0xfff1e974",
+        "end": "0xfff1e974",
+        "destination": "0x3268c"
+      },
+      {
+        "source": "0xfff1d8ec",
+        "end": "0xfff1e974",
+        "destination": "0x31604"
+      },
+      {
+        "source": "0xfff1d8c7",
+        "end": "0xfff1d8ec",
+        "destination": "0x315df"
+      },
+      {
+        "source": "0xfff00cf4",
+        "end": "0xfff010f4",
+        "destination": "0x162d0"
+      },
+      {
+        "source": "0xfff029b8",
+        "end": "0xfff1d8c7",
+        "destination": "0x166d0"
+      },
+      {
+        "source": "0xfffc7c00",
+        "end": "0xfffc8000",
+        "destination": "0x39c00"
+      },
+      {
+        "source": "0xfff1e974",
+        "end": "0xfff1ed12",
+        "destination": "0x2c00"
+      }
+    ],
+    "zero_table": "0xfff00c9c",
+    "zero_record_count": 11,
+    "zero_ranges": [
+      [
+        "0x11804",
+        "0x15654"
+      ],
+      [
+        "0x11006",
+        "0x112d2"
+      ],
+      [
+        "0x10dee",
+        "0x10f4a"
+      ],
+      [
+        "0xfe0",
+        "0x1000"
+      ],
+      [
+        "0x1000",
+        "0x1020"
+      ],
+      [
+        "0x1800",
+        "0x1898"
+      ],
+      [
+        "0x1900",
+        "0x1d10"
+      ],
+      [
+        "0x16054",
+        "0x16074"
+      ],
+      [
+        "0x15bb8",
+        "0x16054"
+      ],
+      [
+        "0x15654",
+        "0x15bb8"
+      ],
+      [
+        "0x1020",
+        "0x10a4"
+      ]
+    ],
+    "missing_resident_pointer": {
+      "load_pc": "0xfff00167",
+      "slot": "0xfffc8008",
+      "call_pc": "0xfff00169",
+      "member_limit": "0xfffc8000",
+      "slot_supplied": false
+    }
+  },
+  "transport": {
+    "peripheral": "SCI5",
+    "base": "0x8a0a0",
+    "initialize_pc": "0x175d1",
+    "receive_dma": {
+      "channel": 0,
+      "source": "0x8a0a5"
+    },
+    "transmit_dma": {
+      "channel": 1,
+      "destination": "0x8a0a3",
+      "initial_bytes": 276
+    },
+    "select_handler": "0x17d2d",
+    "command_dispatch": "0x177c3",
+    "commands": {
+      "F1": {
+        "dispatch": "0x1786c",
+        "data_checksum_and_copy_worker": "0x180eb",
+        "length_overhead": 16,
+        "flag4": {
+          "dispatch": "0x179de",
+          "base": "0xa4000",
+          "max_payload_bytes": 256,
+          "master_builder": "0x103b86ec",
+          "observed_builder_payload_bytes": 66
+        }
+      },
+      "F2": {
+        "dispatch": "0x17a1c",
+        "flag0": "read_request",
+        "schedule_pc": "0x17add",
+        "reply_worker": "0x17ea8",
+        "length_overhead": 16,
+        "master_builder": "0x103b847e",
+        "request_padding_is_write_data": false
+      },
+      "D0": {
+        "dispatch": "0x17c61",
+        "queued_flag": 1,
+        "other_flags": "ordinary completion path"
+      }
+    }
+  },
+  "runtime": {
+    "rx_executed": false,
+    "original_controller_reply_verified": false,
+    "spi4_peer_implemented": false,
+    "lens_capture_fault_fixed": false,
+    "sensor_or_actuator_operation_verified": false
+  },
+  "checks": [
+    "Member CRC and page continuity accepted by existing parser",
+    "Extracted page payload equals supplied flash image byte for byte",
+    "All 13 COPY source and destination extents bounded",
+    "Bootstrap call slot lies beyond complete member extent",
+    "Three relocated DTC vectors point at mapped original descriptors"
+  ]
+}

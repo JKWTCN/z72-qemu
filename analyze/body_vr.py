@@ -2,10 +2,10 @@
 """Structure analysis for the distributed body VR update member.
 
 Firmware analysis identified the member the menu update names "BobyVR": a
-paged flash image for the body vibration-reduction unit's own controller,
-whose ROM window sits at 0xFFF00000 like the FR-family co-processors the
-bodies have historically carried. The member is not engine firmware and
-never enters the engine boot window.
+paged flash image for the body vibration-reduction unit's RX controller.
+The ROM window starts at 0xFFF00000; the bootstrap relocates application
+sections to RAM. The member is not engine firmware and never enters the
+engine boot window. This parser validates the container, not the CPU type.
 
 Layout, recovered from the stock member:
 
