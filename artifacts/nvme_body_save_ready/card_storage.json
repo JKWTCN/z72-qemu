@@ -1,0 +1,12 @@
+{
+  "logical_bytes": 4294967296,
+  "allocated_bytes": 1495040,
+  "before": {
+    "logical_bytes": 4294967296,
+    "allocated_bytes": 4294967296,
+    "sha256": "d1cfe85bea3e2b8a030d37cacf40fc7c61d0d700e71fa712a74d815ca246a08b"
+  },
+  "sha256": "d1cfe85bea3e2b8a030d37cacf40fc7c61d0d700e71fa712a74d815ca246a08b",
+  "logical_bytes_preserved": true,
+  "method": "NTFS compression after normal VM shutdown"
+}

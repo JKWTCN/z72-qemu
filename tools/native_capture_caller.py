@@ -10,8 +10,10 @@ import hashlib
 import struct
 
 from analyze.decode_z72 import require
-from tools.sdk_file_probe import CALLBACK, CODE, OBJECT, ORIGINAL_CALLBACK
+from tools.sdk_file_probe import CALLBACK, CODE, ORIGINAL_CALLBACK
 
+# Dedicated laboratory RAM; runtime NVMe Identify buffers occupy B5F00000.
+OBJECT = 0x40102000
 REQUEST = OBJECT + 0x80
 RESULT = OBJECT + 0x100
 
@@ -408,6 +410,7 @@ class NativeCaptureCaller:
                            format_request=None if settings_only else
                                '0x3800' if format_3800 else 'jpeg' if jpeg else 'default',
                            storage_request=None if settings_only else storage,
+                           object_address=hex(OBJECT), code_address=hex(CODE),
                            code_bytes=len(self.code), code_sha256=hashlib.sha256(self.code).hexdigest())
         if exposure is not None:
             self.report['settings_fixture'] = dict(program_property='0x500e', program_value=1,

@@ -4160,7 +4160,9 @@ def main():
     parser.add_argument('--watch', type=int, default=30,
                         help='Host seconds to observe the requested stage (10..3600)')
     parser.add_argument('--capture-card-copy', type=Path,
-                        help='Create a new persistent private card copy for capture file inspection')
+                        help='Create a new persistent private SD card copy for capture file inspection')
+    parser.add_argument('--capture-nvme-copy', type=Path,
+                        help='Create a new persistent private NVMe card copy for capture file inspection')
     parser.add_argument('--icount-shift', type=int, default=0,
                         help='Diagnostic virtual nanoseconds per instruction as a power of two (0..6)')
     parser.add_argument('--capture-counter-seconds', type=float,
@@ -4249,6 +4251,7 @@ def main():
     parser.add_argument('--body-system-events', action='store_true',
                         help='Observe system mode input callbacks, notifications and mode requests after preview readiness')
     args = parser.parse_args()
+    persistent_card = args.capture_card_copy is not None or args.capture_nvme_copy is not None
     require(not args.controller_step_feedback or args.controller_step_link and not args.input_handshake,
             'Controller step feedback requires the step link and the automatic handshake disabled')
     require(not args.primary_exposure_sync or
@@ -4263,6 +4266,15 @@ def main():
     require(args.capture_card_copy is None or
             args.capture_card_copy.resolve().is_relative_to((ROOT / '.local').resolve()),
             'Capture card copy must remain in the private .local directory')
+    require(args.capture_nvme_copy is None or args.nvme_card is not None and
+            (args.capture_focus or args.playback),
+            'Persistent NVMe copy requires a supplied NVMe card and focused capture or playback tracing')
+    require(args.capture_nvme_copy is None or
+            args.capture_nvme_copy.resolve().is_relative_to((ROOT / '.local').resolve()),
+            'Capture NVMe copy must remain in the private .local directory')
+    require(args.capture_card_copy is None or args.capture_nvme_copy is None or
+            args.capture_card_copy.resolve() != args.capture_nvme_copy.resolve(),
+            'SD and NVMe capture copies must have distinct paths')
     require(0 <= args.icount_shift <= 6, 'Instruction clock shift out of bounds')
     require(args.capture_counter_seconds is None or
             args.capture_focus and 0 < args.capture_counter_seconds <= 120,
@@ -4310,7 +4322,7 @@ def main():
             not args.capture_submit_on_ready and 0 < args.body_exposure <= 0xFFFFFFFF,
             'Body exposure requires readiness-triggered body input and a positive 32-bit property value')
     require(not (args.playback and args.body_exposure is not None) or args.round_trip and
-            args.capture_focus and args.shutter_click and args.capture_card_copy is not None and
+            args.capture_focus and args.shutter_click and persistent_card and
             not args.repeat_body_capture,
             'Body capture after playback requires a round trip, focused release input and a private card copy')
     require(not args.body_silent or args.body_exposure is not None,
@@ -4364,7 +4376,7 @@ def main():
     require(args.playback_after_capture == 0 or 10 <= args.playback_after_capture <= 3600,
             'Post-capture playback time out of bounds')
     require(not args.playback_after_capture or args.body_exposure is not None and
-            args.capture_focus and args.shutter_click and args.capture_card_copy is not None and
+            args.capture_focus and args.shutter_click and persistent_card and
             not (args.playback or args.repeat_body_capture),
             'Post-capture playback requires one focused body shot, released contacts and a private card copy')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
@@ -4402,6 +4414,7 @@ def main():
                           sampling_output_complete=args.sampling_output_complete,
                           primary_exposure_sync=args.primary_exposure_sync,
                           preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
+                          preserved_nvme_name=args.capture_nvme_copy.name if args.capture_nvme_copy else None,
                           display_complete=args.display_complete,
                           input_handshake=args.input_handshake, frame_phase=args.frame_phase,
                           input_stop_complete=args.input_stop_complete,
@@ -4468,6 +4481,10 @@ def main():
                       icount_shift=args.icount_shift,
                       sd_snapshot=args.capture_card_copy is None,
                       preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
+                      nvme_attached=args.nvme_card is not None,
+                      nvme_image_bytes=args.nvme_card.stat().st_size if args.nvme_card else None,
+                      nvme_snapshot=args.capture_nvme_copy is None,
+                      preserved_nvme_name=args.capture_nvme_copy.name if args.capture_nvme_copy else None,
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
                       sample_group1=args.sample_group1,

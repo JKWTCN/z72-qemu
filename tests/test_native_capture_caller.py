@@ -148,10 +148,10 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
 
 if __name__ == '__main__':
     require(hashlib.sha256(caller_code()[0]).hexdigest() ==
-            '3e6d8b27bc1a887fca77f25631521beef8d215ec08b6a450b90d13ca035fe9c0',
+            '4f7c0f83e92c5ff67d4eb304da3cb7b51d4923c22f45e2caec3ce88600411129',
             'Default capture caller changed')
     require(hashlib.sha256(caller_code(1000)[0]).hexdigest() ==
-            'c0c794b151ca2ae9499a698ee19326f6499b3d935533492f473a3ba0119672b1',
+            '273d496fb6cb37be205cbed72e84f92a4b63bd6d5d1608acf4cc14f175ef4cab',
             'Remote exposure capture caller changed')
     for failure in (None, 0x500e, 0x500d, 'program-timeout', 'exposure-mismatch',
                     'mode-denied', 'mode-timeout'):

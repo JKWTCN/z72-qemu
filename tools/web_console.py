@@ -310,10 +310,17 @@ class Machine:
         nvme_card = getattr(self.args, 'nvme_card', None)
         if nvme_card is not None:
             require(nvme_card.is_file(), 'NVMe card image does not exist')
+            nvme_copy = getattr(self.args, 'capture_nvme_copy', None)
+            if nvme_copy is not None:
+                nvme_copy = nvme_copy.resolve()
+                nvme_copy.parent.mkdir(parents=True, exist_ok=True)
+                with nvme_card.open('rb') as source, nvme_copy.open('xb') as target:
+                    shutil.copyfileobj(source, target)
+                nvme_card = nvme_copy
             nvme_path = nvme_card.resolve().as_posix().replace(',', ',,')
             card_globals += ('nikon-z72-boot-config.nvme-drive=console-nvme',)
             card_arguments += ('-drive', f'if=none,id=console-nvme,file={nvme_path},'
-                               'format=raw,snapshot=on')
+                               f'format=raw,snapshot={"off" if nvme_copy else "on"}')
         self.process, self.remote = dual_machine(self.args.qemu, work, master, slave,
             work / 'console.txt',
             icount=None if self.args.realtime else

@@ -12,6 +12,9 @@ namespace geometry and block I/O. Firmware owns discovery, partitions and
 filesystems. There is no host filesystem service or command-success shortcut.
 The console uses a temporary write overlay for this image; its existing SD
 card export does not export NVMe writes.
+For body-probe diagnostics, `--capture-nvme-copy .local/new-card.raw` creates
+an exclusive persistent NVMe clone. `--capture-card-copy` still selects the
+separate SD copy. The probe records the two destinations independently.
 
 ## C 1.70 contract
 
@@ -88,7 +91,32 @@ decoder completed once, the LCD sample contained 220 distinct byte values,
 and all four sampled engine cores had zero fault registers.
 
 This establishes native startup, block reads and JPEG decode from the NVMe
-path. Native photo saving and persistent export on NVMe remain unverified;
-this run made no block writes. The LCD was sampled and hashed without an
+path. This read-only run made no block writes. The LCD was sampled and hashed without an
 independent comparison against source-photo pixels. Full local observations
 are archived privately; Git retains compact validation records and no images.
+
+The [native NVMe body-save validation](../../artifacts/nvme_body_save_ready/validation.json)
+uses a new private card clone and the focused body profile. Native exposure
+and silent-mode APIs run before staged half/full contacts; the settings
+caller does not invoke capture. Its data/results now use laboratory RAM at
+`40102000`, because native NVMe Identify occupies the previous `B5F00000`
+scratch region. Occupancy checks and conditional restoration remain enabled.
+
+Firmware saved `DCIM/100NZ7_2/DSC_0001.JPG` (3,407,179 bytes), recovered to
+capture state `(2,0)` and driver state 9, then read the photo for playback in
+the same guest. There were 36 NVMe writes totaling 3,535,360 bytes and 30
+native Flush commands; every observed CQ status succeeded. The separate SD
+backend had no I/O. Flush evidence comes from native command traces; the
+controller does not account these flushes in the backend operation counter.
+
+The [card check](../../artifacts/nvme_body_save_ready/card_check.json) independently
+decodes the 8256×5504 primary image and three embedded JPEGs. All 12,288 scene
+cell-center comparisons have zero RGB error; four complete encoder RAM bodies
+match the saved file byte for byte. The filesystem is valid, `PROBE.TXT` is
+preserved and the original card hash is unchanged. A later NTFS compression
+step preserves the clone's full logical hash while reducing its allocation.
+
+This capture still explicitly skips original DSP preprocessing and uses
+modeled pixel/codec hardware with a deterministic grayscale source. It does
+not establish default-browser capture, original DSP execution or all settings
+and firmware versions. The exported JPG remains local and is excluded from Git.

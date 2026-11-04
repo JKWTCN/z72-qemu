@@ -1016,3 +1016,19 @@ INTx, MSI-X, cancellation and reset. An unknown selected backend must fail
 initialization. See the [host contract and scope](../research/z7ii/nvme_host.md).
 The browser and body probe accept `--nvme-card` with a temporary write overlay;
 `--capture-card-copy` continues to refer to the SD image.
+
+For persistent NVMe capture inspection, the body probe accepts
+`--capture-nvme-copy .local/new-card.raw` with `--nvme-card`. It exclusively
+creates a new clone and attaches that clone without an overlay. The source
+image is preserved, and an existing output is never overwritten. This option
+requires focused capture or playback tracing and a destination inside `.local`.
+SD and NVMe copy destinations must differ. The report records attachment,
+image size, overlay selection and preserved filename separately for each medium.
+Either private card copy satisfies the post-capture playback and post-return
+capture requirements; media selection remains firmware behavior.
+
+The native capture/settings caller uses laboratory RAM at `40102000` for
+parameters and results. Its previous `B5F00000` buffer overlaps native NVMe
+Identify data. The zero-occupancy check and conditional scratch restoration
+remain in place; caller code and the original resource-8 callback keep their
+existing locations and behavior.
