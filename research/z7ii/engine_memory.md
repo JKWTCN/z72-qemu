@@ -146,13 +146,13 @@ JPEG 均完整解码；四份对应编码器主体均在卡文件中完整匹配
 已经包含非零数据；`NIKON001.DSC` 仍为全零，未据此宣称其格式正确。
 这些结果验证完整诊断图案的搬运、替代处理和原厂保存链，仍没有恢复
 真实场景输入、原厂 DSP 或机身快门的完整原生提交。克隆卡及完整观察
-保留在本地忽略目录；下方这张黑白原始 JPG 按用户要求随文档提交。
+保留在本地忽略目录；黑白原始 JPG 仅在本地保留，Git 不跟踪图片。
 
 ### 黑白棋盘格的 SD 卡原文件
 
-![从 SD 卡原样导出的黑白棋盘格](../../artifacts/capture_raw_dynamic_dma/DCIM/100NZ7_2/DSC_0001.JPG)
-
-[下载原始 DSC_0001.JPG](../../artifacts/capture_raw_dynamic_dma/DCIM/100NZ7_2/DSC_0001.JPG)。
+原始 JPG 在本地位于
+`artifacts/capture_raw_dynamic_dma/DCIM/100NZ7_2/DSC_0001.JPG`。
+仓库保留下述摘要与卡内容检查记录，图片本身不随 Git 分发。
 
 使用 7-Zip 从已保留的 SD 卡镜像文件系统提取
 `DCIM/100NZ7_2/DSC_0001.JPG`，保留原目录和文件名。
