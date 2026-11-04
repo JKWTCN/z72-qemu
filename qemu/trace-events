@@ -5,3 +5,8 @@ z72_sequence_transfer(uint32_t engine, unsigned channel, uint32_t command, uint3
 # nikon-z72-controller-gpio.c
 z72_controller_gpio_transition(int64_t virtual_ns, uint64_t base, uint32_t offset, uint32_t value, uint16_t previous, uint16_t outputs, uint32_t pc, uint32_t lr) "virtual_ns=%" PRId64 " base=0x%" PRIx64 " offset=0x%x value=0x%x previous=0x%x outputs=0x%x pc=0x%x lr=0x%x"
 z72_engine_gpio_latch(int64_t virtual_ns, bool master, uint64_t address, uint32_t value, uint32_t previous, uint32_t latch) "virtual_ns=%" PRId64 " master=%d address=0x%" PRIx64 " value=0x%x previous=0x%x latch=0x%x"
+
+# nikon-z72-lens.c and sensor input
+z72_lens_iris_request(int64_t virtual_ns, unsigned command, unsigned selector, unsigned position, unsigned target, int64_t duration_ns, bool started) "virtual_ns=%" PRId64 " command=0x%x selector=0x%x position=%u target=%u duration_ns=%" PRId64 " started=%d"
+z72_lens_iris_complete(int64_t virtual_ns, unsigned position, uint64_t generation) "virtual_ns=%" PRId64 " position=%u generation=%" PRIu64
+z72_scene_raw(int64_t virtual_ns, bool primary, uint64_t frame, unsigned channels, unsigned aperture, unsigned factor_q16, uint32_t first, uint32_t second) "virtual_ns=%" PRId64 " primary=%d frame=%" PRIu64 " channels=%u aperture=%u factor_q16=%u first=0x%x second=0x%x"

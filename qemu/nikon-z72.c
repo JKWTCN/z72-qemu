@@ -2532,6 +2532,9 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     s->primary_dma_count++;
     s->primary_scene_aperture = aperture;
     s->primary_scene_factor = factor;
+    trace_z72_scene_raw(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL), true,
+        s->primary_dma_count, s->scene_channels, aperture, factor,
+        s->primary_dma_address, s->primary_second_address);
     s->primary_frame_written = true;
     if (s->frame_notify) {
         /* The complete RAW input was written. Do not claim statistics output
@@ -2606,6 +2609,8 @@ static void input_generate_frame(NikonZ72BootConfig *s)
         s->input_dma_count++;
         s->preview_scene_aperture = aperture;
         s->preview_scene_factor = factor;
+        trace_z72_scene_raw(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL), false,
+            s->input_dma_count, s->scene_channels, aperture, factor, target, 0);
         input_process_frame(s, target, width, height, stride);
         if (s->frame_notify) {
             /* Recovered frame timing / queued-output input causes. Keep

@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "result": "passed-original-aperture-coordinate-contract",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "original": {
+    "biased_getter": "0x103795cc",
+    "closure": "0x1031086a",
+    "a0_constructor": "0x10377dea",
+    "a3_constructor": "0x10377e5a"
+  },
+  "biased_cases": [
+    {
+      "encoded": 384,
+      "denominator": 192,
+      "numerator": 0
+    },
+    {
+      "encoded": 960,
+      "denominator": 192,
+      "numerator": 576
+    },
+    {
+      "encoded": 1536,
+      "denominator": 192,
+      "numerator": 1152
+    },
+    {
+      "encoded": 2112,
+      "denominator": 192,
+      "numerator": 1728
+    }
+  ],
+  "closure_cases": [
+    {
+      "request": [
+        6,
+        1
+      ],
+      "reference": [
+        3,
+        1
+      ],
+      "result": [
+        576,
+        192
+      ],
+      "maximum": 1152
+    },
+    {
+      "request": [
+        3,
+        1
+      ],
+      "reference": [
+        3,
+        1
+      ],
+      "result": [
+        0,
+        192
+      ],
+      "maximum": 1152
+    },
+    {
+      "request": [
+        2,
+        1
+      ],
+      "reference": [
+        3,
+        1
+      ],
+      "result": [
+        0,
+        192
+      ],
+      "maximum": 1152
+    },
+    {
+      "request": [
+        12,
+        1
+      ],
+      "reference": [
+        3,
+        1
+      ],
+      "result": [
+        1152,
+        192
+      ],
+      "maximum": 1152
+    },
+    {
+      "request": [
+        18,
+        3
+      ],
+      "reference": [
+        6,
+        2
+      ],
+      "result": [
+        576,
+        192
+      ],
+      "maximum": 1152
+    },
+    {
+      "request": [
+        7,
+        2
+      ],
+      "reference": [
+        3,
+        1
+      ],
+      "result": [
+        96,
+        192
+      ],
+      "maximum": 1152
+    }
+  ],
+  "constructors": [
+    {
+      "constructor": "0x10377dea",
+      "packet_bytes": 24,
+      "relative_target": 0,
+      "target_le_hex": "0000"
+    },
+    {
+      "constructor": "0x10377dea",
+      "packet_bytes": 24,
+      "relative_target": 96,
+      "target_le_hex": "6000"
+    },
+    {
+      "constructor": "0x10377dea",
+      "packet_bytes": 24,
+      "relative_target": 576,
+      "target_le_hex": "4002"
+    },
+    {
+      "constructor": "0x10377dea",
+      "packet_bytes": 24,
+      "relative_target": 1152,
+      "target_le_hex": "8004"
+    },
+    {
+      "constructor": "0x10377e5a",
+      "packet_bytes": 4,
+      "relative_target": 0,
+      "target_le_hex": "0000"
+    },
+    {
+      "constructor": "0x10377e5a",
+      "packet_bytes": 4,
+      "relative_target": 96,
+      "target_le_hex": "6000"
+    },
+    {
+      "constructor": "0x10377e5a",
+      "packet_bytes": 4,
+      "relative_target": 576,
+      "target_le_hex": "4002"
+    },
+    {
+      "constructor": "0x10377e5a",
+      "packet_bytes": 4,
+      "relative_target": 1152,
+      "target_le_hex": "8004"
+    }
+  ],
+  "limitations": [
+    "Synthetic ordinary-family and maximum-closure properties; no live property discovery.",
+    "Only buffer lookup is intercepted for original packet constructors; surrounding framing/checksum is not tested here.",
+    "Does not exercise alternate families, native motor timing, electronic exposure or physical optics."
+  ]
+}

@@ -800,6 +800,13 @@ the requested target, one factor per frame, row padding, guards, invalid DMA,
 stopped input and reset. Read-only completed-frame aperture/factor observations
 remain unchanged after rejected input and are included in body input snapshots.
 
+`tools/lens_aperture_contract.py --master ... --out ...` executes original
+C1.70 absolute-aperture decoding, ordinary-family relative closure/clamping and
+A0/A3 target constructors with synthetic service inputs. It checks four biased
+values, six rational pairs and eight target encodings. Native iris/RAW ordering
+is separately recorded by optional trace events; see the
+[coordinate and timing evidence](../research/z7ii/iris_timing.md).
+
 `tools/capture_release_deferred_contract.py --master /path/to/master.bin
 --out /path/to/report.json` executes the original C1.70 deferred half/full and
 full-release callbacks against eleven isolated mask/flag inputs. It checks

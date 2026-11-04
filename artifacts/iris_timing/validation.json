@@ -1,0 +1,479 @@
+{
+  "schema": 1,
+  "result": "observed-native-raw-before-virtual-iris-arrival",
+  "scope": "Read-only trace of original F8 setting and body-contact capture; functional 60 ms iris and configuration-triggered RAW. This diagnoses current model ordering, not physical-camera timing or a completed electronic-exposure implementation.",
+  "source_revision": "0c6c8fb plus opt-in iris and RAW trace events",
+  "native_build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "dced480692a936e977dc4bcab868403cb8f84cf93597adac79021ede4057b8ef",
+    "sources": {
+      "qemu/nikon-z72.c": "827f949926c972a942e42a389241f226332892d012079fe07ad8b91451b948d7",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+      "qemu/trace-events": "e0326efb3c455339e3e5ff15838f41ebaaf1d70410ae34b7708d09578404b154",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+      "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+      "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+      "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    }
+  },
+  "source_sha256": {
+    "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+    "qemu/trace-events": "e0326efb3c455339e3e5ff15838f41ebaaf1d70410ae34b7708d09578404b154",
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "827f949926c972a942e42a389241f226332892d012079fe07ad8b91451b948d7",
+    "tools/body_shutter_gate_probe.py": "52ae1cc211f118f9474c8f8dd987d0c257db9adcbf232120f5adec88c07ca749",
+    "tools/web_console.py": "dffe90deb1d678117cca18033362cb9e9baa98fe0afc5e62317ad017f76fb3f0",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+  },
+  "arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--trace-sd-host",
+    "--display-complete",
+    "--frame-phase",
+    "--input-stop-complete",
+    "--frame-generate",
+    "--frame-notify",
+    "--frame-process",
+    "--processing-resource-header",
+    "--aux-image-process",
+    "--controller-step-link",
+    "--controller-actuator",
+    "--sampling-output-complete",
+    "--shutter-on-ready",
+    "--half-before-full",
+    "--shutter-click",
+    "--application-only",
+    "--body-exposure",
+    "1000",
+    "--capture-focus",
+    "--capture-counter-seconds",
+    "1",
+    "--skip-still-preprocessing",
+    "--icount-shift",
+    "2",
+    "--watch",
+    "900",
+    "--out",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\iris_timing_f8\\report.json",
+    "--controller-step-feedback",
+    "--trace-controller-gpio",
+    "--body-silent",
+    "--sample-group1",
+    "--sensor-image",
+    "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+    "--nvme-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--virtual-lens",
+    "--body-fnumber",
+    "800"
+  ],
+  "settings": {
+    "program_property": "0x0000",
+    "program_value": 3,
+    "exposure_property": "0x500d",
+    "exposure_value": 1000,
+    "setter": "0x104d1620",
+    "readback_required": true,
+    "program_readback_expected": 1,
+    "program_validator": "0x10634324",
+    "program_setter": "0x106342de",
+    "control_mode_request": false,
+    "silent": {
+      "property": "0x057a",
+      "value": 1,
+      "effective_property": "0x161d",
+      "validator": "0x10634324",
+      "setter": "0x106342de",
+      "getter": "0x1063c7d4",
+      "readback_required": true,
+      "validation": 1,
+      "setter_status": "0x0",
+      "readback": 1,
+      "effective_readback": 1,
+      "ready": true
+    },
+    "aperture": {
+      "property": "0x5007",
+      "value": 800,
+      "units": "F-number in hundredths",
+      "setter": "0x10779afe",
+      "getter": "0x10779dda",
+      "readback_required": true,
+      "setter_status": "0x2001",
+      "readback": 800,
+      "ready": true
+    },
+    "program_status": "0x0",
+    "exposure_status": "0x2001",
+    "final_property_status": "0x0",
+    "program_readback": 1,
+    "exposure_readback": 1000,
+    "ready": true,
+    "capture_api_invoked": false,
+    "control_mode": {
+      "eligible": 0,
+      "request_status": "0x0",
+      "readback": 0,
+      "notification": "0x0",
+      "notification_status": 0,
+      "request_invoked": false,
+      "notification_received": false
+    }
+  },
+  "lens_before": {
+    "runtime": "phase=0 offset=0/24 command=20:01 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 00 00 00\naperture=0 target=0 aperture-pending=0 aperture-generation=0\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=19 completed=19\n1f headers=1 completed=1\n20 headers=20 completed=20\n21 headers=1 completed=1\n24 headers=2 completed=2\n27 headers=1 completed=1\na0 headers=1 completed=1\na3 headers=1 completed=1\n",
+    "completed": 51,
+    "rejected": 0,
+    "configuration-generation": 1,
+    "stream-frames": 622,
+    "aperture-position": 0,
+    "aperture-target": 0,
+    "aperture-pending": false,
+    "aperture-generation": 0,
+    "focus-position": 0,
+    "focus-target": 0,
+    "focus-pending": false,
+    "focus-generation": 0,
+    "policy_state": 1,
+    "policy_target": {
+      "numerator": 576,
+      "denominator": 192
+    },
+    "last_submitted_target": {
+      "numerator": 576,
+      "denominator": 192
+    }
+  },
+  "lens_after": {
+    "runtime": "phase=0 offset=0/24 command=20:01 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 00 00 00\naperture=0 target=0 aperture-pending=0 aperture-generation=2\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=97 completed=97\n1f headers=1 completed=1\n20 headers=83 completed=83\n21 headers=1 completed=1\n24 headers=2 completed=2\n27 headers=1 completed=1\na0 headers=4 completed=4\na3 headers=1 completed=1\n",
+    "completed": 195,
+    "rejected": 0,
+    "configuration-generation": 1,
+    "stream-frames": 3270,
+    "aperture-position": 0,
+    "aperture-target": 0,
+    "aperture-pending": false,
+    "aperture-generation": 2,
+    "focus-position": 0,
+    "focus-target": 0,
+    "focus-pending": false,
+    "focus-generation": 0,
+    "policy_state": 0,
+    "policy_target": {
+      "numerator": 576,
+      "denominator": 192
+    },
+    "last_submitted_target": {
+      "numerator": 576,
+      "denominator": 192
+    }
+  },
+  "timeline": [
+    {
+      "kind": "lens_iris_request",
+      "virtual_ns": 3470265204,
+      "command": 160,
+      "selector": 6,
+      "position": 0,
+      "target": 576,
+      "duration_ns": 60000000,
+      "started": 1
+    },
+    {
+      "kind": "scene_raw",
+      "virtual_ns": 3496160504,
+      "primary": 1,
+      "frame": 1,
+      "channels": 3,
+      "aperture": 248,
+      "factor_q16": 26804,
+      "first": 1651507200,
+      "second": 3134238848
+    },
+    {
+      "kind": "lens_iris_complete",
+      "virtual_ns": 3530265204,
+      "position": 576,
+      "generation": 1
+    },
+    {
+      "kind": "lens_iris_request",
+      "virtual_ns": 3791854708,
+      "command": 160,
+      "selector": 4,
+      "position": 576,
+      "target": 0,
+      "duration_ns": 60000000,
+      "started": 1
+    },
+    {
+      "kind": "lens_iris_complete",
+      "virtual_ns": 3851854708,
+      "position": 0,
+      "generation": 2
+    }
+  ],
+  "timing": {
+    "raw_after_request_ns": 25895300,
+    "raw_before_arrival_ns": 34104700,
+    "virtual_move_duration_ns": 60000000,
+    "raw_position": 248,
+    "target": 576
+  },
+  "no_op_requests": [
+    {
+      "kind": "lens_iris_request",
+      "virtual_ns": 1308163904,
+      "command": 163,
+      "selector": 0,
+      "position": 0,
+      "target": 0,
+      "duration_ns": 0,
+      "started": 0
+    },
+    {
+      "kind": "lens_iris_request",
+      "virtual_ns": 1572768488,
+      "command": 160,
+      "selector": 2,
+      "position": 0,
+      "target": 0,
+      "duration_ns": 0,
+      "started": 0
+    },
+    {
+      "kind": "lens_iris_request",
+      "virtual_ns": 1671280028,
+      "command": 160,
+      "selector": 6,
+      "position": 0,
+      "target": 0,
+      "duration_ns": 0,
+      "started": 0
+    }
+  ],
+  "primary_scene": {
+    "aperture": 248,
+    "factor_q16": 26804
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "capture_driver_state": 9,
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107074",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a44",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a44",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "preprocessing": {
+    "requested": true,
+    "contexts": [
+      {
+        "context": "0xc19d3ec0",
+        "nested": "0xc29b9040",
+        "address": "0xc29bbbbc",
+        "previous": 0,
+        "supplied": 2,
+        "native_clear_observed": true,
+        "preprocessing_inputs": [
+          {
+            "address": "0xc29bbbb9",
+            "offset": "0x2b79",
+            "previous": 0,
+            "supplied": 1
+          },
+          {
+            "address": "0xc29bbbbb",
+            "offset": "0x2b7b",
+            "previous": 0,
+            "supplied": 2
+          }
+        ],
+        "sflt_skip_observed": true,
+        "raw_compute_skip_observed": true,
+        "result_halfwords": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "component": {
+    "test": "tests/test_lens_scene.py",
+    "passed": true,
+    "source_sha256": "3a45022f3d60b126838d2e4d8242bedcd1692ea5166b49d47013c243b91556cc"
+  },
+  "coordinate_contract": {
+    "result": "passed-original-aperture-coordinate-contract",
+    "source": "tools/lens_aperture_contract.py",
+    "source_sha256": "394258728e1f0d6b04897817876e75f654a3f73a3bdf74a4f2d385dbc3da5b4f"
+  },
+  "evidence": {
+    "report.json": {
+      "bytes": 8621119,
+      "sha256": "ae2f49f7a6dd6e6659f54cf3761fd646252cb4352cfc516aefb70078e27856b8"
+    },
+    "conditions.json": {
+      "bytes": 6550,
+      "sha256": "429bf1fbc3deb822007b2d7b9da48d94af5b75fe5dd01b1e89c55c9e4e24032a"
+    },
+    "qemu.log": {
+      "bytes": 459605,
+      "sha256": "c01faff0de0298e8881bfcec089c70bb5bb9fffd432322e47a8baf97ccef087f"
+    },
+    "cleanup.json": {
+      "bytes": 1873,
+      "sha256": "8b9b8e5741d69c3bf2d40450baf017348452fb41f72ae150144ae145db35683d"
+    }
+  },
+  "cleanup": {
+    "codec_files": [
+      {
+        "name": "codec-5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556.jpg",
+        "bytes": 1080848,
+        "sha256": "5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556"
+      },
+      {
+        "name": "codec-666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302.jpg",
+        "bytes": 19670,
+        "sha256": "666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302"
+      },
+      {
+        "name": "codec-9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c.jpg",
+        "bytes": 26482,
+        "sha256": "9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c"
+      },
+      {
+        "name": "codec-a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45.jpg",
+        "bytes": 7724,
+        "sha256": "a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45"
+      },
+      {
+        "name": "codec-b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133.jpg",
+        "bytes": 95319,
+        "sha256": "b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133"
+      },
+      {
+        "name": "codec-c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539.jpg",
+        "bytes": 21919,
+        "sha256": "c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539"
+      },
+      {
+        "name": "codec-cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69.jpg",
+        "bytes": 26115,
+        "sha256": "cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69"
+      },
+      {
+        "name": "codec-d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b.jpg",
+        "bytes": 24010,
+        "sha256": "d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b"
+      }
+    ],
+    "temporary_vm_work_removed": true,
+    "intermediate_codec_files_removed": true,
+    "no_persistent_card_created": true
+  },
+  "limitations": [
+    "Iris speed and frame generation remain functional assumptions; this is not a physical-camera timing fault.",
+    "The trace records completed RAW writes, not a recovered integration-start signal.",
+    "Only the ordinary lens family and synthetic coordinate inputs are covered by the isolated original-code contract.",
+    "No native guest state, driver completion or iris target is changed by tracing; original DSP preprocessing is separately and explicitly skipped.",
+    "No persistent save or playback is revalidated in this bounded timing run."
+  ]
+}

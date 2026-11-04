@@ -10,6 +10,7 @@
 #include "hw/qdev-properties.h"
 #include "hw/ssi/ssi.h"
 #include "nikon-z72-spi.h"
+#include "trace.h"
 
 #include "migration/vmstate.h"
 
@@ -143,6 +144,8 @@ static void lens_aperture_done(void *opaque)
     s->aperture = s->aperture_target;
     s->aperture_pending = false;
     s->aperture_generation++;
+    trace_z72_lens_iris_complete(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+                                 s->aperture, s->aperture_generation);
 }
 
 static void lens_get_aperture_position(Object *obj, Visitor *v,
@@ -486,6 +489,8 @@ static bool lens_process(Z72Lens *s)
         }
         distance = abs((int)target - s->aperture);
         if (!distance) {
+            trace_z72_lens_iris_request(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+                s->header[3], s->header[4], s->aperture, target, 0, false);
             s->aperture_noops++;
             break;
         }
@@ -495,6 +500,8 @@ static bool lens_process(Z72Lens *s)
         /* Explicit virtual mechanics: 20 ms/stop, minimum 2 ms per move. */
         s->aperture_duration = MAX(LENS_APERTURE_MIN_NS,
             (LENS_APERTURE_STEP_NS * (int64_t)distance + 191) / 192);
+        trace_z72_lens_iris_request(s->aperture_begin, s->header[3], s->header[4],
+            s->aperture_start, target, s->aperture_duration, true);
         s->aperture_pending = true;
         timer_mod(s->aperture_timer,
                   s->aperture_begin + s->aperture_duration);
