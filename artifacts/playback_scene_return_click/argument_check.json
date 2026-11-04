@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "result": "passed",
+  "observer_sha256": "1eed9175e38594247fc75da59797bf9b590357841364545ea0319fede760ecdf",
+  "checks": [
+    {
+      "return_click": true,
+      "round_trip": true,
+      "result": "accepted before machine construction"
+    },
+    {
+      "return_click": true,
+      "round_trip": false,
+      "result": "rejected",
+      "reason": "Return click requires a round trip"
+    },
+    {
+      "return_click": false,
+      "round_trip": true,
+      "result": "accepted before machine construction"
+    }
+  ],
+  "scope": "Argument checks with machine construction replaced by a sentinel; no guest execution"
+}

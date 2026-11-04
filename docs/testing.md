@@ -970,3 +970,19 @@ counts. `final_application`, `jpeg_decoded_counts` and `native_lcd_after` descri
 the final playback state when that stage starts. Explicit scene, exposure,
 silent mode and preprocessing diagnostic settings retain their own scope;
 this option does not enable them in the default browser profile.
+
+For a playback round trip, `--return-click` releases the half-press after a
+quarter camera-counter second; it requires `--round-trip`. Omitting it retains
+the held-half diagnostic input. The trace records press/release ticks and
+duration under `return_key`. An incomplete `return-checkpoint.json` is updated
+in the output directory while returning; transient checkpoints are ignored by Git.
+
+`return_liveview.native_lcd` and `return_liveview.input_dma` sample the return
+stage before the existing unconfigured full-press observation. The latter is
+present with generated input. Return graphics counts are part of that stage's
+`trace.after`. With a round trip, `playback_application` preserves the playback
+stage's application and `final_application` now reports the last observed
+application after the later stages. Legacy reports used the latter field for
+the earlier playback state. A return to shooting and a subsequent full press
+do not establish a saved second photo; inspect the relevant capture and card
+evidence separately.

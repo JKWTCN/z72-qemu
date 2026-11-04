@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "result": "passed-return",
+  "firmware_included": false,
+  "observer_completed": true,
+  "report": {
+    "path": "artifacts/playback_scene_return/report.json",
+    "bytes": 532178,
+    "sha256": "28d2496975c7e9c926e03bd2066b94abf70b8ae1f22636bd086b9354fb45d224"
+  },
+  "full_report_archive": {
+    "path": ".local/capture-report-archive/playback_scene_return.json",
+    "bytes": 4653358,
+    "sha256": "89007b4cfe63792650414ebd5296757ebc77b693dbf6bdaddd9bfef3c0c64040"
+  },
+  "source_capture": "artifacts/body_capture_playback_scene/card_check.json",
+  "return_input": "Half press held throughout return observation, released when observer detached",
+  "return_counter_seconds": 6.204369,
+  "return_application_index": 3,
+  "capture_recovered": true,
+  "engine_and_controller_faults_zero": true,
+  "reported_top_level_application_index": 2,
+  "top_level_application_scope": "Legacy observer records the playback application here; use return_liveview.application for the actual later stage",
+  "input_dma_after": {
+    "frames": 182,
+    "address": "0x56b0d000",
+    "stride": 2080,
+    "running_mask": "0x0",
+    "frame_ticks": 415,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 164,
+    "processing_grids": 164,
+    "auxiliary_jobs": 84,
+    "primary_frames": 1,
+    "primary_address": "0x62700000",
+    "primary_second_address": "0xbad0b080",
+    "primary_current_row_strides": {
+      "first": 4224,
+      "full": 12432
+    },
+    "primary_completed_layout": "split",
+    "primary_samples": [
+      {
+        "owner": "master",
+        "cpu": 0,
+        "address": "0x62700000",
+        "bytes": 4224,
+        "sha256": "0a231395c8eca98a917fb52961e2a6fc2d4a158aa0edb96682e12415f329895c",
+        "unique_bytes": 2,
+        "minimum": 0,
+        "maximum": 255
+      },
+      {
+        "owner": "slave",
+        "cpu": 2,
+        "address": "0xbad0b080",
+        "bytes": 8208,
+        "sha256": "e19c60443814e35cac6cec58d8c7e1cd6b925248cb02fcd1c273776e94a6cbd2",
+        "unique_bytes": 2,
+        "minimum": 0,
+        "maximum": 255
+      }
+    ],
+    "primary_row_strides": {
+      "first": 4224,
+      "full": 12432
+    },
+    "primary_samples_scope": "Last completed addresses sampled using the current row layout",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "408cba15d6bc48ff597fa486ea4f41464542ce14d0acfb84671bb5e2e38bbe73",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "post_full_press_capture_state": [
+    8,
+    0
+  ],
+  "scope": "Cold native photo playback and held-half return to shooting. LCD and DMA were sampled only after the following unconfigured full press; they are not independent return-stage samples. No completed second photo claim.",
+  "stdout_archive": {
+    "path": ".local/capture-report-archive/playback_scene_return-stdout.log",
+    "bytes": 4653358,
+    "sha256": "89007b4cfe63792650414ebd5296757ebc77b693dbf6bdaddd9bfef3c0c64040"
+  },
+  "incomplete_checkpoint_archives": [
+    {
+      "path": ".local/capture-report-archive/playback_scene_return-playback-checkpoint.json",
+      "bytes": 352988,
+      "sha256": "da170271ea1fc07d200ab888f0ed826c5338575f2dc5be997dbb698e5bd77a9a"
+    }
+  ],
+  "temporary_vm_directory_removed": true
+}

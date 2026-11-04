@@ -2206,7 +2206,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
             capture_format_3800=False, body_exposure=None, repeat_body_capture=False, skip_compute_statistics=False,
-            skip_still_preprocessing=False, body_silent=False, playback_click=False):
+            skip_still_preprocessing=False, body_silent=False, playback_click=False, return_click=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -2377,6 +2377,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         if not (shutter_on_preview or shutter_on_ready or capture_submit_on_ready):
             machine.set_key(24 if returning else 8 if playback else 25, 0)
         playback_key = dict(requested=playback_click, released=False)
+        return_key = dict(requested=returning and return_click, released=False,
+                          press_ticks=before['counter_ticks'] if returning else None)
         playback_samples = []
         if playback and playback_click:
             remote.select_thread(1)
@@ -2402,6 +2404,14 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         checkpointed = started
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if returning and return_click and not return_key['released']:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if ticks - return_key['press_ticks'] >= before['counter_frequency'] // 4:
+                    machine.set_key(24, 1)
+                    return_key.update(released=True, release_ticks=ticks,
+                        held_counter_seconds=(ticks - return_key['press_ticks']) / before['counter_frequency'])
+                    records.append(dict(entry='return-half-release', counter_ticks=ticks))
             if playback and playback_click and not playback_key['released']:
                 remote.select_thread(1)
                 ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
@@ -2500,16 +2510,17 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
                             half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
                                 if half_before_full else None))
-            if (capture_focus or playback) and time.monotonic() - checkpointed >= 15:
+            if (capture_focus or playback or returning) and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                checkpoint = (machine.args.out.parent / 'playback-checkpoint.json' if playback else
+                checkpoint = (machine.args.out.parent / ('return-checkpoint.json' if returning else
+                              'playback-checkpoint.json') if playback or returning else
                               machine.work / 'capture-focus-checkpoint.json')
                 checkpoint.parent.mkdir(parents=True, exist_ok=True)
                 temporary = checkpoint.with_suffix('.tmp')
                 temporary.write_text(json.dumps(dict(incomplete=True, before=before,
                     records=records, diagnostic_capture=capture_caller.report if capture_caller else None,
-                    playback_key=playback_key,
+                    playback_key=playback_key, return_key=return_key,
                     playback_samples=playback_samples,
                     counter_ticks=checkpoint_ticks), indent=2),
                     encoding='utf-8')
@@ -4009,9 +4020,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             else:
                 del armed[pc]
         after = snapshot(remote)
-        if playback:
+        if playback or returning:
             from tools.graphics_boot_probe import graphics_observation
-            after['playback_pipeline'] = playback_pipeline_snapshot(remote)
+            if playback:
+                after['playback_pipeline'] = playback_pipeline_snapshot(remote)
             after['graphics'] = graphics_observation(remote)
             after['graphics_diagnostics'] = [line.strip() for line in
                 (machine.work / 'qemu.log').read_text(encoding='utf-8', errors='replace').splitlines()
@@ -4070,7 +4082,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_compute_events=body_compute_events,
                     body_system_events=body_system_events,
                     shutter_click=click,
-                    playback_key=playback_key,
+                    playback_key=playback_key, return_key=return_key,
                     playback_samples=playback_samples,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
@@ -4135,6 +4147,8 @@ def main():
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
     parser.add_argument('--round-trip', action='store_true',
                         help='After playback, half-press to return to shooting and observe full release')
+    parser.add_argument('--return-click', action='store_true',
+                        help='With round trip, release the return half-press after a quarter counter second')
     parser.add_argument('--gpio-handshake-events', action='store_true',
                         help='Laboratory input: pulse GPIO input 0 at armed return-path handshake waits/submissions')
     parser.add_argument('--return-watch', type=int, default=120,
@@ -4343,6 +4357,7 @@ def main():
             not (args.playback or args.repeat_body_capture),
             'Post-capture playback requires one focused body shot, released contacts and a private card copy')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
+    require(not args.return_click or args.round_trip, 'Return click requires a round trip')
     require(not args.gpio_handshake_events or args.round_trip,
             'GPIO handshake events require a round trip')
     args.realtime = args.auto_menu = False
@@ -4507,16 +4522,22 @@ def main():
                     completed=machine.qmp.command('qom-get', dict(path='/machine/unattached/' + name,
                         property='codec-decoded-count'))) for name in machine.config_names]
         if args.round_trip and report['final_application']['index'] == 2:
+            report['playback_application'] = report['final_application']
             trace = observe(machine, args.return_watch, returning=True,
+                            return_click=args.return_click,
                             gpio_handshake_events=args.gpio_handshake_events,
                             watch_write=args.watch_write, frame_notify=args.frame_notify,
                             watch_bytes=args.watch_bytes, watch_count=args.watch_count)
             state = machine.status()
-            report['return_liveview'] = dict(application=state, trace=trace)
+            report['return_liveview'] = dict(application=state, trace=trace,
+                                             native_lcd=lcd_snapshot(machine))
+            if args.frame_generate:
+                report['return_liveview']['input_dma'] = input_dma_snapshot(machine)
             if state['index'] == 3 and state['input_ready']:
                 report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write,
                     frame_notify=args.frame_notify, watch_bytes=args.watch_bytes, watch_count=args.watch_count)
                 report['post_shutter_application'] = machine.status()
+            report['final_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
         if args.frame_generate:
             report['input_dma_after'] = input_dma_snapshot(machine)

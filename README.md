@@ -71,6 +71,9 @@ The body probe's optional `--playback-after-capture SECONDS` also verifies one
 static grayscale scene capture followed by playback in the same guest, with
 native card creation and no host card edits between stages; see the
 [combined validation](artifacts/body_capture_playback_scene/validation.json).
+Cold playback round trips also recover the shooting application and restarted
+preview with a held or short half-press; see the
+[return validation](artifacts/playback_scene_return_click/validation.json).
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production

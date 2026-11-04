@@ -1,0 +1,204 @@
+{
+  "format": 1,
+  "result": "passed-return",
+  "firmware_included": false,
+  "observer_completed": true,
+  "report": {
+    "path": "artifacts/playback_scene_return_click/report.json",
+    "bytes": 535374,
+    "sha256": "26693b49715abdba2b31937a2f1cf10f2287c92e55636e50a42733ca60ea100a"
+  },
+  "full_report_archive": {
+    "path": ".local/capture-report-archive/playback_scene_return_click.json",
+    "bytes": 4610033,
+    "sha256": "4ccc7de2c16360a8e5935cce009d657cb63efc94ff5549073be6c6ee87816138"
+  },
+  "run_conditions": {
+    "path": "artifacts/playback_scene_return_click/run_conditions.json",
+    "bytes": 6070,
+    "sha256": "48964dc0624b69917ab1225f3c1edb0efb766947b560470ddb166d0a60cedb03"
+  },
+  "argument_check": {
+    "path": "artifacts/playback_scene_return_click/argument_check.json",
+    "bytes": 640,
+    "sha256": "873ecd881a26e7fc5c6426f4ef5121613c414818153e9874e1cc7b5fa5476310"
+  },
+  "baseline": "artifacts/playback_scene_return/validation.json",
+  "source_photo_sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+  "source_card_filesystem_integrity": true,
+  "source_photo_unchanged": true,
+  "cold_decoded_planes_match_saved_preview": true,
+  "return_key": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 323933292,
+    "release_ticks": 336609790,
+    "held_counter_seconds": 0.26409370833333334
+  },
+  "return_counter_seconds": 6.303064,
+  "playback_application_index": 2,
+  "return_application_index": 3,
+  "final_application_index": 3,
+  "return_capture_state": [
+    2,
+    0
+  ],
+  "return_capture_driver_state": 9,
+  "return_release_gate": 0,
+  "return_status_codes": [],
+  "return_lcd": {
+    "width": 1024,
+    "height": 682,
+    "planes": [
+      "0xdcec4800",
+      "0xdcff1c00"
+    ],
+    "registers": {
+      "0x200": "0x300004",
+      "0x204": "0x2aa0400",
+      "0x240": "0x400",
+      "0x250": "0x400",
+      "0x410": "0x200",
+      "0x414": "0xc00100",
+      "0x418": "0xc0",
+      "0x41c": "0x0",
+      "0x420": "0x80000000",
+      "0x424": "0x8000",
+      "0x600": "0x0",
+      "0x604": "0x0"
+    },
+    "candidate_buffer_heads": {
+      "0xdcec4800": {
+        "bytes": 4096,
+        "sha256": "ea8a180e807cfdb64d2bded6f0288f420cb3838ec770f7d1efeef11fc45de6c0",
+        "unique_bytes": 2,
+        "minimum": 16,
+        "maximum": 235,
+        "slots": [
+          "0x210"
+        ]
+      },
+      "0xdcff1c00": {
+        "bytes": 4096,
+        "sha256": "78aacbc3fb34efb8ffa5467b931291ec2bdf5e19564fc45fe97b5affbc893dc6",
+        "unique_bytes": 1,
+        "minimum": 128,
+        "maximum": 128,
+        "slots": [
+          "0x220"
+        ]
+      },
+      "0xcb4a7000": {
+        "bytes": 4096,
+        "sha256": "9f2f804920cc665b5222664bb3449726d1420c950a0120d33c19f0fb73138108",
+        "unique_bytes": 3,
+        "minimum": 16,
+        "maximum": 128,
+        "slots": [
+          "0x2440"
+        ]
+      },
+      "0xcb5fc000": {
+        "bytes": 4096,
+        "sha256": "95bbe9f76364405eb2f9ee818ae037185c2f8673dbbf4b2ba385890a3255a153",
+        "unique_bytes": 8,
+        "minimum": 0,
+        "maximum": 255,
+        "slots": [
+          "0x24c0"
+        ]
+      },
+      "0xbf7b9600": {
+        "bytes": 4096,
+        "sha256": "51954d64d949eef12607b39fe2fa439ddf6d3d4aeeea9d8ca1f8cdc22dcbbd2c",
+        "unique_bytes": 2,
+        "minimum": 0,
+        "maximum": 128,
+        "slots": [
+          "0x3440"
+        ]
+      },
+      "0xbf7ba5c0": {
+        "bytes": 4096,
+        "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+        "unique_bytes": 1,
+        "minimum": 0,
+        "maximum": 0,
+        "slots": [
+          "0x34c0"
+        ]
+      }
+    },
+    "configured": true,
+    "sampled_plane": "0xdcec4800",
+    "byte_count": 698368,
+    "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+    "unique_bytes": 2,
+    "minimum": 16,
+    "maximum": 235
+  },
+  "return_input_dma": {
+    "frames": 179,
+    "address": "0x58d1a000",
+    "stride": 2080,
+    "running_mask": "0x2bf",
+    "frame_ticks": 345,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 161,
+    "processing_grids": 161,
+    "auxiliary_jobs": 160,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "e234525b90ade5365ae68ba62f32a041cbb350c28729a07e386c75a0dcb91cab",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "return_graphics": {
+    "successful_uploads": 1240,
+    "render_requests": 0,
+    "rendered_commands": 2253,
+    "unsupported_commands": 0,
+    "failed_requests": 0,
+    "surface_address": 3200643584,
+    "target_address": 3414339584,
+    "target_dimensions": 45089792,
+    "target_format": 263,
+    "target_second_plane": 3415736320
+  },
+  "all_stage_sampled_faults_zero": true,
+  "post_full_press": {
+    "observed_counter_seconds": 1.471445,
+    "capture_state": [
+      8,
+      0
+    ],
+    "driver_state": 15,
+    "status_codes": [],
+    "saved_photo_verified": false
+  },
+  "scope": "Cold native photo playback, measured half-click return and independently sampled restarted checkerboard preview before the next full press. Same experimental hardware profile; no direct stop/GPIO-handshake/result events supplied. A complete second capture or saved second file is not established.",
+  "stdout_archive": {
+    "path": ".local/capture-report-archive/playback_scene_return_click-stdout.log",
+    "bytes": 4610033,
+    "sha256": "4ccc7de2c16360a8e5935cce009d657cb63efc94ff5549073be6c6ee87816138"
+  },
+  "incomplete_checkpoint_archives": [
+    {
+      "path": ".local/capture-report-archive/playback_scene_return_click-playback-checkpoint.json",
+      "bytes": 350762,
+      "sha256": "13d0d13d973fe6aee9b54c744e55132b2484e957993f56315a3ff395dec9e0ba"
+    },
+    {
+      "path": ".local/capture-report-archive/playback_scene_return_click-return-checkpoint.json",
+      "bytes": 319882,
+      "sha256": "ab2df5b8b6a561217e2e77f55626dbec0c635a40db48711259f028792f0d52b5"
+    }
+  ],
+  "temporary_vm_directory_removed": true
+}
