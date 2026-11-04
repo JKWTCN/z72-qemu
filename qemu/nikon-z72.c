@@ -607,6 +607,8 @@ struct NikonZ72BootConfig {
     DeviceState *timer;
     DeviceState *intc;
     DeviceState *serial;
+    bool virtual_lens;
+    bool peripheral_dma;
     bool controller_connected;
     uint8_t controller_levels;
     uint32_t gpio_input_levels;
@@ -4878,6 +4880,8 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
         DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
         DEFINE_PROP_BOOL("primary-exposure-sync", NikonZ72BootConfig, primary_exposure_sync, false),
+        DEFINE_PROP_BOOL("virtual-lens", NikonZ72BootConfig, virtual_lens, false),
+        DEFINE_PROP_BOOL("peripheral-dma", NikonZ72BootConfig, peripheral_dma, false),
         DEFINE_PROP_UINT32("blocked-control", NikonZ72BootConfig, blocked_control, 0),
         DEFINE_PROP_UINT32("clear-base", NikonZ72BootConfig, clear_base, 0),
         DEFINE_PROP_UINT32("clear-size", NikonZ72BootConfig, clear_size, 0),
@@ -5563,6 +5567,9 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
     DeviceState *spi = qdev_new("nikon-z72-spi");
     NIKON_Z72_BOOT_CONFIG(config)->serial = spi;
     qdev_prop_set_string(spi, "bus-name", own_file ? "master-spi" : "slave-spi");
+    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_lens) {
+        qdev_prop_set_uint16(spi, "external-clock-mask", 1u << 2);
+    }
     if (object_dynamic_cast(OBJECT(machine), TYPE_NIKON_Z72_DUAL) &&
         NIKON_Z72_DUAL(machine)->controller_link && own_file) {
         qdev_prop_set_bit(spi, "peer-low-byte-first", true);
@@ -5575,6 +5582,51 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
                            qdev_get_gpio_in(gic, 193 + channel * 2 - 32));
         sysbus_connect_irq(SYS_BUS_DEVICE(spi), channel * 2 + 1,
                            qdev_get_gpio_in(gic, 192 + channel * 2 - 32));
+    }
+    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_lens) {
+        DeviceState *lens = qdev_new("nikon-z72-lens");
+        object_property_add_child(OBJECT(machine), "master-lens", OBJECT(lens));
+        object_property_set_link(OBJECT(lens), "stream", OBJECT(spi), &error_fatal);
+        qdev_realize_and_unref(lens, qdev_get_child_bus(spi,
+            own_file ? "master-spi3" : "slave-spi3"), &error_fatal);
+        qdev_connect_gpio_out_named(lens, "notify", 0,
+            qdev_get_gpio_in_named(config, "gpio-input", 9));
+    }
+    if (NIKON_Z72_BOOT_CONFIG(config)->peripheral_dma ||
+        NIKON_Z72_BOOT_CONFIG(config)->virtual_lens) {
+        DeviceState *dma[2];
+        for (unsigned bank = 0; bank < 2; bank++) {
+            dma[bank] = qdev_new("nikon-z72-hdmac");
+            g_autofree char *name = g_strdup_printf("%s-hdmac%u",
+                                                    slave ? "slave" : "master", bank);
+            object_property_add_child(OBJECT(machine), name, OBJECT(dma[bank]));
+            /* Peripheral FIFO addresses belong to this engine's local bus,
+             * independently of the image transport's remote apertures. */
+            object_property_set_link(OBJECT(dma[bank]), "memory", OBJECT(view),
+                                     &error_fatal);
+            qdev_prop_set_uint32(dma[bank], "bank", bank);
+            sysbus_realize_and_unref(SYS_BUS_DEVICE(dma[bank]), &error_fatal);
+            memory_region_add_subregion_overlap(view, 0x2c020000 + bank * 0x10000,
+                sysbus_mmio_get_region(SYS_BUS_DEVICE(dma[bank]), 0), 1);
+            for (unsigned channel = 0; channel < 8; channel++) {
+                sysbus_connect_irq(SYS_BUS_DEVICE(dma[bank]), channel,
+                    qdev_get_gpio_in(gic, (bank ? 142 : 150) + channel - 32));
+            }
+        }
+        for (unsigned port = 0; port < 11; port++) {
+            for (unsigned direction = 0; direction < 2; direction++) {
+                unsigned selection = 3 + port * 2 + direction;
+                DeviceState *split = qdev_new("split-irq");
+                qdev_prop_set_uint16(split, "num-lines", 2);
+                qdev_realize_and_unref(split, NULL, &error_fatal);
+                for (unsigned bank = 0; bank < 2; bank++) {
+                    qdev_connect_gpio_out(split, bank,
+                                          qdev_get_gpio_in(dma[bank], selection));
+                }
+                qdev_connect_gpio_out_named(spi, "dma", port * 2 + direction,
+                                            qdev_get_gpio_in(split, 0));
+            }
+        }
     }
     DeviceState *delay = qdev_new("nikon-z72-delay");
     sysbus_realize_and_unref(SYS_BUS_DEVICE(delay), &error_fatal);

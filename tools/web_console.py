@@ -348,6 +348,8 @@ class Machine:
             globals_=('nikon-z72-boot-config.frame-sync=on',
                          'nikon-z72-boot-config.sensor-sample=on',
                          'nikon-z72-boot-config.sample-counter=on') +
+                     (('nikon-z72-boot-config.virtual-lens=on',)
+                      if getattr(self.args, 'virtual_lens', False) else ()) +
                      (('nikon-z72-boot-config.display-complete=on',)
                       if getattr(self.args, 'display_complete', False) else ()) +
                      (('nikon-z72-boot-config.input-handshake=on',)
@@ -397,9 +399,9 @@ class Machine:
         require(len(gpios) == 8 and len(configs) == 2 and len(adcs) == 1,
                 'Missing controller or engine inputs')
         self.adc_name = adcs[0]
-        # G0 is the active-low lens detection input. There is no lens peer
-        # attached to this laboratory machine.
-        for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1), (6, 0, 1),
+        # G0 is the active-low lens detection input.
+        for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1),
+                                  (6, 0, int(not getattr(self.args, 'virtual_lens', False))),
                                   (1, 11, 1), (6, 14, 1), (6, 15, 1),
                                   (6, SHUTTER_CONTACTS[0], 1),
                                   (6, SHUTTER_CONTACTS[1], 1)):
@@ -1137,6 +1139,8 @@ def main():
                              'and native LCD preview processing (default: enabled)')
     parser.add_argument('--sensor-image', type=Path,
                         help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
+    parser.add_argument('--virtual-lens', action='store_true',
+                        help='Attach an experimental normal-family 50 mm F2.8 lens')
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',

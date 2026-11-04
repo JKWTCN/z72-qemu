@@ -4,6 +4,8 @@
 使用 `tools/web_console.py` 指定三份固件后，打开 `http://127.0.0.1:8666` 即可操作。
 页面还提供模式选择和主、副拨盘；原厂 M 模式快门的双向调整已验证，
 其余模式与镜头相关边界见[曝光输入](research/z7ii/exposure_inputs.md)。
+可选 `--virtual-lens` 接入虚拟 50 mm F2.8 镜头及外设 DMA；原厂初始化与
+M/A/S/P 拨轮响应见[虚拟镜头](research/z7ii/lens.md)。
 
 [English](README.md) · [架构](docs/architecture.md) · [开发状态](docs/porting.md) · [固件](docs/firmware.md) · [测试](docs/testing.md) · [发布](docs/publication.md) · [研究索引](research/README.md)
 

@@ -1049,3 +1049,17 @@ phase duration, both directions, independent queues, cancellation, bounds and
 HTTP validation alongside the body contacts. The original mode/dial execution
 and actual setting changes are recorded in
 [the exposure-input receipt](../artifacts/exposure_inputs/validation.json).
+
+The optional lens and peripheral DMA have firmware-free checks:
+
+```sh
+python tests/test_hdmac.py --qemu .build/build/qemu-system-arm
+python tests/test_lens.py --qemu .build/build/qemu-system-arm
+```
+
+They check actual DMA bytes, engine isolation, IRQ acknowledgement, errors,
+cancellation, real SPI demand and both complete long parameter pages. Lens
+checks also cover phase GPIO, pending operations, motor coordinates, history
+checksums, malformed packets and reset. Original firmware initialization and
+mode/dial observations are recorded separately in
+[the virtual-lens receipt](../artifacts/virtual_lens/validation.json).

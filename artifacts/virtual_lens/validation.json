@@ -1,0 +1,889 @@
+{
+  "format": 1,
+  "date": "2026-11-05",
+  "result": "passed-native-lens-initialization-and-mode-dials",
+  "source_revision": "75c5ba4 plus optional virtual lens and peripheral DMA",
+  "scope": "Default live view, snapshot SD and NVMe media, virtual lens; HTTP mode ADC, quadrature contacts and half-release contact; no setting caller or guest state rewrites",
+  "build": {
+    "qemu_version": "10.2.4",
+    "binary_sha256": "9d22cc53510dea51c4ca6896bd2dde9e79244dbccbce924b83e74f47e8ab69bf",
+    "sources": {
+      "qemu/nikon-z72.c": "fb74c5ee6aa18887c973bc7e88c081ab551c03384f07fbd36a515ee1e5370b31",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "600892c3b6c80e28c4407352b9fd76c34fc309d63a6ea194cbb9edaa988dd431",
+      "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+      "qemu/nikon-z72-lens.c": "a7daa7e1daae7c49b7254ff939c94c6d1702d47b19660ebaa527f8c5a9f9ca94",
+      "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+      "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d"
+    }
+  },
+  "firmware": {
+    "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave_sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "checks": {
+    "hdmac": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ],
+      "cases": [
+        "private engine memory",
+        "byte/halfword/word",
+        "fixed source",
+        "real IRQ acknowledgement",
+        "unconnected demand",
+        "cancellation",
+        "unmapped source/destination",
+        "self-cancellation",
+        "shared DREQ deassertion across banks",
+        "reset"
+      ]
+    },
+    "lens": {
+      "passed": true,
+      "cases": [
+        "complete 7426/3468-byte pages over DMA",
+        "phase GPIO and acknowledgement",
+        "configuration pending",
+        "mode pending",
+        "iris interpolation and completion",
+        "focus coordinates and history checksum",
+        "history stop",
+        "invalid target",
+        "bad payload checksum",
+        "unknown command",
+        "reset"
+      ]
+    },
+    "legacy_spi": {
+      "passed": true,
+      "roles": [
+        "master",
+        "slave"
+      ]
+    },
+    "console": {
+      "passed": true,
+      "dial_tests": 5,
+      "release_tests": 5
+    }
+  },
+  "native_mode_run": {
+    "build": {
+      "qemu_version": "10.2.4",
+      "binary_sha256": "018c5a50ff55031a5405da522942086d259a87d42fe6fc6ffa5b9b44aee01865",
+      "sources": {
+        "qemu/nikon-z72.c": "fb74c5ee6aa18887c973bc7e88c081ab551c03384f07fbd36a515ee1e5370b31",
+        "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+        "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+        "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+        "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+        "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+        "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+        "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+        "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+        "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+        "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+        "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+        "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+        "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+        "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+        "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+        "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+        "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+        "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+        "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+        "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+        "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+        "qemu/prepare_source.py": "600892c3b6c80e28c4407352b9fd76c34fc309d63a6ea194cbb9edaa988dd431",
+        "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+        "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+        "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+        "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+        "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+        "qemu/nikon-z72-lens.c": "a7daa7e1daae7c49b7254ff939c94c6d1702d47b19660ebaa527f8c5a9f9ca94",
+        "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+        "qemu/nikon-z72-hdmac.c": "5af994663615ee1ef93beb9c66c037f3041cda7b34306da286bfafa5b4725edc"
+      }
+    },
+    "options": {
+      "display_complete": true,
+      "input_handshake": true,
+      "frame_phase": true,
+      "input_stop_complete": true,
+      "frame_generate": true,
+      "frame_notify": true,
+      "frame_process": true,
+      "aux_image_process": true,
+      "live_view": true,
+      "auto_menu": false,
+      "controller_step_link": false,
+      "controller_step_feedback": false,
+      "controller_actuator": false,
+      "sample_group1": false,
+      "virtual_lens": true
+    },
+    "stages": [
+      {
+        "stage": "shooting",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 2,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          24
+        ],
+        "dial_totals": [
+          0,
+          0
+        ],
+        "mode_adc": 115,
+        "controller_mode": 0,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 42,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 10,
+          "1f": 1,
+          "20": 17,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "mode-M",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          24
+        ],
+        "dial_totals": [
+          0,
+          0
+        ],
+        "mode_adc": 1506,
+        "controller_mode": 3,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 524,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 38,
+          "1f": 1,
+          "20": 33,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "dial-M",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          304,
+          24
+        ],
+        "dial_totals": [
+          4294967295,
+          0
+        ],
+        "mode_adc": 1506,
+        "controller_mode": 3,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 889,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 50,
+          "1f": 1,
+          "20": 41,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "mode-A",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          304,
+          24
+        ],
+        "dial_totals": [
+          4294967295,
+          0
+        ],
+        "mode_adc": 975,
+        "controller_mode": 2,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 1462,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 72,
+          "1f": 1,
+          "20": 48,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "dial-A",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          304,
+          80
+        ],
+        "dial_totals": [
+          4294967295,
+          4294967295
+        ],
+        "mode_adc": 975,
+        "controller_mode": 2,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 1824,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 84,
+          "1f": 1,
+          "20": 56,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "mode-S",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          304,
+          80
+        ],
+        "dial_totals": [
+          4294967295,
+          4294967295
+        ],
+        "mode_adc": 473,
+        "controller_mode": 1,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 2594,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 100,
+          "1f": 1,
+          "20": 63,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "dial-S",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          296,
+          80
+        ],
+        "dial_totals": [
+          4294967294,
+          4294967295
+        ],
+        "mode_adc": 473,
+        "controller_mode": 1,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 3186,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 114,
+          "1f": 1,
+          "20": 71,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "mode-P",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          296,
+          80
+        ],
+        "dial_totals": [
+          4294967294,
+          4294967295
+        ],
+        "mode_adc": 115,
+        "controller_mode": 0,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 3769,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 129,
+          "1f": 1,
+          "20": 78,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "dial-P",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          296,
+          80
+        ],
+        "dial_totals": [
+          4294967293,
+          4294967295
+        ],
+        "mode_adc": 115,
+        "controller_mode": 0,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 4025,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 148,
+          "1f": 1,
+          "20": 86,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "return-M",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          296,
+          80
+        ],
+        "dial_totals": [
+          4294967293,
+          4294967295
+        ],
+        "mode_adc": 1506,
+        "controller_mode": 3,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 4525,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 163,
+          "1f": 1,
+          "20": 93,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "positive-M",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          304,
+          80
+        ],
+        "dial_totals": [
+          4294967294,
+          4294967295
+        ],
+        "mode_adc": 1506,
+        "controller_mode": 3,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 4987,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 178,
+          "1f": 1,
+          "20": 101,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      }
+    ],
+    "lcd_observations": {
+      "M": "M, 1/6400, F2.8",
+      "A": "A, F3.2",
+      "S": "S, 1/5000, F2.8",
+      "P": "P* program shift, F2.8"
+    },
+    "screenshots_committed": false,
+    "local_screenshot_hashes": {
+      "M-after-dial": {
+        "sha256": "076a1b45d7ca6b41cca0579aa48338d1c6db41c2dc7c13faa9dfa96bd58e7276",
+        "yellow_rows": [],
+        "size": [
+          1024,
+          682
+        ]
+      },
+      "A-after-dial": {
+        "sha256": "f3d3f36756a58b5b18ea4537aa60a576eed787720906b99a1b27fa232cd240cc",
+        "yellow_rows": [],
+        "size": [
+          1024,
+          682
+        ]
+      },
+      "S-after-dial": {
+        "sha256": "affb76f58a928877c89c21de5074eb79d0766a4a84d5bbff789c50644bbeff35",
+        "yellow_rows": [],
+        "size": [
+          1024,
+          682
+        ]
+      },
+      "P-after-dial": {
+        "sha256": "f4291a727add32b30d3a58db2ae3ea86f0ca21be8405a8656ff47140a03415bc",
+        "yellow_rows": [],
+        "size": [
+          1024,
+          682
+        ]
+      },
+      "M-positive": {
+        "sha256": "417f4a20ab75b18e711caabd2dda6d6349a7e1ff6e38850591542ca0d13e6892",
+        "yellow_rows": [],
+        "size": [
+          1024,
+          682
+        ]
+      }
+    }
+  },
+  "native_meter_run": {
+    "build": "top-level build, including shared DREQ ordering correction",
+    "stages": [
+      {
+        "stage": "shooting",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 2,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          24
+        ],
+        "dial_totals": [
+          0,
+          0
+        ],
+        "mode_adc": 115,
+        "controller_mode": 0,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 40,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 10,
+          "1f": 1,
+          "20": 17,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "aperture-selected",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          80
+        ],
+        "dial_totals": [
+          0,
+          4294967295
+        ],
+        "mode_adc": 975,
+        "controller_mode": 2,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 863,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 46,
+          "1f": 1,
+          "20": 41,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "half-pressed",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          80
+        ],
+        "dial_totals": [
+          0,
+          4294967295
+        ],
+        "mode_adc": 975,
+        "controller_mode": 2,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 1660,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 76,
+          "1f": 1,
+          "20": 56,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      },
+      {
+        "stage": "released",
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 9,
+        "status_codes": [],
+        "tv_av": [
+          312,
+          80
+        ],
+        "dial_totals": [
+          0,
+          4294967295
+        ],
+        "mode_adc": 975,
+        "controller_mode": 2,
+        "storage_guard": 0,
+        "graphics": {
+          "rendered-commands": 1819,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "lens_configured": 1,
+        "completed_by_command": {
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "15": 1,
+          "16": 88,
+          "1f": 1,
+          "20": 62,
+          "21": 1,
+          "24": 2,
+          "27": 1,
+          "a0": 2,
+          "a3": 1
+        }
+      }
+    ],
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x1010707c",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10107078",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a44",
+        "cpsr": "0x60000013",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a64",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ],
+    "controller_fault_registers_zero": true,
+    "lens_diagnostics": {
+      "completed": 167,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 3025,
+      "aperture-generation": 0,
+      "focus-generation": 0
+    }
+  },
+  "evidence": {
+    "mode_observation_sha256": "a089fb7b9d86cdf0b3abe2613344c33eae6fa5f4b02a841d5afa2f8d86f2c585",
+    "meter_observation_sha256": "e7a6060c0c73d1fa221b1e32de9530db703ef838a9e807954ec18b7fb9ca616e"
+  },
+  "limitations": [
+    "Virtual identity, neutral parameter pages and motor timing are explicit model inputs.",
+    "Native half-release did not move iris or focus; only synthetic SPI commands exercised nonzero motor movement.",
+    "No optical exposure, autofocus accuracy, real scene calibration or photo save is established by this receipt.",
+    "Readonly destination rejection has no separate dynamic mapping test.",
+    "Optional lens and DMA devices do not support migration."
+  ]
+}

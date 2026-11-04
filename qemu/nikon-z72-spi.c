@@ -8,6 +8,7 @@
 #include "qemu/timer.h"
 #include "hw/ssi/ssi.h"
 #include "qapi/error.h"
+#include "nikon-z72-spi.h"
 
 #define TYPE_NIKON_Z72_SPI "nikon-z72-spi"
 OBJECT_DECLARE_SIMPLE_TYPE(NikonZ72Spi, NIKON_Z72_SPI)
@@ -27,11 +28,13 @@ struct NikonZ72Spi {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
     qemu_irq irq[SPI_CHANNELS * 2];
+    qemu_irq dma[SPI_CHANNELS * 2];
     NikonZ72SpiChannel channel[SPI_CHANNELS];
     bool enabled;
     char *bus_name;
     uint8_t peer_bits;
     bool low_byte_first;
+    uint16_t external_clock_mask;
     uint64_t word_delay_ns;
     SSIBus *buses[SPI_CHANNELS];
     uint8_t shifted[SPI_CHANNELS];
@@ -48,6 +51,38 @@ static void spi_irq(NikonZ72SpiChannel *c)
     uint32_t active = c->pending & c->regs[0x20 / 4];
     qemu_set_irq(c->owner->irq[c->index * 2], (active & 3) != 0);
     qemu_set_irq(c->owner->irq[c->index * 2 + 1], (active & 4) != 0);
+    bool dma = (c->regs[0x3c / 4] & 1) && (c->regs[0x0c / 4] & 0x400);
+    qemu_set_irq(c->owner->dma[c->index * 2], dma &&
+                 c->tx_count + c->rx_count < SPI_DEPTH);
+    qemu_set_irq(c->owner->dma[c->index * 2 + 1], dma && c->rx_count != 0);
+}
+
+bool nikon_z72_spi_receive(DeviceState *dev, unsigned channel,
+                           uint16_t value, unsigned bits)
+{
+    NikonZ72Spi *s = NIKON_Z72_SPI(dev);
+    if (channel >= SPI_CHANNELS || !s->enabled) {
+        return false;
+    }
+    NikonZ72SpiChannel *c = &s->channel[channel];
+    unsigned configured = ((c->regs[0x10 / 4] >> 8) & 31) + 1;
+    if (!(c->regs[0x3c / 4] & 1) || (c->regs[0x0c / 4] & 0x20) ||
+        configured != bits || (bits != 8 && bits != 16) ||
+        (bits == 8 && value > 255) || c->rx_count == SPI_DEPTH) {
+        return false;
+    }
+    if (c->tx_count) {
+        memmove(c->tx, c->tx + 1, (--c->tx_count) * sizeof(c->tx[0]));
+        if (!c->tx_count) {
+            c->pending |= 3;
+        }
+    }
+    c->rx[(c->rx_head + c->rx_count++) % SPI_DEPTH] = value;
+    if (c->rx_count >= MAX(1, c->regs[0x4c / 4] & 0xff)) {
+        c->pending |= 4;
+    }
+    spi_irq(c);
+    return true;
 }
 
 /* Firmware polls +0x14 bits 4/5/2 for full/empty/idle, reads capacity at
@@ -56,6 +91,9 @@ static void spi_irq(NikonZ72SpiChannel *c)
 static void spi_complete(void *opaque)
 {
     NikonZ72SpiChannel *c = opaque;
+    if (c->owner->external_clock_mask & (1u << c->index)) {
+        return;
+    }
     unsigned bits = ((c->regs[0x10 / 4] >> 8) & 31) + 1;
     uint16_t value = bits >= 16 ? UINT16_MAX : (1u << bits) - 1;
     if (spi_attached(c) && c->tx_count) {
@@ -99,7 +137,8 @@ static void spi_complete(void *opaque)
 
 static bool spi_register(hwaddr offset, unsigned size)
 {
-    return size == 4 && !(offset & 3) && offset <= 0x64 &&
+    return ((size == 2 && (offset == 0 || offset == 4)) ||
+           (size == 4 && !(offset & 3))) && offset <= 0x64 &&
            offset != 0x2c && offset != 0x30 && offset != 0x40 &&
            offset != 0x44 && offset != 0x50 && offset != 0x54 &&
            offset != 0x58 && offset != 0x5c;
@@ -157,7 +196,8 @@ static MemTxResult spi_write(void *opaque, hwaddr offset, uint64_t value,
         }
         c->tx[c->tx_count++] = value;
         c->pending &= ~3u;
-        if (!attached || c->tx_count == 1) {
+        if (!(s->external_clock_mask & (1u << c->index)) &&
+            (!attached || c->tx_count == 1)) {
             timer_mod(c->timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
                       (attached ? s->word_delay_ns : 100000));
         }
@@ -173,7 +213,8 @@ static MemTxResult spi_write(void *opaque, hwaddr offset, uint64_t value,
             c->tx_count = c->rx_count = c->rx_head = c->pending = 0;
             s->shifted[c->index] = s->receiving[c->index] = 0;
         }
-        if (offset == 0x3c && (value & 1) && !spi_attached(c)) {
+        if (offset == 0x3c && (value & 1) && !spi_attached(c) &&
+            !(s->external_clock_mask & (1u << c->index))) {
             timer_mod(c->timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 100000);
         }
     }
@@ -260,6 +301,7 @@ static const Property spi_properties[] = {
     DEFINE_PROP_STRING("bus-name", NikonZ72Spi, bus_name),
     DEFINE_PROP_UINT8("peer-word-bits", NikonZ72Spi, peer_bits, 8),
     DEFINE_PROP_BOOL("peer-low-byte-first", NikonZ72Spi, low_byte_first, false),
+    DEFINE_PROP_UINT16("external-clock-mask", NikonZ72Spi, external_clock_mask, 0),
     DEFINE_PROP_UINT64("peer-word-delay-ns", NikonZ72Spi, word_delay_ns, 2000),
 };
 
@@ -283,6 +325,7 @@ static void spi_init(Object *obj)
     memory_region_init_io(&s->iomem, obj, &spi_ops, s, TYPE_NIKON_Z72_SPI,
                           SPI_CHANNELS * 0x100);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
+    qdev_init_gpio_out_named(DEVICE(obj), s->dma, "dma", SPI_CHANNELS * 2);
     for (unsigned i = 0; i < SPI_CHANNELS; i++) {
         NikonZ72SpiChannel *c = &s->channel[i];
         c->owner = s;

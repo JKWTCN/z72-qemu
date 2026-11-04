@@ -27,6 +27,8 @@ SOURCES = ['qemu/nikon-z72.c', 'qemu/nikon-z72-counter.c', 'qemu/nikon-z72-uart.
            'qemu/nikon-z72-controller-panel.c',
            'qemu/nikon-z72-controller-spi.c',
            'qemu/nikon-z72-controller.h',
+           'qemu/nikon-z72-lens.c', 'qemu/nikon-z72-hdmac.c',
+           'qemu/nikon-z72-spi.h',
            'qemu/nikon-z72-profile.h', 'qemu/prepare_source.py']
 
 def digest(path):
