@@ -1063,3 +1063,13 @@ checks also cover phase GPIO, pending operations, motor coordinates, history
 checksums, malformed packets and reset. Original firmware initialization and
 mode/dial observations are recorded separately in
 [the virtual-lens receipt](../artifacts/virtual_lens/validation.json).
+
+The body capture probe also accepts `--virtual-lens`. Its `lens_before` and
+`lens_after` snapshots keep device work separate from the original aperture
+policy and last submitted target. `python tests/test_lens_snapshot.py` checks
+signed rational decoding, ignored padding, paused/running state preservation,
+and restoration after an observation failure.
+The [capture boundary receipt](../artifacts/lens_capture_probe/validation.json)
+records a native RAW transfer followed by an execution fault and the watched
+callback overwrite. It is an incomplete capture result. Bulk-copy write watches
+also record the original saved return from the stack while LR holds copy data.

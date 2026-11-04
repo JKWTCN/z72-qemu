@@ -1,0 +1,298 @@
+{
+  "format": 1,
+  "date": "2026-11-05",
+  "result": "native-lens-capture-aborts-after-delegate-callback-overwrite",
+  "source_revision": "da3d962 plus optional lens capture observation and bulk-copy return capture",
+  "binary_sha256": "9d22cc53510dea51c4ca6896bd2dde9e79244dbccbce924b83e74f47e8ab69bf",
+  "probe_sha256": "03873b330c1853eb223ce45107c58c44040d2e0a8c9dc41837200608bc128ba9",
+  "probe_archives": {
+    "lens-capture-probe-current.py": "03873b330c1853eb223ce45107c58c44040d2e0a8c9dc41837200608bc128ba9",
+    "lens-capture-probe-before-copy-return.py": "07755e3c026e496a8a0de14421640f5a60257c5a34f43bee4d2bfcb0da6568f8"
+  },
+  "checks": {
+    "lens_snapshot": true,
+    "paused_and_running": true,
+    "read_failure_restoration": true,
+    "signed_rationals_and_padding": true,
+    "existing_input_snapshot": true
+  },
+  "held_input_run": {
+    "scope": "Default live view with virtual lens, separate snapshot SD/NVMe media and real HTTP input heartbeat; no setting caller",
+    "stages": [
+      {
+        "stage": "shooting",
+        "counter_ticks": 57791630,
+        "held_controls": [],
+        "half_contact": 1,
+        "full_contact": 1,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 2,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      },
+      {
+        "stage": "aperture-selected",
+        "counter_ticks": 121103197,
+        "held_controls": [],
+        "half_contact": 1,
+        "full_contact": 1,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      },
+      {
+        "stage": "half-pressed",
+        "counter_ticks": 169638264,
+        "held_controls": [
+          24
+        ],
+        "half_contact": 0,
+        "full_contact": 1,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      },
+      {
+        "stage": "released",
+        "counter_ticks": 193843168,
+        "held_controls": [],
+        "half_contact": 1,
+        "full_contact": 1,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      },
+      {
+        "stage": "full-pressed",
+        "counter_ticks": 218471574,
+        "held_controls": [
+          25
+        ],
+        "half_contact": 0,
+        "full_contact": 0,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      },
+      {
+        "stage": "full-released",
+        "counter_ticks": 242915613,
+        "held_controls": [],
+        "half_contact": 1,
+        "full_contact": 1,
+        "capture_state": [
+          2,
+          0
+        ],
+        "driver_state": 9,
+        "policy_state": 0,
+        "aperture_target": {
+          "numerator": 576,
+          "denominator": 192
+        }
+      }
+    ],
+    "lens": {
+      "completed": 212,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 3950,
+      "aperture-generation": 0,
+      "focus-generation": 0
+    },
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10107074",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10107074",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a44",
+        "cpsr": "0x60000013",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a48",
+        "cpsr": "0x60000093",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ],
+    "controller_faults_zero": true,
+    "earlier_meter_limit": "Earlier meter-only observation did not renew heartbeat and could release before the requested guest interval."
+  },
+  "capture_run": {
+    "scope": "Native short-exposure and silent settings APIs, original body contacts, virtual lens, input/processing/actuator models and explicit preprocessing skip requested",
+    "native_setting_readback": {
+      "program": 1,
+      "exposure": 1000,
+      "silent": 1
+    },
+    "capture_api_invoked": false,
+    "release": {
+      "requested": true,
+      "released": true,
+      "press_ticks": 164865802,
+      "shot": 1,
+      "release_ticks": 176924918,
+      "held_counter_seconds": 0.25123158333333334
+    },
+    "primary_frames": 1,
+    "final_capture_state": [
+      0,
+      0
+    ],
+    "final_driver_state": 15,
+    "fault": {
+      "cpu": 0,
+      "pc": "0x1010000c",
+      "faulting_pc": "0x0",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x5"
+      }
+    },
+    "new_photo_save_verified": false,
+    "preprocessing_skip_contexts": 0,
+    "lens_before": {
+      "completed": 48,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 609,
+      "aperture-position": 0,
+      "aperture-target": 0,
+      "aperture-pending": false,
+      "aperture-generation": 0,
+      "focus-position": 0,
+      "focus-target": 0,
+      "focus-pending": false,
+      "focus-generation": 0,
+      "policy_state": 0,
+      "policy_target": {
+        "numerator": 576,
+        "denominator": 192
+      },
+      "last_submitted_target": {
+        "numerator": 576,
+        "denominator": 192
+      }
+    },
+    "lens_after": {
+      "completed": 151,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 2617,
+      "aperture-position": 0,
+      "aperture-target": 0,
+      "aperture-pending": false,
+      "aperture-generation": 0,
+      "focus-position": 0,
+      "focus-target": 0,
+      "focus-pending": false,
+      "focus-generation": 0,
+      "policy_state": 255,
+      "policy_target": {
+        "numerator": -1,
+        "denominator": -1
+      },
+      "last_submitted_target": {
+        "numerator": 576,
+        "denominator": 192
+      }
+    },
+    "temporary_nvme_clone_removed": true
+  },
+  "callback_overwrite": {
+    "address": "0xb23ed64c",
+    "writer_pc": "0x10360f60",
+    "writer_thread": 2,
+    "previous": "0x1026c66f",
+    "current": "0x0",
+    "copy_saved_return": "0x103ac805",
+    "copy_call_site": "0x103ac800",
+    "requested_bytes": 65535,
+    "requested_bytes_source": "Unsigned halfword loaded from reply subheader +2 at 103ac7de",
+    "original_worker_dispatch": "0x103606b2",
+    "source_client": "SPI4 internal transport, D0 reply consumer",
+    "source_model": "SPI4 has no attached peer; the disconnected serial input supplies all-one halfwords",
+    "missing_peer_is_cause_candidate": true
+  },
+  "evidence_sha256": {
+    ".local/capture-report-archive/lens_held_native/observation.json": "d0015f2b8773a637cca561fb573722277817ef2e427172342fccac4590120825",
+    ".local/capture-report-archive/lens_body_capture/report.json": "93f89212c28449b25d6089b12d6aedebac9699e5983844550891cee104405461",
+    ".local/capture-report-archive/lens_body_fault_trace/fault-blocks.json": "8eff7bc75152083e494be3ffe55e2a1dde972b562934fe1bf127f12998e48177",
+    ".local/capture-report-archive/lens_body_callback_watch/report.json": "44c2d55baa2527f63e7c4da71773abbb0e7802d1e071247a6ae6999787baf37c",
+    ".local/capture-report-archive/lens_body_copy_caller/report.json": "cea559c94240196473035e0a2a7c70417c9aba633e7aa69c90ad14d548644e02"
+  },
+  "limitations": [
+    "The finite lens is initialized and rejects no observed packets; nonzero native motor movement remains unverified.",
+    "A real RAW input transfer does not establish image processing, JPEG completion or a saved photo.",
+    "The disconnected SPI4 reply mechanism is established by the model and consumer; an operational peer and corrected capture require further work.",
+    "The copy-caller run stops after its first watched write; it is not a completed capture or a VM health receipt.",
+    "Debugger observations identify branches and writes, not ordinary runtime timing."
+  ]
+}

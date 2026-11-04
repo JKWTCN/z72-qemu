@@ -2107,6 +2107,29 @@ def lcd_snapshot(machine):
             machine.qmp.command('cont')
 
 
+def lens_snapshot(machine):
+    with machine.io:
+        running = machine.qmp.command('query-status')['running']
+        if running:
+            machine.qmp.command('stop')
+        try:
+            result = {name: machine.qmp.command('qom-get',
+                dict(path='/machine/master-lens', property=name)) for name in
+                ('runtime', 'completed', 'rejected', 'configuration-generation',
+                 'stream-frames', 'aperture-position', 'aperture-target',
+                 'aperture-pending', 'aperture-generation', 'focus-position',
+                 'focus-target', 'focus-pending', 'focus-generation')}
+            result['policy_state'] = machine._bytes(0xb23ed5bc, 1)[0]
+            for name, address in (('policy_target', 0xb23ed5c4),
+                                  ('last_submitted_target', 0xb1868448)):
+                denominator, numerator = struct.unpack('<h2xi', machine._bytes(address, 8))
+                result[name] = dict(numerator=numerator, denominator=denominator)
+            return result
+        finally:
+            if running:
+                machine.qmp.command('cont')
+
+
 def input_dma_snapshot(machine):
     with machine.io:
         machine.qmp.command('stop')
@@ -2573,6 +2596,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc == 0x10361044:
                     record['saved_return'] = hex(int.from_bytes(remote.read(
                         remote.get(registers, 'sp'), 4), 'little'))
+                if pc in (0x10360f58, 0x10360f60, 0x10360f70, 0x10360f78):
+                    # The bulk copy borrows LR for data, saving it at SP+4.
+                    record['saved_return'] = hex(int.from_bytes(remote.read(
+                        remote.get(registers, 'sp') + 4, 4), 'little'))
                 if 0x20100000 <= watched_address < 0x2014f000:
                     record['stack_words'] = [hex(value) for value in struct.unpack(
                         '<32I', remote.read(remote.get(registers, 'sp'), 128))]
@@ -4131,6 +4158,8 @@ def main():
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
                         help='Replace the RAW12 checkerboard with an 8-bit binary PGM scene')
+    parser.add_argument('--virtual-lens', action='store_true',
+                        help='Attach the experimental 50 mm F2.8 lens and record its state')
     parser.add_argument('--frame-notify', action='store_true',
                         help='Experimentally latch recovered input timing causes after successful DMA')
     parser.add_argument('--reconfigure-watch', type=int, default=0,
@@ -4457,6 +4486,7 @@ def main():
             print(json.dumps(dict(reconfiguration_wait=reconfiguration)), flush=True)
         initial_lcd = lcd_snapshot(machine)
         initial_dma = input_dma_snapshot(machine) if args.frame_generate else None
+        initial_lens = lens_snapshot(machine) if args.virtual_lens else None
         body_options = dict(half_before_full=args.half_before_full,
                             shutter_on_ready=args.shutter_on_ready,
                             capture_focus=args.capture_focus,
@@ -4488,6 +4518,7 @@ def main():
                       input_handshake=args.input_handshake,
                       frame_phase=args.frame_phase,
                       sample_group1=args.sample_group1,
+                      virtual_lens=args.virtual_lens,
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,
@@ -4569,6 +4600,9 @@ def main():
                 report['post_shutter_application'] = machine.status()
             report['final_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)
+        if args.virtual_lens:
+            report['lens_before'] = initial_lens
+            report['lens_after'] = lens_snapshot(machine)
         if args.frame_generate:
             report['input_dma_after'] = input_dma_snapshot(machine)
         args.out.parent.mkdir(parents=True, exist_ok=True)
