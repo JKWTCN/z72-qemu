@@ -1,0 +1,371 @@
+{
+  "format": 1,
+  "date": "2026-11-05",
+  "result": "passed-default-console-menu-cycles",
+  "source_revision": "5312a3d plus default live view and auto-menu readiness",
+  "scope": "Cold stock boot using actual console CLI defaults and auto-menu, followed by HTTP navigation and two exit/reopen cycles; normal keys and read-only observations",
+  "binary_sha256": "e4f047753dc6ffb8b26973073be4b46019552603eb51649f252978726f335ada",
+  "firmware_sha256": {
+    "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+    "controller": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a"
+  },
+  "options": {
+    "display_complete": true,
+    "input_handshake": true,
+    "frame_phase": true,
+    "input_stop_complete": true,
+    "frame_generate": true,
+    "frame_notify": true,
+    "frame_process": true,
+    "aux_image_process": true,
+    "live_view": true,
+    "auto_menu": true,
+    "controller_step_link": false,
+    "controller_step_feedback": false,
+    "controller_actuator": false,
+    "sample_group1": false
+  },
+  "stages": [
+    {
+      "stage": "automatic-first-menu",
+      "host_seconds": 38.797,
+      "application": 1,
+      "input_ready": true,
+      "held": [],
+      "health": {
+        "capture": [
+          4,
+          0
+        ],
+        "driver": 12,
+        "status_codes": [],
+        "graphics": {
+          "rendered-commands": 69,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "counter": [
+          53161993,
+          48000000
+        ]
+      }
+    },
+    {
+      "stage": "exit-1",
+      "host_seconds": 11.078,
+      "application": 3,
+      "input_ready": true,
+      "held": [],
+      "health": {
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 2,
+        "status_codes": [],
+        "graphics": {
+          "rendered-commands": 363,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "counter": [
+          157831446,
+          48000000
+        ]
+      }
+    },
+    {
+      "stage": "reopen-1",
+      "host_seconds": 5.062,
+      "application": 1,
+      "input_ready": true,
+      "held": [],
+      "health": {
+        "capture": [
+          4,
+          0
+        ],
+        "driver": 12,
+        "status_codes": [],
+        "graphics": {
+          "rendered-commands": 507,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "counter": [
+          173126145,
+          48000000
+        ]
+      }
+    },
+    {
+      "stage": "exit-2",
+      "host_seconds": 9.047,
+      "application": 3,
+      "input_ready": true,
+      "held": [],
+      "health": {
+        "capture": [
+          2,
+          0
+        ],
+        "driver": 2,
+        "status_codes": [],
+        "graphics": {
+          "rendered-commands": 726,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "counter": [
+          206225858,
+          48000000
+        ]
+      }
+    },
+    {
+      "stage": "reopen-2",
+      "host_seconds": 5.078,
+      "application": 1,
+      "input_ready": true,
+      "held": [],
+      "health": {
+        "capture": [
+          4,
+          0
+        ],
+        "driver": 12,
+        "status_codes": [],
+        "graphics": {
+          "rendered-commands": 892,
+          "failed-requests": 0,
+          "unsupported-commands": 0
+        },
+        "counter": [
+          222007652,
+          48000000
+        ]
+      }
+    }
+  ],
+  "navigation": {
+    "down_moved_yellow": true,
+    "up_restored_yellow": true
+  },
+  "pictures": {
+    "first": {
+      "sha256": "25ed8ed47fb03f8b29325f69276b67b85d240d1458b49ff4e3d76ae51c04da86",
+      "size": [
+        1024,
+        682
+      ],
+      "highlight_row_range": [
+        88,
+        155
+      ]
+    },
+    "down": {
+      "sha256": "61091cee3f313fc4a603d5411b1b235a77dac36b48fea6c23539b382fbf5b738",
+      "size": [
+        1024,
+        682
+      ],
+      "highlight_row_range": [
+        162,
+        229
+      ]
+    },
+    "up": {
+      "sha256": "25ed8ed47fb03f8b29325f69276b67b85d240d1458b49ff4e3d76ae51c04da86",
+      "size": [
+        1024,
+        682
+      ],
+      "highlight_row_range": [
+        88,
+        155
+      ]
+    },
+    "reopen-1": {
+      "sha256": "25ed8ed47fb03f8b29325f69276b67b85d240d1458b49ff4e3d76ae51c04da86",
+      "size": [
+        1024,
+        682
+      ],
+      "highlight_row_range": [
+        88,
+        155
+      ]
+    },
+    "reopen-2": {
+      "sha256": "25ed8ed47fb03f8b29325f69276b67b85d240d1458b49ff4e3d76ae51c04da86",
+      "size": [
+        1024,
+        682
+      ],
+      "highlight_row_range": [
+        88,
+        155
+      ]
+    }
+  },
+  "minimal_profile_comparison": {
+    "profile": "default",
+    "reopened": false,
+    "stages": [
+      {
+        "stage": "shooting",
+        "host_seconds": 39.047,
+        "application": 3,
+        "input_ready": true,
+        "held": [],
+        "health": {
+          "capture": [
+            2,
+            0
+          ],
+          "driver": 2,
+          "status_codes": [],
+          "sequence": {
+            "0x200632d0": "0x400",
+            "0x200632d4": "0x1",
+            "0x200632e0": "0x0",
+            "0x200632e4": "0x0",
+            "0x20060040": "0x27feb7",
+            "0x20060044": "0x0"
+          },
+          "counter": [
+            45356320,
+            48000000
+          ]
+        }
+      },
+      {
+        "stage": "first-menu",
+        "host_seconds": 87.859,
+        "application": 1,
+        "input_ready": true,
+        "held": [
+          9
+        ],
+        "health": {
+          "capture": [
+            4,
+            0
+          ],
+          "driver": 0,
+          "status_codes": [
+            63
+          ],
+          "sequence": {
+            "0x200632d0": "0x400",
+            "0x200632d4": "0x1",
+            "0x200632e0": "0x0",
+            "0x200632e4": "0x1",
+            "0x20060040": "0x27feb7",
+            "0x20060044": "0x0"
+          },
+          "counter": [
+            184000623,
+            48000000
+          ]
+        }
+      },
+      {
+        "stage": "exit-to-shooting",
+        "host_seconds": 2.015,
+        "application": 3,
+        "input_ready": true,
+        "held": [
+          0
+        ],
+        "health": {
+          "capture": [
+            5,
+            0
+          ],
+          "driver": 0,
+          "status_codes": [
+            63
+          ],
+          "sequence": {
+            "0x200632d0": "0x400",
+            "0x200632d4": "0x1",
+            "0x200632e0": "0x0",
+            "0x200632e4": "0x1",
+            "0x20060040": "0x27feb7",
+            "0x20060044": "0x0"
+          },
+          "counter": [
+            192900891,
+            48000000
+          ]
+        }
+      },
+      {
+        "stage": "second-menu",
+        "host_seconds": 120.672,
+        "application": 3,
+        "input_ready": true,
+        "held": [
+          9
+        ],
+        "health": {
+          "capture": [
+            5,
+            0
+          ],
+          "driver": 0,
+          "status_codes": [
+            63
+          ],
+          "sequence": {
+            "0x200632d0": "0x400",
+            "0x200632d4": "0x1",
+            "0x200632e0": "0x0",
+            "0x200632e4": "0x1",
+            "0x20060040": "0x27feb7",
+            "0x20060044": "0x0"
+          },
+          "counter": [
+            379793879,
+            48000000
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "input_unit_tests": 8,
+    "cli_profiles": [
+      "default enabled",
+      "explicitly disabled",
+      "controller feedback without automatic handshake"
+    ]
+  },
+  "evidence": [
+    {
+      "path": ".local/capture-report-archive/menu_reopen_http_ready/observation.json",
+      "sha256": "4309016c4b4e06c7a8f8db4152272f2db98221ad52411df94046c2d3874d9053"
+    },
+    {
+      "path": ".local/capture-report-archive/menu_reopen_default_ready/observation.json",
+      "sha256": "4a66c119959257f3ee3a0a7c5f7df7ddea89b4ab0f26c3b84b464f5bf6c52674"
+    }
+  ],
+  "code": [
+    {
+      "path": "tools/web_console.py",
+      "sha256": "19c1fb709aec57a4a0564313dde8d283d84c2606371c22eeea257c8c891ea26b"
+    },
+    {
+      "path": "checks/test_web_console.py",
+      "sha256": "aa040f41b965fc96e6eba8d74449ed0f8e3e220558034d658ff628c6373650a6"
+    }
+  ],
+  "limits": [
+    "C 1.70 cold boot with the existing laboratory startup inputs, instruction-count clock and no storage image in this run",
+    "Two consecutive exit/reopen cycles with actual LCD highlights; no claim about every menu item or every optional profile",
+    "Native photo save still requires the separate focused capture profile"
+  ]
+}

@@ -302,7 +302,7 @@ class WebConsoleTests(unittest.TestCase):
         finally:
             machine.close()
 
-    def test_auto_menu_presses_once_when_shooting_appears(self):
+    def test_auto_menu_waits_for_shooting_input_and_presses_once(self):
         machine = Machine(None)
         machine.shutdown.set()
         machine.watchdog.join()
@@ -311,6 +311,10 @@ class WebConsoleTests(unittest.TestCase):
         machine._ready = lambda: None
         machine._key_clock = lambda: (0, 1000)
         machine._qtest = commands.append
+        graphics = {'surface-address': 0xcb000000, 'rendered-commands': 1,
+                    'failed-requests': 0, 'unsupported-commands': 0}
+        machine.qmp = Mock()
+        machine.qmp.command.side_effect = lambda name, args: graphics[args['property']]
         try:
             self.assertTrue(machine.auto_menu)
             # Not yet ready: no press even on the polling tick.
@@ -319,8 +323,20 @@ class WebConsoleTests(unittest.TestCase):
             with machine.io:
                 machine._auto_menu_step()
             self.assertEqual(commands, [])
-            # Shooting ready: one press and a deferred release.
+            # Foreground alone is insufficient while rendering is unavailable.
             machine._words = lambda address, count: [1, 0, 0, 0, 3]
+            for name, value in (('surface-address', 0), ('rendered-commands', 0),
+                                ('failed-requests', 1), ('unsupported-commands', 1)):
+                with self.subTest(property=name):
+                    original = graphics[name]
+                    graphics[name] = value
+                    machine.auto_menu_ticks = 5
+                    with machine.io:
+                        machine._auto_menu_step()
+                    self.assertEqual(commands, [])
+                    self.assertFalse(machine.auto_menu_done)
+                    graphics[name] = original
+            # Shooting input ready: one press and a deferred release.
             machine.auto_menu_ticks = 5
             with machine.io:
                 machine._auto_menu_step()

@@ -739,13 +739,7 @@ class Machine:
         self._advance_keys()
 
     def _auto_menu_step(self):
-        """Press the menu key once while the native start window is open.
-
-        The original firmware executes its direct menu start only in a short
-        span after the shooting foreground first appears. The console presses
-        the physical input at that moment, exactly like a person clicking in
-        time; nothing is written into firmware state.
-        """
+        """Press once after shooting input becomes available to the browser."""
         if not self.auto_menu or self.auto_menu_done:
             return
         self.auto_menu_ticks += 1
@@ -753,13 +747,24 @@ class Machine:
             return
         try:
             words = self._words(APP_MANAGER, 5)
+            self.app_index = words[4] & 255
+            ready = (words[0] == 1 and self.app_index == 3 and
+                     self._shooting_input_ready())
         except (OSError, ValueError, RuntimeError):
             return
-        self.app_index = words[4] & 255
-        if words[0] == 1 and self.app_index == 3:
+        if ready:
             self.auto_menu_done = True
             self._set_key_locked(MENU_PIN, 0)
             self._set_key_locked(MENU_PIN, 1)
+
+    def _shooting_input_ready(self):
+        graphics = {name: self.qmp.command('qom-get',
+            {'path': '/machine/master-graphics', 'property': name})
+            for name in ('surface-address', 'rendered-commands',
+                         'failed-requests', 'unsupported-commands')}
+        return (graphics['surface-address'] != 0 and
+                graphics['rendered-commands'] > 0 and graphics['failed-requests'] == 0 and
+                graphics['unsupported-commands'] == 0)
 
     def _menu_hold_step(self):
         """Keep a released menu click pressed until the foreground moves on.
@@ -923,13 +928,7 @@ class Machine:
             state['update_ready'] = bool(self.staged and state['ready'] and
                                          state['index'] == MENU_APPLICATION)
             if state['ready'] and state['index'] == 3:
-                graphics = {name: self.qmp.command('qom-get',
-                    {'path': '/machine/master-graphics', 'property': name})
-                    for name in ('surface-address', 'rendered-commands',
-                                 'failed-requests', 'unsupported-commands')}
-                state['input_ready'] = (graphics['surface-address'] != 0 and
-                    graphics['rendered-commands'] > 0 and graphics['failed-requests'] == 0 and
-                    graphics['unsupported-commands'] == 0)
+                state['input_ready'] = self._shooting_input_ready()
                 size, pointer = self._words(0xb187556c, 2)
                 if size == 0x118 and pointer:
                     count = self._words(pointer + 0x110, 1)[0]
@@ -1071,9 +1070,9 @@ def main():
     parser.add_argument('--display-complete', action='store_true',
                         help='Pulse the recovered display completion lines '
                              'on every laboratory frame tick')
-    parser.add_argument('--live-view', action='store_true',
+    parser.add_argument('--live-view', action=argparse.BooleanOptionalAction, default=True,
                         help='Enable the experimental moving monochrome sensor source '
-                             'and native LCD preview processing')
+                             'and native LCD preview processing (default: enabled)')
     parser.add_argument('--sensor-image', type=Path,
                         help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
     parser.add_argument('--nvme-card', type=Path,
@@ -1092,9 +1091,8 @@ def main():
                         help='Try the real-time virtual clock; menu opening '
                              'prefers the default instruction-count clock')
     parser.add_argument('--auto-menu', action='store_true',
-                        help='Press the menu key automatically during the '
-                             'native start window (the manual menu key only '
-                             'works in that early window)')
+                        help='Press the menu key once after the shooting '
+                             'screen accepts browser input')
     parser.add_argument('--update-image', type=Path,
                         help='Master update file installed through the menu-driven '
                              'firmware update: a whole update file (checked against '

@@ -46,8 +46,9 @@ the channel's work buffers rotate through the frame pool. The browser
 console renders the final LCD output plane (1024×682 luminance)
 beside the graphics surface; see
 [display output research](research/z7ii/display_output.md).
-Start the console with `--live-view` to enable the experimental moving RAW12
-source and monochrome processing. Native firmware submits the changing LCD
+The console enables the experimental moving RAW12 source and monochrome
+processing by default (`--no-live-view` disables this diagnostic profile).
+Native firmware submits the changing LCD
 background and draws the camera interface; independent paused snapshots verify
 both alternating pixel data and composed images. The current profile starts
 without diagnostic finite-output events. Sensor color and calibration remain
@@ -77,7 +78,10 @@ preview with a held or short half-press; see the
 With the explicit focused exposure/silent and preprocessing profile, a body
 capture after that return also saves a second scene JPEG while preserving the
 first photo; see the [saved-file validation](artifacts/playback_return_body_save/validation.json).
-Menu reopening after it closes, the storage-slot status behind the
+The default console profile now returns from the menu to shooting and reopens
+the menu through normal input; auto-menu waits for the same rendering readiness
+as the browser buttons. See the [menu cycle validation](artifacts/menu_reopen_default/validation.json).
+The storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production
 of a few notifications remain pending. Boot-time device registration

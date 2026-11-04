@@ -11,8 +11,9 @@ update: a candidate master supplied from outside the repository installs
 only while the menu application is foreground, commits an atomically
 verified persistent store, and the restarted machine loads the installed
 image with rollback to the supplied stock master; card, file-system and
-flash-write stages stay host-side stand-ins. Menu item interaction, text
-semantics and LCD live view remain pending; see the
+flash-write stages stay host-side stand-ins. The default browser profile now
+provides experimental LCD live view, menu navigation and exit/reopen cycles.
+Menu text semantics and complete capture processing remain pending; see the
 [menu key research](../research/z7ii/controller_keys.md) and
 [menu firmware update](../research/z7ii/firmware_update.md). Earlier runtime
 gate behaviour is unchanged and still covered by the
