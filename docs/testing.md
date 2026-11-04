@@ -863,6 +863,15 @@ batch additionally checks validation rejection, setter failure, both readback
 timeouts, preserved registers and non-diagnostic callback forwarding. Native
 admission and photograph saving require separate original-firmware evidence.
 
+The optional `--body-fnumber 800` requests F8 through the original FNumber
+setter and getter. It requires `--body-exposure` and `--virtual-lens`; values
+are positive UINT16 F-numbers in hundredths. Setter rejection or mismatched
+readback prevents body input. The caller ABI batch checks both failures and
+the combination with silent settings. The [native F8 observation](../artifacts/lens_aperture/validation.json)
+records two completed nonzero aperture moves and a return to full open, with
+zero lens rejections. It does not establish the unsampled intermediate target,
+scene exposure, autofocus or persistent saving in that bounded run.
+
 `tests/test_body_input_snapshot.py` checks retained completion counters against
 four current row layouts, including a reconfigured zero layout. Unsupported
 current layouts report unavailable samples while retaining counters, addresses

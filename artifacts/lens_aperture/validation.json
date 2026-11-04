@@ -1,0 +1,340 @@
+{
+  "schema": 1,
+  "result": "passed-native-f8-setting-and-aperture-round-trip",
+  "scope": "Original FNumber setter/readback before body contacts; native motor commands through SPI and timed virtual mechanics. Original DSP preprocessing explicitly skipped. This bounded run does not verify persistent photo saving or optical exposure.",
+  "source_revision": "add5702 plus optional native FNumber settings caller",
+  "binary_sha256": "dd7e08b42eeba3e7bcbbd3f5ca1832aac8adabc2c2be504e96f19da9794ee0c2",
+  "source_sha256": {
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "77c9f6f51d04db28dc5b1ad3f3ab2bdf1454549323023501cc52af2d37521064",
+    "tools/body_shutter_gate_probe.py": "920238705ddeca3928f552cc3acf27fc52e5c45db5f87cb5ceb3012084a278de",
+    "tools/web_console.py": "4e562df4dce2bcd414dc986e088d9f0125a25ada2a3b617b0a4de3b31284e674",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+  },
+  "arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--trace-sd-host",
+    "--display-complete",
+    "--frame-phase",
+    "--input-stop-complete",
+    "--frame-generate",
+    "--frame-notify",
+    "--frame-process",
+    "--processing-resource-header",
+    "--aux-image-process",
+    "--controller-step-link",
+    "--controller-actuator",
+    "--sampling-output-complete",
+    "--shutter-on-ready",
+    "--half-before-full",
+    "--shutter-click",
+    "--application-only",
+    "--body-exposure",
+    "1000",
+    "--capture-focus",
+    "--capture-counter-seconds",
+    "1",
+    "--skip-still-preprocessing",
+    "--icount-shift",
+    "2",
+    "--watch",
+    "900",
+    "--out",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\lens_aperture_f8\\report.json",
+    "--controller-step-feedback",
+    "--trace-controller-gpio",
+    "--body-silent",
+    "--sample-group1",
+    "--sensor-image",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\nvme_body_save_ready-scene.pgm",
+    "--nvme-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--virtual-lens",
+    "--body-fnumber",
+    "800"
+  ],
+  "original_interfaces": {
+    "property": "0x5007",
+    "setter": "0x10779afe",
+    "getter": "0x10779dda",
+    "payload": "UINT16 little-endian FNumber in hundredths",
+    "validation": "Original setter converts and validates allowed property 0x0206 values. It may return 0x2001 after its polling limit, so the caller also requires exact independent readback."
+  },
+  "settings": {
+    "program_property": "0x0000",
+    "program_value": 3,
+    "exposure_property": "0x500d",
+    "exposure_value": 1000,
+    "setter": "0x104d1620",
+    "readback_required": true,
+    "program_readback_expected": 1,
+    "program_validator": "0x10634324",
+    "program_setter": "0x106342de",
+    "control_mode_request": false,
+    "silent": {
+      "property": "0x057a",
+      "value": 1,
+      "effective_property": "0x161d",
+      "validator": "0x10634324",
+      "setter": "0x106342de",
+      "getter": "0x1063c7d4",
+      "readback_required": true,
+      "validation": 1,
+      "setter_status": "0x0",
+      "readback": 1,
+      "effective_readback": 1,
+      "ready": true
+    },
+    "aperture": {
+      "property": "0x5007",
+      "value": 800,
+      "units": "F-number in hundredths",
+      "setter": "0x10779afe",
+      "getter": "0x10779dda",
+      "readback_required": true,
+      "setter_status": "0x2001",
+      "readback": 800,
+      "ready": true
+    },
+    "program_status": "0x0",
+    "exposure_status": "0x2001",
+    "final_property_status": "0x0",
+    "program_readback": 1,
+    "exposure_readback": 1000,
+    "ready": true,
+    "capture_api_invoked": false,
+    "control_mode": {
+      "eligible": 0,
+      "request_status": "0x0",
+      "readback": 0,
+      "notification": "0x0",
+      "notification_status": 0,
+      "request_invoked": false,
+      "notification_received": false
+    }
+  },
+  "lens_before": {
+    "runtime": "phase=0 offset=0/4 command=16:00 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 01 00 aa\naperture=0 target=0 aperture-pending=0 aperture-generation=0\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=19 completed=19\n1f headers=1 completed=1\n20 headers=18 completed=18\n21 headers=1 completed=1\n24 headers=2 completed=2\n27 headers=1 completed=1\na3 headers=1 completed=1\n",
+    "completed": 48,
+    "rejected": 0,
+    "configuration-generation": 1,
+    "stream-frames": 608,
+    "aperture-position": 0,
+    "aperture-target": 0,
+    "aperture-pending": false,
+    "aperture-generation": 0,
+    "focus-position": 0,
+    "focus-target": 0,
+    "focus-pending": false,
+    "focus-generation": 0,
+    "policy_state": 0,
+    "policy_target": {
+      "numerator": 576,
+      "denominator": 192
+    },
+    "last_submitted_target": {
+      "numerator": 576,
+      "denominator": 192
+    }
+  },
+  "lens_after": {
+    "runtime": "phase=0 offset=0/24 command=20:01 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 00 00 00\naperture=0 target=0 aperture-pending=0 aperture-generation=2\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=103 completed=103\n1f headers=1 completed=1\n20 headers=86 completed=86\n21 headers=1 completed=1\n24 headers=2 completed=2\n27 headers=1 completed=1\na0 headers=4 completed=4\na3 headers=1 completed=1\n",
+    "completed": 204,
+    "rejected": 0,
+    "configuration-generation": 1,
+    "stream-frames": 3470,
+    "aperture-position": 0,
+    "aperture-target": 0,
+    "aperture-pending": false,
+    "aperture-generation": 2,
+    "focus-position": 0,
+    "focus-target": 0,
+    "focus-pending": false,
+    "focus-generation": 0,
+    "policy_state": 0,
+    "policy_target": {
+      "numerator": 576,
+      "denominator": 192
+    },
+    "last_submitted_target": {
+      "numerator": 576,
+      "denominator": 192
+    }
+  },
+  "movement_evidence": "Four completed A0 packets and two timed nonzero moves; zero-distance commands do not increment aperture-generation. Final position returns to zero. Intermediate target and maximum position were not sampled, so this receipt does not assert the exact stop-down coordinate.",
+  "capture_api_invoked": false,
+  "capture_window": {
+    "requested_seconds": 1.0,
+    "reached": true
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "capture_driver_state": 9,
+  "primary_frames": 1,
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x1010707c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107078",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a64",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "body_vr": {
+    "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d2:00 sensor-connected=0 actuator-connected=0",
+    "frames": 171,
+    "completed": 70,
+    "rejected": 101,
+    "truncated": 0,
+    "reads": 5,
+    "writes": 0,
+    "configuration-generation": 1
+  },
+  "preprocessing_skip": {
+    "requested": true,
+    "contexts": [
+      {
+        "context": "0xc19d3ec0",
+        "nested": "0xc29b9040",
+        "address": "0xc29bbbbc",
+        "previous": 0,
+        "supplied": 2,
+        "native_clear_observed": true,
+        "preprocessing_inputs": [
+          {
+            "address": "0xc29bbbb9",
+            "offset": "0x2b79",
+            "previous": 0,
+            "supplied": 1
+          },
+          {
+            "address": "0xc29bbbbb",
+            "offset": "0x2b7b",
+            "previous": 0,
+            "supplied": 2
+          }
+        ],
+        "sflt_skip_observed": true,
+        "raw_compute_skip_observed": true,
+        "result_halfwords": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "codec_outputs": [
+    {
+      "name": "codec-10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728.jpg",
+      "bytes": 186122,
+      "sha256": "10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728"
+    },
+    {
+      "name": "codec-3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d.jpg",
+      "bytes": 38429,
+      "sha256": "3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d"
+    },
+    {
+      "name": "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg",
+      "bytes": 366923,
+      "sha256": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1"
+    },
+    {
+      "name": "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg",
+      "bytes": 2748980,
+      "sha256": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e"
+    },
+    {
+      "name": "codec-4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69.jpg",
+      "bytes": 223998,
+      "sha256": "4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69"
+    },
+    {
+      "name": "codec-6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40.jpg",
+      "bytes": 271156,
+      "sha256": "6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40"
+    },
+    {
+      "name": "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg",
+      "bytes": 11596,
+      "sha256": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017"
+    },
+    {
+      "name": "codec-bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a.jpg",
+      "bytes": 45098,
+      "sha256": "bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a"
+    },
+    {
+      "name": "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg",
+      "bytes": 56292,
+      "sha256": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92"
+    },
+    {
+      "name": "codec-e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877.jpg",
+      "bytes": 32069,
+      "sha256": "e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877"
+    },
+    {
+      "name": "codec-fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999.jpg",
+      "bytes": 307614,
+      "sha256": "fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999"
+    }
+  ],
+  "evidence_sha256": {
+    ".local/capture-report-archive/lens_aperture_f8/report.json": "99974aba6309cabc2f7902466a2eb0d484de53d78aca5eacf433a085ebba398a",
+    ".local/capture-report-archive/lens_aperture_f8/conditions.json": "7b80510057c8ce59ef082b80b2dd6027b30aec745ffaad785ec43ab7f6481487",
+    ".local/capture-report-archive/lens_aperture_f8/qemu.log": "68ffc32cfefbf10bf7a269814831ba0c69a2df546a2f1efe24f86a7e3c71cf93"
+  },
+  "limitations": [
+    "No autofocus movement was observed.",
+    "Virtual lens timing and mechanics remain explicit functional assumptions.",
+    "The requested FNumber does not affect synthetic scene brightness or depth of field.",
+    "Temporary snapshot cards were discarded; no new persistent saved-photo claim."
+  ]
+}

@@ -2244,7 +2244,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
             capture_format_3800=False, body_exposure=None, repeat_body_capture=False, skip_compute_statistics=False,
-            skip_still_preprocessing=False, body_silent=False, playback_click=False, return_click=False):
+            skip_still_preprocessing=False, body_silent=False, body_fnumber=None,
+            playback_click=False, return_click=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -2371,7 +2372,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                                  jpeg=capture_jpeg, storage=capture_storage,
                                                  format_3800=capture_format_3800,
                                                  settings_only=body_exposure is not None,
-                                                 silent=body_silent)
+                                                 silent=body_silent, aperture=body_fnumber)
             if capture_focus:
                 selected = {0x1020f8dc, 0x1032385a, 0x10233222, 0x10233250,
                             0x103234e8, 0x10322e3e, 0x10322ef8, 0x10322f30,
@@ -4217,6 +4218,8 @@ def main():
                         help='Set original program 1 and exposure property 0x500d; require readback before submission')
     parser.add_argument('--body-exposure', type=int,
                         help='Set local program parameter 0 to 3 and exposure through native APIs before body input')
+    parser.add_argument('--body-fnumber', type=int,
+                        help='With body exposure and virtual lens, request native FNumber in hundredths (800 is F8); require readback')
     parser.add_argument('--body-silent', action='store_true',
                         help='With body exposure, set native silent parameter 0x057a and verify effective 0x161d')
     parser.add_argument('--repeat-body-capture', action='store_true',
@@ -4373,6 +4376,9 @@ def main():
             'Body capture after playback requires a round trip, focused release input and a private card copy')
     require(not args.body_silent or args.body_exposure is not None,
             'Silent body capture requires the local body exposure settings caller')
+    require(args.body_fnumber is None or args.body_exposure is not None and
+            args.virtual_lens and 0 < args.body_fnumber <= 0xffff,
+            'FNumber requires local body exposure settings, a virtual lens and a positive UINT16 value')
     require(not args.repeat_body_capture or args.body_exposure is not None and
             args.capture_focus and args.shutter_click and args.half_before_full,
             'Repeated body capture requires focused local exposure settings and staged press/release contacts')
@@ -4509,6 +4515,7 @@ def main():
                             capture_focus=args.capture_focus,
                             capture_counter_seconds=args.capture_counter_seconds,
                             body_exposure=args.body_exposure, body_silent=args.body_silent,
+                            body_fnumber=args.body_fnumber,
                             repeat_body_capture=args.repeat_body_capture,
                             controller_step_trigger=args.controller_step_trigger,
                             application_only=args.application_only, shutter_click=args.shutter_click,

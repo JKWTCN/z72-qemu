@@ -15,13 +15,15 @@ from analyze.decode_z72 import require
 from tools.native_capture_caller import caller_code, CODE, OBJECT, REQUEST, RESULT, ORIGINAL_CALLBACK
 
 
-def check_case(failure=None, operation=127, program_selected=False, settings_only=False, silent=False):
+def check_case(failure=None, operation=127, program_selected=False, settings_only=False,
+               silent=False, aperture=None):
     exposure = 1000
-    code, _, completion = caller_code(exposure, settings_only, silent)
+    code, _, completion = caller_code(exposure, settings_only, silent, aperture)
     cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
     functions = (0x104C8254, 0x10779876, 0x104D12AA, 0x103DC538,
                  0x103BA6EA, 0x104C18E2, 0x104C0F20, 0x10634176,
                  0x10634324, 0x106342DE, 0x104D1620, 0x1063C7D4,
+                 0x10779AFE, 0x10779DDA,
                  ORIGINAL_CALLBACK & ~1)
     stop, stack = 0x14000000, 0x14010000
     for page in {CODE & ~4095, OBJECT, stop, stack, *(p & ~4095 for p in functions)}:
@@ -30,6 +32,8 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
     cpu.mem_write(OBJECT, struct.pack('<I', operation))
     cpu.mem_write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
     cpu.mem_write(OBJECT + 0x30, struct.pack('<3I', 1, 0, 0))
+    if aperture is not None:
+        cpu.mem_write(OBJECT + 0x3c, struct.pack('<H', aperture))
     cpu.mem_write(REQUEST, struct.pack('<5I', 0, 1, 0, 0, 1))
     saved = {UC_ARM_REG_R4: 0x4444, UC_ARM_REG_R5: 0x5555, UC_ARM_REG_R6: 0x6666}
     for register, value in saved.items():
@@ -79,6 +83,14 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
                     int.from_bytes(uc.mem_read(args[0], 4), 'little') == exposure,
                     'Invalid local exposure setter ABI')
             result = 0x201c if failure == 0x500d else 0x2001
+        elif address == 0x10779AFE:
+            require(settings_only and aperture is not None and args[0] == OBJECT + 0x3c and
+                    int.from_bytes(uc.mem_read(args[0], 2), 'little') == aperture,
+                    'Invalid native FNumber setter ABI')
+            result = 0x201c if failure == 'aperture-denied' else 0x2001
+        elif address == 0x10779DDA:
+            require(settings_only and aperture is not None, 'Unexpected FNumber readback')
+            result = aperture + (failure == 'aperture-mismatch')
         elif address == 0x104C18E2:
             result = int(failure != 'mode-denied')
         elif address == 0x104C0F20:
@@ -117,11 +129,21 @@ def check_case(failure=None, operation=127, program_selected=False, settings_onl
         require((ready, invoked) == (int(ready_expected), int(captured)), 'Incorrect settings markers')
         require(int.from_bytes(cpu.mem_read(RESULT + 4, 4), 'little') == int(captured),
                 'Incorrect capture return marker')
+    if aperture is not None and operation == 127:
+        status, readback = struct.unpack('<2I', cpu.mem_read(RESULT + 8, 8))
+        require(status == (0x201c if failure == 'aperture-denied' else 0x2001),
+                'Aperture setter status not retained')
+        require(readback == (0 if failure == 'aperture-denied' else
+                            aperture + (failure == 'aperture-mismatch')),
+                'Aperture readback not retained or failure bypassed')
     if failure == 'program-timeout':
         require(reads == 1001, 'Program readback did not stop at retry limit')
     if failure == 'mode-timeout':
         require(mode_reads == 1000, 'Control-mode readback did not stop at retry limit')
-    if silent and operation == 127:
+    if silent and operation == 127 and failure in ('aperture-denied', 'aperture-mismatch'):
+        require(not any(address == 0x10634324 and args[0] == 0x057a for address, args in calls),
+                'Aperture failure continued into silent settings')
+    if silent and operation == 127 and failure not in ('aperture-denied', 'aperture-mismatch'):
         validations = [args[:2] for address, args in calls if address == 0x10634324]
         setters = [args[:2] for address, args in calls if address == 0x106342DE]
         require([0x057a, 1] in validations, 'Silent value was not validated')
@@ -167,4 +189,15 @@ if __name__ == '__main__':
         check_case(failure, settings_only=True, silent=True)
     check_case(operation=3, settings_only=True, silent=True)
     check_case(program_selected=True, settings_only=True, silent=True)
+    for failure in (None, 'aperture-denied', 'aperture-mismatch'):
+        check_case(failure, settings_only=True, aperture=800)
+        check_case(failure, settings_only=True, silent=True, aperture=800)
+    check_case(operation=3, settings_only=True, aperture=800)
+    for aperture in (0, 65536):
+        try:
+            caller_code(1000, True, aperture=aperture)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Out-of-range FNumber was accepted')
     print('PASS: native caller ABI, readback, property failures and original callback')

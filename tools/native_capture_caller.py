@@ -83,9 +83,11 @@ POST_SUBMIT_POINTS = {
 }
 
 
-def caller_code(exposure=None, settings_only=False, silent=False):
+def caller_code(exposure=None, settings_only=False, silent=False, aperture=None):
     require(not settings_only or exposure is not None, 'Settings caller requires an exposure')
     require(not silent or settings_only, 'Silent setting requires the local settings caller')
+    require(aperture is None or settings_only and 0 < aperture <= 0xffff,
+            'Aperture requires local settings and a positive UINT16 F-number')
     code, literals, branches, labels = bytearray(), [], [], {}
 
     def emit(value):
@@ -213,6 +215,20 @@ def caller_code(exposure=None, settings_only=False, silent=False):
         literal(5, exposure)
         emit(0x42A8)
         jump('return', 1)
+        if aperture is not None:
+            literal(0, OBJECT + 0x3c)
+            literal(6, 0x10779AFF)  # original FNumber conversion, validation and setter
+            emit(0x47B0)
+            store(0x08)
+            literal(5, 0x2001)
+            emit(0x42A8)
+            jump('return', 1)
+            literal(6, 0x10779DDB)  # original FNumber readback; setter status is insufficient
+            emit(0x47B0)
+            store(0x0c)
+            literal(5, aperture)
+            emit(0x42A8)
+            jump('return', 1)
         if silent:
             literal(0, 0x057a)
             emit(0x2101)
@@ -313,12 +329,13 @@ def caller_code(exposure=None, settings_only=False, silent=False):
 
 class NativeCaptureCaller:
     def __init__(self, remote, exposure=None, jpeg=False, storage=0, format_3800=False,
-                 settings_only=False, silent=False):
+                 settings_only=False, silent=False, aperture=None):
         request_words = capture_request_words(jpeg, storage, format_3800)
         self.remote = remote
         self.exposure = exposure
         self.silent = silent
-        self.code, self.return_pc, completion = caller_code(exposure, settings_only, silent)
+        self.aperture = aperture
+        self.code, self.return_pc, completion = caller_code(exposure, settings_only, silent, aperture)
         self.completion_pc = completion
         self.points = {CODE + 6: 'diagnostic-capture-caller',
                        self.return_pc: 'diagnostic-capture-api-return',
@@ -400,6 +417,8 @@ class NativeCaptureCaller:
         if exposure is not None:
             remote.write(OBJECT + 0x20, struct.pack('<2I', 1, exposure))
             remote.write(OBJECT + 0x30, struct.pack('<3I', 1, 0, 0))
+        if aperture is not None:
+            remote.write(OBJECT + 0x3c, struct.pack('<H', aperture))
         remote.write(CALLBACK, struct.pack('<I', CODE | 1))
         self.report = dict(caller_fixture=True, triggered=False, caller_entered=False,
                            caller_returned=False, body_shutter_used=False,
@@ -425,6 +444,10 @@ class NativeCaptureCaller:
                     effective_property='0x161d',
                     validator='0x10634324', setter='0x106342de', getter='0x1063c7d4',
                     readback_required=True)
+            if aperture is not None:
+                self.report['settings_fixture']['aperture'] = dict(property='0x5007',
+                    value=aperture, units='F-number in hundredths',
+                    setter='0x10779afe', getter='0x10779dda', readback_required=True)
         self.entry_sp = None
         self.native_return = None
         excluded = self.remote.read(0x118FA48B, 40)
@@ -695,6 +718,10 @@ class NativeCaptureCaller:
             self.report['settings_fixture']['silent'].update(validation=validated,
                 setter_status=hex(status), readback=readback, effective_readback=effective,
                 ready=validated == 1 and status == 0 and readback == effective == 1)
+        if self.aperture is not None:
+            status, readback = struct.unpack('<2I', self.remote.read(RESULT + 8, 8))
+            self.report['settings_fixture']['aperture'].update(setter_status=hex(status),
+                readback=readback, ready=status == 0x2001 and readback == self.aperture)
 
     def close(self):
         self.remote.select_thread(1)
