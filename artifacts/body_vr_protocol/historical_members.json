@@ -1,0 +1,202 @@
+{
+  "schema": 1,
+  "qualification": "Integrity-checked update-member inventory; no firmware execution.",
+  "package_count": 12,
+  "unique_vr_member_digests": 2,
+  "resident_pointer_slot": "0xfffc8008",
+  "resident_pointer_slot_present_in_any_member": false,
+  "packages": [
+    {
+      "package": "Z7_2_0101.bin",
+      "package_size": 47621576,
+      "package_sha256": "6e06b6ef9f0b86f9c20a6cb1a2a86b719674ae4cc9416e4d65430b9413f43099",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010000.bi",
+        "size": 838664,
+        "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0110_01.bin",
+      "package_size": 47640392,
+      "package_sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010000.bi",
+        "size": 838664,
+        "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0120.bin",
+      "package_size": 47642376,
+      "package_sha256": "78d2b91abbb9cca6c438538bc2d4a59cb604187296dfe8d7ed75f6853a53beb9",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010000.bi",
+        "size": 838664,
+        "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0121.bin",
+      "package_size": 47643400,
+      "package_sha256": "cd70fe4acf53bc56c9b8380b6368d3ed40b25fd4f17dbd3c21f9e0a2ea6789c7",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010000.bi",
+        "size": 838664,
+        "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0130.bin",
+      "package_size": 47879112,
+      "package_sha256": "ed096994c005fff0692255d93fba2917f823f1e982ea541655f8631aedff910a",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010000.bi",
+        "size": 838664,
+        "sha256": "84b0bf2b4d223cb08a41ae0ed4925b7d2d7a0dfc13e4d7b6ad07f1995a03bb72",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0131.bin",
+      "package_size": 47879560,
+      "package_sha256": "17b424a2d3f0de715be013ff88699623ed14786adac381144f0656c2fc7d1cb3",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0140.bin",
+      "package_size": 48147720,
+      "package_sha256": "fe52d3135c01a91bd88ccb923390de05e73e8231a818d560a3aa9022a057e58e",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0150.bin",
+      "package_size": 48176264,
+      "package_sha256": "5ed3dd815e95061d2daabef4ffb69a2a401e00e1624180ba5ea420d0547ff2b1",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0160.bin",
+      "package_size": 48381064,
+      "package_sha256": "921a9f92cfc394300fc9c26a92d9e3fa15c2be37ca3eb01862711c4609799904",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0161.bin",
+      "package_size": 48381064,
+      "package_sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0162.bin",
+      "package_size": 48381960,
+      "package_sha256": "4e1b865bda9a3fda1cbce09be4cae3b67d5a05551f44720306c6f426aad7941c",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    },
+    {
+      "package": "Z7_2_0170.bin",
+      "package_size": 48494024,
+      "package_sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "directory_and_all_member_crcs_verified": true,
+      "package_crc_verified": true,
+      "vr": {
+        "name": "vr1840_010100.bi",
+        "size": 838664,
+        "sha256": "fd7c1f7518e3af79d15e193c744d36c357b1dabbb5ab528f0054ebb79a5623b2",
+        "records": 3201,
+        "base": "0xfff00000",
+        "limit": "0xfffc8000",
+        "resident_pointer_slot_supplied": false
+      }
+    }
+  ]
+}
