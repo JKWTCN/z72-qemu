@@ -3699,15 +3699,19 @@ static bool codec_encode(NikonZ72BootConfig *s)
         return false;
     }
     size_t plane_bytes = (size_t)stride * height;
-    uint32_t minimum = full ? 0xea3b6800 : 0xc8900000;
-    uint64_t limit = full ? 0xffe66800 : 0xca712200;
+    uint32_t minimum = full ? (s->master_role ? 0xcc700000 : 0xea3b6800) :
+                             (s->master_role ? 0xbd200000 : 0xc8900000);
+    uint64_t limit = full ? (s->master_role ? 0xffee5400 : 0xffe66800) :
+                           (s->master_role ? 0xc3dcb400 : 0xca712200);
+    uint32_t output_minimum = s->master_role ? 0xcc700000 : 0xca800000;
+    uint64_t output_limit = s->master_role ? 0xffee5400 : 0xffe66800;
     if (first < minimum || (uint64_t)first + stride * rows != second ||
         (uint64_t)second + plane_bytes > limit ||
         !processing_ram_range(view, first, plane_bytes) ||
         !processing_ram_range(view, second, plane_bytes)) {
         return false;
     }
-    if (!measuring && (output < 0xca800000 || (uint64_t)output + capacity > 0xffe66800 ||
+    if (!measuring && (output < output_minimum || (uint64_t)output + capacity > output_limit ||
         (output < (uint64_t)second + plane_bytes && first < (uint64_t)output + capacity) ||
         !processing_ram_range(view, output, capacity))) {
         return false;
@@ -3789,7 +3793,7 @@ static void codec_write(void *opaque, hwaddr offset, uint64_t value, unsigned si
         if (offset == 0x404 && (value & 0xc000) == 0x4000 &&
             (r[0x400 / 4] & 0xc000) == 0x4000 && (r[1] & 1) &&
             !(r[0x480 / 4] & 0x08001000) && !(r[0x2c / 4] & 0x80000000) &&
-            s->frame_process && s->cpu && !s->master_role) {
+            s->frame_process && s->cpu) {
             codec_encode(s);
         }
     }

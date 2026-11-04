@@ -171,7 +171,12 @@ CAPTURE_MASTER_TRANSFORM_POINTS = {
     0x102c55f0: 'capture-master-secondary-thumbnail-dispatch',
     0x102c5600: 'capture-master-secondary-thumbnail-wait-return',
 }
+CAPTURE_MASTER_CODEC_POINTS = {
+    0x103bdfea: 'capture-master-codec-interrupt',
+    0x103c6754: 'capture-master-codec-measurement-wait-return',
+}
 CAPTURE_INPUT_POINTS = {
+    **CAPTURE_MASTER_CODEC_POINTS,
     **CAPTURE_MASTER_PROCESSING_POINTS,
     **CAPTURE_MASTER_TRANSFORM_POINTS,
     0x1020aafc: 'capture-input-enable-entry',
@@ -1369,17 +1374,20 @@ def transform_snapshot(remote, slave=True):
     return result
 
 
-def slave_codec_snapshot(remote):
+def codec_snapshot(remote, slave=True):
     def words(address, size):
         return [hex(value) for value in struct.unpack('<' + 'I' * (size // 4), remote.read(address, size))]
     def ram(address, size):
         return 0xc1000000 <= address and address + size <= 0xc8200000
-    globals_ = words(0xc10079a0, 0x30)
-    result = dict(globals=globals_, service_task=task_wait_snapshot(remote, 0xc1486460, slave=True),
-                  registers=words(0x24072000, 0x600))
+    result = dict(registers=words(0x24072000, 0x600))
+    if slave:
+        globals_ = words(0xc10079a0, 0x30)
+        result.update(globals=globals_, service_task=task_wait_snapshot(remote, 0xc1486460, slave=True))
+    output_start, output_end = (0xca800000, 0xffe66800) if slave else (0xcc700000, 0xffee5400)
+    scratch_start, scratch_end = (0xc8900000, 0xca712200) if slave else (0xbd200000, 0xc3dcb400)
     registers = [int(value, 16) for value in result['registers']]
     output, capacity = registers[0x440 // 4], registers[0x458 // 4] * 512
-    if capacity >= 128 and 0xca800000 <= output and output + capacity <= 0xffe66800:
+    if capacity >= 128 and output_start <= output and output + capacity <= output_end:
         result['output_prefix'] = dict(address=hex(output), capacity=capacity,
                                        bytes=remote.read(output, 128).hex())
     width, height = registers[0x418 // 4], registers[0x41c // 4]
@@ -1388,13 +1396,15 @@ def slave_codec_snapshot(remote):
         stride, address = registers[(0x410 + index * 4) // 4], registers[(0x430 + index * 4) // 4]
         if ((width, height, stride) in ((8256, 5504, 8256), (1620, 1080, 1664),
                                        (640, 424, 640), (160, 120, 160)) and
-                (0xca800000 <= address and address + stride * height <= 0xffe66800 or
-                 0xc8900000 <= address and address + stride * height <= 0xca712200)):
+                (output_start <= address and address + stride * height <= output_end or
+                 scratch_start <= address and address + stride * height <= scratch_end)):
             row = remote.read(address, width)
             result['input_planes'].append(dict(plane=index, address=hex(address),
                 width=width, height=height, stride=stride,
                 first_row_sha256=hashlib.sha256(row).hexdigest(),
                 first_row_minimum=min(row), first_row_maximum=max(row)))
+    if not slave:
+        return result
     handle = int(globals_[1], 16)
     if ram(handle, 16):
         result['device'] = dict(address=hex(handle), words=words(handle, 16))
@@ -1411,6 +1421,34 @@ def slave_codec_snapshot(remote):
     if ram(request, 0x60):
         result['request'] = dict(address=hex(request), words=words(request, 0x60))
     return result
+
+
+def save_codec_output(remote, codec, folder, owner):
+    registers = [int(value, 16) for value in codec['registers']]
+    output, length = codec.get('output_prefix'), registers[0x20 // 4]
+    if (not output or registers[0x480 // 4] & 0x08001000 != 0x08001000 or
+            registers[0x404 // 4] & 2 or not 0 < length <= output['capacity']):
+        return None
+    payload = remote.read(int(output['address'], 16), length)
+    require(payload[:2] == b'\xff\xd8' and payload[-2:] == b'\xff\xd9',
+            'Completed diagnostic codec output lacks JPEG markers')
+    digest = hashlib.sha256(payload).hexdigest()
+    destination = folder / ('codec-' + digest + '.jpg')
+    folder.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        require(destination.read_bytes() == payload, 'Codec artifact already has different content')
+    else:
+        destination.write_bytes(payload)
+    from PIL import Image
+    with Image.open(destination) as frame:
+        frame.load()
+        require(frame.size == (registers[0x1c // 4], registers[0x18 // 4]),
+                'Decoded native codec output dimensions differ')
+        return dict(file=destination.name, bytes=length, sha256=digest,
+            decoded=True, width=frame.width, height=frame.height, mode=frame.mode,
+            pixels=[dict(x=x, y=y, rgb=frame.getpixel((x, y))) for x, y in
+                    ((0, 0), (frame.width // 2, frame.height // 2), (frame.width - 1, frame.height - 1))],
+            source=owner + ' codec RAM at IRQ entry; not an SD-card file')
 
 
 def peer_windows_snapshot(remote):
@@ -1491,7 +1529,7 @@ def peer_input_snapshot(remote, resume_thread=1, machine=None):
         result['sflt'] = sflt_snapshot(remote)
         result['processing'] = slave_processing_snapshot(remote)
         result['transform'] = transform_snapshot(remote)
-        result['codec'] = slave_codec_snapshot(remote)
+        result['codec'] = codec_snapshot(remote)
         if machine is not None:
             result['processing']['completed_frames'] = machine.qmp.command(
                 'qom-get', dict(path=path, property='processing-dma-count'))
@@ -2603,35 +2641,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                 if pc in CAPTURE_SLAVE_TRANSFORM_POINTS:
                     record['transform'] = transform_snapshot(remote)
                 if pc in CAPTURE_SLAVE_CODEC_POINTS:
-                    record['codec'] = slave_codec_snapshot(remote)
-                    codec = record['codec']
-                    codec_registers = [int(value, 16) for value in codec['registers']]
-                    output = codec.get('output_prefix')
-                    length = codec_registers[0x20 // 4]
-                    if (pc == 0x10095ade and output and
-                            codec_registers[0x480 // 4] & 0x08001000 == 0x08001000 and
-                            not codec_registers[0x404 // 4] & 2 and 0 < length <= output['capacity']):
-                        payload = remote.read(int(output['address'], 16), length)
-                        require(payload[:2] == b'\xff\xd8' and payload[-2:] == b'\xff\xd9',
-                                'Completed diagnostic codec output lacks JPEG markers')
-                        digest = hashlib.sha256(payload).hexdigest()
-                        destination = machine.args.out.parent / ('codec-' + digest + '.jpg')
-                        destination.parent.mkdir(parents=True, exist_ok=True)
-                        if destination.exists():
-                            require(destination.read_bytes() == payload, 'Codec artifact already has different content')
-                        else:
-                            destination.write_bytes(payload)
-                        from PIL import Image
-                        with Image.open(destination) as frame:
-                            frame.load()
-                            require(frame.size == (codec_registers[0x1c // 4], codec_registers[0x18 // 4]),
-                                    'Decoded native codec output dimensions differ')
-                            record['codec_output'] = dict(file=destination.name, bytes=length, sha256=digest,
-                                decoded=True, width=frame.width, height=frame.height, mode=frame.mode,
-                                pixels=[dict(x=x, y=y, rgb=frame.getpixel((x, y)))
-                                    for x, y in ((0, 0), (frame.width // 2, frame.height // 2),
-                                                 (frame.width - 1, frame.height - 1))],
-                                source='Slave codec RAM at IRQ entry; not an SD-card file')
+                    record['codec'] = codec_snapshot(remote)
+                    if pc == 0x10095ade:
+                        output = save_codec_output(remote, record['codec'], machine.args.out.parent, 'Slave')
+                        if output:
+                            record['codec_output'] = output
                     pointer = remote.get(registers, 'r0')
                     if 0xc1000000 <= pointer <= 0xc81fff48:
                         record['codec_argument'] = dict(address=hex(pointer), words=[hex(value) for value in
@@ -2720,6 +2734,12 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     record['processing'] = master_processing_snapshot(remote)
                 if pc in CAPTURE_MASTER_TRANSFORM_POINTS:
                     record['transform'] = transform_snapshot(remote, slave=False)
+                if pc in CAPTURE_MASTER_CODEC_POINTS:
+                    record['codec'] = codec_snapshot(remote, slave=False)
+                    if pc == 0x103bdfea:
+                        output = save_codec_output(remote, record['codec'], machine.args.out.parent, 'Master')
+                        if output:
+                            record['codec_output'] = output
                 if capture_focus and pc == 0x1023938c:
                     record['peer_input'] = peer_input_snapshot(remote, thread, machine)
                 if capture_caller:
@@ -3815,6 +3835,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                                 struct.unpack('<8I', remote.read(pointer, 32))]
                     hits[pc] = hits.get(pc, 0) + int(keep)
                     repeat = not keep or hits[pc] < (32 if pc in (
+                        0x103bdfea, 0x103c6754,
                         0x1031a638, 0x1031a690, 0x1032ac52, 0x1032ac9a,
                         0x10360468, 0x103604ca, 0x103eb2e4,
                         0x1023cc10, 0x1023cc28, 0x1023cc32, 0x1023cc44, 0x10307fe0, 0x10327108,

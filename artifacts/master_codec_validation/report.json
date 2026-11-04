@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "binary_sha256": "22c129d4f5622efa4063403d139f3b019993f7b2ee113d7e06a460667899dc5c",
+  "source_sha256": "97b28c309db3be2f3c87ed6ec31450a8f81d16fe5ab0d1101cbca04bd40b67ca",
+  "red": {
+    "binary_sha256": "e80a572f648d36288b34bf86fac25458a121396af9ac565b8a2a6f41abb66409",
+    "role": "master",
+    "encoded_count": 0,
+    "pending_480": "0x0",
+    "expected_encoded_count": 1,
+    "expected_pending_480": "0x08001000"
+  },
+  "checks": [
+    {
+      "command": "tests/test_slave_codec.py",
+      "passed": true,
+      "configurations": 5
+    }
+  ],
+  "scope": "JPEG unit 0 master/slave measurement and output for the finite diagnostic raster profiles. Fully decoded dimensions, pixels, quantizers, measured length versus emitted stream length, no output DMA during measurement, unchanged guard words, bounds, overlap, invalid final chroma, masks, W1C, reset and disabled processing. Does not establish factory color/calibration accuracy or other JPEG interfaces."
+}

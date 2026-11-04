@@ -942,3 +942,14 @@ starts, W1C and reset with image and thumbnail completions pending. See the
 [thumbnail device receipt](../artifacts/master_thumbnail_validation/report.json).
 The body probe records each native thumbnail dispatch and wait return; its
 read-only master JPEG register snapshot is based at `24072000`.
+
+The JPEG-unit-0 batch (`tests/test_slave_codec.py`) now has five configurations,
+including master operation and disabled master processing. Both engines check
+all four diagnostic image sizes, measurement versus actual output length,
+measurement without destination DMA, decoded pixels and quantization tables,
+limits, overlap, invalid final chroma, masks, partial W1C and reset. The slave
+color-checker case remains. See the
+[master codec receipt](../artifacts/master_codec_validation/report.json).
+The body probe captures master IRQ 105 at `103bdfea`, original measurement
+wait returns, input row hashes and completed codec RAM streams for comparison
+with the eventual card files. Other JPEG register interfaces are separate.

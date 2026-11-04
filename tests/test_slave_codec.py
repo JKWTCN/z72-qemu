@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Check bounded slave JPEG output, decoded pixels and native IRQ register semantics."""
+"""Check bounded engine JPEG output, decoded pixels and native IRQ register semantics."""
 import argparse
 import io
 import json
@@ -11,11 +11,16 @@ from PIL import Image
 
 
 def check(qemu):
-    base, output, capacity = 0x24072000, 0xdf52e800, 0x100000
+    base, capacity = 0x24072000, 0x100000
     quantizers = [[1 + index % 8 for index in range(64)],
                   [2 + index * 3 % 11 for index in range(64)]]
     for role, enabled, color in (('slave', True, False), ('slave', False, False),
-                                  ('master', True, False), ('slave', True, True)):
+                                  ('master', True, False), ('master', False, False),
+                                  ('slave', True, True)):
+        output = 0xdb8c9c00 if role == 'master' else 0xdf52e800
+        small_source = 0xbd200000 if role == 'master' else 0xc8900000
+        scratch_end = 0xc3dcb400 if role == 'master' else 0xca712200
+        output_end = 0xffee5400 if role == 'master' else 0xffe66800
         with socket.socket() as listener:
             listener.bind(('127.0.0.1', 0))
             port = listener.getsockname()[1]
@@ -88,7 +93,7 @@ def check(qemu):
             def measured_count():
                 return monitor('qom-get', dict(path='/machine/unattached/' + config, property='codec-measured-count'))
 
-            def configure(width=640, height=424, source=0xc8900000, size=capacity, scale=0, measuring=False):
+            def configure(width=640, height=424, source=small_source, size=capacity, scale=0, measuring=False):
                 stride = 1664 if width == 1620 else width
                 rows = 1088 if width == 1620 else height
                 write(base + 4, 0x80000000)
@@ -126,11 +131,11 @@ def check(qemu):
                 return length
 
             configure()
-            if role != 'slave' or not enabled:
+            if not enabled:
                 start()
                 assert count() == 0 and read(base + 0x480) == 0 and not levels.get(105 - 32, False)
                 continue
-            source, plane = 0xc8900000, 640 * 424
+            source, plane = small_source, 640 * 424
             command(f'memset {source:#x} {plane:#x} 0')
             command(f'memset {source + plane:#x} {plane:#x} 0x80')
             for y in range(32):
@@ -139,8 +144,8 @@ def check(qemu):
             write(output - 4, 0x12345678)
             write(output + capacity, 0x87654321)
             for address, value in ((base, 0), (base + 0x418, 16),
-                                   (base + 0x430, 0xca7121f0), (base + 0x434, source + 16),
-                                   (base + 0x440, 0xffe667f0), (base + 0x440, source),
+                                   (base + 0x430, scratch_end - 16), (base + 0x434, source + 16),
+                                   (base + 0x440, output_end - 16), (base + 0x440, source),
                                    (base + 0x100, 0), (base + 0x458, 1)):
                 configure()
                 write(address, value)
@@ -152,7 +157,8 @@ def check(qemu):
             assert count() == 0 and read(output) == 0xa5a5a5a5
             command(f'memset {source + 2 * plane - 1:#x} 1 0x80')
             start()
-            assert count() == 1 and read(base + 0x480) == 0x08001000
+            assert count() == 1 and read(base + 0x480) == 0x08001000, (
+                role, count(), hex(read(base + 0x480)))
             assert read(base + 0x2c) == 0x80000000 and not levels.get(105 - 32, False)
             verify(640, 424, capacity)
             assert read(output - 4) == 0x12345678 and read(output + capacity) == 0x87654321
@@ -169,7 +175,8 @@ def check(qemu):
             write(base + 4, 0x80000000)
             assert read(base + 4) == 0 and count() == 1
 
-            width, height, source = 8256, 5504, 0xf510e800
+            width, height = 8256, 5504
+            source = 0xed650800 if role == 'master' else 0xf510e800
             plane, maximum = width * height, 0xe15a00
             configure(width, height, source, maximum)
             command(f'memset {source:#x} {plane:#x} 0')
@@ -182,7 +189,8 @@ def check(qemu):
             verify(width, height, maximum)
             assert read(output - 4) == 0x12345678 and read(output + maximum) == 0x50607080
 
-            width, height, stride, rows, source = 1620, 1080, 1664, 1088, 0xc8984800
+            width, height, stride, rows = 1620, 1080, 1664, 1088
+            source = 0xbd284800 if role == 'master' else 0xc8984800
             second = source + stride * rows
             command(f'memset {source:#x} {stride * height:#x} 0')
             command(f'memset {second:#x} {stride * height:#x} 0x80')
@@ -244,7 +252,8 @@ def check(qemu):
             start()
             assert count() == 5 and verify(160, 106, capacity, bright=(2, 2)) == measurement
 
-            width, height, source = 160, 120, 0xc8cf8800
+            width, height = 160, 120
+            source = 0xbd5f8800 if role == 'master' else 0xc8cf8800
             plane = width * height
             command(f'memset {source:#x} {plane:#x} 0')
             command(f'memset {source + plane:#x} {plane:#x} 0x80')
