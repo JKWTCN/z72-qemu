@@ -1,0 +1,396 @@
+{
+  "schema": 1,
+  "result": "passed-input-lifecycle-and-native-capture",
+  "source_revision": "59806b0-plus-recorded-source-delta",
+  "scope": "Explicit reset/enable admission and selected-unit cancellation; original F8/silent capture with nonzero experimental timing input.",
+  "original_control_commands": 84,
+  "original_contract_source_sha256": "78e37c3ec3988ff32c28ba6b464c627c95bfc8cc31e31ba93719bc832cacb4f6",
+  "checks": [
+    {
+      "test": "test_input_lifecycle.py",
+      "exit_code": 0,
+      "seconds": 5.125,
+      "source_sha256": "6a99cb085d4a954d378deabd92713d5b2c668a05b41d70d3823d8e5a9d8da769",
+      "output": "PASS input reset/enable admission, selective cancellation, DMA preservation and fresh restart\r\n"
+    },
+    {
+      "test": "test_input_dma.py",
+      "exit_code": 0,
+      "seconds": 7.094,
+      "source_sha256": "a8b3d0f51c658474a912ed1daeff968b0d39ee8279e5fac3fe0c81def36b04ec",
+      "output": "PASS RAW12 input DMA and monochrome processing profiles\r\n"
+    },
+    {
+      "test": "test_primary_input_dma.py",
+      "exit_code": 0,
+      "seconds": 26.25,
+      "source_sha256": "911735c042561117c5e3a8281d1e0d0a3a9335005452d28c82512563efd0cea9",
+      "output": "PASS RAW12/RAW14 split DMA, peer ownership, sender code isolation, validation and lifecycle\r\nPASS RAW12/RAW14 split DMA, peer ownership, sender code isolation, validation and lifecycle\r\n"
+    },
+    {
+      "test": "test_color_preview.py",
+      "exit_code": 0,
+      "seconds": 1.172,
+      "source_sha256": "83812b1ba2cb8f1742ec5f0e24aae684eb8d39eca81205573289fb9fce2d6a71",
+      "output": "PASS P6 RAW RAM, NV12, odd-width JPEG chroma from guest RAM, bounds, stop and reset\r\n"
+    },
+    {
+      "test": "test_lens_scene.py",
+      "exit_code": 0,
+      "seconds": 2.203,
+      "source_sha256": "43dd6b9208c8c77ce16d9e5f31c484e6975df9862476b7eb7a05fe358f5a2b09",
+      "output": "PASS scene iris coupling: P5 gray whole/fractional stops, actual motion, invalid DMA and reset\r\nPASS scene iris coupling: P6 RGB whole/fractional stops, actual motion, invalid DMA and reset\r\n"
+    }
+  ],
+  "red": {
+    "source_revision": "59806b0",
+    "binary_sha256": "dced480692a936e977dc4bcab868403cb8f84cf93597adac79021ede4057b8ef",
+    "failure": "Reset/disabled input accepted run",
+    "log_sha256": "9d38f3287ea45589f91aa08456d5a7b1c7a7228b59142e2e9e52407cd163f316"
+  },
+  "native_build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "e6c42e531db3f0eba414b454d349fc35982b5ec6ffab3ba5c6a22371ce2e9b47",
+    "sources": {
+      "qemu/nikon-z72.c": "d9a8f741ae667e2a25611db789ad6942e931742d704d9100ab049c8b2cf19105",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+      "qemu/trace-events": "a84c9b38f7a4871005ca7c1cd1c0a46d9c0e30630ca94e84c5e59e009bf6156f",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+      "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+      "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+      "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    }
+  },
+  "source_sha256": {
+    "tools/create_lab_parameters.py": "239f18a41a70d9543cdaf42d36a62db6dcc363ad0bb85bedc556342bc08f834e",
+    ".local/input-lifecycle/observer.py": "60d5af57857a2893b6ae0aa457d2d468e352755d526b4f1dab572d55338d8c85",
+    "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+    "qemu/trace-events": "a84c9b38f7a4871005ca7c1cd1c0a46d9c0e30630ca94e84c5e59e009bf6156f",
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "d9a8f741ae667e2a25611db789ad6942e931742d704d9100ab049c8b2cf19105",
+    "tools/body_shutter_gate_probe.py": "06a8cb62e87aa270a1be205d5927ed244459dc55b7fad4152aa882e381be896c",
+    "tools/web_console.py": "c568a5742cbe034259ca297deed0ee683865ff983fe840374b4da31fcd59ede0",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+  },
+  "arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--trace-sd-host",
+    "--display-complete",
+    "--frame-phase",
+    "--input-stop-complete",
+    "--frame-generate",
+    "--frame-notify",
+    "--frame-process",
+    "--processing-resource-header",
+    "--aux-image-process",
+    "--controller-step-link",
+    "--controller-actuator",
+    "--sampling-output-complete",
+    "--shutter-on-ready",
+    "--half-before-full",
+    "--shutter-click",
+    "--application-only",
+    "--body-exposure",
+    "1000",
+    "--capture-focus",
+    "--capture-counter-seconds",
+    "1",
+    "--skip-still-preprocessing",
+    "--icount-shift",
+    "2",
+    "--watch",
+    "900",
+    "--out",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\input_lifecycle_f8\\report.json",
+    "--controller-step-feedback",
+    "--trace-controller-gpio",
+    "--body-silent",
+    "--sample-group1",
+    "--sensor-image",
+    "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+    "--nvme-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--sensor-timing-profile",
+    "--virtual-lens",
+    "--body-fnumber",
+    "800"
+  ],
+  "controls": {
+    "events": 218,
+    "commands": [
+      {
+        "role": "master",
+        "address": "0x20068000",
+        "count": 49
+      },
+      {
+        "role": "master",
+        "address": "0x20068004",
+        "count": 44
+      },
+      {
+        "role": "master",
+        "address": "0x20068008",
+        "count": 34
+      },
+      {
+        "role": "master",
+        "address": "0x2006800c",
+        "count": 26
+      },
+      {
+        "role": "master",
+        "address": "0x20068010",
+        "count": 34
+      },
+      {
+        "role": "master",
+        "address": "0x20068014",
+        "count": 31
+      }
+    ],
+    "all_recorded_running_states_within_gates": true,
+    "all_recorded_transitions_match_commands": true,
+    "primary_starts": [
+      {
+        "virtual_ns": 3619330484,
+        "master": true,
+        "address": "0x20068008",
+        "value": "0x400",
+        "previous": "0x5d",
+        "running": "0x45d",
+        "released": "0x45d",
+        "enabled": "0x45d"
+      }
+    ],
+    "cancellations": []
+  },
+  "iris_raw_timing": {
+    "request_ns": 3604761296,
+    "primary_start_ns": 3619330484,
+    "raw_ns": 3630173956,
+    "arrival_ns": 3664761296,
+    "raw_after_start_ns": 10843472,
+    "raw_before_arrival_ns": 34587340,
+    "position": 243,
+    "factor_q16": 27302
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "capture_driver_state": 9,
+  "primary_frames": 1,
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x10104d3c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107094",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a64",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "preprocessing": {
+    "requested": true,
+    "contexts": [
+      {
+        "context": "0xc19d3ec0",
+        "nested": "0xc29b9040",
+        "address": "0xc29bbbbc",
+        "previous": 0,
+        "supplied": 2,
+        "native_clear_observed": true,
+        "preprocessing_inputs": [
+          {
+            "address": "0xc29bbbb9",
+            "offset": "0x2b79",
+            "previous": 0,
+            "supplied": 1
+          },
+          {
+            "address": "0xc29bbbbb",
+            "offset": "0x2b7b",
+            "previous": 0,
+            "supplied": 2
+          }
+        ],
+        "sflt_skip_observed": true,
+        "raw_compute_skip_observed": true,
+        "result_halfwords": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "report.json": {
+      "bytes": 8888646,
+      "sha256": "d16cc861f68e5749e1f0e5b3a1678cfa7a53d876b39a370454e19efe2455e007"
+    },
+    "conditions.json": {
+      "bytes": 6804,
+      "sha256": "99b2b70ac104163c5f250c36bf057fb0e79bd7fde6884ec61a5f61a7535f1c1a"
+    },
+    "timing-events.jsonl": {
+      "bytes": 63115,
+      "sha256": "3b5c4c9111ee702eb73483fd4bb31e29af4ffd3b1f9136e9cd657fbe73c1687c"
+    },
+    "source-observer.py": {
+      "bytes": 2240,
+      "sha256": "60d5af57857a2893b6ae0aa457d2d468e352755d526b4f1dab572d55338d8c85"
+    },
+    "qemu.log": {
+      "bytes": 586599,
+      "sha256": "b3c474f01f717fb075b9802c8f81d3a9206c35471f27518a0e66e637ad369f0e"
+    },
+    "cleanup.json": {
+      "bytes": 1873,
+      "sha256": "ca6b252d1828c4bc7184c89802b612c45ef533845ab3d4bc026eeaea6de03e2c"
+    }
+  },
+  "cleanup": {
+    "codec_files": [
+      {
+        "name": "codec-071c058c8e9596e1156cc840467b5666b8e8808689cd677328956667d61ed770.jpg",
+        "bytes": 26467,
+        "sha256": "071c058c8e9596e1156cc840467b5666b8e8808689cd677328956667d61ed770"
+      },
+      {
+        "name": "codec-18140fd35ab7167551534158f23a20cf1ec0d5d3d460902c590a64478e84b0cb.jpg",
+        "bytes": 26222,
+        "sha256": "18140fd35ab7167551534158f23a20cf1ec0d5d3d460902c590a64478e84b0cb"
+      },
+      {
+        "name": "codec-192db6d1c3c318f681e38b110c39608355668002ebf4e67cac23ec739ff23b62.jpg",
+        "bytes": 7775,
+        "sha256": "192db6d1c3c318f681e38b110c39608355668002ebf4e67cac23ec739ff23b62"
+      },
+      {
+        "name": "codec-2006412f8c4be0156bd088bb2562db959124c29a3a661c9460ec82eecf65e9f2.jpg",
+        "bytes": 1082513,
+        "sha256": "2006412f8c4be0156bd088bb2562db959124c29a3a661c9460ec82eecf65e9f2"
+      },
+      {
+        "name": "codec-225d2031c4245c14f0d0b2fdf5c2182fdb932197f93382d74b36488c0162fcbe.jpg",
+        "bytes": 22099,
+        "sha256": "225d2031c4245c14f0d0b2fdf5c2182fdb932197f93382d74b36488c0162fcbe"
+      },
+      {
+        "name": "codec-3cd5ba41a88b7bfc4ea8ad159bbf1e7573778fa9bba4ea3a83f93df61cd7440f.jpg",
+        "bytes": 19701,
+        "sha256": "3cd5ba41a88b7bfc4ea8ad159bbf1e7573778fa9bba4ea3a83f93df61cd7440f"
+      },
+      {
+        "name": "codec-8081d490bcb986ecddfaff319c491b64f8e76031ee41077d320e1f2b0efc6073.jpg",
+        "bytes": 95677,
+        "sha256": "8081d490bcb986ecddfaff319c491b64f8e76031ee41077d320e1f2b0efc6073"
+      },
+      {
+        "name": "codec-89e82f4a601719f8865375632f36f7c7f00d9e808750ec78bfd76781be27aff9.jpg",
+        "bytes": 24190,
+        "sha256": "89e82f4a601719f8865375632f36f7c7f00d9e808750ec78bfd76781be27aff9"
+      }
+    ],
+    "intermediate_codec_files_removed": true,
+    "no_persistent_card_created": true,
+    "temporary_vm_work_removed": true
+  },
+  "limitations": [
+    "Reset release/enable admission is a finite functional interpretation of original lifecycle controls, not physical timing.",
+    "Control trace covers the six command ports; the separate hard-stop register is outside this trace event.",
+    "RAW remains periodic and precedes iris arrival; committed-configuration snapshots and electronic integration are not restored.",
+    "Original DSP preprocessing is explicitly skipped; no persistent-card save/playback or full migration round trip was verified."
+  ]
+}

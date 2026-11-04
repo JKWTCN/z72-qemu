@@ -1150,3 +1150,14 @@ The optional `--sensor-timing-profile` is covered separately by the
 [original-firmware comparison](../research/z7ii/sensor_timing.md). Generator CLI
 checks preserve the default header and reject the profile without its required
 header option before creating output. Temporary CLI outputs are cleaned.
+
+`tests/test_input_lifecycle.py --qemu <qemu-system-arm>` checks both roles'
+eleven input-unit gates, mixed masks, selective reset/disable cancellation,
+discarded blocked starts and machine reset. Actual small preview DMA checks
+RAM, frame counts and retained pending causes across cancellation and restart.
+The primary input batch also checks cancellation after a completed RAW and
+suppression of its stale frame tail. Existing pixel fixtures now explicitly
+release and enable their units before issuing a run command.
+The [lifecycle receipt](../research/z7ii/input_lifecycle.md) separates the old
+admission failure, final device checks and original-firmware observation.
+The source workflow includes the lifecycle check; no remote CI run is claimed.

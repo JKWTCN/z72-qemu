@@ -73,6 +73,8 @@ def check(qemu):
 
             monitor('qmp_capabilities')
             active = role == 'master' and enabled and sampling
+            write(0x20068004, 0xfff)
+            write(0x20068010, 0xfff)
             devices = monitor('qom-list', dict(path='/machine/unattached'))
             names = [item['name'] for item in devices
                      if item['type'] == 'child<nikon-z72-boot-config>']

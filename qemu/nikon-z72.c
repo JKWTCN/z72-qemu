@@ -2840,6 +2840,14 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     return value;
 }
 
+static void input_trace_control(NikonZ72BootConfig *s, hwaddr address,
+                                uint32_t value, uint32_t previous)
+{
+    trace_z72_input_control(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+        s->master_role, address, value, previous, s->input_running,
+        *boot_config_value(s, 0x20068000), *boot_config_value(s, 0x20068010));
+}
+
 static void boot_config_write(void *opaque, hwaddr offset,
                               uint64_t value, unsigned size)
 {
@@ -2872,22 +2880,29 @@ static void boot_config_write(void *opaque, hwaddr offset,
         address == 0x20068140 || address == 0x20068144) {
         return;
     }
-    /* The native enable command changes running channels. Interrupt masks
+    /* Run is admitted only for released, enabled units. Interrupt masks
      * remain owned by the firmware's separate mask-register writes. */
     if (address == 0x20068008 && value) {
+        uint32_t previous = s->input_running;
+        uint32_t started = (uint32_t)value &
+            *boot_config_value(s, 0x20068000) &
+            *boot_config_value(s, 0x20068010);
+
         *stored = (uint32_t)value;
-        if ((value & 0x10) && !(s->input_running & 0x10)) {
+        if ((started & 0x10) && !(s->input_running & 0x10)) {
             s->input_grid_phase = 0;
         }
-        if ((value & 0x400) && !(s->input_running & 0x400)) {
+        if ((started & 0x400) && !(s->input_running & 0x400)) {
             s->primary_frame_written = false;
             s->primary_exposure_ready = false;
         }
-        s->input_running |= value;
+        s->input_running |= started;
+        input_trace_control(s, address, value, previous);
         input_update_irqs(s);
         return;
     }
     if (address == 0x2006800c) {
+        uint32_t previous = s->input_running;
         uint32_t disabled = s->input_running & (uint32_t)value;
 
         /* The source completes transfers synchronously. Report only actual
@@ -2928,15 +2943,25 @@ static void boot_config_write(void *opaque, hwaddr offset,
             s->primary_frame_written = false;
             s->primary_exposure_ready = false;
         }
+        input_trace_control(s, address, value, previous);
         return;
     }
     if (address == 0x20068000 || address == 0x20068004 ||
         address == 0x20068010 || address == 0x20068014) {
+        uint32_t previous = s->input_running;
         hwaddr base = address & ~0x4u;
         uint32_t *state = boot_config_value(s, base);
         bool set = address == 0x20068004 || address == 0x20068010;
         *state = set ? *state | (uint32_t)value : *state & ~(uint32_t)value;
         *boot_config_value(s, base + 4) = *state;
+        if (!set) {
+            s->input_running &= ~(uint32_t)value;
+            if (value & 0x400) {
+                s->primary_frame_written = false;
+                s->primary_exposure_ready = false;
+            }
+        }
+        input_trace_control(s, address, value, previous);
         return;
     }
     if (address >= 0x20068210 && address <= 0x200682f0 &&
@@ -4571,8 +4596,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 59,
-    .minimum_version_id = 59,
+    .version_id = 60,
+    .minimum_version_id = 60,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),

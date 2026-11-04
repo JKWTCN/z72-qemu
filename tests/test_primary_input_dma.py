@@ -205,6 +205,8 @@ def check(qemu, scene, first_case=0, color_scene=False):
                 return bytes.fromhex(command(f'read {address:#x} {length:#x}')[2:])
 
             monitor('qmp_capabilities')
+            write(0x20068004, 0xfff)
+            write(0x20068010, 0xfff)
             names = [item['name'] for item in monitor('qom-list', dict(path='/machine/unattached'))
                      if item['type'] == 'child<nikon-z72-boot-config>']
             assert len(names) == (2 if paired else 1)
@@ -448,6 +450,29 @@ def check(qemu, scene, first_case=0, color_scene=False):
                 assert (data_at(first, 256), data_at(native_full + first_stride, 256, True)) == original
                 write(0x2006800c, 0x400)
                 assert read(0x20068210) == 0, 'Masked primary tail was delivered'
+                if case == 0:
+                    write(0x20069950, 0x10000000 + native_full - 0xb8000000 + first_stride)
+                    write(0x20068200, 0x80)
+                    for expected, cancel in ((4, 0x20068000), (5, 0x20068014)):
+                        write(0x20068004, 0x400)
+                        write(0x20068010, 0x400)
+                        write(0x20068008, 0x400)
+                        tick()
+                        assert count() == expected and read(0x20068210) == 0x41
+                        original = data_at(first, 256)
+                        write(cancel, 0x200)
+                        assert property_value('input-running') == 0x400
+                        write(cancel, 0x400)
+                        write(0x2006800c, 0x400)
+                        tick()
+                        assert count() == expected and read(0x20068210) == 0x41, \
+                            'Cancelled primary run retained DMA or its old frame tail'
+                        assert data_at(first, 256) == original
+                        write(0x20068210, 0xffffffff)
+                        write(0x20068004, 0x400)
+                        write(0x20068010, 0x400)
+                        tick()
+                        assert count() == expected, 'Primary restore replayed a cancelled run'
             monitor('system_reset')
             assert property_value('input-running') == 0
             assert count() == 0 and property_value('primary-input-dma-address') == 0

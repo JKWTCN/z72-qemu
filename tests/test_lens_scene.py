@@ -110,6 +110,8 @@ def check(qemu, scene, color):
         write(target - 4, 0x12345678)
         write(target + 416, 0x87654321)
         command(f'set_irq_in {config} frame-sync-enable 0 1')
+        write(0x20068004, 0x200)
+        write(0x20068010, 0x200)
         write(0x20068008, 0x200)
 
         def inspect(expected=None):

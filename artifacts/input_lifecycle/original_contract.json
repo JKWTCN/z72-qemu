@@ -1,0 +1,764 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "decoder": "0x1020a71a",
+  "callback": "0x1020c0a8",
+  "cases": [
+    {
+      "entry": "0x10209020",
+      "command": "0x3",
+      "logical": "0x600",
+      "status": [
+        "0x0",
+        "0x110",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x4",
+        "0x4"
+      ]
+    },
+    {
+      "entry": "0x1020ae7c",
+      "command": "0x4",
+      "logical": "0x10",
+      "status": [
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x2"
+      ]
+    },
+    {
+      "entry": "0x10208c84",
+      "command": "0x8",
+      "logical": "0x20",
+      "status": [
+        "0x10000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x1"
+      ]
+    },
+    {
+      "entry": "0x1020a05c",
+      "command": "0x10",
+      "logical": "0x800",
+      "status": [
+        "0x0",
+        "0x1000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "waiter_events": [
+        "0x8"
+      ]
+    },
+    {
+      "entry": "0x1020a17e",
+      "command": "0x60",
+      "logical": "0x2",
+      "status": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x30"
+      ],
+      "waiter_events": [
+        "0x10"
+      ]
+    }
+  ],
+  "run_controls": [
+    {
+      "selector": 0,
+      "start": {
+        "entry": "0x10208f72",
+        "register": "0x20068008",
+        "mask": "0x400"
+      },
+      "disable": {
+        "entry": "0x10208ff6",
+        "register": "0x2006800c",
+        "mask": "0x400"
+      }
+    },
+    {
+      "selector": 1,
+      "start": {
+        "entry": "0x10208f72",
+        "register": "0x20068008",
+        "mask": "0x200"
+      },
+      "disable": {
+        "entry": "0x10208ff6",
+        "register": "0x2006800c",
+        "mask": "0x200"
+      }
+    },
+    {
+      "selector": 2,
+      "start": {
+        "entry": "0x10208f72",
+        "register": "0x20068008",
+        "mask": "0x600"
+      },
+      "disable": {
+        "entry": "0x10208ff6",
+        "register": "0x2006800c",
+        "mask": "0x600"
+      }
+    }
+  ],
+  "lifecycle_controls": [
+    {
+      "mask": "0x0",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x1",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x2",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x4",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x8",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x10",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x20",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x40",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x80",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x200",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x400",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x800",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0x600",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    },
+    {
+      "mask": "0xfff",
+      "commands": [
+        {
+          "entry": "0x1020a50c",
+          "flag": 0,
+          "address": "0x20068000"
+        },
+        {
+          "entry": "0x1020a50c",
+          "flag": 1,
+          "address": "0x20068004"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 1,
+          "address": "0x20068010"
+        },
+        {
+          "entry": "0x1020a518",
+          "flag": 0,
+          "address": "0x20068014"
+        },
+        {
+          "entry": "0x1020aafc",
+          "flag": 0,
+          "address": "0x20068008"
+        },
+        {
+          "entry": "0x1020a830",
+          "flag": 0,
+          "address": "0x2006800c"
+        }
+      ]
+    }
+  ],
+  "disable_cases": [
+    {
+      "pending": "0x1",
+      "physical": [
+        "0x1"
+      ],
+      "bank": 0,
+      "bits": "0x200",
+      "logical": "0x1",
+      "callback": "0x10239524",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x2",
+      "physical": [
+        "0x4",
+        "0x8"
+      ],
+      "bank": 0,
+      "bits": "0xa000",
+      "logical": "0xc",
+      "callback": "0x10239298",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x4",
+      "physical": [
+        "0x800"
+      ],
+      "bank": 1,
+      "bits": "0x800",
+      "logical": "0x800",
+      "callback": "0x102392be",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x8",
+      "physical": [
+        "0x10"
+      ],
+      "bank": 0,
+      "bits": "0x80000000",
+      "logical": "0x10",
+      "callback": "0x10239480",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x10",
+      "physical": [
+        "0x40"
+      ],
+      "bank": 0,
+      "bits": "0x20000",
+      "logical": "0x40",
+      "callback": "0x10239410",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x20",
+      "physical": [
+        "0x80"
+      ],
+      "bank": 0,
+      "bits": "0x80000",
+      "logical": "0x80",
+      "callback": "0x102393ea",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x40",
+      "physical": [
+        "0x20"
+      ],
+      "bank": 0,
+      "bits": "0x8000000",
+      "logical": "0x20",
+      "callback": "0x10239436",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x100",
+      "physical": [
+        "0x400"
+      ],
+      "bank": 1,
+      "bits": "0x8",
+      "logical": "0x400",
+      "callback": "0x1023938c",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    },
+    {
+      "pending": "0x200",
+      "physical": [
+        "0x200"
+      ],
+      "bank": 1,
+      "bits": "0x80",
+      "logical": "0x200",
+      "callback": "0x1023931c",
+      "task_event": "0x1000",
+      "waits_for_other_channels": true
+    }
+  ],
+  "disable_task_notification": "0x041a0004",
+  "independent_disable": {
+    "pending": "0x80",
+    "physical": "0x2",
+    "bank": 7,
+    "bits": "0x8",
+    "logical": "0x2",
+    "callback": "0x102394dc",
+    "interrupt_group": 4,
+    "low_task_event": "0x20",
+    "notification": "0x041a0006",
+    "input_task_event": "0x20",
+    "drain_handler": "0x10235944",
+    "enable_mask_supplied_by_existing_configuration": true
+  },
+  "limitations": [
+    "Synthetic memory and event API boundaries only.",
+    "Registered mask group and two handle pointers are synthetic; DMA descriptors are original.",
+    "No physical response latency or pixel transfer is established."
+  ]
+}

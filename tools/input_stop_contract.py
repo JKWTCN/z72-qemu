@@ -47,6 +47,17 @@ class StopProbe(RegionProbe):
 
 def probe(image):
     engine = StopProbe(image)
+    lifecycle_controls = []
+    for mask in (0, 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x200, 0x400, 0x800, 0x600, 0xfff):
+        writes = []
+        for entry, flag, port in ((0x1020a50c, 0, 0), (0x1020a50c, 1, 4),
+                (0x1020a518, 1, 0x10), (0x1020a518, 0, 0x14),
+                (0x1020aafc, 0, 8), (0x1020a830, 0, 0xc)):
+            engine.writes.clear()
+            engine.call(entry - 0x10020000, 0, mask, flag)
+            require(engine.writes == [(0x20068000 + port, mask)], 'Input lifecycle command differs')
+            writes.append(dict(entry=hex(entry), flag=flag, address=hex(0x20068000 + port)))
+        lifecycle_controls.append(dict(mask=hex(mask), commands=writes))
     cases = []
     for entry, command, logical, status, events in (
             (0x10209020, 3, 0x600, [0, 0x110, 0, 0, 0, 0, 0, 0], [4, 4]),
@@ -154,6 +165,7 @@ def probe(image):
     return dict(format=1, firmware_included=False, master_sha256=MASTER_SHA,
                 decoder='0x1020a71a', callback='0x1020c0a8', cases=cases,
                 run_controls=run_controls,
+                lifecycle_controls=lifecycle_controls,
                 disable_cases=disable_cases, disable_task_notification='0x041a0004',
                 independent_disable=dict(pending='0x80', physical='0x2', bank=7, bits='0x8',
                     logical='0x2', callback='0x102394dc', interrupt_group=4,

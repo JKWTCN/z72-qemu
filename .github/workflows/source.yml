@@ -49,6 +49,7 @@ jobs:
           python tests/test_sensor_image.py --qemu .build/build/qemu-system-arm
           python tests/test_primary_input_dma.py --qemu .build/build/qemu-system-arm
           python tests/test_input_dma.py --qemu .build/build/qemu-system-arm
+          python tests/test_input_lifecycle.py --qemu .build/build/qemu-system-arm
           python tests/test_still_processing.py --qemu .build/build/qemu-system-arm
           python tests/test_slave_codec.py --qemu .build/build/qemu-system-arm
           python tests/test_controller_uart.py --qemu .build/build/qemu-system-arm
