@@ -1,0 +1,140 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "previous_photo": {
+    "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+    "bytes": 3656721,
+    "sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+    "unchanged": true
+  },
+  "new_photo": {
+    "name": "DCIM/100NZ7_2/DSC_0002.JPG",
+    "path": "artifacts/playback_return_body_save/DSC_0002.JPG",
+    "bytes": 3407179,
+    "sha256": "b6cfd3f6bb4f70c76e48f1b8ccd44aeff1c72ec778a456344fba4e770df456d4",
+    "jpeg_images": [
+      {
+        "offset": "0x0",
+        "width": 8256,
+        "height": 5504,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x8248",
+        "width": 160,
+        "height": 120,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x2b8800",
+        "width": 640,
+        "height": 424,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x2d6400",
+        "width": 1620,
+        "height": 1080,
+        "sampling": "4:2:2",
+        "decoded": true
+      }
+    ],
+    "matching_ram_bodies": [
+      {
+        "file": "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg",
+        "sha256": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1",
+        "bytes": 366923,
+        "body_offset": "0x2e6402",
+        "body_bytes": 366921
+      },
+      {
+        "file": "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg",
+        "sha256": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e",
+        "bytes": 2748980,
+        "body_offset": "0x19402",
+        "body_bytes": 2748978
+      },
+      {
+        "file": "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg",
+        "sha256": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017",
+        "bytes": 11596,
+        "body_offset": "0x824a",
+        "body_bytes": 11594
+      },
+      {
+        "file": "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg",
+        "sha256": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92",
+        "bytes": 56292,
+        "body_offset": "0x2c8802",
+        "body_bytes": 56290
+      }
+    ]
+  },
+  "other_encoder_candidates": [
+    {
+      "file": "codec-10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728.jpg",
+      "sha256": "10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728",
+      "bytes": 186122
+    },
+    {
+      "file": "codec-3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d.jpg",
+      "sha256": "3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d",
+      "bytes": 38429
+    },
+    {
+      "file": "codec-4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69.jpg",
+      "sha256": "4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69",
+      "bytes": 223998
+    },
+    {
+      "file": "codec-6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40.jpg",
+      "sha256": "6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40",
+      "bytes": 271156
+    },
+    {
+      "file": "codec-bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a.jpg",
+      "sha256": "bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a",
+      "bytes": 45098
+    },
+    {
+      "file": "codec-e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877.jpg",
+      "sha256": "e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877",
+      "bytes": 32069
+    },
+    {
+      "file": "codec-fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999.jpg",
+      "sha256": "fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999",
+      "bytes": 307614
+    }
+  ],
+  "source_scene": {
+    "path": ".local/return-capture-scene.pgm",
+    "bytes": 12339,
+    "sha256": "766c1af08f343216d3acbaa91d30df19571179b4a9faec0835f947be406d0aa3",
+    "width": 128,
+    "height": 96,
+    "generation": "P5 header followed by level=(x*7+y*19+((x//8)^(y//4))*23)&255 in row order"
+  },
+  "scene_check": {
+    "method": "Every 128x96 source cell center in the independently decoded saved primary JPEG",
+    "samples": 12288,
+    "failed_samples": 0,
+    "maximum_rgb_error": 0,
+    "allowed_rgb_error": 12,
+    "split_boundary": {
+      "samples": 576,
+      "failed_samples": 0,
+      "maximum_rgb_error": 0,
+      "allowed_rgb_error": 24
+    }
+  },
+  "probe_txt_preserved": true,
+  "host_fat_or_jpeg_edits": false,
+  "photo_reencoded": false,
+  "scope": "Native new file saved after cold playback and return on a private card clone; old photo and original probe file retained. Primary scene samples and all four JPEG images decoded independently."
+}

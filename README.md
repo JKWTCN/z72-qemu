@@ -74,6 +74,9 @@ native card creation and no host card edits between stages; see the
 Cold playback round trips also recover the shooting application and restarted
 preview with a held or short half-press; see the
 [return validation](artifacts/playback_scene_return_click/validation.json).
+With the explicit focused exposure/silent and preprocessing profile, a body
+capture after that return also saves a second scene JPEG while preserving the
+first photo; see the [saved-file validation](artifacts/playback_return_body_save/validation.json).
 Menu reopening after it closes, the storage-slot status behind the
 shooting-screen `Card`/`Err` counters, menu text semantics,
 complete capture processing and the natural production

@@ -1,0 +1,12 @@
+{
+  "format": 1,
+  "action": "Filesystem compression of this run private card, retaining its logical data for cold-read checks",
+  "card_path": ".local/playback_return_body_save.raw",
+  "logical_bytes": 4294967296,
+  "logical_sha256_before": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+  "logical_sha256_after": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+  "attributes": "Archive, Compressed",
+  "logical_bytes_unchanged": true,
+  "original_card_modified": false,
+  "allocated_data_bytes": 3334144
+}

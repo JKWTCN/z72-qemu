@@ -4153,6 +4153,8 @@ def main():
                         help='Laboratory input: pulse GPIO input 0 at armed return-path handshake waits/submissions')
     parser.add_argument('--return-watch', type=int, default=120,
                         help='Host seconds to trace the return from playback (30..900)')
+    parser.add_argument('--return-capture-watch', type=int, default=900,
+                        help='Host seconds for body capture after return when body exposure is supplied (10..3600)')
     parser.add_argument('--watch', type=int, default=30,
                         help='Host seconds to observe the requested stage (10..3600)')
     parser.add_argument('--capture-card-copy', type=Path,
@@ -4291,7 +4293,8 @@ def main():
             args.reconfigure_watch and not args.playback,
             'Input boundary experiment requires RAW DMA and shooting reconfiguration observation')
     require(not args.shutter_on_ready or args.frame_process and
-            not args.playback and not args.shutter_on_preview,
+            (not args.playback or args.round_trip and args.body_exposure is not None) and
+            not args.shutter_on_preview,
             'Ready shutter requires processing and shooting observation without preview-triggered input')
     require(not args.capture_submit_on_ready or args.frame_process and
             not (args.playback or args.shutter_on_ready or args.shutter_on_preview or args.half_before_full),
@@ -4304,6 +4307,10 @@ def main():
     require(args.body_exposure is None or args.application_only and args.shutter_on_ready and
             not args.capture_submit_on_ready and 0 < args.body_exposure <= 0xFFFFFFFF,
             'Body exposure requires readiness-triggered body input and a positive 32-bit property value')
+    require(not (args.playback and args.body_exposure is not None) or args.round_trip and
+            args.capture_focus and args.shutter_click and args.capture_card_copy is not None and
+            not args.repeat_body_capture,
+            'Body capture after playback requires a round trip, focused release input and a private card copy')
     require(not args.body_silent or args.body_exposure is not None,
             'Silent body capture requires the local body exposure settings caller')
     require(not args.repeat_body_capture or args.body_exposure is not None and
@@ -4326,7 +4333,8 @@ def main():
                  args.trace_capture_compute_boot)) <= 1,
             'Select one boot observation')
     require(not args.application_only or (args.shutter_on_ready or args.shutter_on_preview) and
-            not (args.playback or args.capture_submit_on_ready or args.input_boundary_events),
+            (not args.playback or args.round_trip and args.body_exposure is not None) and
+            not (args.capture_submit_on_ready or args.input_boundary_events),
             'Application-only observation requires a processed-preview body shutter')
     require(not args.shutter_click or args.shutter_on_ready or args.shutter_on_preview,
             'Shutter click requires a processed-preview body shutter')
@@ -4348,6 +4356,7 @@ def main():
                  args.body_input_events or args.image_work_events)),
             'Body system observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
+    require(10 <= args.return_capture_watch <= 3600, 'Return capture watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
     require(not args.playback_click or args.playback, 'Playback click requires playback')
     require(args.playback_after_capture == 0 or 10 <= args.playback_after_capture <= 3600,
@@ -4433,6 +4442,22 @@ def main():
             print(json.dumps(dict(reconfiguration_wait=reconfiguration)), flush=True)
         initial_lcd = lcd_snapshot(machine)
         initial_dma = input_dma_snapshot(machine) if args.frame_generate else None
+        body_options = dict(half_before_full=args.half_before_full,
+                            shutter_on_ready=args.shutter_on_ready,
+                            capture_focus=args.capture_focus,
+                            capture_counter_seconds=args.capture_counter_seconds,
+                            body_exposure=args.body_exposure, body_silent=args.body_silent,
+                            repeat_body_capture=args.repeat_body_capture,
+                            controller_step_trigger=args.controller_step_trigger,
+                            application_only=args.application_only, shutter_click=args.shutter_click,
+                            image_work_events=args.image_work_events,
+                            body_state_events=args.body_state_events,
+                            body_capture_events=args.body_capture_events,
+                            body_input_events=args.body_input_events,
+                            body_compute_events=args.body_compute_events,
+                            body_system_events=args.body_system_events,
+                            skip_compute_statistics=args.skip_compute_statistics,
+                            skip_still_preprocessing=args.skip_still_preprocessing)
         report = dict(observation=('native-playback-capture-stop' if args.playback else
                                   'native-full-release-application-gate'), boot=state,
                       sd_attached=args.sd_card is not None,
@@ -4459,36 +4484,19 @@ def main():
                                     watch_read=args.watch_read, watch_write=args.watch_write,
                                     watch_bytes=args.watch_bytes, watch_count=args.watch_count,
                                     shutter_on_preview=args.shutter_on_preview,
-                                    half_before_full=args.half_before_full,
                                     input_boundary_events=args.input_boundary_events,
-                                    shutter_on_ready=args.shutter_on_ready,
                                     capture_submit_on_ready=args.capture_submit_on_ready,
                                     capture_wait_idle=args.capture_wait_idle,
-                                    capture_focus=args.capture_focus,
-                                    capture_counter_seconds=args.capture_counter_seconds,
                                     capture_exposure=args.capture_exposure,
-                                    body_exposure=args.body_exposure,
-                                    body_silent=args.body_silent,
-                                    repeat_body_capture=args.repeat_body_capture,
                                     capture_jpeg=args.capture_jpeg,
                                     capture_format_3800=args.capture_format_3800,
                                     capture_storage=args.capture_storage,
-                                    controller_step_trigger=args.controller_step_trigger,
-                                    application_only=args.application_only,
-                                    shutter_click=args.shutter_click,
                                     playback_click=args.playback_click,
-                                    image_work_events=args.image_work_events,
-                                    body_state_events=args.body_state_events,
-                                    body_capture_events=args.body_capture_events,
-                                    body_input_events=args.body_input_events,
-                                    body_compute_events=args.body_compute_events,
-                                    body_system_events=args.body_system_events,
-                                    skip_compute_statistics=args.skip_compute_statistics,
-                                    skip_still_preprocessing=args.skip_still_preprocessing,
                                     frame_notify=args.frame_notify,
                                     reconfigure=bool(args.reconfigure_watch),
                                     tail_frame_events=args.tail_frame_events,
-                                    mode1_frame_events=args.mode1_frame_events))
+                                    mode1_frame_events=args.mode1_frame_events,
+                                    **({} if args.playback else body_options)))
         report['native_lcd_before'] = initial_lcd
         report['processing_resource_header'] = args.processing_resource_header
         if args.trace_capture_resource_boot:
@@ -4534,8 +4542,11 @@ def main():
             if args.frame_generate:
                 report['return_liveview']['input_dma'] = input_dma_snapshot(machine)
             if state['index'] == 3 and state['input_ready']:
-                report['shutter_after_return'] = observe(machine, 30, watch_write=args.watch_write,
-                    frame_notify=args.frame_notify, watch_bytes=args.watch_bytes, watch_count=args.watch_count)
+                report['shutter_after_return'] = observe(machine,
+                    args.return_capture_watch if args.body_exposure is not None else 30,
+                    watch_write=args.watch_write, frame_notify=args.frame_notify,
+                    watch_bytes=args.watch_bytes, watch_count=args.watch_count,
+                    **(body_options if args.body_exposure is not None else {}))
                 report['post_shutter_application'] = machine.status()
             report['final_application'] = machine.status()
         report['native_lcd_after'] = lcd_snapshot(machine)

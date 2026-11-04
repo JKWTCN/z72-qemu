@@ -986,3 +986,20 @@ application after the later stages. Legacy reports used the latter field for
 the earlier playback state. A return to shooting and a subsequent full press
 do not establish a saved second photo; inspect the relevant capture and card
 evidence separately.
+
+With `--playback --round-trip`, the existing focused body profile can now be
+applied after returning: supply `--body-exposure`, `--application-only`,
+`--shutter-on-ready`, `--capture-focus`, `--shutter-click` and a new
+`--capture-card-copy`. The exposure/silent caller and capture tracing are
+deferred until the return stage finishes. `--half-before-full`,
+`--body-silent`, `--capture-counter-seconds` and the explicit preprocessing
+experiments retain their existing meanings in that later stage. Repeated body
+capture is excluded from this combination. Ordinary initial body capture keeps
+its previous profile; a round trip without body exposure keeps the existing
+30-host-second unconfigured full-press observation.
+
+`--return-capture-watch` bounds the configured capture stage separately
+(10..3600 host seconds, default 900). `--watch` and `--return-watch` continue
+to bound playback and return. The full trace remains under `shutter_after_return`.
+See the [post-return saved-file validation](../artifacts/playback_return_body_save/validation.json)
+for a native second JPEG, preserved first photo and independent scene checks.

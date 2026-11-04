@@ -1,0 +1,106 @@
+{
+  "format": 1,
+  "result": "passed-save-after-return",
+  "firmware_included": false,
+  "observer_completed": true,
+  "source_photo_sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+  "new_photo_sha256": "b6cfd3f6bb4f70c76e48f1b8ccd44aeff1c72ec778a456344fba4e770df456d4",
+  "new_photo_bytes": 3407179,
+  "new_photo_created_by_firmware": true,
+  "old_photo_unchanged": true,
+  "playback_application_index": 2,
+  "return_application_index": 3,
+  "final_application_index": 3,
+  "settings_applied_only_after_return": true,
+  "settings_trigger_ticks": 518476919,
+  "return_after_ticks": 517978799,
+  "settings_only_caller": true,
+  "capture_api_invoked": false,
+  "body_shutter": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 563429854,
+    "shot": 1,
+    "release_ticks": 575520082,
+    "held_counter_seconds": 0.25187975
+  },
+  "capture_counter_seconds": 2.949878,
+  "capture_recovered": true,
+  "still_queue_empty": true,
+  "primary_frames_before": 0,
+  "primary_frames_after": 1,
+  "all_stage_sampled_faults_zero": true,
+  "scene_samples": 12288,
+  "scene_maximum_rgb_error": 0,
+  "checker_script_sha256": "fe00da46c167f725b5dd894c255e1458fe376f875f0a2257c52fb80d72d7c305",
+  "scope": "Cold native playback of an existing photo, measured half-click return, explicit native exposure/silent settings, staged body contacts and completed new scene JPEG save. Original DSP preprocessing is explicitly skipped; pixel/codec hardware is a functional replacement. No default browser or original DSP execution claim.",
+  "report": {
+    "path": "artifacts/playback_return_body_save/report.json",
+    "bytes": 475346,
+    "sha256": "ebaad36a5e03dfbfaad54d552eb742c439d366c7d7a051f1a558031643b3f7b8"
+  },
+  "full_report_archive": {
+    "path": ".local/capture-report-archive/playback_return_body_save.json",
+    "bytes": 12304385,
+    "sha256": "25157ba00ce06bedc874502ded8b9e6f6155f26c89fdef17b1c336ea719c17e7"
+  },
+  "run_conditions": {
+    "path": "artifacts/playback_return_body_save/run_conditions.json",
+    "bytes": 6877,
+    "sha256": "583fae3720d462c0e9335ff0e9819087257e9bc569671af9ff1fb4358322be5e"
+  },
+  "profile_checks": {
+    "path": "artifacts/playback_return_body_save/profile_checks.json",
+    "bytes": 6613,
+    "sha256": "dc012c6826a1bda6021489de140c94ab4ca6b94976304d5f2d5179c747e9bd11"
+  },
+  "card_check": {
+    "path": "artifacts/playback_return_body_save/card_check.json",
+    "bytes": 4785,
+    "sha256": "2c181c9e3be1b99ee9e218a27ee38cfedb2dd4728d9fa481e57da351f92c339a"
+  },
+  "checker_archive": {
+    "path": ".local/capture-report-archive/check-playback-return-body-save.py",
+    "bytes": 6740,
+    "sha256": "fe00da46c167f725b5dd894c255e1458fe376f875f0a2257c52fb80d72d7c305"
+  },
+  "profile_checker_archive": {
+    "path": ".local/capture-report-archive/check-return-capture-profiles.py",
+    "bytes": 4205,
+    "sha256": "4fc379c40abfd3f5ff2217d00c28f545b62cb225d4347efe1ea3b8f9be68a261"
+  },
+  "card_storage": {
+    "path": "artifacts/playback_return_body_save/card_storage.json",
+    "bytes": 549,
+    "sha256": "c67ce50c08d7e90c7c69028a91bcecf49c97957ef161478b1f9b3f7d75b1664d"
+  },
+  "stdout_archive": {
+    "path": ".local/capture-report-archive/playback_return_body_save-stdout.log",
+    "bytes": 12304385,
+    "sha256": "25157ba00ce06bedc874502ded8b9e6f6155f26c89fdef17b1c336ea719c17e7"
+  },
+  "source_scene_archive": {
+    "path": ".local/capture-report-archive/playback_return_body_save-scene.pgm",
+    "bytes": 12339,
+    "sha256": "766c1af08f343216d3acbaa91d30df19571179b4a9faec0835f947be406d0aa3"
+  },
+  "incomplete_checkpoint_archives": [
+    {
+      "path": ".local/capture-report-archive/playback_return_body_save-playback-checkpoint.json",
+      "bytes": 356705,
+      "sha256": "2cef274044c44974e7a83fa0859269ac9db3cb77c1a4aae77114a88fb8204ad2"
+    },
+    {
+      "path": ".local/capture-report-archive/playback_return_body_save-return-checkpoint.json",
+      "bytes": 319867,
+      "sha256": "7f8e0bbca6cbe71c3ef817cffe6e8e96670c3fa528fdb653b4c09153f51afaaf"
+    },
+    {
+      "path": ".local/capture-report-archive/playback_return_body_save-capture-progress.json",
+      "bytes": 7211657,
+      "sha256": "1f018cb40033169fb09ed299e8bcdb42e9084e3562129dc40eb89e96baf0dcc5"
+    }
+  ],
+  "temporary_vm_directory_removed": true,
+  "private_card_retained_for_cold_read": true
+}

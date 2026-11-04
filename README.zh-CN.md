@@ -53,6 +53,8 @@ JPEG 硬件使用替代后端；不能据此声称默认浏览器交互台已具
 [组合验证](artifacts/body_capture_playback_scene/validation.json)。
 冷回放后，持续半按和短按半按均已验证可返回拍摄应用并恢复取景数据，见
 [返回验证](artifacts/playback_scene_return_click/validation.json)。
+沿用显式曝光、静音和预处理跳过配置，返回后的机身拍摄也已保存第二张场景
+JPG，并保持第一张照片，见[保存验证](artifacts/playback_return_body_save/validation.json)。
 菜单关闭后的重开
 （采集状态 `0x3f` 门控）、拍摄画面 `Card`/`Err` 计数背后的存储槽
 状态、菜单文字语义、完整捕获处理与部分通知的自然产出

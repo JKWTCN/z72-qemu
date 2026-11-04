@@ -1,0 +1,212 @@
+{
+  "format": 1,
+  "result": "passed",
+  "checks": [
+    {
+      "case": "valid",
+      "result": "accepted before machine construction"
+    },
+    {
+      "case": "no-round-trip",
+      "result": "rejected",
+      "reason": "Ready shutter requires processing and shooting observation without preview-triggered input"
+    },
+    {
+      "case": "no-private-card",
+      "result": "rejected",
+      "reason": "Body capture after playback requires a round trip, focused release input and a private card copy"
+    },
+    {
+      "case": "repeat",
+      "result": "rejected",
+      "reason": "Body capture after playback requires a round trip, focused release input and a private card copy"
+    },
+    {
+      "case": "watch-low",
+      "result": "rejected",
+      "reason": "Return capture watch time out of bounds"
+    },
+    {
+      "case": "watch-high",
+      "result": "rejected",
+      "reason": "Return capture watch time out of bounds"
+    },
+    {
+      "case": "original-body",
+      "result": "passed phase routing",
+      "calls": [
+        {
+          "seconds": 900,
+          "playback": false,
+          "returning": false,
+          "options": {
+            "watch_read": null,
+            "watch_write": null,
+            "watch_bytes": 4,
+            "watch_count": 1,
+            "shutter_on_preview": false,
+            "input_boundary_events": false,
+            "capture_submit_on_ready": false,
+            "capture_wait_idle": false,
+            "capture_exposure": null,
+            "capture_jpeg": false,
+            "capture_format_3800": false,
+            "capture_storage": 0,
+            "playback_click": false,
+            "frame_notify": true,
+            "reconfigure": false,
+            "tail_frame_events": false,
+            "mode1_frame_events": false,
+            "half_before_full": true,
+            "shutter_on_ready": true,
+            "capture_focus": true,
+            "capture_counter_seconds": 2.0,
+            "body_exposure": 1000,
+            "body_silent": true,
+            "repeat_body_capture": false,
+            "controller_step_trigger": false,
+            "application_only": true,
+            "shutter_click": true,
+            "image_work_events": false,
+            "body_state_events": false,
+            "body_capture_events": false,
+            "body_input_events": false,
+            "body_compute_events": false,
+            "body_system_events": false,
+            "skip_compute_statistics": false,
+            "skip_still_preprocessing": true
+          }
+        }
+      ]
+    },
+    {
+      "case": "legacy-round-trip",
+      "result": "passed phase routing",
+      "calls": [
+        {
+          "seconds": 180,
+          "playback": true,
+          "returning": false,
+          "options": {
+            "watch_read": null,
+            "watch_write": null,
+            "watch_bytes": 4,
+            "watch_count": 1,
+            "shutter_on_preview": false,
+            "input_boundary_events": false,
+            "capture_submit_on_ready": false,
+            "capture_wait_idle": false,
+            "capture_exposure": null,
+            "capture_jpeg": false,
+            "capture_format_3800": false,
+            "capture_storage": 0,
+            "playback_click": true,
+            "frame_notify": true,
+            "reconfigure": false,
+            "tail_frame_events": false,
+            "mode1_frame_events": false
+          }
+        },
+        {
+          "seconds": 240,
+          "playback": false,
+          "returning": true,
+          "options": {
+            "return_click": true,
+            "gpio_handshake_events": false,
+            "watch_write": null,
+            "frame_notify": true,
+            "watch_bytes": 4,
+            "watch_count": 1
+          }
+        },
+        {
+          "seconds": 30,
+          "playback": false,
+          "returning": false,
+          "options": {
+            "watch_write": null,
+            "frame_notify": true,
+            "watch_bytes": 4,
+            "watch_count": 1
+          }
+        }
+      ]
+    },
+    {
+      "case": "post-return-body",
+      "result": "passed phase routing",
+      "calls": [
+        {
+          "seconds": 180,
+          "playback": true,
+          "returning": false,
+          "options": {
+            "watch_read": null,
+            "watch_write": null,
+            "watch_bytes": 4,
+            "watch_count": 1,
+            "shutter_on_preview": false,
+            "input_boundary_events": false,
+            "capture_submit_on_ready": false,
+            "capture_wait_idle": false,
+            "capture_exposure": null,
+            "capture_jpeg": false,
+            "capture_format_3800": false,
+            "capture_storage": 0,
+            "playback_click": true,
+            "frame_notify": true,
+            "reconfigure": false,
+            "tail_frame_events": false,
+            "mode1_frame_events": false
+          }
+        },
+        {
+          "seconds": 180,
+          "playback": false,
+          "returning": true,
+          "options": {
+            "return_click": true,
+            "gpio_handshake_events": false,
+            "watch_write": null,
+            "frame_notify": true,
+            "watch_bytes": 4,
+            "watch_count": 1
+          }
+        },
+        {
+          "seconds": 900,
+          "playback": false,
+          "returning": false,
+          "options": {
+            "watch_write": null,
+            "frame_notify": true,
+            "watch_bytes": 4,
+            "watch_count": 1,
+            "half_before_full": true,
+            "shutter_on_ready": true,
+            "capture_focus": true,
+            "capture_counter_seconds": 2.0,
+            "body_exposure": 1000,
+            "body_silent": true,
+            "repeat_body_capture": false,
+            "controller_step_trigger": false,
+            "application_only": true,
+            "shutter_click": true,
+            "image_work_events": false,
+            "body_state_events": false,
+            "body_capture_events": false,
+            "body_input_events": false,
+            "body_compute_events": false,
+            "body_system_events": false,
+            "skip_compute_statistics": false,
+            "skip_still_preprocessing": true
+          }
+        }
+      ]
+    }
+  ],
+  "observer_sha256": "3d0a70825b9abbee2b20064158d2cdc76e99e7433c621c4e84133c5361d8e8e1",
+  "checker_sha256": "4fc379c40abfd3f5ff2217d00c28f545b62cb225d4347efe1ea3b8f9be68a261",
+  "scope": "Six argument checks and three main-stage routing checks with fake machine/observer boundaries. No guest execution or hardware result claim; temporary reports removed."
+}
