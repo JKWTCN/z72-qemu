@@ -11,6 +11,9 @@ are recorded in [exposure inputs](research/z7ii/exposure_inputs.md).
 Optional `--virtual-lens` adds a finite 50 mm F2.8 lens and peripheral DMA;
 original initialization and M/A/S/P dial responses are recorded in
 [virtual lens research](research/z7ii/lens.md).
+Optional `--virtual-body-vr` adds [SPI4 communication memory](research/z7ii/body_vr_transport.md)
+with physical chip select, checked transfers and deferred replies. Sensors and
+stabilization actuators remain absent; this is not an operational VR subsystem.
 
 Z72 QEMU is an experimental QEMU environment for Nikon Z7 II C 1.70 firmware
 research. It provides a dedicated ARM machine, strict firmware input validation,

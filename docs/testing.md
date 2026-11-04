@@ -1073,3 +1073,12 @@ The [capture boundary receipt](../artifacts/lens_capture_probe/validation.json)
 records a native RAW transfer followed by an execution fault and the watched
 callback overwrite. It is an incomplete capture result. Bulk-copy write watches
 also record the original saved return from the stack while LR holds copy data.
+
+`python tests/test_body_vr.py --qemu .build/build/qemu-system-arm` exercises
+the optional SPI4 communication-memory device through actual GPIO, SPI and
+HDMAC. It checks deferred read/write completion, checksums, bounds, partial
+reply retention, busy rejection, missing resident views and reset cancellation.
+The body probe accepts `--virtual-body-vr` and records `body_vr_after`.
+The [communication receipt](../artifacts/body_vr_transport/validation.json)
+separates component checks from bounded original-firmware observations;
+neither establishes physical stabilization or a saved JPEG.

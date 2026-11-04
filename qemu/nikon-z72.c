@@ -9,6 +9,7 @@
 #include "qapi/error.h"
 #include "hw/boards.h"
 #include "hw/sysbus.h"
+#include "hw/ssi/ssi.h"
 #include "hw/qdev-properties.h"
 #include "hw/arm/machines-qom.h"
 #include "hw/resettable.h"
@@ -608,6 +609,10 @@ struct NikonZ72BootConfig {
     DeviceState *intc;
     DeviceState *serial;
     bool virtual_lens;
+    bool virtual_body_vr;
+    qemu_irq body_vr_select_irq;
+    MemoryRegion body_vr_select_register;
+    uint32_t body_vr_pdr;
     bool peripheral_dma;
     bool controller_connected;
     uint8_t controller_levels;
@@ -4238,9 +4243,40 @@ static const MemoryRegionOps compute_mailbox_ops = {
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
+static uint64_t body_vr_select_read(void *opaque, hwaddr offset, unsigned size)
+{
+    return NIKON_Z72_BOOT_CONFIG(opaque)->body_vr_pdr;
+}
+
+static void body_vr_select_write(void *opaque, hwaddr offset,
+                                 uint64_t value, unsigned size)
+{
+    NikonZ72BootConfig *s = opaque;
+    uint32_t mask = value >> 16;
+    uint32_t previous = s->body_vr_pdr;
+
+    s->body_vr_pdr = (previous & ~mask) | (value & mask);
+    if (mask & 2) {
+        qemu_set_irq(s->body_vr_select_irq, !!(s->body_vr_pdr & 2));
+    }
+    if (previous != s->body_vr_pdr) {
+        trace_z72_engine_gpio_latch(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+            s->master_role, 0x0428202c, value, previous, s->body_vr_pdr);
+    }
+}
+
+static const MemoryRegionOps body_vr_select_ops = {
+    .read = body_vr_select_read, .write = body_vr_select_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4 },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
 static void boot_config_reset(Object *obj, ResetType type)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
+    s->body_vr_pdr = 2;
+    qemu_set_irq(s->body_vr_select_irq, 1);
     memset(s->values, 0, sizeof(s->values));
     s->sampling_output_gates = 0;
     s->sampling_output_active = 0;
@@ -4586,6 +4622,7 @@ static void boot_config_init(Object *obj)
     qdev_init_gpio_in_named(DEVICE(obj), sd_irq_input, "sd-irq", 1);
     qdev_init_gpio_out(DEVICE(obj), &s->peer_ready_irq, 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_ack_irq, "controller-ack", 1);
+    qdev_init_gpio_out_named(DEVICE(obj), &s->body_vr_select_irq, "body-vr-select", 1);
     qdev_init_gpio_out_named(DEVICE(obj), &s->controller_step_irq, "controller-step", 1);
     /* One rising edge per frame on the two recovered display completion
      * lines; wired to the master display device when it exists. */
@@ -4841,6 +4878,12 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                                         (outside_bank ? 0 : base),
                                     &s->registers[i]);
     }
+    if (s->virtual_body_vr && s->master_role) {
+        memory_region_init_io(&s->body_vr_select_register, OBJECT(dev),
+                              &body_vr_select_ops, s, "z72-body-vr-select", 4);
+        memory_region_add_subregion(&s->banks[0], 0x8202c,
+                                    &s->body_vr_select_register);
+    }
     if (s->release_config) {
         memory_region_init_io(&s->auxiliary_ram, OBJECT(dev), &auxiliary_ops, s,
                               "z72-auxiliary-configuration", 0x4000);
@@ -4881,6 +4924,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
         DEFINE_PROP_BOOL("primary-exposure-sync", NikonZ72BootConfig, primary_exposure_sync, false),
         DEFINE_PROP_BOOL("virtual-lens", NikonZ72BootConfig, virtual_lens, false),
+        DEFINE_PROP_BOOL("virtual-body-vr", NikonZ72BootConfig, virtual_body_vr, false),
         DEFINE_PROP_BOOL("peripheral-dma", NikonZ72BootConfig, peripheral_dma, false),
         DEFINE_PROP_UINT32("blocked-control", NikonZ72BootConfig, blocked_control, 0),
         DEFINE_PROP_UINT32("clear-base", NikonZ72BootConfig, clear_base, 0),
@@ -5574,6 +5618,9 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         NIKON_Z72_DUAL(machine)->controller_link && own_file) {
         qdev_prop_set_bit(spi, "peer-low-byte-first", true);
     }
+    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr) {
+        qdev_prop_set_bit(spi, "peer-low-byte-first", true);
+    }
     sysbus_realize_and_unref(SYS_BUS_DEVICE(spi), &error_fatal);
     memory_region_add_subregion_overlap(view, 0x2c0a0000,
         sysbus_mmio_get_region(SYS_BUS_DEVICE(spi), 0), 1);
@@ -5592,8 +5639,17 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         qdev_connect_gpio_out_named(lens, "notify", 0,
             qdev_get_gpio_in_named(config, "gpio-input", 9));
     }
+    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr) {
+        DeviceState *vr = qdev_new("nikon-z72-body-vr");
+        object_property_add_child(OBJECT(machine), "master-body-vr", OBJECT(vr));
+        qdev_realize_and_unref(vr, qdev_get_child_bus(spi,
+            own_file ? "master-spi4" : "slave-spi4"), &error_fatal);
+        qdev_connect_gpio_out_named(config, "body-vr-select", 0,
+                                    qdev_get_gpio_in_named(vr, SSI_GPIO_CS, 0));
+    }
     if (NIKON_Z72_BOOT_CONFIG(config)->peripheral_dma ||
-        NIKON_Z72_BOOT_CONFIG(config)->virtual_lens) {
+        NIKON_Z72_BOOT_CONFIG(config)->virtual_lens ||
+        (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr)) {
         DeviceState *dma[2];
         for (unsigned bank = 0; bank < 2; bank++) {
             dma[bank] = qdev_new("nikon-z72-hdmac");

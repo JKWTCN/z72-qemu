@@ -2130,6 +2130,21 @@ def lens_snapshot(machine):
                 machine.qmp.command('cont')
 
 
+def body_vr_snapshot(machine):
+    with machine.io:
+        running = machine.qmp.command('query-status')['running']
+        if running:
+            machine.qmp.command('stop')
+        try:
+            return {name: machine.qmp.command('qom-get',
+                dict(path='/machine/master-body-vr', property=name)) for name in
+                ('runtime', 'frames', 'completed', 'rejected', 'truncated',
+                 'reads', 'writes', 'configuration-generation')}
+        finally:
+            if running:
+                machine.qmp.command('cont')
+
+
 def input_dma_snapshot(machine):
     with machine.io:
         machine.qmp.command('stop')
@@ -4158,6 +4173,8 @@ def main():
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
                         help='Replace the RAW12 checkerboard with an 8-bit binary PGM scene')
+    parser.add_argument('--virtual-body-vr', action='store_true',
+                        help='Attach the finite body VR communication memory model; sensors and actuators remain absent')
     parser.add_argument('--virtual-lens', action='store_true',
                         help='Attach the experimental 50 mm F2.8 lens and record its state')
     parser.add_argument('--frame-notify', action='store_true',
@@ -4519,6 +4536,7 @@ def main():
                       frame_phase=args.frame_phase,
                       sample_group1=args.sample_group1,
                       virtual_lens=args.virtual_lens,
+                      virtual_body_vr=args.virtual_body_vr,
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,
@@ -4603,6 +4621,8 @@ def main():
         if args.virtual_lens:
             report['lens_before'] = initial_lens
             report['lens_after'] = lens_snapshot(machine)
+        if args.virtual_body_vr:
+            report['body_vr_after'] = body_vr_snapshot(machine)
         if args.frame_generate:
             report['input_dma_after'] = input_dma_snapshot(machine)
         args.out.parent.mkdir(parents=True, exist_ok=True)

@@ -24,7 +24,7 @@ def prepare(root):
                  'nikon-z72-controller.h',
                  'nikon-z72-profile.h', 'nikon-z72-graphics.c', 'nikon-gpu.h',
                  'nikon-z72-nvme.c', 'nikon-z72-lens.c', 'nikon-z72-spi.h',
-                 'nikon-z72-hdmac.c'):
+                 'nikon-z72-hdmac.c', 'nikon-z72-body-vr.c'):
         source, destination = project / name, root / 'hw/arm' / name
         if not destination.exists() or source.read_bytes() != destination.read_bytes():
             shutil.copyfile(source, destination)
@@ -99,6 +99,9 @@ def prepare(root):
             hdmac = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-hdmac.c'))\n"
             if hdmac.strip() not in data:
                 data += hdmac
+            body_vr = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-body-vr.c'))\n"
+            if body_vr.strip() not in data:
+                data += body_vr
             graphics = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-graphics.c'))\n"
             if graphics.strip() not in data:
                 data += graphics

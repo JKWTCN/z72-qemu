@@ -350,6 +350,8 @@ class Machine:
                          'nikon-z72-boot-config.sample-counter=on') +
                      (('nikon-z72-boot-config.virtual-lens=on',)
                       if getattr(self.args, 'virtual_lens', False) else ()) +
+                     (('nikon-z72-boot-config.virtual-body-vr=on',)
+                      if getattr(self.args, 'virtual_body_vr', False) else ()) +
                      (('nikon-z72-boot-config.display-complete=on',)
                       if getattr(self.args, 'display_complete', False) else ()) +
                      (('nikon-z72-boot-config.input-handshake=on',)
@@ -1141,6 +1143,8 @@ def main():
                         help='Use an 8-bit binary PGM scene for the monochrome RAW12 input')
     parser.add_argument('--virtual-lens', action='store_true',
                         help='Attach an experimental normal-family 50 mm F2.8 lens')
+    parser.add_argument('--virtual-body-vr', action='store_true',
+                        help='Attach body VR communication RAM; sensors and stabilization actuators remain absent')
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',

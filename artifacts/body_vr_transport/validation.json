@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "qualification": "Finite communication-memory device; no original RX execution, physical stabilization, or saved JPEG verified.",
+  "source_sha256": {
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "055a892b1541a7fff3ea6249dc5b6d99a286876a7e6f5d77479d0151bc343981",
+    "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+    "tools/build.py": "6823a8c5ecdf7d12344926307e6a902c6a5830c58fe4f97dd650fdccf8fffb32",
+    "tests/test_body_vr.py": "6dfe0e6ac373a9fb4105f60b62c063cb1bc1c46ba1d9680b360b46c8b03856c9",
+    "tools/body_shutter_gate_probe.py": "434b700d2c640dcb3ef468cce68b0193efcac822ad4093c20f7a491b96bba6e0",
+    "tools/web_console.py": "4e562df4dce2bcd414dc986e088d9f0125a25ada2a3b617b0a4de3b31284e674"
+  },
+  "component_validation": {
+    "result": "passed",
+    "binary_sha256": "8c43685c2fb9b690d03a70e12cef9f88dfb55618e49e2b7a047c19d97f52d18f",
+    "command": "python -B tests/test_body_vr.py --qemu <local-built-qemu>",
+    "checks": [
+      "GPIO write masks and physical chip-select framing",
+      "128/256-byte SPI4 halfword DMA readback",
+      "Deferred write and read completion with busy state",
+      "Checksum failure preserves existing memory",
+      "Out-of-range, resident-view and unknown requests rejected",
+      "Partial reply retained until fully clocked",
+      "Overlapping write rejected without replacing pending data",
+      "Truncated and overflowing frames rejected",
+      "Normal control argument is not treated as a memory length",
+      "Reset cancels pending work and clears virtual RAM"
+    ]
+  },
+  "default_layout_validation": {
+    "register_address_table_unchanged": true,
+    "boot_config_vmstate_unchanged": true
+  },
+  "original_profile": {
+    "firmware": "C 1.70",
+    "virtual_lens": true,
+    "virtual_body_vr": true,
+    "program": 3,
+    "exposure_setting": 1000,
+    "silent": true,
+    "trigger": "actual body half/full/release contacts",
+    "preprocessing_skip_requested": true,
+    "storage_uses_temporary_overlay": true
+  },
+  "original_observations": [
+    {
+      "binary_sha256": "f39d33b5c2fd43e763aaf1e7befb3158d56d28cb67ca23f64b714853fe5d4589",
+      "source_sha256": {
+        "qemu/nikon-z72-body-vr.c": "f856bb8e8a65d9e71f6d3593b2e02b5bf2ac14a98122ba6871fb3b542fe5dd0e",
+        "qemu/nikon-z72.c": "0a9f2e481f92ad7530ad6b131de0538fbf19090f632b6cd641459dea96044c51",
+        "tools/body_shutter_gate_probe.py": "434b700d2c640dcb3ef468cce68b0193efcac822ad4093c20f7a491b96bba6e0",
+        "tools/web_console.py": "064d73d3c5a33c64a5ae7fd7392f4f8895388fd479c5d3ea8afc31dfe0a4cd1e"
+      },
+      "report_sha256": "e42c31b88fa1de95ed418dd39e178b338c3edc4118fcd33c3734032c97c0b094",
+      "conditions_sha256": "81094325cccb78520dff716e9ea34f2a84fcaf9c24f1d3f5233a2bb0e1103abf",
+      "capture_counter_window": {
+        "requested_seconds": 2.0,
+        "reached": true
+      },
+      "primary_raw_frames": 1,
+      "abort_events": [],
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x1022e2e4",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x1028c800",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a64",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a64",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "body_vr": {
+        "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d2:00 sensor-connected=0 actuator-connected=0",
+        "frames": 195,
+        "completed": 76,
+        "rejected": 119,
+        "truncated": 81,
+        "reads": 5,
+        "writes": 0,
+        "configuration-generation": 1
+      },
+      "lens_rejected": 0,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "jpeg_encoder_registers_nonzero": false,
+      "saved_photo_verified": false,
+      "preprocessing_skip_requested": true
+    },
+    {
+      "binary_sha256": "0e76cc7ab2226b4fe24cb8b312f205d4b4caafe3f95490093c4110ac616fd0b7",
+      "source_sha256": {
+        "qemu/nikon-z72-body-vr.c": "23a0318904eaf8aee8e839437b871366eadbca68895577c8c02e19f01489926e",
+        "qemu/nikon-z72.c": "055a892b1541a7fff3ea6249dc5b6d99a286876a7e6f5d77479d0151bc343981",
+        "tools/body_shutter_gate_probe.py": "434b700d2c640dcb3ef468cce68b0193efcac822ad4093c20f7a491b96bba6e0",
+        "tools/web_console.py": "4e562df4dce2bcd414dc986e088d9f0125a25ada2a3b617b0a4de3b31284e674"
+      },
+      "report_sha256": "88dca8fc014722c23811009588e3b9ee91581d75dc2aa6e465cd882920e1f12a",
+      "conditions_sha256": "067259b458760556ccfc4e843bfdd56e66b1bd60185121d8f2a87e85674083af",
+      "capture_counter_window": {
+        "requested_seconds": 1.0,
+        "reached": true
+      },
+      "primary_raw_frames": 1,
+      "abort_events": [],
+      "cores": [
+        {
+          "thread": 1,
+          "pc": "0x10107094",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "pc": "0x10107094",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "pc": "0x10038a4c",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "pc": "0x10038a50",
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "body_vr": {
+        "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d2:00 sensor-connected=0 actuator-connected=0",
+        "frames": 158,
+        "completed": 66,
+        "rejected": 92,
+        "truncated": 0,
+        "reads": 5,
+        "writes": 0,
+        "configuration-generation": 1
+      },
+      "lens_rejected": 0,
+      "capture_state": [
+        2,
+        0
+      ],
+      "capture_driver_state": 9,
+      "jpeg_encoder_registers_nonzero": false,
+      "saved_photo_verified": false,
+      "preprocessing_skip_requested": true
+    }
+  ],
+  "qualifications": [
+    "The two native runs precede the final guard rejecting F2 resident-flash-view addresses; that guard is checked by the final component fixture.",
+    "The first native run used a prototype GPIO register in the common table; the second used the isolated optional register preserving the default table.",
+    "Unsupported stabilization/control commands remain rejected, and telemetry ready bits are not supplied.",
+    "No callback slot or firmware reply length is patched by the device.",
+    "A bounded fault-free observation and one RAW frame do not establish a saved photo."
+  ]
+}
