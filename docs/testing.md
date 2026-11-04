@@ -1127,3 +1127,15 @@ JPEG images, 12,288 scene samples and playback in the same guest. It distinguish
 the explicit-peer native build from the final automatic-attachment component
 check. The source card and previously requested JPG are preserved; the owned
 temporary card and intermediate codec images are removed after verification.
+
+`tools/sensor_serial_contract.py --master <C1.70-master> --out .local/serial-contract.json`
+executes the original image-interface program selector, packet-list walker and
+byte writer. Six transport cases cover the 192-byte boundary, zero-extension,
+selection lifetime and continued chunks after an error. Four list cases cover
+zero termination, source advancement and stopping at the first packet error.
+All 21 selectors are checked for input class 5, including explicit nonempty
+resource forwarding. Transport completion and GPIO are synthetic boundaries.
+The separate [native observation](../research/z7ii/sensor_serial.md) records six
+empty resource programs and two built-in lists under the current explicit
+resource-header input. It establishes neither physical sensor acceptance nor
+electronic exposure timing; DSP preprocessing remains explicitly skipped.

@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "result": "passed-original-image-interface-serial-contract",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "original": {
+    "selector": "0x102fe1ea",
+    "input_class": "0x102fe126",
+    "packet_list": "0x1030621e",
+    "byte_writer": "0x10367fe0",
+    "serial_job": "0x10370a14"
+  },
+  "transport": [
+    {
+      "bytes": 0,
+      "failed_chunk": null,
+      "result": 0,
+      "chunk_sizes": [],
+      "select_levels": [
+        0,
+        1
+      ]
+    },
+    {
+      "bytes": 1,
+      "failed_chunk": null,
+      "result": 0,
+      "chunk_sizes": [
+        1
+      ],
+      "select_levels": [
+        0,
+        1
+      ]
+    },
+    {
+      "bytes": 192,
+      "failed_chunk": null,
+      "result": 0,
+      "chunk_sizes": [
+        192
+      ],
+      "select_levels": [
+        0,
+        1
+      ]
+    },
+    {
+      "bytes": 193,
+      "failed_chunk": null,
+      "result": 0,
+      "chunk_sizes": [
+        192,
+        1
+      ],
+      "select_levels": [
+        0,
+        1
+      ]
+    },
+    {
+      "bytes": 385,
+      "failed_chunk": null,
+      "result": 0,
+      "chunk_sizes": [
+        192,
+        192,
+        1
+      ],
+      "select_levels": [
+        0,
+        1
+      ]
+    },
+    {
+      "bytes": 385,
+      "failed_chunk": 1,
+      "result": 2,
+      "chunk_sizes": [
+        192,
+        192,
+        1
+      ],
+      "select_levels": [
+        0,
+        1
+      ]
+    }
+  ],
+  "packet_lists": [
+    {
+      "lengths": [],
+      "failed_packet": null,
+      "result": 0,
+      "packets": 0
+    },
+    {
+      "lengths": [
+        5,
+        3
+      ],
+      "failed_packet": null,
+      "result": 0,
+      "packets": 2
+    },
+    {
+      "lengths": [
+        5,
+        3
+      ],
+      "failed_packet": 0,
+      "result": 2,
+      "packets": 1
+    },
+    {
+      "lengths": [
+        5,
+        3
+      ],
+      "failed_packet": 1,
+      "result": 2,
+      "packets": 2
+    }
+  ],
+  "input_class": 5,
+  "table_column": 3,
+  "selectors": [
+    {
+      "selector": 0,
+      "result": 0,
+      "program_offset": "0xbf080",
+      "length_table_offset": "0xbf180",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 1,
+      "result": 0,
+      "program_offset": "0xbf280",
+      "length_table_offset": "0xbf2b0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 2,
+      "result": 0,
+      "program_offset": "0xbfa10",
+      "length_table_offset": "0xc13b0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 3,
+      "result": 0,
+      "origin": "native-builder",
+      "lengths": [
+        5,
+        5
+      ],
+      "payload_sha256": "fab75dd3f36cfbd0c2dda25a80f52a44e8f1a06288ab81634b216dc5eb5b76e7"
+    },
+    {
+      "selector": 4,
+      "result": 0,
+      "origin": "native-builder",
+      "lengths": [
+        7,
+        4,
+        4,
+        4,
+        4,
+        5,
+        4,
+        7
+      ],
+      "payload_sha256": "66a14dfd8d68837c6fa2bc46d88b1300e5ec66519277a463e7dbced1ce936d72"
+    },
+    {
+      "selector": 5,
+      "result": 0,
+      "program_offset": "0xc18e0",
+      "length_table_offset": "0xc19b0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 6,
+      "result": 0,
+      "program_offset": "0xc1ae0",
+      "length_table_offset": "0xc1bb0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 7,
+      "result": 0,
+      "program_offset": "0xc1cb0",
+      "length_table_offset": "0xc1cd0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 8,
+      "result": 0,
+      "program_offset": "0xc1e00",
+      "length_table_offset": "0xc1ed0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 9,
+      "result": 0,
+      "program_offset": "0xc1fd0",
+      "length_table_offset": "0xc1ff0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 10,
+      "result": 0,
+      "program_offset": "0xc2100",
+      "length_table_offset": "0xc2150",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 11,
+      "result": 0,
+      "program_offset": "0xc2260",
+      "length_table_offset": "0xc22b0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 12,
+      "result": 0,
+      "program_offset": "0xc23b0",
+      "length_table_offset": "0xc23d0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 13,
+      "result": 0,
+      "program_offset": "0xc24d0",
+      "length_table_offset": "0xc24f0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 14,
+      "result": 0,
+      "program_offset": "0xc25f0",
+      "length_table_offset": "0xc2610",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 15,
+      "result": 0,
+      "program_offset": "0xc2710",
+      "length_table_offset": "0xc2730",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 16,
+      "result": 0,
+      "program_offset": "0xc2830",
+      "length_table_offset": "0xc2870",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 17,
+      "result": 0,
+      "program_offset": "0xc2970",
+      "length_table_offset": "0xc2990",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 18,
+      "result": 0,
+      "program_offset": "0xc2a90",
+      "length_table_offset": "0xc2ad0",
+      "lengths": [],
+      "origin": "resource-80"
+    },
+    {
+      "selector": 19,
+      "result": 1
+    },
+    {
+      "selector": 20,
+      "result": 1
+    }
+  ],
+  "explicit_program_forwarded": true,
+  "limitations": [
+    "Synthetic serial transport, GPIO descriptor and completion results; no physical peer or bus timing.",
+    "Resource data starts zero except for one explicit forwarding fixture; zero-length success is not sensor configuration.",
+    "Only input class 5 and table column 3 are covered; electronic exposure and register meanings are not established."
+  ]
+}
