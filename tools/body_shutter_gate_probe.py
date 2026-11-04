@@ -4536,7 +4536,7 @@ def main():
                       frame_phase=args.frame_phase,
                       sample_group1=args.sample_group1,
                       virtual_lens=args.virtual_lens,
-                      virtual_body_vr=args.virtual_body_vr,
+                      virtual_body_vr=args.virtual_body_vr or args.virtual_lens,
                       input_stop_complete=args.input_stop_complete,
                       frame_generate=args.frame_generate,
                       frame_notify=args.frame_notify,
@@ -4621,7 +4621,7 @@ def main():
         if args.virtual_lens:
             report['lens_before'] = initial_lens
             report['lens_after'] = lens_snapshot(machine)
-        if args.virtual_body_vr:
+        if args.virtual_body_vr or args.virtual_lens:
             report['body_vr_after'] = body_vr_snapshot(machine)
         if args.frame_generate:
             report['input_dma_after'] = input_dma_snapshot(machine)

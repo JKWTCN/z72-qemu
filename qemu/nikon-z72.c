@@ -4878,7 +4878,7 @@ static void boot_config_realize(DeviceState *dev, Error **errp)
                                         (outside_bank ? 0 : base),
                                     &s->registers[i]);
     }
-    if (s->virtual_body_vr && s->master_role) {
+    if ((s->virtual_body_vr || s->virtual_lens) && s->master_role) {
         memory_region_init_io(&s->body_vr_select_register, OBJECT(dev),
                               &body_vr_select_ops, s, "z72-body-vr-select", 4);
         memory_region_add_subregion(&s->banks[0], 0x8202c,
@@ -5618,7 +5618,8 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         NIKON_Z72_DUAL(machine)->controller_link && own_file) {
         qdev_prop_set_bit(spi, "peer-low-byte-first", true);
     }
-    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr) {
+    if (!slave && (NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr ||
+                   NIKON_Z72_BOOT_CONFIG(config)->virtual_lens)) {
         qdev_prop_set_bit(spi, "peer-low-byte-first", true);
     }
     sysbus_realize_and_unref(SYS_BUS_DEVICE(spi), &error_fatal);
@@ -5639,7 +5640,8 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         qdev_connect_gpio_out_named(lens, "notify", 0,
             qdev_get_gpio_in_named(config, "gpio-input", 9));
     }
-    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr) {
+    if (!slave && (NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr ||
+                   NIKON_Z72_BOOT_CONFIG(config)->virtual_lens)) {
         DeviceState *vr = qdev_new("nikon-z72-body-vr");
         object_property_add_child(OBJECT(machine), "master-body-vr", OBJECT(vr));
         qdev_realize_and_unref(vr, qdev_get_child_bus(spi,

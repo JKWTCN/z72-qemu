@@ -8,7 +8,8 @@ with the three firmware paths and open `http://127.0.0.1:8666`.
 Mode selection and both command dials now use original controller inputs;
 native M-mode shutter changes and the remaining lens-dependent boundaries
 are recorded in [exposure inputs](research/z7ii/exposure_inputs.md).
-Optional `--virtual-lens` adds a finite 50 mm F2.8 lens and peripheral DMA;
+Optional `--virtual-lens` adds a finite 50 mm F2.8 lens, peripheral DMA and the
+SPI4 communication peer required by that DMA configuration;
 original initialization and M/A/S/P dial responses are recorded in
 [virtual lens research](research/z7ii/lens.md).
 Optional `--virtual-body-vr` adds [SPI4 communication memory](research/z7ii/body_vr_transport.md)

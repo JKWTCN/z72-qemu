@@ -4,8 +4,8 @@
 使用 `tools/web_console.py` 指定三份固件后，打开 `http://127.0.0.1:8666` 即可操作。
 页面还提供模式选择和主、副拨盘；原厂 M 模式快门的双向调整已验证，
 其余模式与镜头相关边界见[曝光输入](research/z7ii/exposure_inputs.md)。
-可选 `--virtual-lens` 接入虚拟 50 mm F2.8 镜头及外设 DMA；原厂初始化与
-M/A/S/P 拨轮响应见[虚拟镜头](research/z7ii/lens.md)。
+可选 `--virtual-lens` 接入虚拟 50 mm F2.8 镜头、外设 DMA 及对应的 SPI4
+通信对端；原厂初始化与 M/A/S/P 拨轮响应见[虚拟镜头](research/z7ii/lens.md)。
 可选 `--virtual-body-vr` 接入具备实际片选、校验和延迟回复的
 [SPI4 通信内存](research/z7ii/body_vr_transport.md)。传感器和防抖执行器
 仍未连接，不能视为可工作的防抖子系统。

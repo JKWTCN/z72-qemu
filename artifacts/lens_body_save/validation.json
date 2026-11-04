@@ -1,0 +1,469 @@
+{
+  "schema": 1,
+  "result": "passed-native-lens-vr-nvme-save-and-playback",
+  "scope": "Original firmware saves a native scene JPEG through NVMe, then reads it back for playback in the same guest. Native setting APIs and body contacts; original DSP preprocessing explicitly skipped and pixel/codec hardware modeled. No general/default-browser or original DSP claim.",
+  "native_build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "8c43685c2fb9b690d03a70e12cef9f88dfb55618e49e2b7a047c19d97f52d18f",
+    "sources": {
+      "qemu/nikon-z72.c": "055a892b1541a7fff3ea6249dc5b6d99a286876a7e6f5d77479d0151bc343981",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+      "qemu/trace-events": "f6d7317860a6f14cf9ad99a49c427a879cc8c73f7f9a515678aeff5953244aa8",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "ab6a3d3b9a644cfe2bcb24056b729c2df6fde7cb02fc9a386f927efe7482e2a1",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+      "qemu/nikon-z72-lens.c": "a7daa7e1daae7c49b7254ff939c94c6d1702d47b19660ebaa527f8c5a9f9ca94",
+      "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+      "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    }
+  },
+  "native_source_revision": "e9268c6",
+  "native_source_sha256": {
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "055a892b1541a7fff3ea6249dc5b6d99a286876a7e6f5d77479d0151bc343981",
+    "tools/body_shutter_gate_probe.py": "434b700d2c640dcb3ef468cce68b0193efcac822ad4093c20f7a491b96bba6e0",
+    "tools/web_console.py": "4e562df4dce2bcd414dc986e088d9f0125a25ada2a3b617b0a4de3b31284e674",
+    "tools/native_capture_caller.py": "95e642bd12e93de85dd27d0e86bf55cf472797d7ab390eedb25ba28f03d11684"
+  },
+  "automatic_peer_component": {
+    "result": "passed",
+    "binary_sha256": "dd7e08b42eeba3e7bcbbd3f5ca1832aac8adabc2c2be504e96f19da9794ee0c2",
+    "source_sha256": {
+      "qemu/nikon-z72.c": "77c9f6f51d04db28dc5b1ad3f3ab2bdf1454549323023501cc52af2d37521064",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+      "tools/body_shutter_gate_probe.py": "61df59c3d25f80bcf94ffe8befa7dbc66499c910835aff27a85ebd397ff07f53",
+      "tests/test_body_vr.py": "c3871893c5b3dc848e634996205347111a22c8f2a95013f18a9f6134f715156f"
+    },
+    "command": "python -B tests/test_body_vr.py --qemu <local-built-qemu> --via-lens",
+    "lens_regression": "passed complete pages, phase GPIO, configuration, motor operations, history and reset"
+  },
+  "native_profile": {
+    "virtual_lens": true,
+    "virtual_body_vr": true,
+    "program_value": 3,
+    "exposure_setting": 1000,
+    "silent": true,
+    "shutter_contacts": true,
+    "preprocessing_skipped": true
+  },
+  "card_check": {
+    "format": 1,
+    "result": "passed-native-lens-vr-nvme-save-and-playback",
+    "firmware_included": false,
+    "virtual_lens": true,
+    "virtual_body_vr": true,
+    "body_vr": {
+      "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d4:00 sensor-connected=0 actuator-connected=0",
+      "frames": 201,
+      "completed": 78,
+      "rejected": 123,
+      "truncated": 0,
+      "reads": 5,
+      "writes": 0,
+      "configuration-generation": 1
+    },
+    "source_scene": {
+      "path": ".local/capture-report-archive/nvme_body_save_ready-scene.pgm",
+      "bytes": 12339,
+      "sha256": "766c1af08f343216d3acbaa91d30df19571179b4a9faec0835f947be406d0aa3",
+      "width": 128,
+      "height": 96,
+      "generation": "level=(x*7+y*19+((x//8)^(y//4))*23)&255"
+    },
+    "source_card_unchanged": true,
+    "source_card_sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+    "photo": {
+      "path": ".local/capture-report-archive/lens_body_vr_save/DSC_0001.JPG",
+      "card_path": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 3407179,
+      "sha256": "6c924d734aa2cae4da42c754de4d3be94b08bda356b93d8de56f6ef836e44c59",
+      "jpeg_images": [
+        {
+          "offset": "0x0",
+          "width": 8256,
+          "height": 5504,
+          "sampling": "4:2:2",
+          "decoded": true
+        },
+        {
+          "offset": "0x8248",
+          "width": 160,
+          "height": 120,
+          "sampling": "4:2:2",
+          "decoded": true
+        },
+        {
+          "offset": "0x2b8800",
+          "width": 640,
+          "height": 424,
+          "sampling": "4:2:2",
+          "decoded": true
+        },
+        {
+          "offset": "0x2d6400",
+          "width": 1620,
+          "height": 1080,
+          "sampling": "4:2:2",
+          "decoded": true
+        }
+      ],
+      "matching_ram_bodies": [
+        {
+          "file": "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg",
+          "bytes": 366923,
+          "sha256": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1",
+          "body_offset": "0x2e6402"
+        },
+        {
+          "file": "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg",
+          "bytes": 2748980,
+          "sha256": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e",
+          "body_offset": "0x19402"
+        },
+        {
+          "file": "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg",
+          "bytes": 11596,
+          "sha256": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017",
+          "body_offset": "0x824a"
+        },
+        {
+          "file": "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg",
+          "bytes": 56292,
+          "sha256": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92",
+          "body_offset": "0x2c8802"
+        }
+      ]
+    },
+    "scene_check": {
+      "samples": 12288,
+      "failed_samples": 0,
+      "maximum_rgb_error": 0,
+      "allowed_rgb_error": 12
+    },
+    "filesystem_integrity": true,
+    "probe_txt_preserved": true,
+    "host_fat_or_jpeg_edits": false,
+    "photo_reencoded": false,
+    "nvme_blockstats": {
+      "unmap_operations": 0,
+      "unmap_merged": 0,
+      "failed_zone_append_operations": 0,
+      "flush_total_time_ns": 0,
+      "wr_highest_offset": 3846144,
+      "wr_total_time_ns": 165548677,
+      "failed_wr_operations": 0,
+      "failed_rd_operations": 0,
+      "wr_merged": 0,
+      "wr_bytes": 3535360,
+      "timed_stats": [],
+      "failed_unmap_operations": 0,
+      "zone_append_merged": 0,
+      "failed_flush_operations": 0,
+      "account_invalid": true,
+      "rd_total_time_ns": 521924812,
+      "invalid_unmap_operations": 0,
+      "flush_operations": 0,
+      "wr_operations": 36,
+      "unmap_bytes": 0,
+      "rd_merged": 0,
+      "rd_bytes": 4328448,
+      "unmap_total_time_ns": 0,
+      "invalid_flush_operations": 0,
+      "account_failed": true,
+      "idle_time_ns": 195075445922,
+      "zone_append_total_time_ns": 0,
+      "zone_append_operations": 0,
+      "rd_operations": 785,
+      "zone_append_bytes": 0,
+      "invalid_zone_append_operations": 0,
+      "invalid_wr_operations": 0,
+      "invalid_rd_operations": 0
+    },
+    "sd_blockstats": {
+      "unmap_operations": 0,
+      "unmap_merged": 0,
+      "failed_zone_append_operations": 0,
+      "flush_total_time_ns": 0,
+      "wr_highest_offset": 348160,
+      "wr_total_time_ns": 0,
+      "failed_wr_operations": 0,
+      "failed_rd_operations": 0,
+      "wr_merged": 0,
+      "wr_bytes": 0,
+      "timed_stats": [],
+      "failed_unmap_operations": 0,
+      "zone_append_merged": 0,
+      "failed_flush_operations": 0,
+      "account_invalid": true,
+      "rd_total_time_ns": 0,
+      "invalid_unmap_operations": 0,
+      "flush_operations": 0,
+      "wr_operations": 0,
+      "unmap_bytes": 0,
+      "rd_merged": 0,
+      "rd_bytes": 0,
+      "unmap_total_time_ns": 0,
+      "invalid_flush_operations": 0,
+      "account_failed": true,
+      "zone_append_total_time_ns": 0,
+      "zone_append_operations": 0,
+      "rd_operations": 0,
+      "zone_append_bytes": 0,
+      "invalid_zone_append_operations": 0,
+      "invalid_wr_operations": 0,
+      "invalid_rd_operations": 0
+    },
+    "native_flush_commands": 30,
+    "native_completions": 864,
+    "all_cq_statuses_successful": true,
+    "capture_recovered": true,
+    "still_queue_empty": true,
+    "settings_only_caller": true,
+    "capture_api_invoked": false,
+    "caller_object_address": "0x40102000",
+    "caller_scratch_restored": true,
+    "body_shutter": {
+      "requested": true,
+      "released": true,
+      "press_ticks": 168172105,
+      "shot": 1,
+      "release_ticks": 180297478,
+      "held_counter_seconds": 0.2526119375
+    },
+    "same_guest_playback": true,
+    "jpeg_decoded_counts": [
+      {
+        "master": true,
+        "completed": 1
+      },
+      {
+        "master": false,
+        "completed": 0
+      }
+    ],
+    "sampled_engine_faults_zero": true,
+    "checker_sha256": "2f246e934d410b4785da151a99d6d95fec0d9ff5808d94beef49d31d872afa5c",
+    "scope": "Original firmware saves a native scene JPEG through NVMe, then reads it back for playback in the same guest. Native setting APIs and body contacts; original DSP preprocessing explicitly skipped and pixel/codec hardware modeled. No general/default-browser or original DSP claim."
+  },
+  "source_scene": {
+    "path": ".local/capture-report-archive/nvme_body_save_ready-scene.pgm",
+    "bytes": 12339,
+    "sha256": "766c1af08f343216d3acbaa91d30df19571179b4a9faec0835f947be406d0aa3",
+    "width": 128,
+    "height": 96,
+    "generation": "level=(x*7+y*19+((x//8)^(y//4))*23)&255"
+  },
+  "preprocessing": {
+    "requested": true,
+    "contexts": [
+      {
+        "context": "0xc19d3ec0",
+        "nested": "0xc29b9040",
+        "address": "0xc29bbbbc",
+        "previous": 0,
+        "supplied": 2,
+        "native_clear_observed": true,
+        "preprocessing_inputs": [
+          {
+            "address": "0xc29bbbb9",
+            "offset": "0x2b79",
+            "previous": 0,
+            "supplied": 1
+          },
+          {
+            "address": "0xc29bbbbb",
+            "offset": "0x2b7b",
+            "previous": 0,
+            "supplied": 2
+          }
+        ],
+        "sflt_skip_observed": true,
+        "raw_compute_skip_observed": true,
+        "result_halfwords": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "body_vr": {
+    "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d4:00 sensor-connected=0 actuator-connected=0",
+    "frames": 201,
+    "completed": 78,
+    "rejected": 123,
+    "truncated": 0,
+    "reads": 5,
+    "writes": 0,
+    "configuration-generation": 1
+  },
+  "lens": {
+    "rejected": 0,
+    "configuration_generation": 1
+  },
+  "codec_comparison": {
+    "all_11_outputs_match_prior_save": true,
+    "output_count": 11,
+    "hashes": {
+      "codec-10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728.jpg": "10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728",
+      "codec-3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d.jpg": "3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d",
+      "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1",
+      "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e",
+      "codec-4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69.jpg": "4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69",
+      "codec-6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40.jpg": "6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40",
+      "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017",
+      "codec-bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a.jpg": "bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a",
+      "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92",
+      "codec-e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877.jpg": "e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877",
+      "codec-fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999.jpg": "fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999"
+    },
+    "snapshot_qualification": "An idle master encoder register snapshot does not describe completed slave codec work."
+  },
+  "archives": {
+    "report.json": {
+      "bytes": 10704595,
+      "sha256": "ba9e1bab3818e651b1afa26b2b7c2da1a443a83ca2cefb2d56eaf372f26a32b8"
+    },
+    "conditions.json": {
+      "bytes": 6804,
+      "sha256": "dddf0940b50536eca7e98c9824a8f4229206842177f20b8c2ef663a1557ab050"
+    },
+    "storage_observation.json": {
+      "bytes": 8588,
+      "sha256": "83895909ee85f6ca4f8cfb9611a35dc8fe897b1e94e28645ee258eb70289c67f"
+    },
+    "qemu.log": {
+      "bytes": 859723,
+      "sha256": "51f6c437fefa6b8e6e967bc2d215d02a2defcef4d38fea68c91ef3cf2d4cdb91"
+    },
+    "card-checker.py": {
+      "bytes": 5864,
+      "sha256": "2f246e934d410b4785da151a99d6d95fec0d9ff5808d94beef49d31d872afa5c"
+    },
+    "cleanup.json": {
+      "bytes": 2715,
+      "sha256": "27044668df78b98dc03975abebfbe055a9edf5bb0b6259c145c30bc3e7965857"
+    }
+  },
+  "cleanup": {
+    "card": {
+      "name": "lens_body_vr_save.raw",
+      "bytes": 4294967296,
+      "sha256": "c7f774686e981a657e3113947108746a25437b45940e6224f86f84d0fce4c097"
+    },
+    "codec_files": [
+      {
+        "name": "codec-10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728.jpg",
+        "bytes": 186122,
+        "sha256": "10da6282d2dde907920bbf02d50524aef7128066c4fb2df87346809681d3a728"
+      },
+      {
+        "name": "codec-3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d.jpg",
+        "bytes": 38429,
+        "sha256": "3d93e09f7cd0264acd5639f875b741a8bbc35e0b85ecba2de58400222c270c4d"
+      },
+      {
+        "name": "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg",
+        "bytes": 366923,
+        "sha256": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1"
+      },
+      {
+        "name": "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg",
+        "bytes": 2748980,
+        "sha256": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e"
+      },
+      {
+        "name": "codec-4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69.jpg",
+        "bytes": 223998,
+        "sha256": "4a4a787d049b296c1a1c44fea56d3390d736130afd4eda710b6260887fee6f69"
+      },
+      {
+        "name": "codec-6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40.jpg",
+        "bytes": 271156,
+        "sha256": "6f29454d40d768977a0f7a69e4cea6c68698b1f0531efbdc4c770fc5b8669b40"
+      },
+      {
+        "name": "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg",
+        "bytes": 11596,
+        "sha256": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017"
+      },
+      {
+        "name": "codec-bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a.jpg",
+        "bytes": 45098,
+        "sha256": "bcdf7aa517832e743e3cd25aa5a6439b7fe706ca20bcbbc20b60359e95a8993a"
+      },
+      {
+        "name": "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg",
+        "bytes": 56292,
+        "sha256": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92"
+      },
+      {
+        "name": "codec-e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877.jpg",
+        "bytes": 32069,
+        "sha256": "e1f2c85c3ceb8560b5d0c31ee7b287042237b0fb040ac9443d63338858369877"
+      },
+      {
+        "name": "codec-fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999.jpg",
+        "bytes": 307614,
+        "sha256": "fced2c7d77b9b3edd7c203f07f626f070b276bb346102f7c0b2639e91c146999"
+      }
+    ],
+    "temporary_card_removed": true,
+    "codec_files_removed": true,
+    "requested_jpg_preserved": true,
+    "original_requested_jpg_unchanged": true
+  },
+  "qualifications": [
+    "Native save and same-guest playback used the explicit two-peer configuration from e9268c6; final automatic attachment is separately checked through actual SPI4 DMA and lens regression.",
+    "The source is a synthetic 128x96 monochrome PGM; exported full-size pixels do not imply optical resolution or color accuracy.",
+    "Original DSP preprocessing is explicitly skipped; image transport and codecs are modeled hardware.",
+    "Original RX execution, stabilization sensors/actuators and nonzero native lens motor movement remain unverified.",
+    "All exported photo bytes came from the native card file; no host FAT editing or JPEG reencoding.",
+    "JPEG candidates in metadata must have a marker prefix after SOI; arbitrary SOI byte pairs are not counted as images."
+  ]
+}

@@ -19,13 +19,14 @@ def request(code=0xd0, flag=0, data=b'', address=0, size=None, key=0xaa55):
     return result
 
 
-def run(qemu):
+def run(qemu, via_lens=False):
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
     process = subprocess.Popen([qemu, '-M', 'nikon-z72-lab', '-accel', 'qtest',
         '-display', 'none', '-serial', 'none', '-monitor', 'none', '-qmp', 'stdio',
-        '-global', 'nikon-z72-boot-config.virtual-body-vr=on',
+        '-global', ('nikon-z72-boot-config.virtual-lens=on' if via_lens else
+                    'nikon-z72-boot-config.virtual-body-vr=on'),
         '-global', 'nikon-z72-body-vr.work-delay-ns=1000000',
         '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -222,4 +223,7 @@ def run(qemu):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
-    run(parser.parse_args().qemu)
+    parser.add_argument('--via-lens', action='store_true',
+                        help='Verify that the lens option also wires the body VR peer')
+    args = parser.parse_args()
+    run(args.qemu, args.via_lens)

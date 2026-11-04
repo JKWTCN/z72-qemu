@@ -1,0 +1,199 @@
+{
+  "format": 1,
+  "result": "passed-native-lens-vr-nvme-save-and-playback",
+  "firmware_included": false,
+  "virtual_lens": true,
+  "virtual_body_vr": true,
+  "body_vr": {
+    "runtime": "selected=0 offset=152 busy=0 status=82 reply-pending=0 reply-size=148 command=d4:00 sensor-connected=0 actuator-connected=0",
+    "frames": 201,
+    "completed": 78,
+    "rejected": 123,
+    "truncated": 0,
+    "reads": 5,
+    "writes": 0,
+    "configuration-generation": 1
+  },
+  "source_scene": {
+    "path": ".local/capture-report-archive/nvme_body_save_ready-scene.pgm",
+    "bytes": 12339,
+    "sha256": "766c1af08f343216d3acbaa91d30df19571179b4a9faec0835f947be406d0aa3",
+    "width": 128,
+    "height": 96,
+    "generation": "level=(x*7+y*19+((x//8)^(y//4))*23)&255"
+  },
+  "source_card_unchanged": true,
+  "source_card_sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+  "photo": {
+    "path": ".local/capture-report-archive/lens_body_vr_save/DSC_0001.JPG",
+    "card_path": "DCIM/100NZ7_2/DSC_0001.JPG",
+    "bytes": 3407179,
+    "sha256": "6c924d734aa2cae4da42c754de4d3be94b08bda356b93d8de56f6ef836e44c59",
+    "jpeg_images": [
+      {
+        "offset": "0x0",
+        "width": 8256,
+        "height": 5504,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x8248",
+        "width": 160,
+        "height": 120,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x2b8800",
+        "width": 640,
+        "height": 424,
+        "sampling": "4:2:2",
+        "decoded": true
+      },
+      {
+        "offset": "0x2d6400",
+        "width": 1620,
+        "height": 1080,
+        "sampling": "4:2:2",
+        "decoded": true
+      }
+    ],
+    "matching_ram_bodies": [
+      {
+        "file": "codec-42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1.jpg",
+        "bytes": 366923,
+        "sha256": "42d6544464ba26b6a3f26128877d6ad8d80667800916639bba7799f57023a7f1",
+        "body_offset": "0x2e6402"
+      },
+      {
+        "file": "codec-48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e.jpg",
+        "bytes": 2748980,
+        "sha256": "48a175e363f1ee3e9311dd3bafc4e3278b5e5ccf4deb68d3f820bc1360364a6e",
+        "body_offset": "0x19402"
+      },
+      {
+        "file": "codec-899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017.jpg",
+        "bytes": 11596,
+        "sha256": "899d0041f4e9ddd33c2869dccc91f41a93e13c2ac411c91211737b865a19c017",
+        "body_offset": "0x824a"
+      },
+      {
+        "file": "codec-c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92.jpg",
+        "bytes": 56292,
+        "sha256": "c2ce5de386e9642946c68e823dc48a252dfbda9ebafb30be3c5291f3f848dd92",
+        "body_offset": "0x2c8802"
+      }
+    ]
+  },
+  "scene_check": {
+    "samples": 12288,
+    "failed_samples": 0,
+    "maximum_rgb_error": 0,
+    "allowed_rgb_error": 12
+  },
+  "filesystem_integrity": true,
+  "probe_txt_preserved": true,
+  "host_fat_or_jpeg_edits": false,
+  "photo_reencoded": false,
+  "nvme_blockstats": {
+    "unmap_operations": 0,
+    "unmap_merged": 0,
+    "failed_zone_append_operations": 0,
+    "flush_total_time_ns": 0,
+    "wr_highest_offset": 3846144,
+    "wr_total_time_ns": 165548677,
+    "failed_wr_operations": 0,
+    "failed_rd_operations": 0,
+    "wr_merged": 0,
+    "wr_bytes": 3535360,
+    "timed_stats": [],
+    "failed_unmap_operations": 0,
+    "zone_append_merged": 0,
+    "failed_flush_operations": 0,
+    "account_invalid": true,
+    "rd_total_time_ns": 521924812,
+    "invalid_unmap_operations": 0,
+    "flush_operations": 0,
+    "wr_operations": 36,
+    "unmap_bytes": 0,
+    "rd_merged": 0,
+    "rd_bytes": 4328448,
+    "unmap_total_time_ns": 0,
+    "invalid_flush_operations": 0,
+    "account_failed": true,
+    "idle_time_ns": 195075445922,
+    "zone_append_total_time_ns": 0,
+    "zone_append_operations": 0,
+    "rd_operations": 785,
+    "zone_append_bytes": 0,
+    "invalid_zone_append_operations": 0,
+    "invalid_wr_operations": 0,
+    "invalid_rd_operations": 0
+  },
+  "sd_blockstats": {
+    "unmap_operations": 0,
+    "unmap_merged": 0,
+    "failed_zone_append_operations": 0,
+    "flush_total_time_ns": 0,
+    "wr_highest_offset": 348160,
+    "wr_total_time_ns": 0,
+    "failed_wr_operations": 0,
+    "failed_rd_operations": 0,
+    "wr_merged": 0,
+    "wr_bytes": 0,
+    "timed_stats": [],
+    "failed_unmap_operations": 0,
+    "zone_append_merged": 0,
+    "failed_flush_operations": 0,
+    "account_invalid": true,
+    "rd_total_time_ns": 0,
+    "invalid_unmap_operations": 0,
+    "flush_operations": 0,
+    "wr_operations": 0,
+    "unmap_bytes": 0,
+    "rd_merged": 0,
+    "rd_bytes": 0,
+    "unmap_total_time_ns": 0,
+    "invalid_flush_operations": 0,
+    "account_failed": true,
+    "zone_append_total_time_ns": 0,
+    "zone_append_operations": 0,
+    "rd_operations": 0,
+    "zone_append_bytes": 0,
+    "invalid_zone_append_operations": 0,
+    "invalid_wr_operations": 0,
+    "invalid_rd_operations": 0
+  },
+  "native_flush_commands": 30,
+  "native_completions": 864,
+  "all_cq_statuses_successful": true,
+  "capture_recovered": true,
+  "still_queue_empty": true,
+  "settings_only_caller": true,
+  "capture_api_invoked": false,
+  "caller_object_address": "0x40102000",
+  "caller_scratch_restored": true,
+  "body_shutter": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 168172105,
+    "shot": 1,
+    "release_ticks": 180297478,
+    "held_counter_seconds": 0.2526119375
+  },
+  "same_guest_playback": true,
+  "jpeg_decoded_counts": [
+    {
+      "master": true,
+      "completed": 1
+    },
+    {
+      "master": false,
+      "completed": 0
+    }
+  ],
+  "sampled_engine_faults_zero": true,
+  "checker_sha256": "2f246e934d410b4785da151a99d6d95fec0d9ff5808d94beef49d31d872afa5c",
+  "scope": "Original firmware saves a native scene JPEG through NVMe, then reads it back for playback in the same guest. Native setting APIs and body contacts; original DSP preprocessing explicitly skipped and pixel/codec hardware modeled. No general/default-browser or original DSP claim."
+}

@@ -1079,6 +1079,15 @@ the optional SPI4 communication-memory device through actual GPIO, SPI and
 HDMAC. It checks deferred read/write completion, checksums, bounds, partial
 reply retention, busy rejection, missing resident views and reset cancellation.
 The body probe accepts `--virtual-body-vr` and records `body_vr_after`.
+The same peer is attached by `--virtual-lens`; adding `--via-lens` to the
+component check verifies this implicit wiring through actual SPI4 DMA.
 The [communication receipt](../artifacts/body_vr_transport/validation.json)
 separates component checks from bounded original-firmware observations;
 neither establishes physical stabilization or a saved JPEG.
+
+The later [persistent-card receipt](../artifacts/lens_body_save/validation.json)
+checks a native body capture with lens and SPI4 peer, card-file export, all four
+JPEG images, 12,288 scene samples and playback in the same guest. It distinguishes
+the explicit-peer native build from the final automatic-attachment component
+check. The source card and previously requested JPG are preserved; the owned
+temporary card and intermediate codec images are removed after verification.
