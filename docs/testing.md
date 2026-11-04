@@ -793,6 +793,13 @@ scene remains fixed. This also exercises the complete final chroma pair.
 The [color scene contract](../research/z7ii/color_scene.md) describes the separate
 functional encoding and the native save/playback validation boundary.
 
+`tests/test_lens_scene.py --qemu ...` sends iris commands through the actual
+SPI FIFO and compares PGM/PPM RAW RAM against independent exponential light
+attenuation. It covers whole/fractional stops, interpolated motion rather than
+the requested target, one factor per frame, row padding, guards, invalid DMA,
+stopped input and reset. Read-only completed-frame aperture/factor observations
+remain unchanged after rejected input and are included in body input snapshots.
+
 `tools/capture_release_deferred_contract.py --master /path/to/master.bin
 --out /path/to/report.json` executes the original C1.70 deferred half/full and
 full-release callbacks against eleven isolated mask/flag inputs. It checks

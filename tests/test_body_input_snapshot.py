@@ -26,6 +26,8 @@ class Machine:
         return {'master-role': True, 'input-dma-count': 1,
                 'input-dma-address': 0x51000000, 'primary-input-dma-count': 2,
                 'primary-input-dma-address': 0x52000000,
+                'preview-scene-aperture': 192, 'preview-scene-factor-q16': 32768,
+                'primary-scene-aperture': 576, 'primary-scene-factor-q16': 8192,
                 'primary-input-second-dma-address': self.peer}.get(args['property'], 0)
 
     def _words(self, address, count):
@@ -48,6 +50,9 @@ def check():
         result = input_dma_snapshot(machine)
         require(result['primary_frames'] == 2 and result['first_row']['bytes'] == 8,
                 'Reconfiguration lost counters or independent preview observation')
+        require(result['preview_scene'] == dict(aperture=192, factor_q16=32768) and
+                result['primary_scene'] == dict(aperture=576, factor_q16=8192),
+                'Reconfiguration lost completed-frame scene observations')
         require(result['primary_current_row_strides'] == dict(first=layout[0], full=layout[1]),
                 'Current row layout was not preserved')
         require(len(result['primary_samples']) == ((2 if peer else 1) if supported else 0),

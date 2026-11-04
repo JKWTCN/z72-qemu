@@ -608,6 +608,7 @@ struct NikonZ72BootConfig {
     DeviceState *timer;
     DeviceState *intc;
     DeviceState *serial;
+    DeviceState *lens;
     bool virtual_lens;
     bool virtual_body_vr;
     qemu_irq body_vr_select_irq;
@@ -705,6 +706,8 @@ struct NikonZ72BootConfig {
     char *scene_path;
     uint8_t *scene_pixels;
     unsigned scene_width, scene_height, scene_channels;
+    uint32_t preview_scene_aperture, preview_scene_factor;
+    uint32_t primary_scene_aperture, primary_scene_factor;
     bool frame_process;
     bool jpeg_color_checker;
     bool frame_notify;
@@ -2185,9 +2188,34 @@ out:
     return valid;
 }
 
+/* Sample the actual interpolated iris once per generated frame. Relative
+ * position is 192 units/EV. The six-segment Q16 light-response approximation
+ * is a functional scene assumption, not measured sensor or lens response. */
+static uint32_t input_scene_factor(NikonZ72BootConfig *s, uint32_t *aperture)
+{
+    static const uint32_t fractions[] = {
+        65536, 58386, 52016, 46341, 41285, 36780, 32768,
+    };
+    unsigned position, remainder, index, sub;
+
+    *aperture = 0;
+    if (s->scene_pixels && s->lens) {
+        *aperture = object_property_get_uint(OBJECT(s->lens),
+                                            "aperture-position", &error_abort);
+    }
+    position = MIN(*aperture, 1152);
+    remainder = position % 192;
+    index = remainder / 32;
+    sub = remainder % 32;
+    return (fractions[index] -
+            ((fractions[index] - fractions[index + 1]) * sub + 16) / 32) >>
+           (position / 192);
+}
+
 static void input_raw12_row(NikonZ72BootConfig *s, uint8_t *row, unsigned width,
                             unsigned start_x, unsigned y, uint64_t phase,
-                            unsigned frame_width, unsigned frame_height)
+                            unsigned frame_width, unsigned frame_height,
+                            uint32_t light_factor)
 {
     for (unsigned x = 0; x < width; x += 2) {
         uint8_t level = (((start_x + x) / 64 + y / 64 + phase) & 1) ? 0xff : 0;
@@ -2200,6 +2228,7 @@ static void input_raw12_row(NikonZ72BootConfig *s, uint8_t *row, unsigned width,
                     sx = (uint64_t)(start_x + x + i) * s->scene_width / frame_width;
                     unsigned sample = s->scene_pixels[((size_t)sy * s->scene_width + sx) * 3 + channel];
                     unsigned value = (sample << 4) | (sample >> 4);
+                    value = (value * light_factor + 32768) >> 16;
                     row[x * 3 / 2 + i] = value >> 4;
                     if (!i) {
                         row[x * 3 / 2 + 2] = value & 15;
@@ -2210,6 +2239,7 @@ static void input_raw12_row(NikonZ72BootConfig *s, uint8_t *row, unsigned width,
                 continue;
             }
             level = s->scene_pixels[(size_t)sy * s->scene_width + sx];
+            level = (level * light_factor + 32768) >> 16;
         }
         /* Paired replicated bytes are the lab raster convention. This does
          * not establish physical RAW12 nibble order or Bayer interpretation. */
@@ -2467,6 +2497,8 @@ static void input_generate_primary(NikonZ72BootConfig *s)
         }
         return;
     }
+    uint32_t aperture;
+    uint32_t factor = input_scene_factor(s, &aperture);
     for (unsigned y = 0; y < height; y++) {
         if (ldl_le_p(geometry) == 1) {
             input_raw14_row(first_row, first_width, 0, y, s->primary_dma_count);
@@ -2474,9 +2506,9 @@ static void input_generate_primary(NikonZ72BootConfig *s)
                 input_raw14_row(second_row, 5472, 2816, y, s->primary_dma_count);
             }
         } else {
-            input_raw12_row(s, first_row, first_width, 0, y, s->primary_dma_count, 8288, height);
+            input_raw12_row(s, first_row, first_width, 0, y, s->primary_dma_count, 8288, height, factor);
             if (split) {
-                input_raw12_row(s, second_row, 5472, 2816, y, s->primary_dma_count, 8288, height);
+                input_raw12_row(s, second_row, 5472, 2816, y, s->primary_dma_count, 8288, height, factor);
             }
         }
         if (address_space_write(view, (hwaddr)first_address + y * first_stride,
@@ -2498,6 +2530,8 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     s->primary_second_address = split ?
         g_array_index(writes, NikonZ72PrimaryWrite, 0).address : 0;
     s->primary_dma_count++;
+    s->primary_scene_aperture = aperture;
+    s->primary_scene_factor = factor;
     s->primary_frame_written = true;
     if (s->frame_notify) {
         /* The complete RAW input was written. Do not claim statistics output
@@ -2561,13 +2595,17 @@ static void input_generate_frame(NikonZ72BootConfig *s)
         return;
     }
     pixels = g_malloc0(length);
+    uint32_t aperture;
+    uint32_t factor = input_scene_factor(s, &aperture);
     for (unsigned y = 0; y < height; y++) {
-        input_raw12_row(s, pixels + y * stride, width, 0, y, s->input_dma_count, width, height);
+        input_raw12_row(s, pixels + y * stride, width, 0, y, s->input_dma_count, width, height, factor);
     }
     if (address_space_write(view, target, MEMTXATTRS_UNSPECIFIED,
                             pixels, length) == MEMTX_OK) {
         s->input_dma_address = target;
         s->input_dma_count++;
+        s->preview_scene_aperture = aperture;
+        s->preview_scene_factor = factor;
         input_process_frame(s, target, width, height, stride);
         if (s->frame_notify) {
             /* Recovered frame timing / queued-output input causes. Keep
@@ -4442,6 +4480,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->input_running = 0;
     s->input_dma_count = 0;
     s->input_dma_address = 0;
+    s->preview_scene_aperture = s->primary_scene_aperture = 0;
+    s->preview_scene_factor = s->primary_scene_factor = 65536;
     s->input_grid_count = 0;
     s->input_grid_address = 0;
     s->input_grid_phase = 0;
@@ -4691,6 +4731,14 @@ static void boot_config_init(Object *obj)
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-dma-address", &s->input_dma_address,
                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "preview-scene-aperture", &s->preview_scene_aperture,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "preview-scene-factor-q16", &s->preview_scene_factor,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "primary-scene-aperture", &s->primary_scene_aperture,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint32_ptr(obj, "primary-scene-factor-q16", &s->primary_scene_factor,
+                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "input-grid-count", &s->input_grid_count,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "input-grid-address", &s->input_grid_address,
@@ -5753,6 +5801,7 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
             own_file ? "master-spi3" : "slave-spi3"), &error_fatal);
         qdev_connect_gpio_out_named(lens, "notify", 0,
             qdev_get_gpio_in_named(config, "gpio-input", 9));
+        NIKON_Z72_BOOT_CONFIG(config)->lens = lens;
     }
     if (!slave && (NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr ||
                    NIKON_Z72_BOOT_CONFIG(config)->virtual_lens)) {

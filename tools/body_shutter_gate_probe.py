@@ -2156,6 +2156,10 @@ def input_dma_snapshot(machine):
             address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
             stride = machine._words(0x20069a08, 1)[0]
             result = dict(frames=count, address=hex(address), stride=stride)
+            for kind in ('preview', 'primary'):
+                result[kind + '_scene'] = {
+                    key: machine.qmp.command('qom-get', dict(path=path, property=kind + '-scene-' + name))
+                    for key, name in (('aperture', 'aperture'), ('factor_q16', 'factor-q16'))}
             result['running_mask'] = hex(machine.qmp.command('qom-get',
                 dict(path=path, property='input-running')))
             result['frame_ticks'] = machine.qmp.command('qom-get',

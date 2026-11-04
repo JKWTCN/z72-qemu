@@ -149,7 +149,8 @@ def check(qemu, scene, first_case=0, color_scene=False):
             '-global', f'nikon-z72-boot-config.sampling-output-complete={"on" if synchronized else "off"}',
             '-global', f'nikon-z72-boot-config.transport-link={"on" if linked else "off"}',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'] + loaders +
-            (['-global', f'nikon-z72-boot-config.sensor-image={scene}'] if case == 0 else []),
+            (['-global', f'nikon-z72-boot-config.sensor-image={scene}'] if case == 0 else []) +
+            (['-global', 'nikon-z72-boot-config.virtual-lens=on'] if color_scene else []),
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         wire = stream = None
         try:
@@ -234,6 +235,34 @@ def check(qemu, scene, first_case=0, color_scene=False):
                 write(0x20060020, 16)
                 command('clock_step 1000000')
 
+            if color_scene:
+                spi = 0x2c0a0300
+                for offset, value in ((0x10, 7 << 8), (0xc, 0x20), (0x3c, 1)):
+                    write(spi + offset, value)
+
+                def exchange(data):
+                    for value in data:
+                        write(spi, value)
+                        command('clock_step 2000')
+                        assert not read(spi + 0x14) & 0x20
+                        read(spi + 4)
+
+                for sequence, (code, size, payload, mode) in enumerate((
+                        (0x1f, 4, b'\1', 255), (0x13, 14, b'', 0),
+                        (0xa3, 4, (192).to_bytes(2, 'little'), 0))):
+                    header = bytearray((0x55, sequence, mode, code, 0, (size-2)//2, 0, 0))
+                    header[-1] = -sum(header[:-1]) & 255
+                    exchange(header)
+                    command('clock_step 1000000')
+                    packet = bytearray(size)
+                    packet[0] = 0x55
+                    packet[1:1+len(payload)] = payload
+                    packet[-1] = -sum(packet[:-1]) & 255
+                    exchange(packet)
+                    command('clock_step 22000000')
+                assert monitor('qom-get', dict(path='/machine/master-lens', property='rejected')) == 0
+                assert monitor('qom-get', dict(path='/machine/master-lens', property='aperture-position')) == 192
+
             # Equal numeric addresses in two engines must remain independent.
             first, full, aperture = 0x88000000, 0x88000000, 0x18000000
             for address, value in ((0x20069500, geometry_mode), (0x20069504, 2816 << 16),
@@ -294,6 +323,9 @@ def check(qemu, scene, first_case=0, color_scene=False):
             assert read(0x20068270) == (0x40000021 if active and notifying else 0)
             assert property_value('input-dma-count') == 0, 'Primary DMA changed the other input counter'
             if active:
+                if color_scene:
+                    assert property_value('primary-scene-aperture') == 192
+                    assert property_value('primary-scene-factor-q16') == 32768
                 assert property_value('primary-input-dma-address') == first
                 assert property_value('primary-input-second-dma-address') == full + first_stride
 
@@ -305,7 +337,9 @@ def check(qemu, scene, first_case=0, color_scene=False):
                             for x in range(0, width, 2):
                                 values = [COLOR_SCENE[((y // 1380) * 4 + (start + x + i) // 2072) * 3 +
                                           ((1 + i) if y & 1 else i)] for i in range(2)]
-                                row.extend((*values, (values[0] >> 4) | (values[1] & 0xf0)))
+                                codes = [(((v << 4) | (v >> 4)) + 1) // 2 for v in values]
+                                row.extend((codes[0] >> 4, codes[1] >> 4,
+                                            (codes[0] & 15) | ((codes[1] & 15) << 4)))
                             return row
                         return bytes(SCENE[(y // 1380) * 4 + (start + x) // 2072]
                                      for x in range(0, width, 2) for _ in range(3))

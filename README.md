@@ -77,6 +77,9 @@ and carries chroma through preview, still processing, thumbnails and JPEG.
 The [color scene contract](research/z7ii/color_scene.md) defines its explicit
 packing and arithmetic assumptions; it does not claim recovered sensor color
 or original DSP execution.
+With `--virtual-lens`, file-backed scenes also use the iris's actual interpolated
+position for a per-frame relative light factor. This functional response does
+not establish electronic exposure timing, shutter/ISO gain or depth of field.
 Cold playback now decodes the native 4:2:2 photo and samples its JPEG texture
 into the original 1024×682 LCD background. A focused run completed with zero
 graphics failures; the existing grayscale viewer shows the diagnostic photo
