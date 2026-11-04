@@ -545,6 +545,14 @@ IMAGE_WORK_WAIT_POINTS = {
     0x10369968: 'image-device-bank1-interrupt',
 }
 AFTER_PLAYBACK = {
+    0x1073edf2: 'playback-application-entry',
+    0x1074e820: 'playback-initial-state-request',
+    0x1062e474: 'application-request-dispatch',
+    0x106ddc1e: 'application-start-notification',
+    0x103be5f0: 'playback-jpeg-configure',
+    0x103be756: 'playback-jpeg-start',
+    0x103bdfea: 'playback-jpeg-interrupt',
+    0x103be7e6: 'playback-jpeg-header',
     0x103f25ec: 'operation18-api',
     0x103ef386: 'operation18-task-request',
     0x103e7312: 'capture-mode-request',
@@ -1199,7 +1207,7 @@ def auxiliary_image_snapshot(remote):
 def sd_trace_snapshot(machine):
     if not getattr(machine.args, 'trace_sd_host', False):
         return None
-    events, counts = [], {}
+    events, commands, counts = [], [], {}
     pattern = re.compile(r'(sdhci_send_command|sdhci_adma_loop|sdhci_adma|sdhci_access|sdcard_write_block) (.*)')
     for line in (machine.work / 'qemu.log').open(encoding='utf-8', errors='replace'):
         match = pattern.search(line)
@@ -1207,6 +1215,8 @@ def sd_trace_snapshot(machine):
             continue
         event, detail = match.groups()
         counts[event] = counts.get(event, 0) + 1
+        if event == 'sdhci_send_command' and len(commands) < 1024:
+            commands.append(detail)
         if event == 'sdhci_access':
             access = re.fullmatch(r'wr(8|16|32): addr\[0x([0-9a-f]+)\] <- 0x([0-9a-f]+) \(\d+\)', detail)
             if not access or int(access[2], 16) not in (0, 4, 8, 0xc, 0xe, 0x28, 0x58, 0x5c):
@@ -1219,6 +1229,8 @@ def sd_trace_snapshot(machine):
         if len(events) < 256:
             events.append(item)
     return dict(counts=counts, events=events, event_limit=256,
+        commands=commands, command_limit=1024,
+        commands_truncated=counts.get('sdhci_send_command', 0) > len(commands),
         truncated=counts.get('selected', 0) > len(events),
         scope='Ordered command, DMA and control metadata only; data-port contents are excluded')
 
@@ -1371,6 +1383,42 @@ def transform_snapshot(remote, slave=True):
                     if lower <= pointer <= limit - 0xa0:
                         operation['parameters'] = dict(address=hex(pointer), words=words(pointer, 0xa0))
                     result['program']['operations'].append(operation)
+    return result
+
+
+def decode_snapshot(remote, descriptor=None):
+    def word(address):
+        return int.from_bytes(remote.read(address, 4), 'little')
+    descriptor = word(0xb1801ec8) if descriptor is None else descriptor
+    registers = {hex(offset): hex(word(0x24072000 + offset)) for offset in
+        (0, 4, 0x18, 0x1c, 0x28, 0x2c, 0x38, 0x3c, 0x400, 0x404, 0x408,
+         0x410, 0x414, 0x418, 0x41c, 0x420, 0x430, 0x434, 0x440, 0x458, 0x480, 0x484)}
+    result = dict(descriptor=hex(descriptor), registers=registers)
+    if 0xb1800000 <= descriptor <= 0xb5efff68:
+        result['descriptor_words'] = [hex(value) for value in
+            struct.unpack('<38I', remote.read(descriptor, 0x98))]
+    result['buffers'] = []
+    for offset in (0x430, 0x434, 0x440):
+        address = int(registers[hex(offset)], 16)
+        if 0xbd200000 <= address <= 0xffee5300:
+            data = remote.read(address, 256)
+            result['buffers'].append(dict(register=hex(offset), address=hex(address),
+                sampled_bytes=len(data), sha256=hashlib.sha256(data).hexdigest(),
+                minimum=min(data), maximum=max(data), unique_bytes=len(set(data)),
+                jpeg_start=data[:2] == b'\xff\xd8'))
+    width, height, stride = (int(registers[hex(offset)], 16) for offset in (0x418, 0x41c, 0x410))
+    if (int(registers['0x480'], 16) & 0x0800c000 == 0x0800c000 and
+            0 < width <= 2048 and 0 < height <= 1536 and width <= stride <= 2176):
+        result['output_planes'] = []
+        for offset in (0x430, 0x434):
+            address = int(registers[hex(offset)], 16)
+            if 0xbd200000 <= address <= 0xffee5400 - stride * height:
+                data = remote.read(address, stride * height)
+                pixels = b''.join(data[y * stride:y * stride + width] for y in range(height))
+                result['output_planes'].append(dict(register=hex(offset), address=hex(address),
+                    width=width, height=height, stride=stride, active_bytes=len(pixels),
+                    active_sha256=hashlib.sha256(pixels).hexdigest(),
+                    minimum=min(pixels), maximum=max(pixels), unique_bytes=len(set(pixels))))
     return result
 
 
@@ -2127,7 +2175,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             body_system_events=False,
             controller_step_trigger=False, capture_exposure=None, capture_jpeg=False, capture_storage=0,
             capture_format_3800=False, body_exposure=None, repeat_body_capture=False, skip_compute_statistics=False,
-            skip_still_preprocessing=False, body_silent=False):
+            skip_still_preprocessing=False, body_silent=False, playback_click=False):
     with machine.io:
         machine.qmp.command('stop')
     remote = Remote(machine.gdb_port)
@@ -2297,6 +2345,11 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
             memory_watch_armed = True
         if not (shutter_on_preview or shutter_on_ready or capture_submit_on_ready):
             machine.set_key(24 if returning else 8 if playback else 25, 0)
+        playback_key = dict(requested=playback_click, released=False)
+        playback_samples = []
+        if playback and playback_click:
+            remote.select_thread(1)
+            playback_key['press_ticks'] = int.from_bytes(remote.read(0x04266008, 8), 'little')
         preview_press_sent = False
         idle_preview_seen = False
         preview_half_tick = None
@@ -2318,6 +2371,26 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         checkpointed = started
         while time.monotonic() < deadline and (armed or memory_watch_armed):
             machine.heartbeat()
+            if playback and playback_click and not playback_key['released']:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if ticks - playback_key['press_ticks'] >= before['counter_frequency'] // 4:
+                    machine.set_key(8, 1)
+                    playback_key.update(released=True, release_ticks=ticks,
+                        held_counter_seconds=(ticks - playback_key['press_ticks']) / before['counter_frequency'])
+                    records.append(dict(entry='playback-key-release', counter_ticks=ticks))
+            if playback and len(playback_samples) < 64:
+                remote.select_thread(1)
+                ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
+                if ticks - before['counter_ticks'] >= len(playback_samples) * before['counter_frequency']:
+                    playback_samples.append(dict(counter_ticks=ticks,
+                        application=dict(zip(('current', 'requested', 'state'),
+                            (remote.read(0xb1811e50 + offset, 1)[0] for offset in (0, 1, 8)))),
+                        display=display_delivery_snapshot(remote.read),
+                        image_registers={hex(base): [hex(value) for value in struct.unpack(
+                            '<12I', remote.read(base, 48))] for base in
+                            (0x24072000, 0x24072400)},
+                        lcd_planes=[hex(value) for value in struct.unpack('<8I', remote.read(0x20144210, 32))]))
             if (capture_caller and capture_caller.report['caller_returned'] and
                     capture_caller.report.get('api_status') not in (None, 0)):
                 capture_caller.report['observation_ended_for_rejection'] = True
@@ -2396,13 +2469,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                             release_gate_before_press=int.from_bytes(remote.read(0xb1821e84, 4), 'little'),
                             half_press_counter_seconds=(ticks - preview_half_tick) / before['counter_frequency']
                                 if half_before_full else None))
-            if capture_focus and time.monotonic() - checkpointed >= 15:
+            if (capture_focus or playback) and time.monotonic() - checkpointed >= 15:
                 remote.select_thread(1)
                 checkpoint_ticks = int.from_bytes(remote.read(0x04266008, 8), 'little')
-                checkpoint = machine.work / 'capture-focus-checkpoint.json'
+                checkpoint = machine.work / ('playback-checkpoint.json' if playback else
+                                             'capture-focus-checkpoint.json')
                 temporary = checkpoint.with_suffix('.tmp')
                 temporary.write_text(json.dumps(dict(incomplete=True, before=before,
-                    records=records, diagnostic_capture=capture_caller.report,
+                    records=records, diagnostic_capture=capture_caller.report if capture_caller else None,
+                    playback_key=playback_key,
+                    playback_samples=playback_samples,
                     counter_ticks=checkpoint_ticks), indent=2),
                     encoding='utf-8')
                 temporary.replace(checkpoint)
@@ -2992,6 +3068,16 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         hits[pc] = hits.get(pc, 0) + 1
                         repeat = hits[pc] < 8
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
+                    if playback:
+                        record['application_index'] = remote.read(0xb1811e50, 1)[0]
+                        if pc in (0x1062e474, 0x106ddc1e):
+                            hits[pc] = hits.get(pc, 0) + 1
+                            repeat = hits[pc] < 16
+                        if pc in (0x103be5f0, 0x103be756, 0x103bdfea, 0x103be7e6):
+                            hits[pc] = hits.get(pc, 0) + 1
+                            repeat = hits[pc] < 32
+                            record['jpeg_decode'] = decode_snapshot(remote,
+                                remote.get(registers, 'r1') if pc == 0x103be5f0 else None)
                     if pc == 0x10321a4c:
                         callback_hits += int(keep)
                         record['notification'] = hex(remote.get(registers, 'r0'))
@@ -3922,6 +4008,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     body_compute_events=body_compute_events,
                     body_system_events=body_system_events,
                     shutter_click=click,
+                    playback_key=playback_key,
+                    playback_samples=playback_samples,
                     unseen=[label for address, label in armed.items()
                             if not hits.get(address, 0) and
                             not (capture_caller and capture_caller.ui_hits.get(address, 0)) and
@@ -3977,6 +4065,8 @@ def main():
                         help='Laboratory input: pulse bank 3 bit 7, then repeat after the first native output latch')
     parser.add_argument('--playback', action='store_true',
                         help='Observe the native playback capture-stop request instead of full release')
+    parser.add_argument('--playback-click', action='store_true',
+                        help='Release the playback key after a quarter counter second')
     parser.add_argument('--local-stop-events', action='store_true',
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
     parser.add_argument('--round-trip', action='store_true',
@@ -4085,8 +4175,9 @@ def main():
     require(10 <= args.watch <= 3600, 'Watch time out of bounds')
     require(not args.trace_sd_host or args.sd_card is not None,
             'SD tracing requires an attached card')
-    require(args.capture_card_copy is None or args.sd_card is not None and args.capture_focus,
-            'Persistent capture card requires a supplied card and focused capture tracing')
+    require(args.capture_card_copy is None or args.sd_card is not None and
+            (args.capture_focus or args.playback),
+            'Persistent card copy requires a supplied card and focused capture or playback tracing')
     require(args.capture_card_copy is None or
             args.capture_card_copy.resolve().is_relative_to((ROOT / '.local').resolve()),
             'Capture card copy must remain in the private .local directory')
@@ -4180,6 +4271,7 @@ def main():
             'Body system observation requires application-only tracing without other work events')
     require(30 <= args.return_watch <= 900, 'Return watch time out of bounds')
     require(not args.local_stop_events or args.playback, 'Local stop events require playback')
+    require(not args.playback_click or args.playback, 'Playback click requires playback')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
     require(not args.gpio_handshake_events or args.round_trip,
             'GPIO handshake events require a round trip')
@@ -4275,6 +4367,7 @@ def main():
                       local_stop_events=args.local_stop_events,
                       gpio_handshake_events=args.gpio_handshake_events,
                       round_trip=args.round_trip,
+                      playback_click=args.playback_click,
                       reconfiguration_wait=reconfiguration,
                       return_watch_seconds=args.return_watch,
                       trace=observe(machine, args.watch, args.playback, args.local_stop_events,
@@ -4298,6 +4391,7 @@ def main():
                                     controller_step_trigger=args.controller_step_trigger,
                                     application_only=args.application_only,
                                     shutter_click=args.shutter_click,
+                                    playback_click=args.playback_click,
                                     image_work_events=args.image_work_events,
                                     body_state_events=args.body_state_events,
                                     body_capture_events=args.body_capture_events,
@@ -4321,6 +4415,12 @@ def main():
         if initial_dma is not None:
             report['input_dma_before'] = initial_dma
         report['final_application'] = machine.status()
+        if args.playback:
+            with machine.io:
+                report['jpeg_decoded_counts'] = [dict(master=machine.qmp.command('qom-get',
+                    dict(path='/machine/unattached/' + name, property='master-role')),
+                    completed=machine.qmp.command('qom-get', dict(path='/machine/unattached/' + name,
+                        property='codec-decoded-count'))) for name in machine.config_names]
         if args.round_trip and report['final_application']['index'] == 2:
             trace = observe(machine, args.return_watch, returning=True,
                             gpio_handshake_events=args.gpio_handshake_events,

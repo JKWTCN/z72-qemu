@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "source_photo_unchanged": true,
+  "filesystem_integrity": true,
+  "photo_bytes": 5160027,
+  "photo_sha256": "0c1d946e47b8c74bebf27042f14ead6d6f01458da0632ccd7dceacf38ba70906",
+  "native_decode_completed": 1,
+  "full_active_planes_match": true,
+  "lcd_photo_verified": false,
+  "lcd_main_plane_uniform": 16,
+  "final_application": 2,
+  "core_faults": [
+    {
+      "thread": 1,
+      "pc": "0x1011127c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107070",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a68",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a50",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "native_watch_counter_seconds": 8.614799,
+  "source_card_and_private_clone_removed_after_validation": true
+}

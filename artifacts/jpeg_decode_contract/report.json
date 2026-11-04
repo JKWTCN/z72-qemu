@@ -1,0 +1,125 @@
+{
+  "format": 1,
+  "result": "passed",
+  "firmware_included": false,
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "configure": "0x103be5f0",
+  "start": "0x103be756",
+  "handler": "0x103bdfea",
+  "configuration_registers": {
+    "0x0": "0x39",
+    "0x28": "0x31f",
+    "0x400": "0x8",
+    "0x404": "0x8",
+    "0x408": "0x10000",
+    "0x410": "0x0",
+    "0x414": "0x0",
+    "0x418": "0x0",
+    "0x41c": "0x0",
+    "0x430": "0x53100000",
+    "0x434": "0x53104b00",
+    "0x440": "0x53000000",
+    "0x458": "0x0",
+    "0x484": "0xc4d000"
+  },
+  "start_writes": [
+    {
+      "address": "0x24072404",
+      "bytes": 4,
+      "value": "0x4008"
+    },
+    {
+      "address": "0x24072004",
+      "bytes": 4,
+      "value": "0x1"
+    }
+  ],
+  "header_writes": [
+    {
+      "address": "0x24072480",
+      "bytes": 4,
+      "value": "0xa000000"
+    },
+    {
+      "address": "0x24072418",
+      "bytes": 4,
+      "value": "0xa0"
+    },
+    {
+      "address": "0x2407241c",
+      "bytes": 4,
+      "value": "0x78"
+    },
+    {
+      "address": "0x24072420",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072424",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072428",
+      "bytes": 4,
+      "value": "0x0"
+    },
+    {
+      "address": "0x24072410",
+      "bytes": 4,
+      "value": "0xa0"
+    },
+    {
+      "address": "0x24072414",
+      "bytes": 4,
+      "value": "0xa0"
+    },
+    {
+      "address": "0x2407202c",
+      "bytes": 4,
+      "value": "0xffffffef"
+    },
+    {
+      "address": "0x24072400",
+      "bytes": 4,
+      "value": "0x4008"
+    }
+  ],
+  "header_geometry": {
+    "0x410": 160,
+    "0x414": 160,
+    "0x418": 160,
+    "0x41c": 120,
+    "0x420": 0,
+    "0x424": 0,
+    "0x428": 0
+  },
+  "completion": [
+    {
+      "notification": "0x41051402",
+      "flags": "0x62001",
+      "dimensions": [
+        160,
+        120
+      ]
+    }
+  ],
+  "mismatched_format_rejection": [
+    {
+      "notification": "0x41051402",
+      "flags": "0x2800",
+      "dimensions": [
+        160,
+        120
+      ]
+    }
+  ],
+  "host_boundaries": [
+    "Synthetic descriptor, header metadata and completion status; record callback"
+  ],
+  "limitations": [
+    "Ordinary MMIO storage does not model status acknowledgement side effects",
+    "No JPEG bytes, pixel DMA, interrupt delivery or LCD output are exercised"
+  ]
+}

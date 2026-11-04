@@ -93,6 +93,85 @@ def check(qemu):
             def measured_count():
                 return monitor('qom-get', dict(path='/machine/unattached/' + config, property='codec-measured-count'))
 
+            def decoded_count():
+                return monitor('qom-get', dict(path='/machine/unattached/' + config, property='codec-decoded-count'))
+
+            # A separate JPEG exercises the read direction, including color;
+            # this does not use the modeled encoder as a decode oracle.
+            picture = Image.new('RGB', (160, 120), (32, 64, 224))
+            picture.paste((240, 208, 32), (16, 16, 80, 64))
+            packed = io.BytesIO()
+            picture.save(packed, 'JPEG', quality=95, subsampling=2)
+            jpeg = packed.getvalue()
+            expected = Image.open(io.BytesIO(jpeg)).convert('YCbCr').tobytes()
+            plane, target = 160 * 120, small_source
+            input_size = (len(jpeg) + 511) & ~511
+
+            def decoder_setup(data=jpeg, destination=target, geometry=(160, 120), stride=160):
+                previous_decoded = decoded_count()
+                write(base + 4, 0x80000000)
+                command(f'memset {output:#x} {input_size:#x} 0')
+                command(f'write {output:#x} {len(data):#x} 0x{data.hex()}')
+                command(f'memset {target:#x} {2 * plane:#x} 0xa5')
+                for offset, value in {0: 0x39, 0x28: 0x10, 0x400: 8, 0x404: 0x4008,
+                        0x408: 0x10000, 0x410: 0, 0x414: 0, 0x418: 0, 0x41c: 0,
+                        0x420: 0, 0x424: 0, 0x428: 0,
+                        0x430: destination, 0x434: destination + plane, 0x440: output,
+                        0x458: input_size // 512, 0x484: 0xc4d000}.items():
+                    write(base + offset, value)
+                write(base + 4, 1)
+                if not enabled:
+                    assert decoded_count() == 0 and read(base + 0x480) == 0
+                    assert data_at(target, 2 * plane) == b'\xa5' * (2 * plane)
+                    return
+                assert read(base + 0x480) == 0x0a000000 and levels[105 - 32]
+                assert read(base + 0x1c) == 160 and read(base + 0x18) == 120
+                assert read(base) & 7 == 2 and decoded_count() == previous_decoded
+                assert data_at(target, 2 * plane) == b'\xa5' * (2 * plane)
+                write(base + 0x480, 0x0a000000)
+                write(base + 0x2c, ~0x10 & 0xffffffff)
+                assert not levels[105 - 32]
+                write(base + 0x410, stride)
+                write(base + 0x414, stride)
+                write(base + 0x418, geometry[0])
+                write(base + 0x41c, geometry[1])
+                write(base + 0x400, 0x4008)
+
+            write(target - 4, 0x12345678)
+            write(target + 2 * plane, 0x87654321)
+            decoder_setup()
+            if enabled:
+                assert decoded_count() == 1 and read(base + 0x480) == 0x0800c000
+                assert levels[105 - 32] and read(base + 0x2c) == 0x80000000
+                pixels = data_at(target, 2 * plane)
+                assert all(abs(pixels[i] - expected[i * 3]) <= 2 for i in range(plane))
+                assert all(abs(pixels[plane + i] - expected[(i & ~1) * 3 + (2 if i & 1 else 1)]) <= 2
+                           for i in range(plane))
+                assert read(target - 4) == 0x12345678 and read(target + 2 * plane) == 0x87654321
+                write(base + 0x480, 0x0800c000)
+                assert not levels[105 - 32]
+                for data, destination, geometry in ((jpeg[:-64], target, (160, 120)),
+                        (jpeg, output_end - plane, (160, 120)), (jpeg, target, (162, 120))):
+                    decoder_setup(data, destination, geometry)
+                    assert decoded_count() == 1 and read(base + 0x480) == 0
+                    assert data_at(target, 2 * plane) == b'\xa5' * (2 * plane)
+                write(base + 4, 0x80000000)
+                write(base + 0x440, 0x24072000)
+                write(base + 4, 1)
+                assert read(base + 0x480) == 0 and decoded_count() == 1
+                plane = 192 * 120
+                write(target + 2 * plane, 0x87654321)
+                decoder_setup(stride=192)
+                assert decoded_count() == 2
+                pixels = data_at(target, 2 * plane)
+                for y in range(120):
+                    assert all(abs(pixels[y * 192 + x] - expected[(y * 160 + x) * 3]) <= 2 for x in range(160))
+                    assert pixels[y * 192 + 160:(y + 1) * 192] == b'\xa5' * 32
+                    assert pixels[plane + y * 192 + 160:plane + (y + 1) * 192] == b'\xa5' * 32
+                assert read(target + 2 * plane) == 0x87654321
+            monitor('system_reset')
+            assert decoded_count() == 0 and read(base + 0x480) == 0 and not levels.get(105 - 32, False)
+
             def configure(width=640, height=424, source=small_source, size=capacity, scale=0, measuring=False):
                 stride = 1664 if width == 1620 else width
                 rows = 1088 if width == 1620 else height
@@ -122,6 +201,7 @@ def check(qemu):
                 assert encoded[:2] == b'\xff\xd8' and encoded[-2:] == b'\xff\xd9'
                 image = Image.open(io.BytesIO(encoded))
                 assert image.size == (width, height) and image.mode == 'RGB'
+                assert image.layer[0][1:3] == (2, 1), 'Mode 1 must encode 4:2:2 for native playback'
                 assert image.quantization[0] == quantizers[0] and image.quantization[1] == quantizers[1]
                 assert not image.info.get('progressive', False)
                 for point, expected in ((bright, 255), ((width // 2, height // 2), 0), ((width - 8, height - 8), 0)):
@@ -290,7 +370,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS monochrome/color JPEG pixels, quantizers, bounds, rejected jobs, IRQ acknowledgement and reset')
+    print('PASS JPEG encoding, staged decoding, color pixels, quantizers, bounds, rejected jobs, IRQ acknowledgement and reset')
 
 
 if __name__ == '__main__':

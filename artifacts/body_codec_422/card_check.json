@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "firmware_included": false,
+  "filesystem_integrity": true,
+  "native_card_writes_only": true,
+  "export_reencoded": false,
+  "completed_raw_frames": 1,
+  "native_key": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 148412986,
+    "shot": 1,
+    "release_ticks": 160523510,
+    "held_counter_seconds": 0.25230258333333333
+  },
+  "final_capture_state": [
+    2,
+    0
+  ],
+  "final_driver_state": 9,
+  "native_still_queue_empty": true,
+  "core_faults": [
+    {
+      "thread": 1,
+      "pc": "0x1010707c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10289fba",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a68",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a4c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "file": {
+    "name": "DCIM\\100NZ7_2\\DSC_0001.JPG",
+    "bytes": 5160027,
+    "sha256": "0c1d946e47b8c74bebf27042f14ead6d6f01458da0632ccd7dceacf38ba70906",
+    "jpeg_images": [
+      {
+        "offset": "0x0",
+        "width": 8256,
+        "height": 5504,
+        "decoded": true,
+        "sampling": "4:2:2"
+      },
+      {
+        "offset": "0x8248",
+        "width": 160,
+        "height": 120,
+        "decoded": true,
+        "sampling": "4:2:2"
+      },
+      {
+        "offset": "0x461600",
+        "width": 640,
+        "height": 424,
+        "decoded": true,
+        "sampling": "4:2:2"
+      },
+      {
+        "offset": "0x480800",
+        "width": 1620,
+        "height": 1080,
+        "decoded": true,
+        "sampling": "4:2:2"
+      }
+    ],
+    "matching_ram_bodies": [
+      {
+        "ram_jpeg": "codec-5120457eaf8028a0cc727f74ff232bca606bfd80bc1953849cc9f03c903a8a56.jpg",
+        "offset": "0x19402",
+        "bytes": 4489707
+      },
+      {
+        "ram_jpeg": "codec-7b44352bcdf314f388568bbb02d65d00477e0d9450c1071a4a23a23e9f90a7ec.jpg",
+        "offset": "0x824a",
+        "bytes": 10972
+      },
+      {
+        "ram_jpeg": "codec-a47be34b72f2bc028cb82009013209e1051a5c59d1ac66004e55da149ce271cf.jpg",
+        "offset": "0x471602",
+        "bytes": 61885
+      },
+      {
+        "ram_jpeg": "codec-f06cdfc5299e4b9d96894cfca0d2ad6a0c87c3bd03bbc7411a955d0d24564f7e.jpg",
+        "offset": "0x490802",
+        "bytes": 373849
+      }
+    ],
+    "checker_phase": 0,
+    "checker_centers": 11310,
+    "checker_errors": 0,
+    "export": "artifacts/body_codec_422/DSC_0001.JPG"
+  },
+  "probe_txt": {
+    "bytes": 20,
+    "sha256": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5"
+  },
+  "temporary_card_retained_for_cold_playback": true,
+  "temporary_card_retained_after_cold_playback": false
+}

@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "source_preserved": true,
+  "clone_filesystem_integrity": "passed",
+  "photo_unchanged": true,
+  "photo": {
+    "path": "DCIM/100NZ7_2/DSC_0001.JPG",
+    "bytes": 5126646,
+    "sha256": "e94567b31cb51bad147dbae080e130be7869b6b36b085aaf9ee0bd0a949df0d9",
+    "size": [
+      8256,
+      5504
+    ]
+  },
+  "scope": "Read-only archive integrity and full JPEG decode; no display success inferred"
+}

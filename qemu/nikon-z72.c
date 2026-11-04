@@ -639,6 +639,8 @@ struct NikonZ72BootConfig {
     uint32_t codec_registers[0x600 / 4];
     uint64_t codec_dma_count;
     uint64_t codec_measured_count;
+    bool codec_decode_header_pending;
+    uint64_t codec_decoded_count;
     MemoryRegion compute_mailbox;
     uint32_t compute_owners[8];
     uint32_t compute_mailbox_words[0x400];
@@ -3596,9 +3598,9 @@ static void codec_jpeg_end(j_compress_ptr jpeg)
 /* A bounded baseline JPEG for the lab's byte luma and neutral chroma.
  * Optional blue/yellow false color requires a binary stimulus;
  * it does not decode a Bayer pattern or model native color processing.
- * Quantizers come from the native register file. Three-component 4:2:0,
- * standard Huffman tables and the input-plane interpretation are diagnostic
- * choices, not a reconstruction of the hardware's bit-exact codec. */
+ * Quantizers come from the native register file. Mode 1 uses 4:2:2, matching
+ * the decoder mode requested by native playback. Standard Huffman tables
+ * and the input-plane interpretation remain laboratory choices. */
 static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
                        const unsigned quantizers[2][64], bool color_checker,
                        size_t capacity,
@@ -3633,6 +3635,8 @@ static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
     context->jpeg.input_components = 3;
     context->jpeg.in_color_space = JCS_YCbCr;
     jpeg_set_defaults(&context->jpeg);
+    context->jpeg.comp_info[0].h_samp_factor = 2;
+    context->jpeg.comp_info[0].v_samp_factor = 1;
     jpeg_add_quant_table(&context->jpeg, 0, quantizers[0], 100, TRUE);
     jpeg_add_quant_table(&context->jpeg, 1, quantizers[1], 100, TRUE);
     jpeg_start_compress(&context->jpeg, TRUE);
@@ -3667,7 +3671,141 @@ static bool codec_jpeg(const uint8_t *pixels, unsigned width, unsigned height,
 static void codec_update_irq(NikonZ72BootConfig *s)
 {
     qemu_set_irq(qdev_get_gpio_in(s->intc, 105 - 32),
-        (s->codec_registers[0x480 / 4] & s->codec_registers[0x484 / 4]) != 0);
+        (s->codec_registers[0x480 / 4] & s->codec_registers[0x484 / 4]) != 0 ||
+        ((s->codec_registers[0x480 / 4] & 0x08000000) &&
+         (s->codec_registers[0x2c / 4] & s->codec_registers[0x28 / 4])));
+}
+
+/* Header IRQ precedes the native worker's output geometry and input-DMA
+ * resume. Decode into private storage first; publish pixels only after a
+ * complete, warning-free stream and both output ranges have been checked.
+ * The laboratory raster is Y plus interleaved Cb/Cr, with contiguous planes;
+ * this is not a bit-exact reconstruction of the hardware's upsampler. */
+static bool codec_decode(NikonZ72BootConfig *s, bool header_only)
+{
+    uint32_t *r = s->codec_registers;
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint32_t input = r[0x440 / 4], first = r[0x430 / 4], second = r[0x434 / 4];
+    uint32_t minimum = s->master_role ? 0xbd200000 : 0xc8900000;
+    uint64_t limit = s->master_role ? 0xffee5400 : 0xffe66800;
+    uint64_t capacity = r[0x458 / 4] ? (uint64_t)r[0x458 / 4] * 512 : 0x1000000;
+    struct {
+        struct jpeg_decompress_struct jpeg;
+        NikonZ72JpegError error;
+        uint8_t *pixels;
+        uint8_t *row;
+        bool ok;
+    } *context = g_new0(typeof(*context), 1);
+
+    if ((r[0] & ~7u) != 0x38 || r[0x408 / 4] != 0x10000 ||
+        (r[0x400 / 4] & ~0xc000) != 8 || (r[0x404 / 4] & ~0xc000) != 8 ||
+        capacity > 0x1000000 || input < minimum || input >= limit) {
+        g_free(context);
+        return false;
+    }
+    capacity = MIN(capacity, limit - input);
+    if (!processing_ram_range(view, input, capacity)) {
+        g_free(context);
+        return false;
+    }
+    g_autofree uint8_t *encoded = g_malloc(capacity);
+    if (address_space_read(view, input, MEMTXATTRS_UNSPECIFIED, encoded, capacity) != MEMTX_OK ||
+        capacity < 4 || encoded[0] != 0xff || encoded[1] != 0xd8) {
+        g_free(context);
+        return false;
+    }
+    context->jpeg.err = jpeg_std_error(&context->error.parent);
+    context->error.parent.error_exit = codec_jpeg_error;
+    if (setjmp(context->error.jump)) {
+        goto done;
+    }
+    jpeg_create_decompress(&context->jpeg);
+    jpeg_mem_src(&context->jpeg, encoded, capacity);
+    if (jpeg_read_header(&context->jpeg, TRUE) != JPEG_HEADER_OK ||
+        context->jpeg.data_precision != 8 || context->jpeg.num_components != 3 ||
+        context->error.parent.num_warnings ||
+        context->jpeg.progressive_mode || context->jpeg.image_width > 8256 ||
+        context->jpeg.image_height > 5504 || !context->jpeg.image_width ||
+        !context->jpeg.image_height) {
+        goto done;
+    }
+    jpeg_component_info *component = context->jpeg.comp_info;
+    unsigned format;
+    if (component[1].h_samp_factor != 1 || component[1].v_samp_factor != 1 ||
+        component[2].h_samp_factor != 1 || component[2].v_samp_factor != 1) {
+        goto done;
+    }
+    if (component[0].h_samp_factor == 1 && component[0].v_samp_factor == 1) {
+        format = 0;
+    } else if (component[0].h_samp_factor == 2 && component[0].v_samp_factor == 1) {
+        format = 1;
+    } else if (component[0].h_samp_factor == 2 && component[0].v_samp_factor == 2) {
+        format = 2;
+    } else {
+        goto done;
+    }
+    if (header_only) {
+        r[0] = (r[0] & ~7u) | format;
+        r[0x1c / 4] = context->jpeg.image_width;
+        r[0x18 / 4] = context->jpeg.image_height;
+        r[0x2c / 4] |= 0x10;
+        r[0x480 / 4] |= 0x0a000000;
+        s->codec_decode_header_pending = true;
+        context->ok = true;
+        goto done;
+    }
+    unsigned width = context->jpeg.image_width, height = context->jpeg.image_height;
+    size_t plane = (uint64_t)second - first;
+    unsigned stride = r[0x410 / 4];
+    if ((width & 1) || stride < width || stride > ROUND_UP(width, 128) ||
+        r[0x414 / 4] != stride || r[0x418 / 4] != width || r[0x41c / 4] != height ||
+        r[0x420 / 4] || r[0x424 / 4] || r[0x428 / 4] ||
+        second <= first || plane > 0x4000000 || plane % stride ||
+        plane < (uint64_t)stride * height || plane > (uint64_t)stride * ROUND_UP(height, 16) ||
+        first < minimum || (uint64_t)second + plane > limit ||
+        !processing_ram_range(view, first, 2 * plane)) {
+        goto done;
+    }
+    context->jpeg.out_color_space = JCS_YCbCr;
+    jpeg_start_decompress(&context->jpeg);
+    context->pixels = g_malloc0(2 * plane);
+    memset(context->pixels + plane, 128, plane);
+    context->row = g_malloc(width * 3);
+    while (context->jpeg.output_scanline < height) {
+        unsigned y = context->jpeg.output_scanline;
+        JSAMPROW row = context->row;
+        jpeg_read_scanlines(&context->jpeg, &row, 1);
+        for (unsigned x = 0; x < width; x++) {
+            context->pixels[(size_t)y * stride + x] = row[x * 3];
+            context->pixels[plane + (size_t)y * stride + x] = row[(x & ~1u) * 3 + (x & 1 ? 2 : 1)];
+        }
+    }
+    jpeg_finish_decompress(&context->jpeg);
+    size_t consumed = capacity - context->jpeg.src->bytes_in_buffer;
+    if (context->error.parent.num_warnings ||
+        (input < (uint64_t)second + plane && first < (uint64_t)input + consumed)) {
+        goto done;
+    }
+    for (unsigned y = 0; y < height; y++) {
+        if (address_space_write(view, first + y * stride, MEMTXATTRS_UNSPECIFIED,
+                                context->pixels + (size_t)y * stride, width) != MEMTX_OK ||
+            address_space_write(view, second + y * stride, MEMTXATTRS_UNSPECIFIED,
+                                context->pixels + plane + (size_t)y * stride, width) != MEMTX_OK) {
+            goto done;
+        }
+    }
+    r[0x2c / 4] |= 0x80000000;
+    r[0x480 / 4] |= 0x0800c000;
+    s->codec_decoded_count++;
+    context->ok = true;
+done:
+    jpeg_destroy_decompress(&context->jpeg);
+    bool ok = context->ok;
+    g_free(context->row);
+    g_free(context->pixels);
+    g_free(context);
+    codec_update_irq(s);
+    return ok;
 }
 
 static bool codec_encode(NikonZ72BootConfig *s)
@@ -3788,8 +3926,18 @@ static void codec_write(void *opaque, hwaddr offset, uint64_t value, unsigned si
         r[0x480 / 4] = 0;
         r[0x2c / 4] = 0;
         r[0x488 / 4] = 0;
+        s->codec_decode_header_pending = false;
     } else {
         r[offset / 4] = value;
+        if (s->frame_process && s->cpu && (r[0] & ~7u) == 0x38) {
+            if (offset == 4 && value == 1 && !s->codec_decode_header_pending) {
+                codec_decode(s, true);
+            } else if (offset == 0x400 && (value & 0xc000) == 0x4000 &&
+                       s->codec_decode_header_pending) {
+                s->codec_decode_header_pending = false;
+                codec_decode(s, false);
+            }
+        }
         if (offset == 0x404 && (value & 0xc000) == 0x4000 &&
             (r[0x400 / 4] & 0xc000) == 0x4000 && (r[1] & 1) &&
             !(r[0x480 / 4] & 0x08001000) && !(r[0x2c / 4] & 0x80000000) &&
@@ -4109,6 +4257,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     memset(s->codec_registers, 0, sizeof(s->codec_registers));
     s->codec_dma_count = 0;
     s->codec_measured_count = 0;
+    s->codec_decode_header_pending = false;
+    s->codec_decoded_count = 0;
     memset(s->compute_owners, 0, sizeof(s->compute_owners));
     memset(s->compute_mailbox_words, 0, sizeof(s->compute_mailbox_words));
     memset(s->dbi_table, 0, sizeof(s->dbi_table));
@@ -4222,8 +4372,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 58,
-    .minimum_version_id = 58,
+    .version_id = 59,
+    .minimum_version_id = 59,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4296,6 +4446,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_UINT32_ARRAY(codec_registers, NikonZ72BootConfig, 0x600 / 4),
         VMSTATE_UINT64(codec_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT64(codec_measured_count, NikonZ72BootConfig),
+        VMSTATE_BOOL(codec_decode_header_pending, NikonZ72BootConfig),
+        VMSTATE_UINT64(codec_decoded_count, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_input, NikonZ72BootConfig),
         VMSTATE_BOOL(peer_ready_output, NikonZ72BootConfig),
         VMSTATE_UINT8_ARRAY(transport_table, NikonZ72BootConfig, 0x10000),
@@ -4400,6 +4552,8 @@ static void boot_config_init(Object *obj)
     object_property_add_uint64_ptr(obj, "codec-dma-count", &s->codec_dma_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "codec-measured-count", &s->codec_measured_count,
+                                   OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "codec-decoded-count", &s->codec_decoded_count,
                                    OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "processing-grid-count", &s->processing_grid_count,
                                   OBJ_PROP_FLAG_READ);
