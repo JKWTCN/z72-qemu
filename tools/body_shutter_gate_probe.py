@@ -4248,6 +4248,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
                     sampling_feedback=getattr(machine.args, 'sampling_feedback', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
+                    sampling_output_frame_start=getattr(machine.args, 'sampling_output_frame_start', False),
                     primary_exposure_sync=getattr(machine.args, 'primary_exposure_sync', False),
                     controller_step_trigger=dict(requested=controller_step_trigger,
                                                  supplied=controller_step_trigger_sent),
@@ -4452,6 +4453,8 @@ def main():
                         help='Enable experimental request/capture feedback; requires sampling-output-complete')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental sampling comparison and finite tail output events')
+    parser.add_argument('--sampling-output-frame-start', action='store_true',
+                        help='Experimentally start output 16 at a frame boundary; requires sampling-output-complete and sample-group1')
     parser.add_argument('--primary-exposure-sync', action='store_true',
                         help='Experimentally defer primary pixels until the output-16 comparison')
     parser.add_argument('--application-only', action='store_true',
@@ -4636,6 +4639,7 @@ def main():
                           icount_shift=args.icount_shift,
                           sampling_feedback=args.sampling_feedback,
                           sampling_output_complete=args.sampling_output_complete,
+                          sampling_output_frame_start=args.sampling_output_frame_start,
                           primary_exposure_sync=args.primary_exposure_sync,
                           preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
                           preserved_nvme_name=args.capture_nvme_copy.name if args.capture_nvme_copy else None,

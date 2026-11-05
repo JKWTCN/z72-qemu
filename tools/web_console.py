@@ -384,6 +384,8 @@ class Machine:
                       if getattr(self.args, 'sampling_feedback', False) else ()) +
                      (('nikon-z72-boot-config.sampling-output-complete=on',)
                       if getattr(self.args, 'sampling_output_complete', False) else ()) +
+                     (('nikon-z72-boot-config.sampling-output-frame-start=on',)
+                      if getattr(self.args, 'sampling_output_frame_start', False) else ()) +
                      (('nikon-z72-boot-config.primary-exposure-sync=on',)
                       if getattr(self.args, 'primary_exposure_sync', False) else ()) +
                      card_globals +
@@ -1178,6 +1180,8 @@ def main():
                         help='Enable experimental request/capture feedback; requires sampling-output-complete')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental sampling comparison and finite tail output timers')
+    parser.add_argument('--sampling-output-frame-start', action='store_true',
+                        help='Experimentally start output 16 at a frame boundary; requires sampling-output-complete and sample-group1')
     parser.add_argument('--controller-actuator', action='store_true',
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',

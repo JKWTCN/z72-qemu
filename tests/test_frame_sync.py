@@ -26,6 +26,7 @@ def check(qemu):
             '-global', f'nikon-z72-boot-config.sampling-output-complete={"on" if enabled else "off"}',
             '-global', f'nikon-z72-boot-config.frame-phase={"on" if phase else "off"}',
             '-global', f'nikon-z72-boot-config.sample-group1={"on" if group1 else "off"}',
+            '-global', f'nikon-z72-boot-config.sampling-output-frame-start={"on" if group1 else "off"}',
             '-global', 'nikon-z72-boot-config.sample-lines=0x1234',
             '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off', '-qtest-log', '/dev/null'],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -116,6 +117,47 @@ def check(qemu):
                 assert read(0x20060034) == 0 and read(0x20060038) == 0
                 command('clock_step 100000000')
                 assert read(0x20060038) == 0
+                # The optional output-16 profile waits for an eligible input
+                # boundary, then counts its own comparison interval once.
+                for action in ('complete', 'stop', 'gate', 'reset', 'mode4', 'output8'):
+                    monitor('system_reset')
+                    bit = 8 if action == 'output8' else 16
+                    base = 0x200630d0 if bit == 8 else 0x20063110
+                    values = (0xffffffff, 0xffffff, 0xffff, 0xffff1940,
+                              1, 0xffffff, 0xffff0000,
+                              0x06000004 if action == 'mode4' else 0x06000006)
+                    for offset, value in enumerate(values):
+                        write(base + offset * 4, value)
+                    write(0x2006000c, bit << 1)
+                    write(base + 0x20, 1)
+                    write(0x20060020, bit)
+                    command('clock_step 1000000')
+                    if action in ('mode4', 'output8'):
+                        assert read(0x20060038) & bit
+                        continue
+                    assert not read(0x20060038) & bit
+                    if action == 'stop':
+                        write(0x20060024, bit)
+                    elif action == 'gate':
+                        write(0x20060008, bit << 1)
+                    elif action == 'reset':
+                        monitor('system_reset')
+                    command(f'set_irq_in {clock_path} frame-sync-enable 0 1')
+                    command('clock_step 33333333')
+                    command('clock_step 999999')
+                    assert not read(0x20060038) & bit
+                    command('clock_step 1')
+                    assert bool(read(0x20060038) & bit) == (action == 'complete')
+                    write(0x20060038, bit)
+                    if action == 'gate':
+                        write(0x2006000c, bit << 1)
+                        command('clock_step 32333333')
+                        assert not read(0x20060038) & bit
+                        command('clock_step 1000000')
+                        assert read(0x20060038) & bit
+                        write(0x20060038, bit)
+                    command('clock_step 100000000')
+                    assert not read(0x20060038) & bit
                 continue
             if active:
                 write(0x20060040, 0x10)
