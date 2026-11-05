@@ -1,0 +1,278 @@
+{
+  "result": "observed-post-readiness-body-press-without-primary-input-configuration",
+  "source_revision": "e0ec976",
+  "conditions": {
+    "source_sha256": {
+      ".local/repeat-playback/run-default-ready-body.py": "1364d97079ff3bddaa1238d60e40f56d20a21285579a5fc24205de3e08400c32",
+      "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+      "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+    },
+    "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+  },
+  "arguments": {
+    "qemu": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "master": "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "slave": "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "controller": "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "sd_card": "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "port": 8666,
+    "wsl": true,
+    "display_complete": true,
+    "live_view": true,
+    "sensor_image": null,
+    "sensor_timing_profile": false,
+    "virtual_lens": false,
+    "virtual_body_vr": false,
+    "nvme_card": "D:\\code\\z72-qemu\\.local\\playback_return_body_save.raw",
+    "input_handshake": true,
+    "sample_group1": false,
+    "controller_actuator": false,
+    "controller_step_link": false,
+    "controller_step_feedback": false,
+    "realtime": false,
+    "auto_menu": false,
+    "update_image": null,
+    "boot_key": null,
+    "update_store": "D:\\code\\z72-qemu\\.local\\capture-report-archive\\default_browser_ready_body\\update-store",
+    "open_browser": false,
+    "frame_phase": true,
+    "input_stop_complete": true,
+    "frame_generate": true,
+    "frame_notify": true,
+    "frame_process": true,
+    "aux_image_process": true
+  },
+  "controls": {
+    "initial_readiness": {
+      "gate": 0,
+      "driver": 9,
+      "tv": 312,
+      "controller_mode": 0
+    },
+    "manual_mode": {
+      "gate": 0,
+      "driver": 9,
+      "tv": 312,
+      "controller_mode": 3
+    },
+    "native_ready": {
+      "gate": 0,
+      "driver": 9,
+      "tv": 304,
+      "controller_mode": 3
+    },
+    "half": {
+      "pin": 24,
+      "start_ticks": 118972442,
+      "end_ticks": 143150241,
+      "frequency": 48000000,
+      "held_at_end": [
+        24
+      ]
+    },
+    "full": {
+      "pin": 25,
+      "start_ticks": 143154329,
+      "end_ticks": 155401747,
+      "frequency": 48000000,
+      "held_at_end": [
+        24,
+        25
+      ]
+    }
+  },
+  "before": {
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 9,
+    "release_gate": 0,
+    "status_codes": [],
+    "application": {
+      "initialized": 1,
+      "current": 3,
+      "requested": 5,
+      "state": 2
+    },
+    "counter_ticks": 115848326,
+    "counter_frequency": 48000000
+  },
+  "after": {
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 9,
+    "release_gate": 0,
+    "status_codes": [],
+    "application": {
+      "initialized": 1,
+      "current": 3,
+      "requested": 5,
+      "state": 2
+    },
+    "counter_ticks": 429447511,
+    "counter_frequency": 48000000
+  },
+  "guest_seconds_after_full": 5.964441291666667,
+  "input_before": {
+    "frames": 36,
+    "address": "0x5af27000",
+    "stride": 2080,
+    "configuration_commits": {
+      "preview": 38,
+      "primary": 0
+    },
+    "preview_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "primary_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "running_mask": "0x2bf",
+    "frame_ticks": 44,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 23,
+    "processing_grids": 23,
+    "auxiliary_jobs": 25,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "408cba15d6bc48ff597fa486ea4f41464542ce14d0acfb84671bb5e2e38bbe73",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "input_after": {
+    "frames": 225,
+    "address": "0x54900000",
+    "stride": 2080,
+    "configuration_commits": {
+      "preview": 227,
+      "primary": 0
+    },
+    "preview_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "primary_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "running_mask": "0x2bf",
+    "frame_ticks": 233,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 212,
+    "processing_grids": 212,
+    "auxiliary_jobs": 203,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "e234525b90ade5365ae68ba62f32a041cbb350c28729a07e386c75a0dcb91cab",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x101207fc",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x101187c0",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a68",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a4c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "snapshots": {
+    "before.png": {
+      "sha256": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+      "bytes": 69282
+    },
+    "after.png": {
+      "sha256": "2cd344ea62db99fc5c92e4acd40284cceea760a4acbc26a9fb9a00e33379a819",
+      "bytes": 71361
+    }
+  },
+  "evidence": {
+    "report.json": {
+      "sha256": "6ea17eb5f317ae8fac1e6f704b7072d17c14258b9ee93a80056b567e9aa3f106",
+      "bytes": 316688
+    },
+    "conditions.json": {
+      "sha256": "5944cdfd9abb438b081b10fdf39c502ab781beacae77985810e55d9975532b81",
+      "bytes": 637
+    },
+    "qemu.log": {
+      "sha256": "c4d2cec6927fc7e82130f7fce52f16a27cd6eb8e188d1d92d08d3a12d7b6df9e",
+      "bytes": 155705
+    },
+    "storage.json": {
+      "sha256": "cd9cb9f5eb48a2db9e9609c29a55634f99aa199a16fbf4b36e70673fa4127239",
+      "bytes": 18978
+    }
+  },
+  "visual_observation": "Upright M shooting UI; before snapshot still shows 1/8000, after shows 1/6400 and a red clock-shaped symbol. Preview remains a checkerboard.",
+  "interpretation": "Native readiness and short manual exposure alone did not produce primary input configuration in this observation. Endpoint snapshots do not establish the intervening application dispatch or identify a DSP failure.",
+  "next_step": "Trace native body input dispatch and capture admission under this same default device profile.",
+  "limitations": [
+    "One post-readiness press, no continuous capture-state trace.",
+    "No diagnostic settings or capture calls, no preprocessing skip.",
+    "Default device profile uses synthetic preview and automatic handshake.",
+    "No saved-file or original DSP execution claim."
+  ],
+  "checker_sha256": "6ffcadcea7bca6809f13693b1df4beb79c0c6c6f884387a04237ceb21f92e270",
+  "cleanup": {
+    "temporary_vm_work_removed": true,
+    "temporary_pngs_removed": true,
+    "cards_use_temporary_write_layers": true
+  }
+}
