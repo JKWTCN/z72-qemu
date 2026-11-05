@@ -1,0 +1,115 @@
+{
+  "result": "controller-feedback-observed-without-capture-completion",
+  "seconds_after_full": 2.0070735416666667,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x1a",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x1022b8bc": 7,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022b886": 1,
+    "0x1022b88c": 1,
+    "0x1022b8b6": 1,
+    "0x1022b7a4": 3,
+    "0x1022b7b4": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1,
+    "0x1022b81e": 1,
+    "0x1022d32a": 1,
+    "0x1022d384": 1,
+    "0x1022a444": 1,
+    "0x1022a4f6": 1,
+    "0x103edaea": 1,
+    "0x103ec25a": 1,
+    "0x103e4b8c": 4,
+    "0x103e4b9c": 14,
+    "0x103e4b9e": 14,
+    "0x103e9d24": 4,
+    "0x103e785e": 1,
+    "0x103e786c": 1,
+    "0x103e7882": 1,
+    "0x103e78b6": 1,
+    "0x103e7312": 3,
+    "0x103e7334": 3,
+    "0x103e6e94": 3,
+    "0x10242124": 2,
+    "0x102422ec": 2,
+    "0x10328e52": 1,
+    "0x103eb604": 1,
+    "0x10394d06": 7,
+    "0x102962ea": 4,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10296324": 2
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "cb74278b2a4c81dff8fd00aa2b35bee85710c060ad3d51d453acd6fbf9d4dcb8",
+    "trace.jsonl": "d28fe19d845ebab4ef52ad58333942a28466b35f52f04e29125146b29d70629e",
+    "conditions.json": "b48cdbd8caf7447e5f0f46caf382577b63cd9532f2d7f78d3d57688ebcc82f67",
+    "arguments.json": "8e5b72bade1af4e7ee26d7358ddb8ce77384f2a24be7a2fbefe05100e22b1a20",
+    "storage.json": "bba6e66d740db799dc7c29d53bb212679062b521801cd0e529c12c5d51b9577b",
+    "qemu.log": "6e717a794e41a8e46315909aa95a4b859e5486468e9e095a37ae422f3cbc92e8",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-controller-feedback.py": "3e044e55fdd9e3cfe9fbc9cb6d4d35696d4c1a78a942307a238e979e14c918f2",
+    ".local/repeat-playback/trace_controller_feedback_contacts.py": "6f97667c0d96a6b67fa70c17094ec6cfda3af5b69e2686b9798905849ed22059",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "f2ab7cebe4d1011895663e5ed64c878f530ef067e98422a4bbdcd8cd9de3fcaf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  }
+}
