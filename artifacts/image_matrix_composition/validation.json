@@ -1,0 +1,217 @@
+{
+  "result": "passed-original-scale-and-transform-composition",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "scale_entry": "0x105a7206",
+  "composition_entry": "0x105a9ca6",
+  "composition_stop": "0x105aa1bc",
+  "context_getter_intercept": "0x106449ae",
+  "scale_cases": [
+    {
+      "mode": "0x1400",
+      "context_29c": 0,
+      "result_matrix": [
+        2,
+        4,
+        3,
+        -4,
+        -5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "mode": "0x1401",
+      "context_29c": 0,
+      "result_matrix": [
+        2,
+        4,
+        6,
+        -4,
+        -5,
+        -6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "mode": "0x1402",
+      "context_29c": 0,
+      "result_matrix": [
+        2,
+        4,
+        3,
+        -4,
+        -5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "mode": "0x1402",
+      "context_29c": 1,
+      "result_matrix": [
+        2,
+        4,
+        6,
+        -4,
+        -5,
+        -6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "mode": "0x1403",
+      "context_29c": 0,
+      "result_matrix": [
+        2,
+        4,
+        3,
+        -4,
+        -5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "mode": "0x1403",
+      "context_29c": 1,
+      "result_matrix": [
+        2,
+        4,
+        6,
+        -4,
+        -5,
+        -6,
+        7,
+        8,
+        9
+      ]
+    }
+  ],
+  "composition_cases": [
+    {
+      "source_size": [
+        1632,
+        1080
+      ],
+      "target_size": [
+        1024,
+        682
+      ],
+      "mode": "0x1401",
+      "caller_stack_32": 682,
+      "matrix_q16": [
+        41120,
+        0,
+        0,
+        0,
+        -41384,
+        0,
+        0,
+        44695548,
+        65536
+      ],
+      "matrix": [
+        0.62744140625,
+        0.0,
+        0.0,
+        0.0,
+        -0.6314697265625,
+        0.0,
+        0.0,
+        681.9999389648438,
+        1.0
+      ],
+      "mapped_source_y_zero": 681.9999389648438,
+      "mapped_source_y_height": 0.01263427734375
+    },
+    {
+      "source_size": [
+        720,
+        480
+      ],
+      "target_size": [
+        1024,
+        682
+      ],
+      "mode": "0x1401",
+      "caller_stack_32": 682,
+      "matrix_q16": [
+        93206,
+        0,
+        0,
+        0,
+        -93115,
+        0,
+        0,
+        44695549,
+        65536
+      ],
+      "matrix": [
+        1.422210693359375,
+        0.0,
+        0.0,
+        0.0,
+        -1.4208221435546875,
+        0.0,
+        0.0,
+        681.9999542236328,
+        1.0
+      ],
+      "mapped_source_y_zero": 681.9999542236328,
+      "mapped_source_y_height": 0.0053253173828125
+    },
+    {
+      "source_size": [
+        640,
+        424
+      ],
+      "target_size": [
+        640,
+        424
+      ],
+      "mode": "0x1401",
+      "caller_stack_32": 424,
+      "matrix_q16": [
+        65536,
+        0,
+        0,
+        0,
+        -65536,
+        0,
+        0,
+        27787264,
+        65536
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        424.0,
+        1.0
+      ],
+      "mapped_source_y_zero": 424.0,
+      "mapped_source_y_height": 0.0
+    }
+  ],
+  "scope": "Original scale, translation and zero-rotation API bodies and arithmetic helpers executed; only current-context lookup substituted. Synthetic objects, matrix mode, stack and identity initial matrix.",
+  "limitations": [
+    "Stack +32 is supplied as target height in these fixtures, not recovered from the native import observation.",
+    "No command submission, matrix inversion, pixel rendering or display scanout executed.",
+    "Does not establish which downstream behavior should change to correct playback orientation."
+  ],
+  "checker_sha256": "7d385c9317d36bf15008c6ed51c1d9cb5c8ff7ba2db45f7f4e3ab3659d15e129"
+}
