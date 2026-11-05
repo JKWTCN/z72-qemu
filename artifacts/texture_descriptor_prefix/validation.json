@@ -1,0 +1,522 @@
+{
+  "result": "passed-original-texture-descriptor-prefix",
+  "entry": "0x106b4150",
+  "stop": "0x106b41c6",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "checker_sha256": "bf7cae7296f39ea4238c9b67f7a93cf7b76cf3e5f93cbda6b7d4939f3255142a",
+  "cases": [
+    {
+      "format": "0x0",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0000",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0010",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0020",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0030",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0000",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0010",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0020",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0030",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0000",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0010",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0020",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x0",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0030",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b000d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b001d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b002d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b003d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b000d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b001d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b002d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b003d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b000d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b001d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b002d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0xd",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b003d",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x3",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x3",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 0,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0018",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4003",
+      "field_4d": 0,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    },
+    {
+      "format": "0x18",
+      "storage_field": "0x4003",
+      "field_4d": 1,
+      "field_4e": 1,
+      "commands": [
+        "0x158f004",
+        "0x200010",
+        "0x1567004",
+        "0x1b0038",
+        "0x152f004",
+        "0x18000c"
+      ]
+    }
+  ],
+  "executions": 36,
+  "scope": "Original preparation helper and state gate execute, burst command sink intercepted. Stop before texture address binding.",
+  "formula": "image_u32_1c | (image_u8_54 << 16) | (image_u8_55 << 8) | (image_u8_4d != 0 ? 0x10 : 0) | (image_u8_4e != 0 ? 0x20 : 0)",
+  "limitations": [
+    "Only tested fields 0x54=0x1b and 0x55=0.",
+    "Storage values 3, 4 and 0x4003 all bypass preparation; other storage paths not executed.",
+    "No hardware rendering, packed-alpha source descriptor or register-bit semantic established.",
+    "The command byte mask 7 leaves register byte 3 unchanged; this alone does not establish that byte has no function."
+  ]
+}
