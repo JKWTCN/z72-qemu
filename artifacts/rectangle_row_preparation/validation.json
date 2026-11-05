@@ -1,0 +1,103 @@
+{
+  "result": "observed-distinct-fill-and-raster-rectangle-row-preparation",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "rectangle_builder": "0x10646324",
+  "clear_matrix_load": "0x1068bdaa",
+  "clear_matrix": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "fill_evidence_sha256": "12b2818fefede57b9b17f4fc17811d86ef94f83c7453bb961fc59c2979bdd335",
+  "cases": [
+    {
+      "width": 6,
+      "height": 8,
+      "rectangle_coordinates": [
+        0,
+        1,
+        6,
+        2,
+        -6
+      ],
+      "direct_logical_rows": [
+        1,
+        2
+      ],
+      "cpu_fill_storage_rows": [
+        5,
+        6
+      ],
+      "reversed_destination_rows": [
+        6,
+        5
+      ],
+      "emitted": [
+        [
+          10,
+          118032130,
+          0
+        ],
+        [
+          65570,
+          0,
+          1,
+          6,
+          2,
+          4294967290
+        ]
+      ]
+    },
+    {
+      "width": 8,
+      "height": 8,
+      "rectangle_coordinates": [
+        0,
+        1,
+        8,
+        2,
+        -8
+      ],
+      "direct_logical_rows": [
+        1,
+        2
+      ],
+      "cpu_fill_storage_rows": [
+        5,
+        6
+      ],
+      "reversed_destination_rows": [
+        6,
+        5
+      ],
+      "emitted": [
+        [
+          10,
+          118032130,
+          0
+        ],
+        [
+          65570,
+          0,
+          1,
+          8,
+          2,
+          4294967288
+        ]
+      ]
+    }
+  ],
+  "finding": "The rectangle builder preserves y=1; the clear path matrix literal is identity. The separately executed origin-1 contiguous fill selects storage rows 5 and 6 on an eight-row surface.",
+  "limitations": [
+    "Only the rectangle builder executes here; full raster clear setup and hardware are not executed.",
+    "Other rasterizer state may account for row orientation; no universal output flip is proven.",
+    "No textured draw or rendering behavior changed."
+  ],
+  "checker_sha256": "bc14cbb474721b46c0fe74a398a3dbe5c6ee3686ab2b131d8744f29512b504f4"
+}
