@@ -1,0 +1,47 @@
+{
+  "result": "passed-original-memory-handle-address-cache",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "function": "0x106d578a",
+  "cases": [
+    {
+      "enabled": 0,
+      "null_handle": false,
+      "cached_before": "0xcbbaf000",
+      "returned": "0x0",
+      "cached_after": "0xcbbaf000",
+      "mapping_arguments": []
+    },
+    {
+      "enabled": 1,
+      "null_handle": true,
+      "cached_before": "0x0",
+      "returned": "0x0",
+      "cached_after": "0x0",
+      "mapping_arguments": []
+    },
+    {
+      "enabled": 1,
+      "null_handle": false,
+      "cached_before": "0xcbbaf000",
+      "returned": "0xcbbaf000",
+      "cached_after": "0xcbbaf000",
+      "mapping_arguments": []
+    },
+    {
+      "enabled": 1,
+      "null_handle": false,
+      "cached_before": "0x0",
+      "returned": "0xcc18b000",
+      "cached_after": "0xcc18b000",
+      "mapping_arguments": [
+        "0x87654321"
+      ]
+    }
+  ],
+  "scope": "Original address accessor executed; only the cache-miss mapping callback is replaced with a recorded synthetic return.",
+  "limitations": [
+    "No native surface handles resolved by this synthetic check.",
+    "The observer reads the cache without executing mapping or interpreting it as a verified physical address."
+  ],
+  "checker_sha256": "d12df7a9e04c8fa86f4e91bd3bb7f2b8e070b302290e50927359289be4dbcc62"
+}

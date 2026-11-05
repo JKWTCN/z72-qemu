@@ -71,6 +71,29 @@ class TransformSnapshotTests(unittest.TestCase):
             self.assertIn('unavailable', result)
             self.assertEqual(remote.reads, [])
 
+    def test_surface_handle_cache_and_bounds(self):
+        context, surface = 0xb1800c1c, 0xbbfcc000
+        for handle, cached in ((0xbbfcbe50, 0xcc18b000), (0xbbfcbe50, 0),
+                               (0xb5effff4, 0xcc18b000), (0xbc09fff4, 0xcc18b000),
+                               (0xb5effff8, None), (0xbc09fff8, None), (0x20144000, None)):
+            with self.subTest(handle=hex(handle), cached=cached):
+                remote = Remote(context)
+                remote.data[context + 0x28] = struct.pack('<I', surface)
+                data = bytearray(0xf0)
+                struct.pack_into('<I', data, 0x74, handle)
+                remote.data[surface] = bytes(data)
+                if cached is not None:
+                    remote.data[handle] = struct.pack('<3I', 0x1234, cached, 0x5678)
+                result = playback_surface_snapshot(remote, dict(r4=context))
+                item = result['memory_handles']['0x74']
+                if cached is None:
+                    self.assertIn('unavailable', item)
+                    self.assertNotIn(handle, remote.reads)
+                else:
+                    self.assertEqual(item['cached_address'], hex(cached))
+                    self.assertEqual('unavailable' in item, cached == 0)
+                    self.assertNotIn(0x5678, remote.reads)
+
     def test_outside_pool_is_explicit_without_pointer_dereference(self):
         for context in (0, 0xbc09fa04, 0x20144000):
             remote = Remote(context)

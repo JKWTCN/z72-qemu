@@ -1435,6 +1435,21 @@ def playback_surface_snapshot(remote, registers):
             result['words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
                 for offset in (8, 0x10, 0x1c, 0x2c, 0x30, 0x74, 0x88, 0x8c, 0x90,
                                0xa4, 0xa8, 0xcc, 0xd0, 0xd4, 0xd8, 0xdc, 0xe8)}
+            result['memory_handles'] = {}
+            for offset in (0x74, 0xa4, 0xa8, 0xcc, 0xd0, 0xd4):
+                handle = struct.unpack_from('<I', data, offset)[0]
+                if not handle:
+                    continue
+                item = dict(address=hex(handle))
+                result['memory_handles'][hex(offset)] = item
+                if (0xb1800000 <= handle <= 0xb5effff4 or
+                        0xbb300000 <= handle <= 0xbc09fff4):
+                    words = struct.unpack('<3I', remote.read(handle, 12))
+                    item.update(words=[hex(value) for value in words], cached_address=hex(words[1]))
+                    if not words[1]:
+                        item['unavailable'] = 'Address cache empty; mapping callback not invoked'
+                else:
+                    item['unavailable'] = 'Handle outside supported parameter and secondary-buffer RAM'
         else:
             result['unavailable'] = 'Surface outside supported parameter and secondary-buffer RAM'
     else:
