@@ -442,7 +442,12 @@ The default-off and slave-role checks preserve the existing mapping. The
 [audio contract](../research/z7ii/display_audio.md) distinguishes functional
 queue/timing choices from recovered register behavior. An isolated original
 polling routine also returns after submitting combined and separate words;
-full native audio playback, input, DMA and host sound remain unverified.
+full native audio playback, input and host sound remain unverified.
+Audio DMA checks additionally exercise bank-1 request selectors 3/7, both
+enable paths, queue backpressure, stop/resume, completion acknowledgement and
+isolation from bank-0 serial transmit requests. Isolated original descriptor,
+configuration and start routines also complete four-word transfers; the native
+playback task and callbacks have not been exercised.
 
 `tools/graphics_boot_probe.py --icount-shift 0` selects the instruction timing
 used for the resident-data observation. The default remains 4. Reports record

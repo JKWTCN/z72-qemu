@@ -158,10 +158,9 @@ def check(qemu):
                 write(output, 0x55)
                 write(status, 1 << 25)
                 assert read(status) & (1 << 25) == 0
-                # Unsupported input/DMA enables must not mutate configuration.
-                for value in (1 << 12, 1 << 15):
-                    write(control, value)
-                    assert read(control) & ~0x200 == 0
+                # Input activation remains unsupported.
+                write(control, 1 << 12)
+                assert read(control) & ~0x200 == 0
                 write(base, 1 << index)
                 write(base, 0)
                 # Three nonzero divider fields select a 32 us functional period.
@@ -198,6 +197,78 @@ def check(qemu):
                 assert read(channel + 32) == 0
                 assert read(channel + 0x5c) == 0
                 assert not irq_levels.get(167 + index - 32, False)
+            # Audio demand belongs to DMA bank 1, independent of channel number.
+            source, sentinel = 0xb1800400, 0xb1800500
+            for audio_index, dma_index, status_request in ((0, 5, False), (1, 2, True)):
+                monitor('system_reset')
+                channel = base + 0x100 * (audio_index + 1)
+                selection = 3 if audio_index == 0 else 7
+                dma = 0x2c030010 + 16 * dma_index
+                other = 0x2c020010
+                for n in range(4):
+                    write(source + 4 * n, 0x11110001 + n)
+                write(sentinel, 0xdeadbeef)
+                for bank, address, target in ((0x2c030000, dma, channel + 4),
+                                               (0x2c020000, other, sentinel)):
+                    write(bank, 0x80000000)
+                    write(address + 4, 0x09180000)  # Word writes, fixed destination.
+                    write(address + 8, source)
+                    write(address + 12, target)
+                    write(address, 0x80000003 | (selection << 24))
+                command('clock_step 1')
+                assert read(dma + 8) == source and read(channel + 32) == 0
+                write(channel + 8, 1 << 13)
+                command('clock_step 1')
+                assert read(dma + 8) == source  # Output alone does not enable DMA.
+                if status_request:
+                    write(channel + 16, 1 << 29)
+                else:
+                    write(channel + 8, (1 << 13) | (1 << 15))
+                command('clock_step 1')
+                assert read(dma + 8) == source + 4
+                assert read(channel + 32) == 3
+                assert read(dma + 4) >> 16 & 7 == 0  # Full queue applies backpressure.
+                assert read(other + 8) == source and read(sentinel) == 0xdeadbeef
+                write(channel + 20, 1 << 30)
+                command('clock_step 1334')
+                assert read(channel + 0x5c) == 1
+                assert read(dma + 8) == source + 8
+                # Stopping output lowers demand and preserves the pending DMA.
+                write(channel + 8, 0)
+                command('clock_step 5000')
+                assert read(dma + 8) == source + 8
+                write(channel + 8, (1 << 13) | (0 if status_request else 1 << 15))
+                for _ in range(3):
+                    command('clock_step 1334')
+                assert read(dma + 4) >> 16 & 7 == 5
+                assert read(channel + 0x5c) == 4 and read(channel + 0x60) == 0x1111
+                assert irq_levels.get(142 + dma_index - 32, False)
+                assert read(other + 8) == source and read(sentinel) == 0xdeadbeef
+                write(dma + 4, read(dma + 4) & ~0x1f0000)
+                assert not irq_levels.get(142 + dma_index - 32, False)
+                write(channel + 8, 0)
+                write(channel + 16, 0)
+                write(channel + 8, 2)
+                write(channel + 8, 2 | (1 << 15))
+                assert read(channel + 8) & ~0x200 == 2
+                write(channel + 16, 1 << 29)
+                assert not read(channel + 16) & (1 << 29)
+            # A serial TX request with the same selector cannot wake audio's bank.
+            monitor('system_reset')
+            for bank in (0x2c020000, 0x2c030000):
+                address = bank + 0x10
+                write(bank, 0x80000000)
+                write(address + 4, 0x09180000)
+                write(address + 8, source)
+                write(address + 12, sentinel + (4 if bank == 0x2c030000 else 0))
+                write(address, 0x83000000)
+            write(0x2c0a0010, 15 << 8)
+            write(0x2c0a000c, 0x420)
+            write(0x2c0a003c, 1)
+            command('clock_step 1')
+            assert read(0x2c020014) >> 16 & 7 == 5
+            assert read(0x2c030018) == source
+            assert read(0x2c030010) & 0x80000000
         finally:
             if stream is not None:
                 stream.close()

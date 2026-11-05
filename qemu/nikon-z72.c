@@ -6048,10 +6048,11 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         qdev_connect_gpio_out_named(config, "body-vr-select", 0,
                                     qdev_get_gpio_in_named(vr, SSI_GPIO_CS, 0));
     }
+    DeviceState *dma[2] = {NULL, NULL};
     if (NIKON_Z72_BOOT_CONFIG(config)->peripheral_dma ||
         NIKON_Z72_BOOT_CONFIG(config)->virtual_lens ||
+        (!slave && NIKON_Z72_BOOT_CONFIG(config)->audio_output) ||
         (!slave && NIKON_Z72_BOOT_CONFIG(config)->virtual_body_vr)) {
-        DeviceState *dma[2];
         for (unsigned bank = 0; bank < 2; bank++) {
             dma[bank] = qdev_new("nikon-z72-hdmac");
             g_autofree char *name = g_strdup_printf("%s-hdmac%u",
@@ -6073,6 +6074,13 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         for (unsigned port = 0; port < 11; port++) {
             for (unsigned direction = 0; direction < 2; direction++) {
                 unsigned selection = 3 + port * 2 + direction;
+                /* C1.70 0x103705fe accepts TX resources 0x12a..0x131.
+                 * Equal selector numbers in bank 1 belong to other devices. */
+                if (!slave && direction == 0) {
+                    qdev_connect_gpio_out_named(spi, "dma", port * 2,
+                        qdev_get_gpio_in(dma[0], selection));
+                    continue;
+                }
                 DeviceState *split = qdev_new("split-irq");
                 qdev_prop_set_uint16(split, "num-lines", 2);
                 qdev_realize_and_unref(split, NULL, &error_fatal);
@@ -6093,6 +6101,8 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         for (unsigned channel = 0; channel < 2; channel++) {
             sysbus_connect_irq(SYS_BUS_DEVICE(audio), channel,
                                qdev_get_gpio_in(gic, 167 + channel - 32));
+            qdev_connect_gpio_out_named(audio, "dma", channel,
+                qdev_get_gpio_in(dma[1], channel ? 7 : 3));
         }
     }
     DeviceState *delay = qdev_new("nikon-z72-delay");

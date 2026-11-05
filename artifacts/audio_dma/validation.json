@@ -1,0 +1,172 @@
+{
+  "observation": "audio DMA bank routing and real queue backpressure",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "windows": [
+    {
+      "address": "0x1036d89e",
+      "end_exclusive": "0x1036d970",
+      "purpose": "audio resource binding",
+      "sha256": "449e683510818c2c087b97c70d45c1ebb5d7a9cd1c1f8442a2c99b64494c34aa"
+    },
+    {
+      "address": "0x103705cc",
+      "end_exclusive": "0x10370646",
+      "purpose": "serial initialization and TX resource guard",
+      "sha256": "1a5f3d0f7751f556be989ee65685ad4721ec5cf0d82901ad6bd6fb76fd58b02f"
+    },
+    {
+      "address": "0x1036de50",
+      "end_exclusive": "0x1036de84",
+      "purpose": "audio descriptor construction",
+      "sha256": "fa4ab9bc723d2ae3258783120490bf6a2ef73a5c42900340619b9b0009b4641f"
+    },
+    {
+      "address": "0x1036e542",
+      "end_exclusive": "0x1036e5cc",
+      "purpose": "audio output selection",
+      "sha256": "63b2377885b7e5cc61460c099823ebf0169bb3c03cfeaece401a0551998af6cc"
+    },
+    {
+      "address": "0x102dc41e",
+      "end_exclusive": "0x102dc48e",
+      "purpose": "DMA configuration",
+      "sha256": "5cbca52aa80701cdddcb7c1abbf67d955f329575b2bcc3b45ef24720e57a20d7"
+    },
+    {
+      "address": "0x102dc4ec",
+      "end_exclusive": "0x102dc526",
+      "purpose": "DMA start",
+      "sha256": "ce43679d6f5c4b308f483b13eec5cd3ddea44c95a96e31150a37c73fed1d46e8"
+    }
+  ],
+  "dma_address_table": {
+    "runtime_address": "0xb180575c",
+    "file_offset": "0x237f6f0",
+    "bank0_first": [
+      "0x2c020010",
+      "0x2c020014",
+      "0x2c020018",
+      "0x2c02001c"
+    ],
+    "bank1_first": [
+      "0x2c030010",
+      "0x2c030014",
+      "0x2c030018",
+      "0x2c03001c"
+    ]
+  },
+  "audio_resources": [
+    "0x132",
+    "0x139"
+  ],
+  "serial_tx_resources": [
+    "0x12a",
+    "0x131"
+  ],
+  "audio_request_selectors": [
+    3,
+    7
+  ],
+  "binary_sha256": "b3d2ea77cdde4430f1c0124528479059dc084ac0228d03e82c9c77931e183be5",
+  "source_sha256": {
+    "qemu/nikon-z72-audio.c": "dd0ac98e9825ce19c1dd0bfcc119d68e70888a9e90f746abcc640e1a79ca9aec",
+    "qemu/nikon-z72.c": "9e9750c6795bc5d4c79c2c22e905911517235d915c6e65351c58c58dfc74e15d",
+    "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+    "tests/test_audio_output.py": "a274977e351b20dcb5ddc0ad62a03f6472cc79a2ff376cfc65e52adeb21db99c"
+  },
+  "build_passed": true,
+  "tests_passed": [
+    "tests/test_audio_output.py",
+    "tests/test_hdmac.py",
+    "tests/test_lens.py"
+  ],
+  "native_isolated": {
+    "scope": "isolated original descriptor construction, DMA configuration and start; project-authored completion poll, not full firmware boot",
+    "functions": [
+      "0x1036de50",
+      "0x102dc41e",
+      "0x102dc4ec"
+    ],
+    "results": [
+      {
+        "audio_channel": 0,
+        "dma_bank": 1,
+        "dma_channel": 5,
+        "descriptor_fields": [
+          3,
+          0,
+          0,
+          0,
+          3,
+          0,
+          2,
+          2,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ],
+        "configured_registers": [
+          "0x3000003",
+          "0x29e00000",
+          "0xb1800200",
+          "0x2c080104"
+        ],
+        "completion_status": 5,
+        "source_reloaded": true,
+        "monitors": [
+          3,
+          13107
+        ],
+        "queued_occupancy": "0x3"
+      },
+      {
+        "audio_channel": 1,
+        "dma_bank": 1,
+        "dma_channel": 2,
+        "descriptor_fields": [
+          7,
+          0,
+          0,
+          0,
+          3,
+          0,
+          2,
+          2,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ],
+        "configured_registers": [
+          "0x7000003",
+          "0x29e00000",
+          "0xb1800200",
+          "0x2c080204"
+        ],
+        "completion_status": 5,
+        "source_reloaded": true,
+        "monitors": [
+          3,
+          13107
+        ],
+        "queued_occupancy": "0x3"
+      }
+    ]
+  },
+  "limitations": [
+    "Full firmware initialization, playback tasks and callbacks unverified.",
+    "Separate-lane DMA, block transfers and input are unsupported.",
+    "Serial RX and slave request routing retain previous behavior pending evidence.",
+    "Functional clock, FIFO capacity and monitor format are not measured hardware properties.",
+    "No host sound output."
+  ]
+}

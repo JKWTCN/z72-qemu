@@ -24,6 +24,7 @@ struct Z72Audio {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
     uint32_t reset;
+    qemu_irq request[2];
     AudioChannel channel[2];
 };
 
@@ -67,6 +68,11 @@ static void audio_irq(AudioChannel *c)
         ((status & (1u << 25)) && (status & (1u << 27))) ||
         ((status & (1u << 17)) && (status & (1u << 19)));
     qemu_set_irq(c->irq, audio_enabled(c) && level);
+    bool demand = audio_enabled(c) && !(c->control & 2) &&
+        audio_used(c) < audio_capacity(c) &&
+        ((c->control & (1u << 15)) ||
+         ((c->status & (1u << 29)) && (status & (1u << 25))));
+    qemu_set_irq(c->owner->request[c->index], demand);
 }
 
 static void audio_schedule(AudioChannel *c)
@@ -178,8 +184,9 @@ static MemTxResult audio_write(void *opaque, hwaddr offset, uint64_t value,
     unsigned lane = 0;
     switch (offset & 0xff) {
     case 8:
-        /* DMA output and input activation require providers not yet wired. */
-        if ((value & ~0xff8fff03u) || (value & ((1u << 12) | (1u << 15))) ||
+        /* Input and separate-lane DMA require providers not yet wired. */
+        if ((value & ~0xff8fff03u) || (value & (1u << 12)) ||
+            ((value & 2) && ((value & (1u << 15)) || (c->status & (1u << 29)))) ||
             (((value ^ c->control) & 2) && audio_used(c))) {
             return MEMTX_ERROR;
         }
@@ -193,7 +200,7 @@ static MemTxResult audio_write(void *opaque, hwaddr offset, uint64_t value,
         c->mode = value;
         break;
     case 16:
-        if ((value & ~0xff0f0000u) || (value & (1u << 29))) {
+        if ((value & ~0xff0f0000u) || ((value & (1u << 29)) && (c->control & 2))) {
             return MEMTX_ERROR;
         }
         c->status = (value & 0xfc0c0000u) | (c->status & value & 0x30000u);
@@ -257,6 +264,7 @@ static void audio_init(Object *obj)
     Z72Audio *s = Z72_AUDIO(obj);
     memory_region_init_io(&s->iomem, obj, &audio_ops, s, TYPE_Z72_AUDIO, 0x400);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
+    qdev_init_gpio_out_named(DEVICE(s), s->request, "dma", 2);
     for (unsigned i = 0; i < 2; i++) {
         AudioChannel *c = &s->channel[i];
         c->owner = s;
