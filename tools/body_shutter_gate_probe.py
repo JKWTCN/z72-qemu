@@ -2098,7 +2098,9 @@ def snapshot(remote):
 def lcd_snapshot(machine):
     """Summarize the native LCD plane without exporting its pixel payload."""
     with machine.io:
-        machine.qmp.command('stop')
+        running = machine.qmp.command('query-status')['running']
+        if running:
+            machine.qmp.command('stop')
         try:
             size = machine._words(0x20144204, 1)[0]
             width, height = size & 0xffff, (size >> 16) & 0x3fff
@@ -2131,7 +2133,8 @@ def lcd_snapshot(machine):
                         unique_bytes=len(set(data)), minimum=min(data), maximum=max(data))
             return dict(result, configured=False)
         finally:
-            machine.qmp.command('cont')
+            if running:
+                machine.qmp.command('cont')
 
 
 def lens_snapshot(machine):
