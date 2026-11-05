@@ -251,5 +251,220 @@
     "No command-buffer parser, GPU hardware or textured image draw executed.",
     "Identical commands do not alone establish the physical row direction."
   ],
-  "checker_sha256": "d6729446c386fc6ed4ed6a03d3af200c77ebd46ae503548f45a2a29160d564c7"
+  "checker_sha256": "d6729446c386fc6ed4ed6a03d3af200c77ebd46ae503548f45a2a29160d564c7",
+  "target_initialization_followup": {
+    "entry": "0x106454b2",
+    "clear_entry": "0x1068bd90",
+    "cases": [
+      {
+        "height": 8,
+        "origins": [
+          0,
+          1
+        ],
+        "commands_equal": true,
+        "command_count": 37,
+        "initialization_commands": [
+          {
+            "kind": "words",
+            "channel": 0,
+            "values": [
+              "0x1408004",
+              "0x0",
+              "0x1901004",
+              "0x0",
+              "0x14ee004",
+              "0x1b0000",
+              "0x156e004",
+              "0x1b0000"
+            ]
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a2f004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a3f004",
+            "value": "0x80008"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1844004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a7f004",
+            "value": "0x101"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x11cf004",
+            "value": "0x80000"
+          },
+          {
+            "kind": "word",
+            "channel": 1,
+            "header": "0x691004",
+            "value": "0x80"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a08004",
+            "value": "0x1000000"
+          }
+        ]
+      },
+      {
+        "height": 480,
+        "origins": [
+          0,
+          1
+        ],
+        "commands_equal": true,
+        "command_count": 37,
+        "initialization_commands": [
+          {
+            "kind": "words",
+            "channel": 0,
+            "values": [
+              "0x1408004",
+              "0x0",
+              "0x1901004",
+              "0x0",
+              "0x14ee004",
+              "0x1b0000",
+              "0x156e004",
+              "0x1b0000"
+            ]
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a2f004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a3f004",
+            "value": "0x1e00008"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1844004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a7f004",
+            "value": "0x101"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x11cf004",
+            "value": "0x1e00000"
+          },
+          {
+            "kind": "word",
+            "channel": 1,
+            "header": "0x691004",
+            "value": "0x80"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a08004",
+            "value": "0x1000000"
+          }
+        ]
+      },
+      {
+        "height": 688,
+        "origins": [
+          0,
+          1
+        ],
+        "commands_equal": true,
+        "command_count": 37,
+        "initialization_commands": [
+          {
+            "kind": "words",
+            "channel": 0,
+            "values": [
+              "0x1408004",
+              "0x0",
+              "0x1901004",
+              "0x0",
+              "0x14ee004",
+              "0x1b0000",
+              "0x156e004",
+              "0x1b0000"
+            ]
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a2f004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a3f004",
+            "value": "0x2b00008"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1844004",
+            "value": "0x0"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a7f004",
+            "value": "0x101"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x11cf004",
+            "value": "0x2b00000"
+          },
+          {
+            "kind": "word",
+            "channel": 1,
+            "header": "0x691004",
+            "value": "0x80"
+          },
+          {
+            "kind": "word",
+            "channel": 0,
+            "header": "0x1a08004",
+            "value": "0x1000000"
+          }
+        ]
+      }
+    ],
+    "checker_sha256": "89d5b4d301e769c39ff67c9ee45ae2fa47936d614e923be19f5a493e8642ecd1",
+    "scope": "Complete target initialization then raster clear; same command sink interception as the base experiment. Surface format-info enum is zero, layout is 0x3fde, width is 8. Initialization dirty global set to one.",
+    "finding": "Register 0x11c receives height << 16 for all three heights, independent of the two tested origins.",
+    "limitations": [
+      "Synthetic state, not a restored native context.",
+      "Register 0x11c coordinate semantics are not established.",
+      "No GPU command replay or physical output validation."
+    ]
+  }
 }
