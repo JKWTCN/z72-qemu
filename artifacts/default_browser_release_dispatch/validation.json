@@ -1,0 +1,658 @@
+{
+  "result": "native-full-release-request-accepted-without-primary-frame",
+  "source_revision": "968f08f",
+  "runs": [
+    {
+      "name": "default_browser_dispatch",
+      "conditions": {
+        "source_sha256": {
+          ".local/repeat-playback/run-default-dispatch.py": "39007ac7c3fb27d4029bacaac4541f10f5bebb52d477bdc58c918960d47de463",
+          ".local/repeat-playback/trace_default_contacts.py": "a79b86229e1203ac03469862ca8e0f93edbad808e08b59151b1618d31d358b99",
+          "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+          "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+          "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+          "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+        },
+        "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+      },
+      "controls": {
+        "manual_mode": {
+          "gate": 0,
+          "driver": 9,
+          "tv": 312,
+          "controller_mode": 3
+        },
+        "native_ready": {
+          "gate": 0,
+          "driver": 9,
+          "tv": 304,
+          "controller_mode": 3
+        }
+      },
+      "trace": {
+        "start_ticks": 118886826,
+        "full_ticks": 143479993,
+        "end_ticks": 349381638,
+        "frequency": 48000000,
+        "released": true,
+        "phase": 2,
+        "events": 103,
+        "counts": {
+          "0x1022aa82": 1,
+          "0x1022cfbc": 8,
+          "0x1053e598": 8,
+          "0x1029995e": 3,
+          "0x102997aa": 3,
+          "0x102997b2": 3,
+          "0x10542038": 3,
+          "0x10542064": 3,
+          "0x10542368": 3,
+          "0x10542394": 3,
+          "0x104e63ae": 3,
+          "0x105af1dc": 3,
+          "0x104e6c28": 3,
+          "0x104e6c66": 3,
+          "0x105548e2": 2,
+          "0x10554902": 2,
+          "0x104e6c70": 3,
+          "0x104e16b4": 8,
+          "0x104e1910": 8,
+          "0x104e1714": 8,
+          "0x104e6cb4": 8,
+          "0x1022aa5c": 1,
+          "0x1022aa64": 1,
+          "0x1022aa72": 1,
+          "0x103eda92": 1,
+          "0x103f53b6": 1,
+          "0x103f53ea": 1,
+          "0x103f5422": 1,
+          "0x1020e568": 1,
+          "0x1020e59a": 1,
+          "0x102473f6": 1,
+          "0x1024740a": 1,
+          "0x102a6cb2": 1,
+          "0x1022aa24": 1,
+          "0x1022aa32": 1
+        }
+      },
+      "selected_events": [
+        {
+          "name": "body-full-deferred-submit",
+          "pc": "0x1022aa72",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x10228c95",
+            "r2": "0xffffffff",
+            "r3": "0x0",
+            "r4": "0x2",
+            "r5": "0x1",
+            "r6": "0x1",
+            "r7": "0xb23f7d94",
+            "lr": "0x10228cad"
+          },
+          "ticks": 143480371,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ]
+        },
+        {
+          "name": "body-full-system-mode-result",
+          "pc": "0x1024740a",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x1020df17",
+            "r2": "0x102473f7",
+            "r3": "0x0",
+            "r4": "0xb1819604",
+            "r5": "0xb51e41e0",
+            "r6": "0xb1818bd0",
+            "r7": "0x0",
+            "lr": "0x1024740b"
+          },
+          "ticks": 143480735,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ]
+        },
+        {
+          "name": "body-full-common-mode-result",
+          "pc": "0x102a6cb2",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x1020df17",
+            "r2": "0x102473f7",
+            "r3": "0x0",
+            "r4": "0xb51e41e0",
+            "r5": "0xb1819604",
+            "r6": "0xb1818bd0",
+            "r7": "0x0",
+            "lr": "0x102a6cb3"
+          },
+          "ticks": 143480737,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ]
+        }
+      ],
+      "after": {
+        "capture_state": [
+          2,
+          0
+        ],
+        "capture_driver_state": 9,
+        "release_gate": 0,
+        "system_input_class": 1,
+        "status_codes": []
+      },
+      "primary_frames": 0,
+      "processing_frames": 164,
+      "faults_zero": true,
+      "evidence": {
+        "report.json": "6cf25be07961ab00b0007278b2b09a32ffda9b6d4af5f0946d09fd76a7b679f9",
+        "trace.jsonl": "915c8ea6a102b8e212f23956cd6a354aa3878fed8a0f5e6f9e3b3baa803bd0e3",
+        "qemu.log": "97003d88311996a33614b19065256aa27f515ec473e96d58a41d87f494cb3f88",
+        "storage.json": "7b89f88c3366e36abdb516577b478d2eae31819d8a63dd8638ce35351280434b"
+      },
+      "snapshots": {
+        "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+        "after.png": "77f73c5f31dea3fe35655f00d4239a23d09eb7c24eeb5e188d0fa9a7872cffd0"
+      },
+      "cleanup": {
+        "vm_work_removed": true,
+        "pngs_removed": true
+      }
+    },
+    {
+      "name": "default_browser_prepare",
+      "conditions": {
+        "source_sha256": {
+          ".local/repeat-playback/run-default-prepare.py": "26414dd78477ec374b177373c8647f49364981fa62edcf0eeb5fc3b13a8715a7",
+          ".local/repeat-playback/trace_default_prepare.py": "4e2b6198e986285874985d47ad8d44a80d9f0f64122b0fcbfd4d177ec0dd34b0",
+          "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+          "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+          "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+          "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+        },
+        "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+      },
+      "controls": {
+        "manual_mode": {
+          "gate": 0,
+          "driver": 9,
+          "tv": 312,
+          "controller_mode": 3
+        },
+        "native_ready": {
+          "gate": 0,
+          "driver": 9,
+          "tv": 304,
+          "controller_mode": 3
+        }
+      },
+      "trace": {
+        "start_ticks": 118945286,
+        "full_ticks": 144137153,
+        "end_ticks": 432674818,
+        "frequency": 48000000,
+        "released": true,
+        "phase": 2,
+        "events": 14,
+        "counts": {
+          "0x103f28f6": 1,
+          "0x103f2906": 1,
+          "0x103f290c": 1,
+          "0x103f2926": 1,
+          "0x1022c41c": 1,
+          "0x1022c42a": 1,
+          "0x1022c45a": 1,
+          "0x1022ac2e": 2,
+          "0x1022c460": 1,
+          "0x1022b7a4": 2,
+          "0x1022c46a": 1,
+          "0x103f292a": 1
+        }
+      },
+      "selected_events": [
+        {
+          "name": "capture-prepare-entry",
+          "pc": "0x103f28f6",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x1020df17",
+            "r2": "0x102473f7",
+            "r3": "0x0",
+            "r4": "0xb51e41e0",
+            "r5": "0xb1819604",
+            "r6": "0xb1818bd0",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x102a6cbd"
+          },
+          "ticks": 144138534,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "capture-prepare-first-condition",
+          "pc": "0x103f2906",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x0",
+            "r2": "0x20000",
+            "r3": "0x0",
+            "r4": "0xb51e41e0",
+            "r5": "0xb1819604",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x103ea48d"
+          },
+          "ticks": 144138560,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "capture-prepare-second-condition",
+          "pc": "0x103f290c",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x0",
+            "r2": "0x20000",
+            "r3": "0x0",
+            "r4": "0x0",
+            "r5": "0xb1819604",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x103f290d"
+          },
+          "ticks": 144138589,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "capture-prepare-release-submit",
+          "pc": "0x103f2926",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0xb51e4030",
+            "r1": "0x0",
+            "r2": "0x20000",
+            "r3": "0x0",
+            "r4": "0x0",
+            "r5": "0x0",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x103f2913"
+          },
+          "ticks": 144138602,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": "0100241000000000"
+        },
+        {
+          "name": "release-table-result",
+          "pc": "0x1022c41c",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x1",
+            "r2": "0x1",
+            "r3": "0x1",
+            "r4": "0xb51e4030",
+            "r5": "0x0",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c41d"
+          },
+          "ticks": 144138608,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-accepted",
+          "pc": "0x1022c42a",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x1",
+            "r2": "0x1",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0x0",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c41d"
+          },
+          "ticks": 144138702,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-control-start",
+          "pc": "0x1022c45a",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x4",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0xb23f7edc",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c42f"
+          },
+          "ticks": 144138703,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-start-entry",
+          "pc": "0x1022ac2e",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x4",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0xb23f7edc",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c461"
+          },
+          "ticks": 144138711,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-control-tail",
+          "pc": "0x1022c460",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x4",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0xb23f7edc",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c461"
+          },
+          "ticks": 144138750,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-tail-entry",
+          "pc": "0x1022b7a4",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x0",
+            "r1": "0x4",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0xb23f7edc",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022c467"
+          },
+          "ticks": 144138750,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-submit-return",
+          "pc": "0x1022c46a",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x0",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0xb23f7e64",
+            "r5": "0xb23f7edc",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022b79f"
+          },
+          "ticks": 144138755,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "capture-prepare-release-result",
+          "pc": "0x103f292a",
+          "thread": 2,
+          "phase": 1,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x0",
+            "r2": "0xb1869878",
+            "r3": "0x1",
+            "r4": "0x0",
+            "r5": "0x0",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001b",
+            "lr": "0x1022b79f"
+          },
+          "ticks": 144138755,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-tail-entry",
+          "pc": "0x1022b7a4",
+          "thread": 2,
+          "phase": 2,
+          "registers": {
+            "r0": "0x1",
+            "r1": "0x4",
+            "r2": "0xb1869878",
+            "r3": "0x0",
+            "r4": "0xb23f7e64",
+            "r5": "0xb1818f60",
+            "r6": "0xb1818bd0",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001d",
+            "lr": "0x1022c4bf"
+          },
+          "ticks": 156315054,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        },
+        {
+          "name": "release-start-entry",
+          "pc": "0x1022ac2e",
+          "thread": 2,
+          "phase": 2,
+          "registers": {
+            "r0": "0x4",
+            "r1": "0x1",
+            "r2": "0xb1869878",
+            "r3": "0x0",
+            "r4": "0xb23f7e64",
+            "r5": "0x0",
+            "r6": "0x1",
+            "r7": "0x0",
+            "r8": "0x1",
+            "r9": "0x200",
+            "r10": "0x400000a",
+            "r11": "0x410001d",
+            "lr": "0x1022d3cf"
+          },
+          "ticks": 156315100,
+          "gate": 0,
+          "capture": [
+            9,
+            5
+          ],
+          "request_bytes": null
+        }
+      ],
+      "after": {
+        "capture_state": [
+          2,
+          0
+        ],
+        "capture_driver_state": 9,
+        "release_gate": 0,
+        "system_input_class": 1,
+        "status_codes": []
+      },
+      "primary_frames": 0,
+      "processing_frames": 214,
+      "faults_zero": true,
+      "evidence": {
+        "report.json": "f6d74c3acd44fb1e5dba27bfa31c8537950ee622e58f372cf29b99bfcf13ee63",
+        "trace.jsonl": "7920a2c6addc484558d28277b1396cffed3f05834bbf9bca54e4b900148449d9",
+        "qemu.log": "ac908c22bffc2a0c432186ec5915d02546ec91d28667d28dfdaf396eb90cd587",
+        "storage.json": "4780bc6e62a162c409258e9323613b7de7daaca88cad6f878086f52e28db7699"
+      },
+      "snapshots": {
+        "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+        "after.png": "2cd344ea62db99fc5c92e4acd40284cceea760a4acbc26a9fb9a00e33379a819"
+      },
+      "cleanup": {
+        "vm_work_removed": true,
+        "pngs_removed": true
+      }
+    }
+  ],
+  "interpretation": "Input class one selects preparation. The lower release request latches a new bit and returns one; start and tail control functions execute. Their internal state checks remain unobserved.",
+  "limitations": [
+    "Two separate boots with the same default device profile and M-mode dial input.",
+    "No exposure setter, diagnostic capture call or preprocessing skip.",
+    "One press per run; no image-file or original DSP execution claim.",
+    "Some first-run background observation points reached their eight-hit limit."
+  ],
+  "checker_sha256": "bb63923d97171af2bdc31d9c423c48d3e42c65caca14a9e81a6d2e078d2e2c11"
+}
