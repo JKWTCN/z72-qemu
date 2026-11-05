@@ -1,0 +1,82 @@
+{
+  "result": "release-start-returns-at-state-five-check",
+  "source_revision": "553314a",
+  "conditions": {
+    "source_sha256": {
+      ".local/repeat-playback/run-default-release.py": "2c5150c7c69a7243d1f31dca504135e69a77ad835758f6ef326db6f3c7663d49",
+      ".local/repeat-playback/trace_default_release.py": "1ce9d86ec54feeed018c162be47017ec7af30b6fcf53e8a9ac38b5403d2a3d25",
+      "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+      "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+    },
+    "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+  },
+  "trace": {
+    "start_ticks": 119306845,
+    "full_ticks": 143489639,
+    "end_ticks": 240601257,
+    "frequency": 48000000,
+    "released": true,
+    "phase": 2,
+    "events": 24,
+    "counts": {
+      "0x103f28f6": 1,
+      "0x103f2906": 1,
+      "0x103f290c": 1,
+      "0x103f2926": 1,
+      "0x1022c41c": 1,
+      "0x1022c42a": 1,
+      "0x1022c45a": 1,
+      "0x1022ac2e": 2,
+      "0x1022ac40": 2,
+      "0x1022ac44": 2,
+      "0x1022ac48": 2,
+      "0x1022ace0": 2,
+      "0x1022c460": 1,
+      "0x1022b7a4": 2,
+      "0x1022b7b4": 2,
+      "0x1022c46a": 1,
+      "0x103f292a": 1
+    }
+  },
+  "check": {
+    "address": "0x1022ac48",
+    "ticks": 143490440,
+    "context_address": "0xb23f7e64",
+    "inhibit_offset": "0x1d",
+    "inhibit": 0,
+    "state_offset": "0x82",
+    "current_state": 5,
+    "requested_state": 1
+  },
+  "after": {
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 9,
+    "release_gate": 0,
+    "status_codes": []
+  },
+  "primary_frames": 0,
+  "evidence": {
+    "report.json": "a65108328b92759e57c80cfe16f61223f4f68a65c4c2d768dbaa45f340265637",
+    "trace.jsonl": "59412b30b5b43b4e389a255472294d708da1dcdd6cbbdeee74ae31d4e0c3608a",
+    "conditions.json": "343d0fe15b80c2b6d7b603fd4938701fc6a8bf648718e8ea81ee4f03be1e25d0",
+    "qemu.log": "2cdf16c1edfe924675fe501dffb48da2fbd19efb138b2539dadc84415fc8796d",
+    "storage.json": "cdc58fe3b3768d5202f385ae6e7c6c0853e5e60c9f28eff0191048b93d0c9be2",
+    "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+    "after.png": "2cd344ea62db99fc5c92e4acd40284cceea760a4acbc26a9fb9a00e33379a819"
+  },
+  "interpretation": "The requested transition to state one returns at the current-state-five check before building the control request. The producer and clearing conditions of state five remain to be traced.",
+  "limitations": [
+    "Default device profile, one full press after native readiness and normal M-mode exposure input.",
+    "No firmware state changes or diagnostic capture calls.",
+    "This identifies a software branch, not the missing physical device behavior."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}

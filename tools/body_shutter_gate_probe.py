@@ -2081,6 +2081,10 @@ def snapshot(remote):
         release_control=dict(header=list(remote.read(0xb186935c, 16)),
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
+        release_request=dict(context='0xb23f7e64',
+            active_mask=hex(word(0xb23f7e6c)),
+            inhibit=remote.read(0xb23f7e81, 1)[0],
+            state=remote.read(0xb23f7ee6, 1)[0]),
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,
