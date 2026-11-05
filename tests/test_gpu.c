@@ -185,6 +185,29 @@ int main(void) {
     CHECK(nikon_gpu_draw(&g,r,p));
     CHECK(memory[0x1000]==0 && memory[0x1003]==255);
     CHECK(memory[0x1000+7*4]==255 && memory[0x1000+7*4+3]==255);
+    /* RGB565 colors match the original CPU unpacker, including bit replication. */
+    static const uint16_t rgb565[]={0,0xffff,0xf800,0x07e0,0x001f,0x8410,0x0821,0x4208};
+    static const uint8_t rgb565_rgba[][4]={
+        {0,0,0,255},{255,255,255,255},{255,0,0,255},{0,255,0,255},
+        {0,0,255,255},{132,130,132,255},{8,4,8,255},{66,65,66,255}};
+    r[0x156]=0x001b0003; r[0x152]=(8<<16)|6;
+    for(unsigned i=0;i<48;i++) {
+        memory[0x3000+i*2]=rgb565[i%8]&255;
+        memory[0x3001+i*2]=rgb565[i%8]>>8;
+    }
+    memcpy(source_copy,memory+0x3000,sizeof(source_copy));
+    CHECK(nikon_gpu_draw(&g,r,p));
+    for(unsigned i=0;i<48;i++) { CHECK(!memcmp(memory+0x1000+i*4,rgb565_rgba[i%8],4)); }
+    CHECK(!memcmp(source_copy,memory+0x3000,sizeof(source_copy)));
+    /* A single independent RGB pixel needs exactly two accessible bytes. */
+    r[0x152]=(1<<16)|1; r[0x155]=0xa100fffe;
+    memory[0xfffe]=0; memory[0xffff]=0xf8;
+    CHECK(nikon_gpu_draw(&g,r,p));
+    for(unsigned i=0;i<48;i++) { CHECK(!memcmp(memory+0x1000+i*4,rgb565_rgba[2],4)); }
+    memcpy(saved,memory+0x1000,192);
+    r[0x155]=0xa100ffff; CHECK(!nikon_gpu_draw(&g,r,p));
+    r[0x155]=0xa100fffe; r[0x156]=0x001a0003; CHECK(!nikon_gpu_draw(&g,r,p));
+    CHECK(!memcmp(saved,memory+0x1000,192));
     nikon_gpu_path_free(p);
     printf("PASS %u synthetic renderer checks\n",checks); return 0;
 }

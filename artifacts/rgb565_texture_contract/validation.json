@@ -1,0 +1,160 @@
+{
+  "result": "passed-original-rgb565-pixel-and-descriptor-check",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "checker_sha256": "fe89b99e99852210b492c1474a7625a8f7f9477748cdb6bacea2a173c0217209",
+  "pixel_entry": "0x10684b64",
+  "format": 3,
+  "depth": 16,
+  "width": 3,
+  "height": 4,
+  "row_bytes": 8,
+  "pixels": [
+    {
+      "x": 0,
+      "y": 0,
+      "value": "0x0",
+      "rgba": [
+        0,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "value": "0xffff",
+      "rgba": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "value": "0xf800",
+      "rgba": [
+        255,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "value": "0x7e0",
+      "rgba": [
+        0,
+        255,
+        0,
+        255
+      ]
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "value": "0x1f",
+      "rgba": [
+        0,
+        0,
+        255,
+        255
+      ]
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "value": "0x8410",
+      "rgba": [
+        132,
+        130,
+        132,
+        255
+      ]
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "value": "0x821",
+      "rgba": [
+        8,
+        4,
+        8,
+        255
+      ]
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "value": "0x4208",
+      "rgba": [
+        66,
+        65,
+        66,
+        255
+      ]
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "value": "0x1234",
+      "rgba": [
+        16,
+        69,
+        165,
+        255
+      ]
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "value": "0xabcd",
+      "rgba": [
+        173,
+        121,
+        107,
+        255
+      ]
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "value": "0xffe0",
+      "rgba": [
+        255,
+        255,
+        0,
+        255
+      ]
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "value": "0xf81f",
+      "rgba": [
+        255,
+        0,
+        255,
+        255
+      ]
+    }
+  ],
+  "descriptor_entry": "0x106b4166",
+  "descriptor_stop": "0x106b41c2",
+  "descriptor_commands": [
+    "0x158f004",
+    "0x30004",
+    "0x1567004",
+    "0x1b0003",
+    "0x152f004",
+    "0x30004"
+  ],
+  "limitations": [
+    "Original CPU unpacker and descriptor construction with synthetic inputs; no native RGB565 draw captured.",
+    "No channel-swap or alpha-order flags enabled.",
+    "Descriptor construction stops before command submission; GPU output not independently verified."
+  ]
+}
