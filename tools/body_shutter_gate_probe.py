@@ -545,6 +545,8 @@ IMAGE_WORK_WAIT_POINTS = {
     0x10369968: 'image-device-bank1-interrupt',
 }
 AFTER_PLAYBACK = {
+    0x105a9ca6: 'playback-image-transform-before',
+    0x105aa1bc: 'playback-image-transform-after',
     0x105a9c5a: 'playback-image-import-primary',
     0x105aa7b4: 'playback-image-import-secondary',
     0x105aaeb4: 'playback-image-import-scaled',
@@ -1395,6 +1397,26 @@ def transform_snapshot(remote, slave=True):
                     if lower <= pointer <= limit - 0xa0:
                         operation['parameters'] = dict(address=hex(pointer), words=words(pointer, 0xa0))
                     result['program']['operations'].append(operation)
+    return result
+
+
+def playback_transform_snapshot(remote, registers):
+    context = int.from_bytes(remote.read(0xb1800c38, 4), 'little')
+    stack = remote.read(remote.get(registers, 'sp'), 0x60)
+    result = dict(context=hex(context), stack_halfwords=[hex(value) for value in
+                  struct.unpack('<48H', stack)])
+    caller = remote.get(registers, 'r4')
+    if 0xb1800000 <= caller <= 0xb5efffa8:
+        result['caller'] = dict(address=hex(caller), bytes=remote.read(caller, 0x58).hex())
+    if (0xb1800000 <= context <= 0xb5effa00 or
+            0xbb300000 <= context <= 0xbc09fa00):
+        mode = int.from_bytes(remote.read(context + 0x104, 4), 'little')
+        address = context + 0x324 + (mode & 15) * 36
+        values = struct.unpack('<9i', remote.read(address, 36))
+        result.update(mode=hex(mode), matrix_address=hex(address), matrix_q16=list(values),
+                      context_29c=hex(int.from_bytes(remote.read(context + 0x29c, 4), 'little')))
+    else:
+        result['matrix_unavailable'] = 'Context outside supported parameter and secondary-buffer RAM'
     return result
 
 
@@ -3193,6 +3215,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
                     if playback:
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
+                        if pc in (0x105a9ca6, 0x105aa1bc):
+                            record['image_transform'] = playback_transform_snapshot(remote, registers)
                         if pc in (0x105a9c5a, 0x105aa7b4, 0x105aaeb4):
                             record['image_import'] = playback_import_snapshot(remote, registers)
                         if pc in (0x1062e474, 0x106ddc1e):
