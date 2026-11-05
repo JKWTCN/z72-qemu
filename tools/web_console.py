@@ -288,6 +288,8 @@ class Machine:
                          for name, address in auxiliary)
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
+        if getattr(self.args, 'eye_sensor', False):
+            devices += ('nikon-z72-eye,bus=master-i2c2,address=56',)
         card = getattr(self.args, 'sd_card', None)
         card_globals, card_arguments = (), ()
         if card is not None:
@@ -1158,6 +1160,8 @@ def main():
                         help='Attach an experimental normal-family 50 mm F2.8 lens')
     parser.add_argument('--virtual-body-vr', action='store_true',
                         help='Attach body VR communication RAM; sensors and stabilization actuators remain absent')
+    parser.add_argument('--eye-sensor', action='store_true',
+                        help='Attach the optional eye sensor register profile without optical samples or measurement interrupts')
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',

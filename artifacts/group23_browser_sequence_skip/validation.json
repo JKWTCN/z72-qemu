@@ -1,0 +1,91 @@
+{
+  "result": "preprocessing-skip-entry-not-reached",
+  "seconds_after_full": 2.016181083333333,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x1022b8bc": 7,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022b886": 1,
+    "0x1022b88c": 1,
+    "0x1022b8b6": 1,
+    "0x1022b7a4": 3,
+    "0x1022b7b4": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1,
+    "0x1022b81e": 1,
+    "0x1022d32a": 1,
+    "0x1022d384": 1,
+    "0x1022a444": 1,
+    "0x1022a4f6": 1,
+    "0x103edaea": 1,
+    "0x103ec25a": 1,
+    "0x103e4b8c": 4,
+    "0x103e4b9c": 14,
+    "0x103e4b9e": 14,
+    "0x103e785e": 1,
+    "0x103e786c": 1,
+    "0x103e7882": 1,
+    "0x103e78b6": 1,
+    "0x103e7312": 3,
+    "0x103e7334": 3,
+    "0x103e6e94": 3
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; prior comparison used temporary snapshot"
+  },
+  "evidence": {
+    "report.json": "5875d9f74450482e4844fa3b2b3f1ed5bbeace83fe7e4f621989b060e109f684",
+    "trace.jsonl": "e1af5e4416952d6da706ef836a9038cd017eb9d0e883409f10a9d94ada357837",
+    "conditions.json": "9a7473561c1c8c04b609b076974c395e85e9f1b670775a85a874b1e82dcbc669",
+    "arguments.json": "abf2e69d76902b6a69a5f68ea7d7b6035a7dafe288307e32605231d384c821ee",
+    "storage.json": "37b59898783c7084af9cd891feb41c578ea0404120f139c77422697d364f5d26",
+    "qemu.log": "195e7cf7a8aad2ed6dbc4a7a775cc40174e2f884f6f3862d8ca0500ccff2fd11",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-sequence-skip.py": "72c486de6016edbabbb43e7a7f74dc984a91617c02d3f1c00b721c92dec475c5",
+    ".local/repeat-playback/trace_sequence_skip_contacts.py": "39bad50c4ce62f1c483310afa507e91dbcf826a57dc148528a6fac84798338e7",
+    "tools/web_console.py": "debef9dc348236f9553fc2f9a55029b37c5900c8e51e066107971ee8418c380c",
+    "tools/body_shutter_gate_probe.py": "f2ab7cebe4d1011895663e5ed64c878f530ef067e98422a4bbdcd8cd9de3fcaf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  }
+}
