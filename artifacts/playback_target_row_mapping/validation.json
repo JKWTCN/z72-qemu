@@ -1,0 +1,1507 @@
+{
+  "result": "validated-native-playback-bottom-origin-target-mapping",
+  "records": [
+    {
+      "first_line": 2619,
+      "count": 12,
+      "target": "cb82b000",
+      "source": "bf309600",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000000",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 2623,
+      "count": 12,
+      "target": "cb82b000",
+      "source": "bec5f200",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000001",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 2649,
+      "count": 11,
+      "target": "cbbaf000",
+      "source": "bf309600",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000000",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 2653,
+      "count": 11,
+      "target": "cbbaf000",
+      "source": "bec5f200",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000001",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 3024,
+      "count": 10,
+      "target": "cb4a7000",
+      "source": "bf309600",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000000",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 3028,
+      "count": 10,
+      "target": "cb4a7000",
+      "source": "bec5f200",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000001",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    },
+    {
+      "first_line": 7602,
+      "count": 1,
+      "target": "cc18b000",
+      "source": "db5b6500",
+      "target_format": "00000105",
+      "source_format": "001b000d",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000000",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.496307373046875,
+        0.9992698901516199
+      ],
+      "bottom_center_uv": [
+        0.496307373046875,
+        0.0007150471210479736
+      ]
+    },
+    {
+      "first_line": 7921,
+      "count": 1,
+      "target": "cbbaf000",
+      "source": "bec5f200",
+      "target_format": "00000107",
+      "source_format": "001b0100",
+      "target_size": "02b00400",
+      "target_11c": "02b00000",
+      "target_1a5": "00000000",
+      "target_flags": "00000101",
+      "source_flags": "00000007",
+      "top_center_uv": [
+        0.49997711146715496,
+        0.9992806127385415
+      ],
+      "bottom_center_uv": [
+        0.49997711146715496,
+        0.0006997990100709545
+      ]
+    }
+  ],
+  "photo_records": 1,
+  "ui_records": 7,
+  "all_11c_equal_target_height": true,
+  "native_capture": {
+    "source_revision": "b58a440-with-target-row-trial",
+    "native_build": {
+      "qemu_version": "10.2.4",
+      "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+      "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+      "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e",
+      "sources": {
+        "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+        "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+        "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+        "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+        "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+        "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+        "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+        "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+        "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+        "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+        "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+        "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+        "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+        "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+        "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+        "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+        "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+        "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+        "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+        "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+        "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+        "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+        "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+        "qemu/trace-events": "472a4768ea99b0e289eef4d3f961a969df51ef905b2461bd9a0c81fa5dcd2d08",
+        "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+        "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6",
+        "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+        "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+        "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+        "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+        "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+        "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+      },
+      "configure": [
+        "--target-list=arm-softmmu",
+        "--without-default-devices",
+        "--disable-docs",
+        "--disable-tools",
+        "--disable-user",
+        "--disable-werror",
+        "--disable-gtk",
+        "--disable-sdl",
+        "--disable-vnc",
+        "--disable-opengl",
+        "--disable-guest-agent",
+        "--disable-slirp",
+        "--disable-rust",
+        "--disable-debug-info"
+      ],
+      "prepared_nvme_sources": {
+        "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+        "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+      },
+      "trial_base_revision": "b58a4409d561b75ff2b56af2d107476cfbe18dde",
+      "trial_patch_sha256": "116244b6feaf4f0b66f9738379fd3849f5410334a4cf66058d405856000754e3"
+    },
+    "source_sha256": {
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6",
+      ".local/repeat-playback/snapshot-active-lcd.py": "4c08f0ffe760eca689b4137a69bfa553b2e114281fb700766938a45cf77c4693",
+      "tools/create_lab_parameters.py": "239f18a41a70d9543cdaf42d36a62db6dcc363ad0bb85bedc556342bc08f834e",
+      "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+      "qemu/trace-events": "472a4768ea99b0e289eef4d3f961a969df51ef905b2461bd9a0c81fa5dcd2d08",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+      "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+      "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+    },
+    "arguments": [
+      "--qemu",
+      "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+      "--wsl",
+      "--master",
+      "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+      "--slave",
+      "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+      "--controller",
+      "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+      "--sd-card",
+      "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+      "--trace-sd-host",
+      "--display-complete",
+      "--frame-phase",
+      "--input-stop-complete",
+      "--frame-generate",
+      "--frame-notify",
+      "--frame-process",
+      "--processing-resource-header",
+      "--aux-image-process",
+      "--controller-step-link",
+      "--controller-actuator",
+      "--sampling-output-complete",
+      "--shutter-on-ready",
+      "--half-before-full",
+      "--shutter-click",
+      "--application-only",
+      "--body-exposure",
+      "1000",
+      "--capture-focus",
+      "--capture-counter-seconds",
+      "1",
+      "--skip-still-preprocessing",
+      "--icount-shift",
+      "2",
+      "--watch",
+      "900",
+      "--out",
+      "D:\\code\\z72-qemu\\.local\\capture-report-archive\\repeat_playback_target_row_trial\\report.json",
+      "--controller-step-feedback",
+      "--trace-controller-gpio",
+      "--body-silent",
+      "--sample-group1",
+      "--sensor-image",
+      "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+      "--nvme-card",
+      "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+      "--playback-after-capture",
+      "60",
+      "--capture-nvme-copy",
+      "D:\\code\\z72-qemu\\.local\\repeat-playback\\target-row-trial-cards\\two-shots-playback.raw",
+      "--repeat-body-capture",
+      "--sensor-timing-profile",
+      "--virtual-lens",
+      "--body-fnumber",
+      "800"
+    ],
+    "shots": [
+      {
+        "requested": true,
+        "released": true,
+        "press_ticks": 193039132,
+        "shot": 1,
+        "release_ticks": 205190388,
+        "held_counter_seconds": 0.25315116666666665
+      },
+      {
+        "requested": true,
+        "released": true,
+        "press_ticks": 247755049,
+        "shot": 2,
+        "release_ticks": 259911846,
+        "held_counter_seconds": 0.2532666041666667
+      }
+    ],
+    "raw_frames": [
+      {
+        "virtual_ns": 3964743504,
+        "frame": 1,
+        "aperture": 253,
+        "factor_q16": 26306,
+        "first": "0x62700000",
+        "second": "0xbad0b080"
+      },
+      {
+        "virtual_ns": 5031410256,
+        "frame": 2,
+        "aperture": 247,
+        "factor_q16": 26904,
+        "first": "0xa6f22000",
+        "second": "0x0"
+      }
+    ],
+    "metadata_lookups": [
+      {
+        "counter_ticks": 211428091,
+        "descriptor": "0xb2cbee5c",
+        "context": "0xb2d3c440",
+        "selector": 0,
+        "slots": {
+          "0x310": "0x0",
+          "0x46c": "0xb2cbee5c"
+        },
+        "selected_offset": "0x46c",
+        "selected": "0xb2cbee5c"
+      },
+      {
+        "counter_ticks": 264767505,
+        "descriptor": "0xb2c9f55c",
+        "context": "0xb2d3ad40",
+        "selector": 1,
+        "slots": {
+          "0x310": "0xb2c9f55c",
+          "0x46c": "0x0"
+        },
+        "selected_offset": "0x310",
+        "selected": "0xb2c9f55c"
+      }
+    ],
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 9,
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x1022e2e4",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10240660",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a50",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a50",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ],
+    "configuration_commits": {
+      "preview": 103,
+      "primary": 4
+    },
+    "settings": {
+      "caller_fixture": true,
+      "triggered": true,
+      "caller_entered": true,
+      "caller_returned": true,
+      "body_shutter_used": true,
+      "settings_only": true,
+      "hardware_completion_host_supplied": false,
+      "finish_observation_max_contexts": 4,
+      "request_words": null,
+      "format_request": null,
+      "storage_request": null,
+      "object_address": "0x40102000",
+      "code_address": "0x13f01000",
+      "code_bytes": 368,
+      "code_sha256": "116081be443beac8d89656a19aa604352b35e075a9219b9e1acd3ee4c7a15e5a",
+      "settings_fixture": {
+        "program_property": "0x0000",
+        "program_value": 3,
+        "exposure_property": "0x500d",
+        "exposure_value": 1000,
+        "setter": "0x104d1620",
+        "readback_required": true,
+        "program_readback_expected": 1,
+        "program_validator": "0x10634324",
+        "program_setter": "0x106342de",
+        "control_mode_request": false,
+        "silent": {
+          "property": "0x057a",
+          "value": 1,
+          "effective_property": "0x161d",
+          "validator": "0x10634324",
+          "setter": "0x106342de",
+          "getter": "0x1063c7d4",
+          "readback_required": true,
+          "validation": 1,
+          "setter_status": "0x0",
+          "readback": 1,
+          "effective_readback": 1,
+          "ready": true
+        },
+        "aperture": {
+          "property": "0x5007",
+          "value": 800,
+          "units": "F-number in hundredths",
+          "setter": "0x10779afe",
+          "getter": "0x10779dda",
+          "readback_required": true,
+          "setter_status": "0x2001",
+          "readback": 800,
+          "ready": true
+        },
+        "program_status": "0x0",
+        "exposure_status": "0x2001",
+        "final_property_status": "0x0",
+        "program_readback": 1,
+        "exposure_readback": 1000,
+        "ready": true,
+        "capture_api_invoked": false,
+        "control_mode": {
+          "eligible": 0,
+          "request_status": "0x0",
+          "readback": 0,
+          "notification": "0x0",
+          "notification_status": 0,
+          "request_invoked": false,
+          "notification_received": false
+        }
+      },
+      "resources_before": {
+        "masks": [
+          {
+            "descriptor": "0xb1869898",
+            "capacity": 124,
+            "pointer": "0xb23f7e24",
+            "set_bits": [
+              49,
+              87
+            ]
+          },
+          {
+            "descriptor": "0xb18698a0",
+            "capacity": 124,
+            "pointer": "0xb23f7e34",
+            "set_bits": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              48,
+              50,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              106,
+              107,
+              108,
+              109,
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120,
+              121,
+              122,
+              123
+            ]
+          },
+          {
+            "descriptor": "0xb18698b0",
+            "capacity": 124,
+            "pointer": "0xb23f7e54",
+            "set_bits": [
+              49,
+              87
+            ]
+          }
+        ],
+        "primary_scratch_intersection": [
+          49,
+          87
+        ],
+        "processing_resource_flags": [
+          1,
+          1
+        ],
+        "ui_reason_byte": 0
+      },
+      "trigger_counter_ticks": 109794442,
+      "api_status": null,
+      "observed_after_trigger_counter_seconds": 3.876065,
+      "result_words": [
+        0,
+        0,
+        8193,
+        800,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "api_returned": false,
+      "api_accepted": false,
+      "completion_count": 0,
+      "scratch_restored": true,
+      "callback_restored": true,
+      "scratch_retained_until_vm_close": false
+    },
+    "preprocessing": {
+      "requested": true,
+      "contexts": [
+        {
+          "context": "0xc19d3ec0",
+          "nested": "0xc29b9040",
+          "address": "0xc29bbbbc",
+          "previous": 0,
+          "supplied": 2,
+          "native_clear_observed": true,
+          "preprocessing_inputs": [
+            {
+              "address": "0xc29bbbb9",
+              "offset": "0x2b79",
+              "previous": 0,
+              "supplied": 1
+            },
+            {
+              "address": "0xc29bbbbb",
+              "offset": "0x2b7b",
+              "previous": 0,
+              "supplied": 2
+            }
+          ],
+          "sflt_skip_observed": true,
+          "raw_compute_skip_observed": true,
+          "result_halfwords": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "role": "master",
+          "context": "0xb2d3ad40",
+          "nested": "0xb3c84080",
+          "address": "0xb3c86bfc",
+          "previous": 0,
+          "supplied": 2,
+          "native_clear_entered": true,
+          "native_clear_observed": true,
+          "preprocessing_inputs": [
+            {
+              "address": "0xb3c86bf9",
+              "offset": "0x2b79",
+              "previous": 0,
+              "supplied": 1
+            },
+            {
+              "address": "0xb3c86bfb",
+              "offset": "0x2b7b",
+              "previous": 0,
+              "supplied": 2
+            }
+          ],
+          "sflt_skip_observed": true,
+          "raw_compute_skip_observed": true,
+          "result_halfwords": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "lens": {
+      "runtime": "phase=0 offset=0/24 command=20:01 mode=01 notify=0 configured=1 pending=0 stream=1 history-offset=0 probe=1\nmode-state=0 requested-mode=0 mode-pending=0 mode-generation=0\ntx-prefix=55 00 00 00\naperture=0 target=0 aperture-pending=0 aperture-generation=4\nfocus=0 target=0 focus-pending=0 focus-generation=0 focus-noops=0\n10 headers=1 completed=1\n11 headers=1 completed=1\n12 headers=1 completed=1\n13 headers=1 completed=1\n15 headers=1 completed=1\n16 headers=167 completed=167\n1f headers=1 completed=1\n20 headers=253 completed=253\n21 headers=10 completed=10\n24 headers=2 completed=2\n27 headers=1 completed=1\na0 headers=6 completed=6\na3 headers=1 completed=1\n",
+      "completed": 446,
+      "rejected": 0,
+      "configuration-generation": 1,
+      "stream-frames": 5510,
+      "aperture-position": 0,
+      "aperture-target": 0,
+      "aperture-pending": false,
+      "aperture-generation": 4,
+      "focus-position": 0,
+      "focus-target": 0,
+      "focus-pending": false,
+      "focus-generation": 0,
+      "policy_state": 0,
+      "policy_target": {
+        "numerator": 576,
+        "denominator": 192
+      },
+      "last_submitted_target": {
+        "numerator": 576,
+        "denominator": 192
+      }
+    },
+    "evidence": {
+      "report.json": {
+        "bytes": 12385136,
+        "sha256": "666e65e7d91b5485230456bc8826bb4e456fd72a4b0ef1622a396ec2bca6d9c8"
+      },
+      "conditions.json": {
+        "bytes": 7291,
+        "sha256": "b3165ad84417497967e3484b5d5d1a40d9a78d431016c42ea5b999c3186b1214"
+      },
+      "qemu.log": {
+        "bytes": 895148,
+        "sha256": "fd18b052f60715b59b05732b74effd0c1b5720d107315802b606cd93fdcc202b"
+      }
+    },
+    "temporary_vm_work_removed": true
+  },
+  "card": {
+    "schema": 1,
+    "result": "passed-two-native-scene-jpegs",
+    "photos": [
+      {
+        "card_path": "DCIM/100NZ7_2/DSC_0001.JPG",
+        "bytes": 1438236,
+        "sha256": "bf62a909f0043abc0eeb3e341b23dc39a33b84b4c036f6e33f8450ad6ca5f1ee",
+        "local_path": ".local/capture-report-archive/repeat_playback_target_row_trial/DSC_0001.JPG",
+        "exif_fnumber": 8.0,
+        "exif_exposure_seconds": 0.1,
+        "images": [
+          {
+            "width": 8256,
+            "height": 5504,
+            "offset": "0x0",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          },
+          {
+            "width": 160,
+            "height": 120,
+            "offset": "0x8248",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 6,
+            "allowed_rgb_error": 10
+          },
+          {
+            "width": 640,
+            "height": 424,
+            "offset": "0x121600",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          },
+          {
+            "width": 1620,
+            "height": 1080,
+            "offset": "0x137e00",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          }
+        ],
+        "matching_ram_bodies": [
+          {
+            "name": "codec-41cad376bf7bbc7f72cd287cc7598397d81d36ad8019c9b3aa135f4ebdf8e643.jpg",
+            "bytes": 26308,
+            "sha256": "41cad376bf7bbc7f72cd287cc7598397d81d36ad8019c9b3aa135f4ebdf8e643",
+            "body_offset": "0x131602"
+          },
+          {
+            "name": "codec-5ebf3d1d64d532fa1e9502ef16eea72adaced08b7a636710f2fd99d38b9e2a1a.jpg",
+            "bytes": 7973,
+            "sha256": "5ebf3d1d64d532fa1e9502ef16eea72adaced08b7a636710f2fd99d38b9e2a1a",
+            "body_offset": "0x824a"
+          },
+          {
+            "name": "codec-7bac79985ed6ce8d9051fb7dfa4158e788d60ae61fc6e3a9ab631bbe6ba44d0f.jpg",
+            "bytes": 1081752,
+            "sha256": "7bac79985ed6ce8d9051fb7dfa4158e788d60ae61fc6e3a9ab631bbe6ba44d0f",
+            "body_offset": "0x19402"
+          },
+          {
+            "name": "codec-c73e99ef3beb6bd5f120a001d3fba7157f9cb0e2690325c5eb4a60c9269998ba.jpg",
+            "bytes": 95260,
+            "sha256": "c73e99ef3beb6bd5f120a001d3fba7157f9cb0e2690325c5eb4a60c9269998ba",
+            "body_offset": "0x147e02"
+          }
+        ],
+        "input_raw": {
+          "virtual_ns": 3964743504,
+          "frame": 1,
+          "aperture": 253,
+          "factor_q16": 26306,
+          "first": "0x62700000",
+          "second": "0xbad0b080"
+        },
+        "main_red_sample": [
+          90,
+          13,
+          19
+        ]
+      },
+      {
+        "card_path": "DCIM/100NZ7_2/DSC_0002.JPG",
+        "bytes": 1437783,
+        "sha256": "ac0109f20ea4a74eb9cdbf517d902e818cd508c7d83bc2a8bdbb40ad8195df1a",
+        "local_path": ".local/capture-report-archive/repeat_playback_target_row_trial/DSC_0002.JPG",
+        "exif_fnumber": 8.0,
+        "exif_exposure_seconds": 0.1,
+        "images": [
+          {
+            "width": 8256,
+            "height": 5504,
+            "offset": "0x0",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          },
+          {
+            "width": 160,
+            "height": 120,
+            "offset": "0x8248",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 4,
+            "allowed_rgb_error": 10
+          },
+          {
+            "width": 640,
+            "height": 424,
+            "offset": "0x121400",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          },
+          {
+            "width": 1620,
+            "height": 1080,
+            "offset": "0x137c00",
+            "sampling": "4:2:2",
+            "rgb_samples": 432,
+            "maximum_rgb_error": 1,
+            "allowed_rgb_error": 3
+          }
+        ],
+        "matching_ram_bodies": [
+          {
+            "name": "codec-5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556.jpg",
+            "bytes": 1080848,
+            "sha256": "5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556",
+            "body_offset": "0x19402"
+          },
+          {
+            "name": "codec-9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c.jpg",
+            "bytes": 26482,
+            "sha256": "9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c",
+            "body_offset": "0x131402"
+          },
+          {
+            "name": "codec-a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45.jpg",
+            "bytes": 7724,
+            "sha256": "a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45",
+            "body_offset": "0x824a"
+          },
+          {
+            "name": "codec-b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133.jpg",
+            "bytes": 95319,
+            "sha256": "b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133",
+            "body_offset": "0x147c02"
+          }
+        ],
+        "input_raw": {
+          "virtual_ns": 5031410256,
+          "frame": 2,
+          "aperture": 247,
+          "factor_q16": 26904,
+          "first": "0xa6f22000",
+          "second": "0x0"
+        },
+        "main_red_sample": [
+          92,
+          13,
+          19
+        ]
+      }
+    ],
+    "filesystem_integrity": true,
+    "probe_txt_preserved": true,
+    "source_card_unchanged": true,
+    "source_card_sha256": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+    "source_scene_sha256": "e492d8513d497b36da8495fe89ec7b3a45a665bd4f3890b891108bcdfed4162c",
+    "nvme_blockstats": {
+      "unmap_operations": 0,
+      "unmap_merged": 0,
+      "failed_zone_append_operations": 0,
+      "flush_total_time_ns": 0,
+      "wr_highest_offset": 3318272,
+      "wr_total_time_ns": 90318759,
+      "failed_wr_operations": 0,
+      "failed_rd_operations": 0,
+      "wr_merged": 0,
+      "wr_bytes": 3088896,
+      "timed_stats": [],
+      "failed_unmap_operations": 0,
+      "zone_append_merged": 0,
+      "failed_flush_operations": 0,
+      "account_invalid": true,
+      "rd_total_time_ns": 222112077,
+      "invalid_unmap_operations": 0,
+      "flush_operations": 0,
+      "wr_operations": 40,
+      "unmap_bytes": 0,
+      "rd_merged": 0,
+      "rd_bytes": 2516480,
+      "unmap_total_time_ns": 0,
+      "invalid_flush_operations": 0,
+      "account_failed": true,
+      "idle_time_ns": 1875339380915,
+      "zone_append_total_time_ns": 0,
+      "zone_append_operations": 0,
+      "rd_operations": 311,
+      "zone_append_bytes": 0,
+      "invalid_zone_append_operations": 0,
+      "invalid_wr_operations": 0,
+      "invalid_rd_operations": 0
+    },
+    "sd_blockstats": {
+      "unmap_operations": 0,
+      "unmap_merged": 0,
+      "failed_zone_append_operations": 0,
+      "flush_total_time_ns": 0,
+      "wr_highest_offset": 348160,
+      "wr_total_time_ns": 0,
+      "failed_wr_operations": 0,
+      "failed_rd_operations": 0,
+      "wr_merged": 0,
+      "wr_bytes": 0,
+      "timed_stats": [],
+      "failed_unmap_operations": 0,
+      "zone_append_merged": 0,
+      "failed_flush_operations": 0,
+      "account_invalid": true,
+      "rd_total_time_ns": 0,
+      "invalid_unmap_operations": 0,
+      "flush_operations": 0,
+      "wr_operations": 0,
+      "unmap_bytes": 0,
+      "rd_merged": 0,
+      "rd_bytes": 0,
+      "unmap_total_time_ns": 0,
+      "invalid_flush_operations": 0,
+      "account_failed": true,
+      "zone_append_total_time_ns": 0,
+      "zone_append_operations": 0,
+      "rd_operations": 0,
+      "zone_append_bytes": 0,
+      "invalid_zone_append_operations": 0,
+      "invalid_wr_operations": 0,
+      "invalid_rd_operations": 0
+    },
+    "native_flushes": 36,
+    "native_successful_completions": 399,
+    "host_fat_edits": false,
+    "photo_reencoded": false,
+    "photos_exported": true,
+    "checker_sha256": "7fd20c958401df88dac9d66518b01c040f000146b39734c0b1762cbdcbc9bd2c"
+  },
+  "decode": {
+    "result": "passed-latest-photo-exact-active-decode",
+    "reference_decode": "Pillow directly in YCbCr mode without RGB conversion",
+    "references": [
+      {
+        "photo": "DSC_0001.JPG",
+        "offset": "0x137e00",
+        "size": [
+          1620,
+          1080
+        ],
+        "sha256": "bf62a909f0043abc0eeb3e341b23dc39a33b84b4c036f6e33f8450ad6ca5f1ee",
+        "independent_plane_sha256": [
+          "2e71e89e502cd72ec0109fdb8d7f78911a21e2360505eb126d6a55ec333e1b00",
+          "0eb0bd29f0df31aef48efa85891d21d6f14745d10a1e66b803522c579e8f850a"
+        ]
+      },
+      {
+        "photo": "DSC_0002.JPG",
+        "offset": "0x137c00",
+        "size": [
+          1620,
+          1080
+        ],
+        "sha256": "ac0109f20ea4a74eb9cdbf517d902e818cd508c7d83bc2a8bdbb40ad8195df1a",
+        "independent_plane_sha256": [
+          "c46b1684c3a24da8df8f6fcfb2525978a003d91650005ccfaa1f5723eadebe3c",
+          "42fe4e30d3c3313acefc116966b8950cc7e21ab5f07f7717348ddf1f3e64e163"
+        ]
+      }
+    ],
+    "observations": [
+      {
+        "entry": "playback-jpeg-interrupt",
+        "counter_ticks": 307969942,
+        "planes": [
+          {
+            "register": "0x430",
+            "address": "0xdb5b6500",
+            "width": 1620,
+            "height": 1080,
+            "stride": 1632,
+            "active_bytes": 1749600,
+            "active_sha256": "c46b1684c3a24da8df8f6fcfb2525978a003d91650005ccfaa1f5723eadebe3c",
+            "minimum": 9,
+            "maximum": 96,
+            "unique_bytes": 61
+          },
+          {
+            "register": "0x434",
+            "address": "0xdb764a00",
+            "width": 1620,
+            "height": 1080,
+            "stride": 1632,
+            "active_bytes": 1749600,
+            "active_sha256": "42fe4e30d3c3313acefc116966b8950cc7e21ab5f07f7717348ddf1f3e64e163",
+            "minimum": 90,
+            "maximum": 170,
+            "unique_bytes": 76
+          }
+        ],
+        "matches": [
+          {
+            "photo": "DSC_0002.JPG",
+            "offset": "0x137c00",
+            "size": [
+              1620,
+              1080
+            ],
+            "sha256": "ac0109f20ea4a74eb9cdbf517d902e818cd508c7d83bc2a8bdbb40ad8195df1a",
+            "independent_plane_sha256": [
+              "c46b1684c3a24da8df8f6fcfb2525978a003d91650005ccfaa1f5723eadebe3c",
+              "42fe4e30d3c3313acefc116966b8950cc7e21ab5f07f7717348ddf1f3e64e163"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imports": {
+    "report_sha256": "666e65e7d91b5485230456bc8826bb4e456fd72a4b0ef1622a396ec2bca6d9c8",
+    "observations": [
+      {
+        "entry": "playback-image-import-primary",
+        "counter_ticks": 308086696,
+        "image_import": {
+          "format": "0x15",
+          "width": 1632,
+          "height": 1080,
+          "first_capacity": 1762560,
+          "stack_words": [
+            "0x1ae500",
+            "0xdb5b6500",
+            "0xdb764a00",
+            "0x6"
+          ],
+          "stride": 1632,
+          "planes": [
+            {
+              "address": "0xdb5b6500",
+              "capacity": 1762560,
+              "rows": [
+                {
+                  "y": 0,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "25252525252525252525252525252525"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "5c5c5c5c000000000000000000000000"
+                    }
+                  ]
+                },
+                {
+                  "y": 540,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "39393939393939393939393939393939"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "25252525000000000000000000000000"
+                    }
+                  ]
+                },
+                {
+                  "y": 1079,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "0d0d0d0d000000000000000000000000"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "address": "0xdb764a00",
+              "capacity": 1762560,
+              "rows": [
+                {
+                  "y": 0,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "76a776a776a776a776a776a776a776a7"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "94999499949994999499949994999499"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "80808080000000000000000000000000"
+                    }
+                  ]
+                },
+                {
+                  "y": 540,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "6f616f616f616f616f616f616f616f61"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "8d5d8d5e8d5e8d5e8d5e8d5e8d5e8d5e"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "76a776a7000000000000000000000000"
+                    }
+                  ]
+                },
+                {
+                  "y": 1079,
+                  "samples": [
+                    {
+                      "x": 0,
+                      "bytes": "80808080808080808080808080808080"
+                    },
+                    {
+                      "x": 816,
+                      "bytes": "5d8c5d8c5d8c5d8c5d8c5d8c5d8c5d8c"
+                    },
+                    {
+                      "x": 1616,
+                      "bytes": "80808080000000000000000000000000"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "comparisons": [
+          {
+            "photo": "DSC_0001.JPG",
+            "reverse_y": false,
+            "equal_bytes": 90,
+            "total_bytes": 216,
+            "padding_excluded": true
+          },
+          {
+            "photo": "DSC_0001.JPG",
+            "reverse_y": true,
+            "equal_bytes": 8,
+            "total_bytes": 216,
+            "padding_excluded": true
+          },
+          {
+            "photo": "DSC_0002.JPG",
+            "reverse_y": false,
+            "equal_bytes": 216,
+            "total_bytes": 216,
+            "padding_excluded": true
+          },
+          {
+            "photo": "DSC_0002.JPG",
+            "reverse_y": true,
+            "equal_bytes": 8,
+            "total_bytes": 216,
+            "padding_excluded": true
+          }
+        ]
+      }
+    ],
+    "scope": "Sparse original import samples compared with independently decoded embedded previews; not a complete-plane equality check."
+  },
+  "lcd": {
+    "width": 1024,
+    "height": 682,
+    "format": 0,
+    "slot": 0,
+    "luminance": {
+      "address": "0xcc18b000",
+      "stride": 1024,
+      "rows": 682
+    },
+    "chroma": {
+      "address": "0xcc235800",
+      "stride": 1024,
+      "rows": 682
+    },
+    "bytes": 2095104,
+    "sha256": "38526fa5a8579e8b0f1e90375eef77de9a94a9fcba711eb47f2d3af56d616621",
+    "was_running": false,
+    "ui_overlay_included": false
+  },
+  "all_sampled_core_faults_zero": true,
+  "final_application": 2,
+  "limitations": [
+    "Functional row mapping verified for this native playback, not physical GPU equivalence.",
+    "UI observation covers playback overlay, not every menu or rotation mode.",
+    "Display snapshot recovered after observer cleanup deadlock; it is later than the saved report and guest was not restarted.",
+    "Explicit preprocessing skip, virtual lens and functional pixel models remain."
+  ],
+  "checker_sha256": "15fcdb7c710672afc2c122ef6f9dde20e53c98663525d57b8c1bcbc1dcac7157",
+  "orientation": {
+    "result": "compared-native-photo-target-row-mapping",
+    "comparisons": {
+      "bottom_origin": {
+        "samples": 432,
+        "exact": 432,
+        "within_two": 432,
+        "maximum_error": 0,
+        "mean_max_channel_error": 0.0
+      },
+      "direct_rows": {
+        "samples": 432,
+        "exact": 0,
+        "within_two": 0,
+        "maximum_error": 81,
+        "mean_max_channel_error": 72.33333333333333
+      }
+    },
+    "photo_sha256": "ac0109f20ea4a74eb9cdbf517d902e818cd508c7d83bc2a8bdbb40ad8195df1a",
+    "lcd": {
+      "width": 1024,
+      "height": 682,
+      "format": 0,
+      "slot": 0,
+      "luminance": {
+        "address": "0xcc18b000",
+        "stride": 1024,
+        "rows": 682
+      },
+      "chroma": {
+        "address": "0xcc235800",
+        "stride": 1024,
+        "rows": 682
+      },
+      "bytes": 2095104,
+      "sha256": "38526fa5a8579e8b0f1e90375eef77de9a94a9fcba711eb47f2d3af56d616621",
+      "was_running": false,
+      "ui_overlay_included": false
+    },
+    "matrix": {
+      "first_line": 7602,
+      "count": 1,
+      "target": "cc18b000",
+      "source": "db5b6500",
+      "mode": "00000002",
+      "raw": "0034fc38/00000000/00000000/00000000/00b58064/003f0242/00000000/00000000/003f0000",
+      "format": "00000105",
+      "geometry": {
+        "target": "cc18b000",
+        "size": "02b00400",
+        "state": "00002100",
+        "path_y": "6.01263..688",
+        "source": "db5b6500",
+        "source_size": "06600438",
+        "source_flags": "00000007",
+        "target_flags": "00000101",
+        "target_11c": "02b00000",
+        "target_1a5": "00000000",
+        "source_format": "001b000d"
+      },
+      "matrix": [
+        0.0009693503379821777,
+        0.0,
+        0.0,
+        0.0,
+        -0.0014663338661193848,
+        1.008819580078125,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "top_center_uv": [
+        0.496307373046875,
+        0.9992698901516199
+      ],
+      "bottom_center_uv": [
+        0.496307373046875,
+        0.0007150471210479736
+      ]
+    },
+    "scope": "432 interior samples, independent JPEG YCbCr decode, recorded texture matrix and functional YUV round-trip; no UI pixels included.",
+    "checker_sha256": "fd52c5a993717da549d526fcb2e8928859cc3430ad93b0367c505b706ed03bca"
+  },
+  "observer_recovery": {
+    "reason": "Observer cleanup attempted to acquire its already-held I/O lock through lcd_png. Complete report had been written before cleanup.",
+    "observer_pid": 46784,
+    "observer_terminated": true,
+    "qemu_restarted": false,
+    "snapshot_after_report": true,
+    "status_before": {
+      "status": "running",
+      "running": true
+    },
+    "status_after": {
+      "status": "paused",
+      "running": false
+    },
+    "qmp_port": 54392
+  },
+  "ui_visual_check": {
+    "snapshot_sha256": "4dac0e35eb3c47ce564eb4ff76da1268dbbcab1ac20a065210373bfcd4529afe",
+    "observation": "Color grid starts with red, green, blue at the top. File name, NORMAL, 8256x5504 and 2/2 are upright.",
+    "scope": "Human-readable playback overlay inspected in the same-instance recovered display snapshot; other menu layouts not exercised."
+  },
+  "renderer_checks": 697,
+  "cleanup": {
+    "codec_files": [
+      {
+        "name": "codec-206c81896ca44085bb7b3b870cc9fc138dd2e57c40285b52dbad46f8e45dc01b.jpg",
+        "bytes": 19555,
+        "sha256": "206c81896ca44085bb7b3b870cc9fc138dd2e57c40285b52dbad46f8e45dc01b"
+      },
+      {
+        "name": "codec-41cad376bf7bbc7f72cd287cc7598397d81d36ad8019c9b3aa135f4ebdf8e643.jpg",
+        "bytes": 26308,
+        "sha256": "41cad376bf7bbc7f72cd287cc7598397d81d36ad8019c9b3aa135f4ebdf8e643"
+      },
+      {
+        "name": "codec-5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556.jpg",
+        "bytes": 1080848,
+        "sha256": "5b57ea610dfecc55d6253605bda20e9b570431f9b34debee2f9aade862fa5556"
+      },
+      {
+        "name": "codec-5ebf3d1d64d532fa1e9502ef16eea72adaced08b7a636710f2fd99d38b9e2a1a.jpg",
+        "bytes": 7973,
+        "sha256": "5ebf3d1d64d532fa1e9502ef16eea72adaced08b7a636710f2fd99d38b9e2a1a"
+      },
+      {
+        "name": "codec-666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302.jpg",
+        "bytes": 19670,
+        "sha256": "666ade33118fdfdacb2dea4193f8a92903526a01d89ab8f1daf880211a93b302"
+      },
+      {
+        "name": "codec-77814d7df605a95c0e9c557ea63747483f8f9eb36b63653d092a456a3c670e02.jpg",
+        "bytes": 21986,
+        "sha256": "77814d7df605a95c0e9c557ea63747483f8f9eb36b63653d092a456a3c670e02"
+      },
+      {
+        "name": "codec-7bac79985ed6ce8d9051fb7dfa4158e788d60ae61fc6e3a9ab631bbe6ba44d0f.jpg",
+        "bytes": 1081752,
+        "sha256": "7bac79985ed6ce8d9051fb7dfa4158e788d60ae61fc6e3a9ab631bbe6ba44d0f"
+      },
+      {
+        "name": "codec-9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c.jpg",
+        "bytes": 26482,
+        "sha256": "9e60ac8b5b6deb20df0fc2a4d47932e44a26d57cb17f464b17d53162f81b250c"
+      },
+      {
+        "name": "codec-a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45.jpg",
+        "bytes": 7724,
+        "sha256": "a740fd0e74f40aa8a7149f49ec564806c2dea58d63b98c6cf0812472ed825d45"
+      },
+      {
+        "name": "codec-a97965c32045952d8e94c19c42a4f4d7b926228b5886fb601010751893b75422.jpg",
+        "bytes": 25930,
+        "sha256": "a97965c32045952d8e94c19c42a4f4d7b926228b5886fb601010751893b75422"
+      },
+      {
+        "name": "codec-b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133.jpg",
+        "bytes": 95319,
+        "sha256": "b9ca697e83aa15f1e419ea1582809cdbdf714a2543c8178020b894ce94d0a133"
+      },
+      {
+        "name": "codec-c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539.jpg",
+        "bytes": 21919,
+        "sha256": "c1afcd7d6618edb80fced3730a01e8014f2590aa20ec3edaf71e40ec1801e539"
+      },
+      {
+        "name": "codec-c73e99ef3beb6bd5f120a001d3fba7157f9cb0e2690325c5eb4a60c9269998ba.jpg",
+        "bytes": 95260,
+        "sha256": "c73e99ef3beb6bd5f120a001d3fba7157f9cb0e2690325c5eb4a60c9269998ba"
+      },
+      {
+        "name": "codec-cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69.jpg",
+        "bytes": 26115,
+        "sha256": "cfa9bc56a77b004303f9f11ba79ef237580e8fd8df03b29d03f3b7622dba6b69"
+      },
+      {
+        "name": "codec-d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b.jpg",
+        "bytes": 24010,
+        "sha256": "d57d966f90d924db5e8efd37da25c575045ac2b7972bc4cb08e606277c72dd3b"
+      },
+      {
+        "name": "codec-eff89e72664cfc4cd3b42d92ea46fe60becb27e0d7c85192c7e04937211999ef.jpg",
+        "bytes": 23914,
+        "sha256": "eff89e72664cfc4cd3b42d92ea46fe60becb27e0d7c85192c7e04937211999ef"
+      }
+    ],
+    "intermediate_codec_files_removed": true,
+    "temporary_card": {
+      "bytes": 4294967296,
+      "sha256": "2c959170f670811385b7896e4dd9943b975a718ceefc5215beeab1c66f4cd477",
+      "removed": true
+    },
+    "temporary_lcd_rgb_removed": true,
+    "temporary_composite_png_removed": true
+  }
+}

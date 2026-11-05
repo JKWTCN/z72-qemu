@@ -49,13 +49,13 @@ int main(void) {
             }
             r[0x185]=0xffffffff;
             CHECK(nikon_gpu_draw(&g,r,p));
-            uint8_t *a=memory+0x1000,*b=a+n, pixel[4];
+            uint8_t *a=memory+0x1000+(format==0x106?32:0),*b=a+n, pixel[4];
             for(unsigned i=0;i<48;i++) {
                 nikon_gpu_pixel_read(a,b,format,a4,i,pixel);
                 CHECK(pixel[0]>=254 && pixel[1]>=254 && pixel[2]>=254 && pixel[3]==255);
             }
             CHECK(a[-1]==0xa5);
-            CHECK((format==0x106 ? a[8*8*2] : b[n2])==0xa5);
+            CHECK((format==0x106 ? a[8*6*2] : b[n2])==0xa5);
             r[0x185]=0;
             CHECK(nikon_gpu_draw(&g,r,p));
             nikon_gpu_pixel_read(a,b,format,a4,0,pixel);
@@ -82,7 +82,23 @@ int main(void) {
     memset(memory+0x1000,0x80,256); uint8_t saved[256]; memcpy(saved,memory+0x1000,256);
     CHECK(nikon_gpu_draw(&g,r,p)); CHECK(!memcmp(saved,memory+0x1000,256));
     r[0x1a0]=0; CHECK(nikon_gpu_draw(&g,r,p));
-    CHECK(!memcmp(memory+0x1000,(uint8_t[192]){0},192));
+    CHECK(!memcmp(memory+0x1040,(uint8_t[192]){0},192));
+    CHECK(memory[0x1000]==0x80 && memory[0x103f]==0x80);
+    /* Original continuous fill selects storage rows 5 and 6 for y=1,
+     * height=2 on an eight-row origin-1 surface. Raster clear must agree. */
+    for(unsigned j=0;j<p->edges->len;j++) {
+        NikonGPUEdge *e=&g_array_index(p->edges,NikonGPUEdge,j);
+        e->y0=e->uy0/3+1; e->y1=e->uy1/3+1;
+    }
+    memset(memory+0x1000,0,256); r[0x185]=0xffffffff;
+    CHECK(nikon_gpu_draw(&g,r,p));
+    for(unsigned y=0;y<8;y++) {
+        for(unsigned x=0;x<8;x++) {
+            uint8_t expected=(y==5 || y==6)?255:0;
+            CHECK(!memcmp(memory+0x1000+(y*8+x)*4,
+                          (uint8_t[]){expected,expected,expected,expected},4));
+        }
+    }
     nikon_gpu_path_free(p);
     /* A black stroke remains outside a subsequent white fill. Closed paths
      * have an empty center; miter corners must cover the outside corner. */
@@ -93,7 +109,7 @@ int main(void) {
     r[0x185]=0xff000000; r[0x1a0]=0x00010000;
     memset(memory+0x1000,0,16*16*4);
     CHECK(nikon_gpu_draw(&g,r,p));
-    #define PIX(x,y,c) memory[0x1000+((y)*16+(x))*4+(c)]
+    #define PIX(x,y,c) memory[0x1000+((15-(y))*16+(x))*4+(c)]
     CHECK(PIX(3,6,3)==255 && PIX(3,6,0)==0);
     CHECK(PIX(8,7,3)==0);
     CHECK(PIX(3,3,3)==255);
@@ -208,6 +224,19 @@ int main(void) {
     r[0x155]=0xa100ffff; CHECK(!nikon_gpu_draw(&g,r,p));
     r[0x155]=0xa100fffe; r[0x156]=0x001a0003; CHECK(!nikon_gpu_draw(&g,r,p));
     CHECK(!memcmp(saved,memory+0x1000,192));
+    /* Native playback uses a negative texture y scale. Combined with the
+     * target's raster origin, distinct source rows retain storage order. */
+    static const uint8_t row_colors[][4]={{255,0,0,255},{0,255,0,255},
+        {0,0,255,255},{255,255,0,255},{0,255,255,255},{255,0,255,255}};
+    r[0x156]=0; r[0x155]=0xa1003000; r[0x152]=(8<<16)|6;
+    r[0x110]=0xbc5555; r[0x111]=0x3f0000;
+    for(unsigned y=0;y<6;y++) {
+        for(unsigned x=0;x<8;x++) { memcpy(memory+0x3000+(y*8+x)*4,row_colors[y],4); }
+    }
+    CHECK(nikon_gpu_draw(&g,r,p));
+    for(unsigned y=0;y<6;y++) {
+        for(unsigned x=0;x<8;x++) { CHECK(!memcmp(memory+0x1000+(y*8+x)*4,row_colors[y],4)); }
+    }
     nikon_gpu_path_free(p);
     printf("PASS %u synthetic renderer checks\n",checks); return 0;
 }

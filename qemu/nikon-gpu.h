@@ -459,7 +459,8 @@ static bool nikon_gpu_draw(NikonGPU *g, const uint32_t *r, NikonGPUPath *p)
                 }
             }
             uint8_t pixel[4];
-            size_t index = (size_t)(iy-y_bias)*w+ix;
+            /* Raster y counts from the bottom of the aligned target. */
+            size_t index = (size_t)(logical_h-1-iy)*w+ix;
             if (dfmt) {
                 size_t pair = index & ~1ULL;
                 if (!pair_dirty[index/2]) {
@@ -505,7 +506,7 @@ static void nikon_gpu_present(NikonGPU *g)
     uint8_t *out = surface_data(surface);
     for (int y = 0; y < H; y++) {
         for (int x = 0; x < W; x++) {
-            uint8_t *p = rgba + ((H-1-y)*W+x)*4;
+            uint8_t *p = rgba + (y*W+x)*4;
             stl_p(out + y*surface_stride(surface) + x*4, (p[0]<<16)|(p[1]<<8)|p[2]);
         }
     }
@@ -514,7 +515,7 @@ static void nikon_gpu_present(NikonGPU *g)
     if (dir) {
         g_autofree char *path = g_strdup_printf("%s/gui-latest.ppm", dir);
         GString *ppm = g_string_new("P6\n720 480\n255\n");
-        for (int y = H-1; y >= 0; y--) {
+        for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) { g_string_append_len(ppm, (char *)rgba + (y*W+x)*4, 3); }
         }
         g_file_set_contents(path, ppm->str, ppm->len, NULL); g_string_free(ppm, true);
