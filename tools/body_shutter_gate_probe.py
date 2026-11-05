@@ -4446,7 +4446,7 @@ def main():
     parser.add_argument('--controller-step-feedback', action='store_true',
                         help='Use native controller D7 pulses for the experimental engine GPIO handshake')
     parser.add_argument('--sampling-output-complete', action='store_true',
-                        help='Enable experimental single-comparison sampling output events')
+                        help='Enable experimental sampling comparison and finite tail output events')
     parser.add_argument('--primary-exposure-sync', action='store_true',
                         help='Experimentally defer primary pixels until the output-16 comparison')
     parser.add_argument('--application-only', action='store_true',

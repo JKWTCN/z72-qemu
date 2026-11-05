@@ -217,6 +217,51 @@ def check(qemu):
                     assert read(0x20060038) == 0
                 # Restore the other channel's independent case after reset.
                 write(0x20060034, 0)
+            # Finite tail pulse: first edge at 1 ms, end at 9 ms. The
+            # functional completion is emitted once at the end, not the start.
+            for bit, base in ((0x40, 0x20063190), (0x80, 0x200631d0)):
+                for action in ('complete', 'stop', 'gate', 'mode', 'period',
+                               'reversed', 'unbounded', 'reset'):
+                    values = (0xffffffff, 0xffffff, 0xffff, 0xe3401940,
+                              1, 9, 0, 0x06000000)
+                    for offset, value in enumerate(values):
+                        write(base + offset * 4, value)
+                    write(0x20060034, 0)
+                    write(0x20060038, 0x7ff)
+                    write(0x2006000c, bit << 1)
+                    write(base + 0x20, 1)
+                    write(0x20060020, bit)
+                    command('clock_step 1000000')
+                    assert read(0x20060038) == 0
+                    if action == 'stop':
+                        write(0x20060024, bit)
+                        if completes:
+                            assert not read(0x20060020) & bit
+                    elif action == 'gate':
+                        write(0x20060008, bit << 1)
+                    elif action == 'mode':
+                        write(base + 0x1c, 0x06000004)
+                    elif action == 'period':
+                        write(base, 0)
+                    elif action == 'reversed':
+                        write(base + 0x10, 10)
+                    elif action == 'unbounded':
+                        write(base + 0xc, 0xffff1940)
+                        write(base + 0x14, 0xffffff)
+                        write(base + 0x18, 0xffff0000)
+                    elif action == 'reset':
+                        monitor('system_reset')
+                    command('clock_step 7999999')
+                    assert read(0x20060038) == 0
+                    command('clock_step 1')
+                    expected = bit if completes and action == 'complete' else 0
+                    assert read(0x20060038) == expected, (bit, action)
+                    if expected:
+                        write(0x20060034, bit)
+                        assert irq_levels.get(86 - 32, False)
+                        write(0x20060038, bit)
+                    command('clock_step 10000000')
+                    assert read(0x20060038) == 0
         finally:
             if stream is not None:
                 stream.close()
@@ -228,7 +273,7 @@ def check(qemu):
             process.stdin.close()
             process.stdout.close()
             process.stderr.close()
-    print('PASS synchronization: frame phase, control batches, 32-second output compares, masks, stop, reset and source/role gating')
+    print('PASS synchronization: frame phase, single compares, finite tail pulses, masks, stop, reset and source/role gating')
 
 
 if __name__ == '__main__':

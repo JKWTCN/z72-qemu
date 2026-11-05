@@ -1,0 +1,361 @@
+{
+  "result": "finite-tail-output-completes-native-body-capture",
+  "seconds_after_full": 2.004397,
+  "capture_state": [
+    2,
+    0
+  ],
+  "driver_state": 9,
+  "pending_driver_state": 20,
+  "delegate_state": 5,
+  "processing_command": 13,
+  "processing_state": 2,
+  "sampling_control": [
+    "0xd8",
+    "0x1"
+  ],
+  "sampling_state": 2,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 1,
+    "0x102c4040": 0,
+    "0x1012c6d2": 1,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 1,
+    "0x1012c94c": 1
+  },
+  "exhausted_observation_points": [
+    "0x10394762"
+  ],
+  "observed_counts": {
+    "0x10394762": 32,
+    "0x103e6e94": 6,
+    "0x102422ec": 2,
+    "0x10394d06": 13,
+    "0x1022de1a": 6,
+    "0x1022de46": 6,
+    "0x102c9cfa": 1,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x102c9ca6": 1,
+    "0x102c9cf4": 1,
+    "0x1026d0ec": 2,
+    "0x10394db0": 1,
+    "0x1022f4a2": 2,
+    "0x1022f4aa": 2,
+    "0x10397dc2": 1,
+    "0x10395dae": 1,
+    "0x10395e06": 1,
+    "0x1026ec26": 1,
+    "0x1026cedc": 1,
+    "0x10397dca": 1,
+    "0x10395cf4": 1,
+    "0x10395da4": 1,
+    "0x1022e802": 1,
+    "0x10234f86": 1,
+    "0x1012c648": 1,
+    "0x1012c6d2": 1,
+    "0x1012c85c": 1,
+    "0x1012c94c": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "4f08fe247b106df271f7744b146086988ef7d7db8a181422390297ec75cccd52",
+    "identical_to_source": false,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "21c0d2c98effa1f3416d16dc5b44b231cea2e1b97a87e292aab42aaae639d66e",
+    "trace.jsonl": "5b45eb2726aaf86b9e2684259b33600e3fac3b68bda9edce4798142b5e0d5840",
+    "conditions.json": "f8de73684050d1a64b32c3379b9cf41146b2a78a7cf42d7cf3d3a55821da552b",
+    "arguments.json": "ce1e6d429b334fad5eeb26e13e4efde1d349cc06c16a1e82415da4634f4506a9",
+    "storage.json": "e674924789a573b22c58d836330e905db7fddb5c833deec9b9b55ea2d43ff00f",
+    "qemu.log": "22c92efed593f4314cd8c2026a6a5254f63e0f8d7663bb7aa26c18468b2c945d",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "4ae43ed223c75903f64927faa731efc6c1ed4c8af996ede0f57c2106bffe5028"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-output-completion.py": "81928be32871072b2232dad76529967351ac3d813600775537ce564f6b7f09c7",
+    ".local/repeat-playback/trace_output_completion_contacts.py": "17fa1a606be8ff76fe4d76d308f6f1f8c76898cede0c85bd97a3605bc275a7d4",
+    "tools/web_console.py": "31f4758a253980bd8511a303a977197be5c4a2f850e8d3a0a386ebae3caed78f",
+    "tools/body_shutter_gate_probe.py": "5858965ee57739e12170c467b9ad02996846e54afb666e97e2145655963e1dd7",
+    "qemu/nikon-z72.c": "e360a881448531ac7c7ba42649b2fb94fcf0126600d27b1792cd501017b73950",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "eeef3b9d2e168e55320d79c70da99835c0deb3b714a74193a6fafd35a506a5bd",
+  "limitations": [
+    "Explicit experimental slave preprocessing skip executed at the verified native entry.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Capture returned ready; independent card and JPEG validation is recorded separately.",
+    "Finite tail IRQ at pulse end is a functional assumption; no physical waveform or original DSP execution is established.",
+    "Processing adapter reached its 32-hit quota; conclusions rely on separate consumer checkpoints, final state and independent card extraction."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": false
+  },
+  "card_check": {
+    "result": "passed",
+    "new_file": "DCIM/100NZ7_2/DSC_0003.JPG",
+    "bytes": 5160027,
+    "sha256": "f78a8d4868d6a1a868dbbf109dc454458e3fdc1b0ffae85c7791fd4b4f8bf260",
+    "dimensions": [
+      8256,
+      5504
+    ],
+    "decoded": true,
+    "existing_files_preserved": {
+      "PROBE.TXT": "00339db3277e73d2331bdb28b0976f9fc23594696f3031c2e945f93e94770ef5",
+      "DCIM/100NZ7_2/DSC_0001.JPG": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+      "DCIM/100NZ7_2/DSC_0002.JPG": "b6cfd3f6bb4f70c76e48f1b8ccd44aeff1c72ec778a456344fba4e770df456d4"
+    },
+    "scope": "Synthetic monochrome input; explicit slave preprocessing skip; no physical photo claim."
+  },
+  "final_delegate_readiness": {
+    "predicate": "0x1026f6a4",
+    "pending": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "processed": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "mode_bytes": [
+      0,
+      3,
+      0
+    ],
+    "required_indices": [
+      0,
+      4,
+      2,
+      6
+    ],
+    "missing_indices": [],
+    "override": false,
+    "ready": true
+  },
+  "final_tail_queue": {
+    "address": "0xb25ef114",
+    "pending": "0x0",
+    "head": "0x0",
+    "count": 0,
+    "contexts": []
+  },
+  "final_tail_output": {
+    "context": [
+      0,
+      0,
+      15,
+      3,
+      0,
+      0,
+      0,
+      0,
+      237,
+      208,
+      38,
+      16,
+      28,
+      40,
+      128,
+      177,
+      84,
+      40,
+      128,
+      177,
+      220,
+      69,
+      128,
+      177,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "channels": {
+      "0x40": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0xe3400000",
+        "0x0",
+        "0x9",
+        "0x0",
+        "0x6000000",
+        "0x1",
+        "0x1"
+      ],
+      "0x80": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1"
+      ]
+    }
+  },
+  "capture_states": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    2
+  ],
+  "processing_events": [
+    {
+      "name": "tail-output-first-callback",
+      "ticks": 151813772,
+      "pc": "0x102c9ca6",
+      "r0": "0x41080c00",
+      "missing": [
+        0,
+        6
+      ]
+    },
+    {
+      "name": "tail-output-notification",
+      "ticks": 151813773,
+      "pc": "0x102c9cf4",
+      "r0": "0x4200301",
+      "missing": [
+        0,
+        6
+      ]
+    },
+    {
+      "name": "tail-output-delegate-consumer",
+      "ticks": 151813782,
+      "pc": "0x1026d0ec",
+      "r0": "0x4200301",
+      "missing": [
+        0,
+        6
+      ]
+    },
+    {
+      "name": "tail-output-delegate-consumer",
+      "ticks": 152601829,
+      "pc": "0x1026d0ec",
+      "r0": "0x4200305",
+      "missing": []
+    },
+    {
+      "name": "processing-task10-dispatch",
+      "ticks": 152603117,
+      "pc": "0x10397dc2",
+      "r0": "0x80000000",
+      "missing": []
+    },
+    {
+      "name": "processing-task20-dispatch",
+      "ticks": 162595521,
+      "pc": "0x10397dca",
+      "r0": "0x80000000",
+      "missing": []
+    },
+    {
+      "name": "input-processing-ready-consumer",
+      "ticks": 162660579,
+      "pc": "0x1022e802",
+      "r0": "0x0",
+      "missing": []
+    }
+  ],
+  "preprocessing_observations": [
+    {
+      "name": "experimental-slave-preprocessing-input",
+      "pc": "0x1012c648",
+      "before": null,
+      "after": null,
+      "context": null,
+      "original": null,
+      "new": null
+    },
+    {
+      "name": "slave-statistics-cleared",
+      "pc": "0x1012c6d2",
+      "before": null,
+      "after": null,
+      "context": null,
+      "original": null,
+      "new": null
+    },
+    {
+      "name": "slave-sflt-skipped",
+      "pc": "0x1012c85c",
+      "before": null,
+      "after": null,
+      "context": null,
+      "original": null,
+      "new": null
+    },
+    {
+      "name": "slave-raw-compute-skipped",
+      "pc": "0x1012c94c",
+      "before": null,
+      "after": null,
+      "context": null,
+      "original": null,
+      "new": null
+    }
+  ],
+  "device_validation": {
+    "test": "tests/test_frame_sync.py",
+    "result": "passed",
+    "build": "recorded local toolchain; overlay compile and link passed"
+  }
+}

@@ -1169,7 +1169,7 @@ def main():
     parser.add_argument('--sample-group1', action='store_true',
                         help='Enable the optional group-1 frame synchronization event source')
     parser.add_argument('--sampling-output-complete', action='store_true',
-                        help='Enable the experimental single-comparison sampling output timer')
+                        help='Enable experimental sampling comparison and finite tail output timers')
     parser.add_argument('--controller-actuator', action='store_true',
                         help='Enable experimental PWM-driven controller position feedback')
     parser.add_argument('--controller-step-link', action='store_true',
