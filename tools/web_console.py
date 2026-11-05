@@ -945,7 +945,8 @@ class Machine:
                     if (self._words(0x20146200, 1)[0] & 31 != 6 or
                             self._words(0x20146400, 1)[0] != geometry or width & 1):
                         raise ValueError('Unsupported display overlay format or geometry')
-                    overlay = plane(0x20146440, 0x20146500, width * 2)
+                    overlay_slot = (self._words(0x20146214, 1)[0] >> 16) & 3
+                    overlay = plane(0x20146440 + overlay_slot * 4, 0x20146500, width * 2)
                     alpha = plane(0x201464c0, 0x20146540, width)
             finally:
                 if running:

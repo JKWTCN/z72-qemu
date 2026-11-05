@@ -60,7 +60,7 @@ class LCDTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 lcd_rgb(*arguments)
 
-    def machine(self, running=True, broken_uv=False, active_slot=0):
+    def machine(self, running=True, broken_uv=False, active_slot=0, overlay_slot=None):
         machine = Machine.__new__(Machine)
         machine.io = threading.Lock()
         machine.lcd_cache = (0, b'')
@@ -80,11 +80,21 @@ class LCDTests(unittest.TestCase):
         for slot in range(4):
             registers[0x20144210 + slot * 4] = 0xb1000000 + slot * 0x2000
             registers[0x20144220 + slot * 4] = 0xb1001000 + slot * 0x2000
+        if overlay_slot is not None:
+            registers.update({0x20146110: 1, 0x20146200: 6, 0x20146400: 0x20002,
+                              0x20146214: overlay_slot << 16 | ((overlay_slot + 1) % 4) << 8,
+                              0x20146500: 4, 0x20146540: 2, 0x201464c0: 0xb2100000})
+            for slot in range(4):
+                registers[0x20146440 + slot * 4] = 0xb2000000 + slot * 0x1000
         machine._words = lambda address, count: [registers[address]]
         reads = []
 
         def read(address, length):
             reads.append((address, length))
+            if address == 0xb2100000:
+                return bytes([255, 0, 255, 0])
+            if 0xb2000000 <= address < 0xb2004000:
+                return bytes([145, 145, 54, 34] * 2)
             if address & 0x1000:
                 if broken_uv:
                     raise ValueError('Read failed')
@@ -114,6 +124,15 @@ class LCDTests(unittest.TestCase):
             self.assertEqual(frame.tobytes(), bytes([255, 0, 0] * 4))
         self.assertEqual(machine.lcd_png(), image)
         self.assertEqual(calls, ['query-status', 'stop', 'cont'])
+
+    def test_overlay_color_slot_is_independent_with_layout_zero_alpha(self):
+        for slot in range(4):
+            with self.subTest(slot=slot):
+                machine, _, reads = self.machine(active_slot=(slot + 1) % 4, overlay_slot=slot)
+                image = machine.lcd_png()
+                self.assertEqual(reads[-2:], [(0xb2000000 + slot * 0x1000, 8), (0xb2100000, 4)])
+                with Image.open(BytesIO(image)) as frame:
+                    self.assertEqual(frame.tobytes(), bytes([0, 255, 1, 255, 0, 0] * 2))
 
     def test_snapshot_preserves_pause_and_resumes_on_failure(self):
         machine, calls, _ = self.machine(running=False)

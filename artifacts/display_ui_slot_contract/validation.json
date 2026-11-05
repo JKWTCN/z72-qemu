@@ -1,0 +1,50 @@
+{
+  "result": "passed-original-ui-color-slot-and-layout-alpha-readback",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "slot_getter": "0x1046c3ae",
+  "address_resolver": "0x1046e250",
+  "layout_getter": "0x1046d568",
+  "cases": [
+    {
+      "requested_slot": 1,
+      "readback_slot": 0,
+      "color_address_register": "0x20146440",
+      "layout_index": 0,
+      "alpha_address": "0xcbbaf000"
+    },
+    {
+      "requested_slot": 2,
+      "readback_slot": 1,
+      "color_address_register": "0x20146444",
+      "layout_index": 0,
+      "alpha_address": "0xcbbaf000"
+    },
+    {
+      "requested_slot": 3,
+      "readback_slot": 2,
+      "color_address_register": "0x20146448",
+      "layout_index": 0,
+      "alpha_address": "0xcbbaf000"
+    },
+    {
+      "requested_slot": 0,
+      "readback_slot": 3,
+      "color_address_register": "0x2014644c",
+      "layout_index": 0,
+      "alpha_address": "0xcbbaf000"
+    },
+    {
+      "requested_slot": 0,
+      "readback_slot": 3,
+      "color_address_register": "0x2014644c",
+      "layout_index": 1,
+      "alpha_address": "0xcc000000"
+    }
+  ],
+  "scope": "Original readback functions with synthetic display register RAM. UI color slot selected independently; layout entry zero reads alpha from 201464c0 for all four slots.",
+  "limitations": [
+    "No hardware slot-latching timing, nonzero-slot native run or orientation correction demonstrated.",
+    "Preview continues to compose only its existing layout entry zero."
+  ],
+  "checker_sha256": "35183830f40099f9d88a1a4acdd746819959a4b6753a15f1a96c373c91d40a59"
+}
