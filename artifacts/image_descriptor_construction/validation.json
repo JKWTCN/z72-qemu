@@ -1,0 +1,142 @@
+{
+  "result": "passed-original-image-constructor-and-shared-draw-flags",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "constructor": "0x10684410",
+  "cases": [
+    {
+      "input_format": 1,
+      "native_format": 0,
+      "image_24": 4,
+      "image_48": 1,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 128,
+      "bits_per_pixel": 32
+    },
+    {
+      "input_format": 1,
+      "native_format": 0,
+      "image_24": 4,
+      "image_48": 3,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 128,
+      "bits_per_pixel": 32
+    },
+    {
+      "input_format": 1,
+      "native_format": 0,
+      "image_24": 4,
+      "image_48": 4,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 128,
+      "bits_per_pixel": 32
+    },
+    {
+      "input_format": 21,
+      "native_format": 13,
+      "image_24": 4,
+      "image_48": 1,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 32,
+      "bits_per_pixel": 8
+    },
+    {
+      "input_format": 21,
+      "native_format": 13,
+      "image_24": 4,
+      "image_48": 3,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 32,
+      "bits_per_pixel": 8
+    },
+    {
+      "input_format": 21,
+      "native_format": 13,
+      "image_24": 4,
+      "image_48": 4,
+      "active_size": [
+        24,
+        12
+      ],
+      "storage_size": [
+        32,
+        16
+      ],
+      "row_bytes": 32,
+      "bits_per_pixel": 8
+    }
+  ],
+  "original_helpers_executed": [
+    "0x10684374",
+    "0x106842dc",
+    "0x10683740"
+  ],
+  "log_sha256": "e1c29e2744f7eb6b72337d4864a663620331ae716a42fa9520dd2371b9aad807",
+  "native_draws": [
+    {
+      "format": "00000107",
+      "source": "bf309600",
+      "source_flags": "00000007",
+      "target_flags": "00000101",
+      "first_line": 2626,
+      "count": 36
+    },
+    {
+      "format": "00000107",
+      "source": "bec5f200",
+      "source_flags": "00000007",
+      "target_flags": "00000101",
+      "first_line": 2634,
+      "count": 37
+    },
+    {
+      "format": "00000105",
+      "source": "db5b6500",
+      "source_flags": "00000007",
+      "target_flags": "00000101",
+      "first_line": 7831,
+      "count": 1
+    }
+  ],
+  "scope": "Complete original constructor and helpers with synthetic arguments; archived native mode-2 draw records checked separately.",
+  "limitations": [
+    "External-buffer import caller only statically traced, not executed by this check.",
+    "Equal observed flags do not establish their hardware semantics or exclude format-dependent behavior.",
+    "No orientation correction or new native run."
+  ],
+  "checker_sha256": "23451b0dc8c7c6287e21ed0a167424f647d542702ac9be8ed744d7fad6fb66ec"
+}
