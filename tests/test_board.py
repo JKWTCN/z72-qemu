@@ -28,7 +28,7 @@ CONFIG_WORDS = (0x04264000, 0x04264020, 0x04281028, 0x0428102C,
                 0x2006128C, 0x20061400, 0x20061470, 0x200614B0,
                 0x2A900078,
                 *SLAVE_BRANCH_WORDS, *PLATFORM_WORDS, *CONTINUATION_WORDS, 0x20070008)
-SPECIAL_WORDS = (*ALL_STATUS_WORDS, *RESULT_WORDS, 0x20070008)
+SPECIAL_WORDS = (*ALL_STATUS_WORDS, *RESULT_WORDS, 0x20070008, 0x0428202C)
 
 def smoke(qemu, machine, addresses):
     with tempfile.TemporaryDirectory() as td:
@@ -148,7 +148,16 @@ def smoke(qemu, machine, addresses):
                     remote.command('s')
                     remote.command('s')
                     require(remote.get(remote.regs(), 'r2') == value,
-                            'CPU configuration register read/write mismatch')
+                            f'CPU configuration register read/write mismatch at {address:#x}')
+                # PDR uses upper-half write enables, not a plain word latch.
+                for address in (0x0428202c, 0x04282030, 0x04282034, 0x04282038):
+                    for value, expected in ((0x00030003, 3), (0x00010000, 2),
+                                            (0, 2), (0xffff0000, 0)):
+                        remote.set(r0=value, r1=address, pc=0x40100008)
+                        remote.command('s')
+                        remote.command('s')
+                        require(remote.get(remote.regs(), 'r2') == expected,
+                                f'GPIO selected write changed unselected latch bits at {address:#x}')
                 # Completion must follow a supported command and clear when
                 # acknowledged. Software cannot manufacture a completion bit.
                 for control, status, command, maximum_phase in COMPLETION_PAIRS:
@@ -211,13 +220,13 @@ def smoke(qemu, machine, addresses):
                                     (0x20061008, 0x40100008),
                                     (0x20061301, 0x40100008),
                                     (0x20061480, 0x40100008),
-                                    (0x04282030, 0x40100008)):
+                                    (0x0428203C, 0x40100008)):
                     remote.set(r1=address, pc=pc, cpsr=0xD3)
                     remote.command('s')
                     regs = remote.regs()
                     require(remote.get(regs, 'pc') == 0x10 and
                             remote.get(regs, 'cpsr') & 0x1F == 0x17,
-                            'Unsupported configuration access did not abort')
+                            f'Unsupported configuration access did not abort at {address:#x}, pc={pc:#x}')
                 # Exercise the bounded fill using CPU-issued commands. Invalid
                 # destinations must fail without touching RAM or other devices.
                 destination = 0xC1000000 if 'slave' in machine else 0xB1900000

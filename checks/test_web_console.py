@@ -28,12 +28,15 @@ class WebConsoleTests(unittest.TestCase):
         machine.qmp = Mock()
         machine.qmp.command.return_value = {'status': 'running'}
         geometry = (2 << 16) | 2
-        registers = {0x20144204: geometry, 0x20144210: 0xcb000000,
+        registers = {0x20144200: 0, 0x20144204: geometry, 0x20144210: 0xcb000000,
+                     0x20144220: 0xcb100000, 0x20144250: 3, 0x20144260: 0,
                      0x20144240: 3, 0x20146110: 1, 0x20146200: 0x30006,
+                     0x20146214: 0,
                      0x20146400: geometry, 0x20146440: 0xcc000000,
                      0x20146500: 6, 0x201464c0: 0xcd000000, 0x20146540: 3}
         machine._words = lambda address, count: [registers[address]]
         memory = {0xcb000000: bytes([16, 235, 99, 235, 16, 99]),
+                  0xcb100000: bytes([128, 128, 99, 128, 128, 99]),
                   0xcc000000: bytes([235, 16, 103, 202, 99, 99,
                                      16, 235, 128, 128, 99, 99]),
                   0xcd000000: bytes([255, 0, 99, 128, 255, 99])}
@@ -41,7 +44,7 @@ class WebConsoleTests(unittest.TestCase):
         with patch('tools.web_console.ppm_to_png', side_effect=lambda data: data):
             result = machine.lcd_png()
         self.assertEqual(result, b'P6\n2 2\n255\n' +
-                         bytes([255] * 6 + [127] * 3 + [255] * 3))
+                         bytes([255, 205, 205] + [255] * 3 + [127] * 3 + [255] * 3))
         self.assertEqual(machine.qmp.command.call_args_list,
                          [call('query-status'), call('stop'), call('cont')])
         # A failed or unsupported snapshot must resume an originally running guest.
