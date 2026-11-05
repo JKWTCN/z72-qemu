@@ -1,0 +1,236 @@
+{
+  "result": "observed-default-browser-press-before-native-capture-readiness",
+  "source_revision": "adff320",
+  "arguments": {
+    "qemu": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "master": "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "slave": "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "controller": "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "sd_card": "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "port": 8666,
+    "wsl": true,
+    "display_complete": true,
+    "live_view": true,
+    "sensor_image": null,
+    "sensor_timing_profile": false,
+    "virtual_lens": false,
+    "virtual_body_vr": false,
+    "nvme_card": "D:\\code\\z72-qemu\\.local\\playback_return_body_save.raw",
+    "input_handshake": true,
+    "sample_group1": false,
+    "controller_actuator": false,
+    "controller_step_link": false,
+    "controller_step_feedback": false,
+    "realtime": false,
+    "auto_menu": false,
+    "update_image": null,
+    "boot_key": null,
+    "update_store": "D:\\code\\z72-qemu\\.local\\capture-report-archive\\default_browser_body_baseline_v2\\update-store",
+    "open_browser": false,
+    "frame_phase": true,
+    "input_stop_complete": true,
+    "frame_generate": true,
+    "frame_notify": true,
+    "frame_process": true,
+    "aux_image_process": true
+  },
+  "conditions": {
+    "source_sha256": {
+      ".local/repeat-playback/run-default-browser-body.py": "1e92053a47fc5a63b5e3aea13228fd0f9301bf365322506c882eedfc8f0f6757",
+      "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+      "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+    },
+    "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+  },
+  "half": {
+    "pin": 24,
+    "start_ticks": 46851822,
+    "end_ticks": 71108794,
+    "frequency": 48000000,
+    "held_at_end": [
+      24
+    ]
+  },
+  "full": {
+    "pin": 25,
+    "start_ticks": 71113531,
+    "end_ticks": 83223001,
+    "frequency": 48000000,
+    "held_at_end": [
+      24,
+      25
+    ]
+  },
+  "before": {
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 2,
+    "release_gate": 1,
+    "status_codes": []
+  },
+  "after": {
+    "capture_state": [
+      2,
+      0
+    ],
+    "capture_driver_state": 9,
+    "release_gate": 0,
+    "status_codes": [],
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10107090",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10107094",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a64",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a68",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ]
+  },
+  "input_before": {
+    "frames": 1,
+    "address": "0x54900000",
+    "stride": 2080,
+    "configuration_commits": {
+      "preview": 2,
+      "primary": 0
+    },
+    "preview_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "primary_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "running_mask": "0x2bf",
+    "frame_ticks": 2,
+    "startup_grid_frames": 0,
+    "startup_grid_address": "0x0",
+    "processing_frames": 0,
+    "processing_grids": 0,
+    "auxiliary_jobs": 0,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "e234525b90ade5365ae68ba62f32a041cbb350c28729a07e386c75a0dcb91cab",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "input_after": {
+    "frames": 156,
+    "address": "0x5af27000",
+    "stride": 2080,
+    "configuration_commits": {
+      "preview": 158,
+      "primary": 0
+    },
+    "preview_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "primary_scene": {
+      "aperture": 0,
+      "factor_q16": 65536
+    },
+    "running_mask": "0x2bf",
+    "frame_ticks": 164,
+    "startup_grid_frames": 2,
+    "startup_grid_address": "0x5df45400",
+    "processing_frames": 143,
+    "processing_grids": 143,
+    "auxiliary_jobs": 143,
+    "primary_frames": 0,
+    "primary_address": "0x0",
+    "primary_second_address": "0x0",
+    "first_row": {
+      "bytes": 2080,
+      "sha256": "408cba15d6bc48ff597fa486ea4f41464542ce14d0acfb84671bb5e2e38bbe73",
+      "unique_bytes": 2,
+      "minimum": 0,
+      "maximum": 255
+    }
+  },
+  "snapshots": {
+    "before.png": {
+      "sha256": "2513e4494827f394a48f1c043b9391cd8f253eb50894cfeb199063994cdf02e3",
+      "bytes": 9219
+    },
+    "after.png": {
+      "sha256": "e5201fc9a1b22547b115af25b53c95eaa4f3227bdc7ae5b0825a8cf26fc9ebaf",
+      "bytes": 70364
+    }
+  },
+  "visual_observation": "First input-ready snapshot black; later snapshot has upright native shooting UI and checkerboard, A mode with 30-second exposure.",
+  "evidence": {
+    "report.json": {
+      "sha256": "8188438bef036bbc5deef2d32db219e89075baf760a36254987f319270764de0",
+      "bytes": 286258
+    },
+    "conditions.json": {
+      "sha256": "25305631beb7612eade1e5dc876d93d2b7dc6328bb0bf5fa2afc984257a1b362",
+      "bytes": 639
+    },
+    "qemu.log": {
+      "sha256": "d4da245a3c393b54c7904db3b54c531f5a7dc4a2863da2895fb9e65cda0d1e8d",
+      "bytes": 116257
+    },
+    "storage.json": {
+      "sha256": "816dc7196e83456dc46e88b7f17f69d37e21807c6fd0d2caa9c8b76f809c860d",
+      "bytes": 18977
+    }
+  },
+  "interpretation": "Rendering-based input readiness preceded the native capture gate. This early press does not establish failure after native capture readiness.",
+  "next_step": "Observe a new press after native release gate is zero and driver state is nine, using normal controls for any exposure changes.",
+  "limitations": [
+    "One early press; no post-readiness press in this run.",
+    "Default displayed exposure is 30 seconds; observation host time is not an equivalent guest exposure interval.",
+    "No saved-file or DSP execution claim."
+  ],
+  "checker_sha256": "fdce0f779a16ce92da7c7f8605496111607e0a7009ee67ca094719ee5b65c47b",
+  "cleanup": {
+    "temporary_vm_work_removed": true,
+    "temporary_pngs_removed": true,
+    "cards_use_temporary_write_layers": true
+  }
+}

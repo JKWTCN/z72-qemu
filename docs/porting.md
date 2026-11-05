@@ -72,6 +72,10 @@ default shutter path. Original DSP execution, calibrated sensor color and
 exposure, additional pixel layouts, complete playback controls and historical
 firmware compatibility remain unverified. New device behavior needs original
 runtime or register-contract evidence before extending these boundaries.
+The [default shutter baseline](../research/z7ii/default_shutter_profile.md)
+shows that rendering-based input readiness precedes the native capture gate;
+the next capture observation must wait for that gate before attributing a
+missing photo to downstream processing.
 
 ## Earlier boot-stage evidence
 
