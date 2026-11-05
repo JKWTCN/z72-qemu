@@ -369,10 +369,11 @@ static bool nikon_gpu_draw(NikonGPU *g, const uint32_t *r, NikonGPUPath *p)
     if (mode != 8) {
         if (!tw || !th || tw > 4096 || th > 4096 ||
             (fmt != 0 && fmt != 0x100 && fmt != 0x18 && fmt != 0x0d && fmt != 0x105 && fmt != 0x106 && fmt != 0x107) ||
+            ((fmt == 0x0d || fmt == 0x105 || fmt == 0x106 || fmt == 0x107) && (tw & 1)) ||
             (fmt == 0x0d && r[0x156] != 0x001b000d) ||
             !nikon_gpu_range(g, r[0x155], texbytes, false)) { return false; }
         if (fmt == 0x0d || fmt == 0x105 || fmt == 0x107) {
-            if ((tw & 1) || !nikon_gpu_range(g, r[0x15a], (uint64_t)tw*th, false)) { return false; }
+            if (!nikon_gpu_range(g, r[0x15a], (uint64_t)tw*th, false)) { return false; }
             tex2 = g_malloc((size_t)tw*th); nikon_gpu_read(g, r[0x15a], tex2, (size_t)tw*th);
         }
         tex = g_malloc(texbytes); nikon_gpu_read(g, r[0x155], tex, texbytes);

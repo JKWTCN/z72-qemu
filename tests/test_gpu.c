@@ -174,6 +174,17 @@ int main(void) {
     CHECK(memory[0x1002]==78 && memory[0x1003]==78);
     CHECK(memory[0x1006]==218 && memory[0x1007]==235);
     CHECK(memory[0x1000+96]==0xa5 && !memcmp(source_copy,memory+0x3000,sizeof(source_copy)));
+    /* Packed YYUV requires complete pixel pairs even without a second plane.
+     * A one-pixel texture must fail before reading chroma beyond its storage. */
+    r[0x1a2]=0; r[0x156]=0x106; r[0x152]=(1<<16)|1;
+    memcpy(saved,memory+0x1000,192);
+    CHECK(!nikon_gpu_draw(&g,r,p));
+    CHECK(!memcmp(saved,memory+0x1000,192));
+    r[0x152]=(2<<16)|1;
+    memcpy(memory+0x3000,(uint8_t[]){16,235,128,128},4);
+    CHECK(nikon_gpu_draw(&g,r,p));
+    CHECK(memory[0x1000]==0 && memory[0x1003]==255);
+    CHECK(memory[0x1000+7*4]==255 && memory[0x1000+7*4+3]==255);
     nikon_gpu_path_free(p);
     printf("PASS %u synthetic renderer checks\n",checks); return 0;
 }
