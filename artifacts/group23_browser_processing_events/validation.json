@@ -1,0 +1,202 @@
+{
+  "result": "adapter-handshake-arrives-without-processing-task-notifications",
+  "seconds_after_full": 2.0022785208333334,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [],
+  "observed_counts": {
+    "0x10394762": 22,
+    "0x103e6e94": 3,
+    "0x102422ec": 2,
+    "0x10394d06": 8,
+    "0x1022de1a": 3,
+    "0x1022de46": 3,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10394db0": 1,
+    "0x1022f4a2": 1,
+    "0x1022f4aa": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "f133c353e3216706cd151c102d902b81b0353ae4a574b316e7ebf32d68e537ef",
+    "trace.jsonl": "316a13c1b1744d8cc1a0733f1f05057d03d1627564bba9802ea4beaaf5bed8b0",
+    "conditions.json": "1643652c5dd0c0b5f0d68d2a69fa12557cc80609df5fe2844fde9714308cd25a",
+    "arguments.json": "74486f72adaad8685aba57683449e85df7b349eceecca483270d052a88f2dcb0",
+    "storage.json": "795ca1fd8575fa3872a6a814aad661731ea3eaa1ad97ff79adaf413f4d6ad683",
+    "qemu.log": "6ea198bc223c5b2e0244e23acdf0cd2c7068e7344846714a35d0a5fc1b4ba1f5",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "04b44a9e37c9f3e7ea7a7c84ab28c710049182c6308b75f0c35e55f3a72f84ae"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-processing-events.py": "767bfaab7413bd395fdc1c1761d96799fc33c915ca3d016c8fad4a85353449d9",
+    ".local/repeat-playback/trace_processing_events_contacts.py": "05412db9897be3b6375a3d5de5c97f2206f5dd2e3580efbc5eaf057f9d8b1a9b",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "3f470f95b38373dacb13306c055b563020df3203238413b28a59e7508deedc91",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "adapter_notifications": [
+    {
+      "notification": "0x4200104",
+      "ticks": 121026678,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 121123131,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 122747432,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 126025744,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 127695803,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 129371348,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 131030837,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 131155037,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 132739556,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 134469368,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 136094046,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 137770031,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 139418201,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 141106542,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x4200104",
+      "ticks": 142757199,
+      "processing_header": "0d02000300000000000001000400000000000000000000030400000039010001"
+    },
+    {
+      "notification": "0x3030001",
+      "ticks": 144419590,
+      "processing_header": "0202000300000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x3030004",
+      "ticks": 145410800,
+      "processing_header": "0202000000000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x4300024",
+      "ticks": 146081200,
+      "processing_header": "0202000200000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x4200107",
+      "ticks": 147719467,
+      "processing_header": "1202000200000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x4200108",
+      "ticks": 147731167,
+      "processing_header": "1302000200000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x4200109",
+      "ticks": 149315962,
+      "processing_header": "0402000200000000000001000400000000000000000000030400a30039010001"
+    },
+    {
+      "notification": "0x3030005",
+      "ticks": 150286331,
+      "processing_header": "0502000200000000000001000400000000000000000000030400a30039010001"
+    }
+  ],
+  "final_tail_pending": "0x16"
+}

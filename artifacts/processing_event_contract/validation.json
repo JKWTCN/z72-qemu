@@ -1,0 +1,51 @@
+{
+  "result": "passed",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "firmware_included": false,
+  "cases": [
+    {
+      "notification": "0x420010a",
+      "effects": [
+        {
+          "kind": "task-post",
+          "object": "0xb23ecc80",
+          "mask": "0x10"
+        }
+      ]
+    },
+    {
+      "notification": "0x420010b",
+      "effects": [
+        {
+          "kind": "flag-clear",
+          "object": "0xb186832c",
+          "mask": "0x1000000"
+        },
+        {
+          "kind": "task-post",
+          "object": "0xb23ecc80",
+          "mask": "0x20"
+        }
+      ]
+    },
+    {
+      "notification": "0x3030005",
+      "effects": [
+        {
+          "kind": "flag-set",
+          "object": "0xb186832c",
+          "mask": "0x10"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    "Synthetic packet RAM and processing command 5",
+    "Timestamp query and sampling command return zero at explicit boundaries",
+    "Bounded notification copy is performed by the harness",
+    "Flag clear is recorded; execution stops before task post or flag set"
+  ],
+  "limitations": [
+    "No task consumer, device completion or whole-machine event is supplied."
+  ]
+}
