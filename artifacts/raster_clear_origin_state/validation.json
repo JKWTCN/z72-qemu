@@ -1,0 +1,255 @@
+{
+  "result": "passed-original-raster-clear-origin-state-comparison",
+  "entry": "0x1068bd90",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "input": {
+    "target_size": [
+      8,
+      8
+    ],
+    "rectangle": [
+      0,
+      1,
+      8,
+      2
+    ],
+    "format": 0,
+    "primary": "0xcc18b000",
+    "color": "0xff204080",
+    "origins": [
+      0,
+      1
+    ],
+    "surface_origin_offset": "0xe8",
+    "cached_query_origin_offset": "0xc9"
+  },
+  "commands_equal": true,
+  "commands": [
+    {
+      "kind": "array",
+      "channel": 1,
+      "header": "0x41f046",
+      "count": 9,
+      "size": 4,
+      "data": "0000803f0000000000000000000000000000803f0000000000000000000000000000803f"
+    },
+    {
+      "kind": "word",
+      "channel": 1,
+      "header": "0x653004",
+      "value": "0x100"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x115c004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1401004",
+      "value": "0x0"
+    },
+    {
+      "kind": "words",
+      "channel": 0,
+      "values": [
+        "0x14df004",
+        "0x0",
+        "0x14df004",
+        "0x0"
+      ]
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1401004",
+      "value": "0x0"
+    },
+    {
+      "kind": "words",
+      "channel": 0,
+      "values": [
+        "0x14df004",
+        "0x0",
+        "0x14df004",
+        "0x0"
+      ]
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1402004",
+      "value": "0x0"
+    },
+    {
+      "kind": "words",
+      "channel": 0,
+      "values": [
+        "0x14df004",
+        "0x0",
+        "0x14df004",
+        "0x0"
+      ]
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1841004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1863004",
+      "value": "0x100"
+    },
+    {
+      "kind": "words",
+      "channel": 0,
+      "values": [
+        "0x1842004",
+        "0x0",
+        "0x1a02004",
+        "0x0",
+        "0x1a29004",
+        "0x0",
+        "0x1a4f004",
+        "0xcc18b000"
+      ]
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1a74004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x185f004",
+      "value": "0xff204080"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1841004",
+      "value": "0x8"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1848004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1a04004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1a51004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1aa1004",
+      "value": "0x0"
+    },
+    {
+      "kind": "word",
+      "channel": 1,
+      "header": "0x40f004",
+      "value": "0x80008"
+    },
+    {
+      "kind": "words",
+      "channel": 1,
+      "values": [
+        "0x3f004",
+        "0x5",
+        "0x5f004",
+        "0x80000005",
+        "0x63f004",
+        "0x5",
+        "0x5ef004",
+        "0x3f800000",
+        "0x5ff004",
+        "0x0"
+      ]
+    },
+    {
+      "kind": "array",
+      "channel": 1,
+      "header": "0x80f026",
+      "count": 5,
+      "size": 4,
+      "data": "0000000000000000100000000800000000000000"
+    },
+    {
+      "kind": "array",
+      "channel": 3,
+      "header": "0xa0f02e",
+      "count": 6,
+      "size": 4,
+      "data": "000000000000000010000000080000000000000000000000"
+    },
+    {
+      "kind": "word",
+      "channel": 1,
+      "header": "0x6f004",
+      "value": "0x1"
+    },
+    {
+      "kind": "words",
+      "channel": 1,
+      "values": [
+        "0xa",
+        "0x7090702",
+        "0x0"
+      ]
+    },
+    {
+      "kind": "words",
+      "channel": 1,
+      "values": [
+        "0x10022",
+        "0x0",
+        "0x1",
+        "0x8",
+        "0x2",
+        "0xfffffff8"
+      ]
+    },
+    {
+      "kind": "word",
+      "channel": 1,
+      "header": "0x85f004",
+      "value": "0x10001"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0xa6f004",
+      "value": "0x10001"
+    },
+    {
+      "kind": "word",
+      "channel": 0,
+      "header": "0x1a61004",
+      "value": "0x1"
+    }
+  ],
+  "scope": "Complete raster-clear function and its state helpers executed with synthetic state; single-word, burst and typed-array command sinks intercepted, copy boundary reproduced.",
+  "limitations": [
+    "Target binding initialization before this entry is not replayed; other initial state is shared and zero unless explicitly populated.",
+    "No command-buffer parser, GPU hardware or textured image draw executed.",
+    "Identical commands do not alone establish the physical row direction."
+  ],
+  "checker_sha256": "d6729446c386fc6ed4ed6a03d3af200c77ebd46ae503548f45a2a29160d564c7"
+}
