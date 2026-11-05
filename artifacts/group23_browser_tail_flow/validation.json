@@ -1,0 +1,206 @@
+{
+  "result": "tail-work-consumed-with-ready-context-without-capture-completion",
+  "seconds_after_full": 1.7553276458333333,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [
+    "0x1026f714"
+  ],
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x1022b8bc": 9,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022b886": 1,
+    "0x1022b88c": 1,
+    "0x1022b8b6": 1,
+    "0x1022b7a4": 3,
+    "0x1022b7b4": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1,
+    "0x1022b81e": 1,
+    "0x1022d32a": 1,
+    "0x1022d384": 1,
+    "0x1022a444": 1,
+    "0x1022a4f6": 1,
+    "0x103edaea": 1,
+    "0x103ec25a": 1,
+    "0x103e4b8c": 4,
+    "0x103e4b9c": 14,
+    "0x103e4b9e": 14,
+    "0x103e9d24": 4,
+    "0x103e785e": 1,
+    "0x103e786c": 1,
+    "0x103e7882": 1,
+    "0x103e78b6": 1,
+    "0x103e7312": 3,
+    "0x103e7334": 3,
+    "0x103e6e94": 3,
+    "0x10321224": 1,
+    "0x10242124": 2,
+    "0x102422ec": 2,
+    "0x10328e52": 1,
+    "0x103eb604": 1,
+    "0x10323b74": 1,
+    "0x10323c70": 1,
+    "0x1031deb6": 1,
+    "0x10394d06": 8,
+    "0x102962ea": 4,
+    "0x102e9b08": 1,
+    "0x1026f714": 32,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10296324": 2,
+    "0x1022f4a0": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "eedbeeaf4faa887bbc822a9626d7fc6450dd07265918467aca6f620e8dd44c65",
+    "trace.jsonl": "6a56d363d4d1acabdf1bd96492f0a0ef17fdea6c338710cc48968976cf2f6342",
+    "conditions.json": "aca3aa0475b67db05886d58d9f57b859bab8c3b253fa15a7859ba449db0de068",
+    "arguments.json": "f3db3d410cac9ba5fa6e55da72f36316e0cb114ed21f7f81a49ef93ec1b27c16",
+    "storage.json": "28f82d9dec9ecacdcba906ffb5770e44f669059fbde77c7664cbf33eecb9b365",
+    "qemu.log": "2e7f26204e8dde7dd97cf09dec19cef3aa993240f421ee87f0d50df3e30778e4",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "04b44a9e37c9f3e7ea7a7c84ab28c710049182c6308b75f0c35e55f3a72f84ae"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-tail-flow.py": "272a94a2a705de3f9114fa75c717b12125c8014d91fc641289d616bef16a4961",
+    ".local/repeat-playback/trace_tail_flow_contacts.py": "0bf492c375a9300af7a8ffc395a33a6c7f8f345504bda43ffd58ea65da2b9c79",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "f2ab7cebe4d1011895663e5ed64c878f530ef067e98422a4bbdcd8cd9de3fcaf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "tail_work_evidence": [
+    {
+      "name": "driver-tail-work-consumed",
+      "ticks": 147698423,
+      "registers": {
+        "r0": "0xb23ee8f4",
+        "r1": "0x10323b75",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0x1",
+        "r5": "0xb23ede08",
+        "r6": "0x0",
+        "r7": "0x0",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103191c7"
+      },
+      "driver_tail_words": "0000000010023fb28c023fb28c023fb2ac023fb2010000000000000000000000010000000000000018010001010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff000000000000000000000000"
+    },
+    {
+      "name": "driver-tail-ready-check",
+      "ticks": 147698430,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb23efce0",
+        "r5": "0xb1868c70",
+        "r6": "0xb2d3d6c0",
+        "r7": "0x1",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x10323be9"
+      },
+      "driver_tail_words": "0000000010023fb28c023fb28c023fb2ac023fb2010000000000000000000000010000000000000018010001010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff000000000000000000000000"
+    },
+    {
+      "name": "driver-tail-ready-dispatch",
+      "ticks": 147698431,
+      "registers": {
+        "r0": "0xb1868df8",
+        "r1": "0x10323b75",
+        "r2": "0x60000013",
+        "r3": "0x0",
+        "r4": "0x1",
+        "r5": "0xb23ede08",
+        "r6": "0x0",
+        "r7": "0x0",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103191c7"
+      },
+      "driver_tail_words": "0000000010023fb28c023fb28c023fb2ac023fb2010000000000000000000000010000000000000018010001010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff000000000000000000000000"
+    },
+    {
+      "name": "tail-phase-mask-selection",
+      "ticks": 150963606,
+      "registers": {
+        "r0": "0xb1887ef0",
+        "r1": "0x300f85",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb53a7f70",
+        "r5": "0xb1887e70",
+        "r6": "0x1",
+        "r7": "0x0",
+        "r8": "0xb23ed698",
+        "r9": "0x0",
+        "r10": "0xb1868610",
+        "r11": "0xb23ed660",
+        "lr": "0x1022f351"
+      },
+      "driver_tail_words": "0000000010023fb28c023fb28c023fb2ac023fb20100000000000000000000000000000000000000180100010100000001000000000000000100000000000000000000006000200360002003ffffffffffffffff000000000000000000000000"
+    }
+  ]
+}
