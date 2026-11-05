@@ -545,6 +545,9 @@ IMAGE_WORK_WAIT_POINTS = {
     0x10369968: 'image-device-bank1-interrupt',
 }
 AFTER_PLAYBACK = {
+    0x105a9c5a: 'playback-image-import-primary',
+    0x105aa7b4: 'playback-image-import-secondary',
+    0x105aaeb4: 'playback-image-import-scaled',
     0x1073edf2: 'playback-application-entry',
     0x1074e820: 'playback-initial-state-request',
     0x1062e474: 'application-request-dispatch',
@@ -1392,6 +1395,30 @@ def transform_snapshot(remote, slave=True):
                     if lower <= pointer <= limit - 0xa0:
                         operation['parameters'] = dict(address=hex(pointer), words=words(pointer, 0xa0))
                     result['program']['operations'].append(operation)
+    return result
+
+
+def playback_import_snapshot(remote, registers):
+    format_, width, height, capacity = [remote.get(registers, name)
+                                      for name in ('r0', 'r1', 'r2', 'r3')]
+    stack = struct.unpack('<4I', remote.read(remote.get(registers, 'sp'), 16))
+    result = dict(format=hex(format_), width=width, height=height,
+                  first_capacity=capacity, stack_words=[hex(value) for value in stack])
+    # These three call sites align the imported two-plane rows to 16 bytes.
+    stride = (width + 15) & ~15
+    if format_ not in (21, 22) or not (16 <= width <= 8256 and 1 <= height <= 5504):
+        return result
+    result['stride'] = stride
+    result['planes'] = []
+    for address, size in ((stack[1], capacity), (stack[2], stack[0])):
+        plane = dict(address=hex(address), capacity=size)
+        result['planes'].append(plane)
+        if size < stride * height or not (0xbd200000 <= address < address + size <= 0xffee5400):
+            continue
+        plane['rows'] = [dict(y=y, samples=[dict(x=x,
+            bytes=remote.read(address + y * stride + x, 16).hex())
+            for x in sorted({0, min(width - 16, width // 2) & ~1, width - 16})])
+            for y in sorted({0, height // 2, height - 1})]
     return result
 
 
@@ -3163,6 +3190,8 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
                     if playback:
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
+                        if pc in (0x105a9c5a, 0x105aa7b4, 0x105aaeb4):
+                            record['image_import'] = playback_import_snapshot(remote, registers)
                         if pc in (0x1062e474, 0x106ddc1e):
                             hits[pc] = hits.get(pc, 0) + 1
                             repeat = hits[pc] < 16
