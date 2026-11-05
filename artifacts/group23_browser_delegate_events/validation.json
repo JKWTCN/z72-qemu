@@ -1,0 +1,312 @@
+{
+  "result": "delegate-event-observation-exhausted-before-capture-tail",
+  "seconds_after_full": 2.0026583541666665,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [
+    "0x1026cf46"
+  ],
+  "observed_counts": {
+    "0x1026cf46": 32,
+    "0x10394762": 23,
+    "0x103e6e94": 3,
+    "0x102422ec": 2,
+    "0x10394d06": 8,
+    "0x1022de1a": 3,
+    "0x1022de46": 3,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10394db0": 1,
+    "0x1022f4a2": 1,
+    "0x1022f4aa": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "0ffdbe3e55ed3885c39797da71f72edce86eaad624e928ffdc5977408ae7169d",
+    "trace.jsonl": "61e67c33ffd446613ed0f87a25ce6d661e5a5af59da27edb3c55eff40de2e18f",
+    "conditions.json": "f1a4f1a974b9994a037a13757a8e72f27bb64d33d7ac9e47c282fcef44436a31",
+    "arguments.json": "961b2bdac25bcb8d26b02588eb390face6cd6ba6b47ef6dbae78e36a89ef5779",
+    "storage.json": "901656ec2ccc055eb94058b6f6a99b7f2f9de1b66beae09740486d490c5930c8",
+    "qemu.log": "09055e2c438e6adfff82958dcde0a46f20432ab096dd6dd5528cf3fb0a1258b9",
+    "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-delegate-events.py": "69300a4485748e4847c9405118f132cd611f68e4adc79a805320819a0f06ec0d",
+    ".local/repeat-playback/trace_delegate_events_contacts.py": "d2c34d3879dcc76375a9f0a883ec382679f80ed39b7cc7ff2130fe53e07bd574",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "3f470f95b38373dacb13306c055b563020df3203238413b28a59e7508deedc91",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established.",
+    "The delegate event check exhausted its 32-hit budget early; later event absence cannot be inferred from that point."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "delegate_event_checks": [
+    {
+      "ticks": 119367362,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 119497377,
+      "phase": 0,
+      "event": "0x10",
+      "delegate_header": "080000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 121079241,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 121185833,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 122702463,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 122788802,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 124363740,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 124486945,
+      "phase": 0,
+      "event": "0x8",
+      "delegate_header": "060000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 126082982,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 126154331,
+      "phase": 0,
+      "event": "0x8",
+      "delegate_header": "060000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 127745889,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 127843820,
+      "phase": 0,
+      "event": "0x8",
+      "delegate_header": "060000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 129422446,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 129500578,
+      "phase": 0,
+      "event": "0x8",
+      "delegate_header": "060000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 131081726,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 131184849,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 132704241,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 132808475,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 134370405,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 134515067,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 136037875,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 136146415,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 137706424,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 137810709,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 139369604,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 139452995,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 141037438,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 141141577,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 142698768,
+      "phase": 0,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 142795234,
+      "phase": 0,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 144371498,
+      "phase": 1,
+      "event": "0x2",
+      "delegate_header": "040000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    },
+    {
+      "ticks": 144466761,
+      "phase": 1,
+      "event": "0x4",
+      "delegate_header": "050000000000000000000000000000000200000012000000000000000000000063473910074d3910197a391001000000"
+    }
+  ],
+  "last_event_check_seconds_after_full": 0.010913708333333333,
+  "final_tail_queue": {
+    "address": "0xb25ef114",
+    "pending": "0x16",
+    "head": "0xb2cca580",
+    "count": 1,
+    "contexts": [
+      {
+        "address": "0xb2d3c380",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    ]
+  }
+}

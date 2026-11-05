@@ -1053,6 +1053,30 @@ def input_tail_queue_snapshot(remote):
     return result
 
 
+def delegate_readiness_snapshot(remote):
+    """Expose the conditions read by native readiness predicate 0x1026f6a4."""
+    header = remote.read(0xb1868510, 0x48)
+    pending = list(struct.unpack('<14I', remote.read(0xb23ed660, 0x38)))
+    processed = list(struct.unpack('<14I', remote.read(0xb23ed698, 0x38)))
+    required = [0, 4]
+    if header[0xc] != 2:
+        required.append(2)
+    if header[0xd]:
+        required.append(6)
+        if header[0xd] in (1, 2):
+            required.append(7)
+    if int.from_bytes(header[0x44:0x48], 'little'):
+        required.append(5)
+    if header[0xe] == 3:
+        required.append(11)
+    override = bool(processed[13])
+    missing = [i for i in required if not processed[i]]
+    return dict(predicate='0x1026f6a4', pending=pending, processed=processed,
+                mode_bytes=list(header[0xc:0xf]), required_indices=required,
+                missing_indices=missing, override=override,
+                ready=override or not missing)
+
+
 def capture_request_variant_slots_snapshot(remote):
     result = []
     for address, offsets in ((0xb23f6c30, (8, 0x34, 0x38)),
@@ -2159,6 +2183,7 @@ def snapshot(remote):
                       polarity=hex(word(0x0426f014))),
         delegate_state=remote.read(0xb1868510, 1)[0],
         delegate_kind=remote.read(0xb1868511, 1)[0],
+        delegate_readiness=delegate_readiness_snapshot(remote),
         sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
         sampling_header=list(remote.read(0xb1868628, 0x100)),
         sampling_counter_context=list(remote.read(0xb1868880, 0x50)),

@@ -1,0 +1,988 @@
+{
+  "result": "passed",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "cases": [
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "empty",
+      "native": 0,
+      "missing": [
+        0,
+        4,
+        2
+      ]
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "override",
+      "native": 1,
+      "missing": [
+        0,
+        4,
+        2
+      ]
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "complete",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-0",
+      "native": 0,
+      "missing": [
+        0
+      ]
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-1",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-2",
+      "native": 0,
+      "missing": [
+        2
+      ]
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-3",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-4",
+      "native": 0,
+      "missing": [
+        4
+      ]
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-5",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-6",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-7",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-8",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-9",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-10",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-11",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-12",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "empty",
+      "native": 0,
+      "missing": [
+        0,
+        4
+      ]
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "override",
+      "native": 1,
+      "missing": [
+        0,
+        4
+      ]
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "complete",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-0",
+      "native": 0,
+      "missing": [
+        0
+      ]
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-1",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-2",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-3",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-4",
+      "native": 0,
+      "missing": [
+        4
+      ]
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-5",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-6",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-7",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-8",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-9",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-10",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-11",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "case": "missing-12",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "empty",
+      "native": 0,
+      "missing": [
+        0,
+        4,
+        2,
+        6,
+        7,
+        5,
+        11
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "override",
+      "native": 1,
+      "missing": [
+        0,
+        4,
+        2,
+        6,
+        7,
+        5,
+        11
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "complete",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-0",
+      "native": 0,
+      "missing": [
+        0
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-1",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-2",
+      "native": 0,
+      "missing": [
+        2
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-3",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-4",
+      "native": 0,
+      "missing": [
+        4
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-5",
+      "native": 0,
+      "missing": [
+        5
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-6",
+      "native": 0,
+      "missing": [
+        6
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-7",
+      "native": 0,
+      "missing": [
+        7
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-8",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-9",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-10",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-11",
+      "native": 0,
+      "missing": [
+        11
+      ]
+    },
+    {
+      "mode": [
+        0,
+        1,
+        3,
+        1
+      ],
+      "case": "missing-12",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "empty",
+      "native": 0,
+      "missing": [
+        0,
+        4,
+        6,
+        7,
+        5,
+        11
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "override",
+      "native": 1,
+      "missing": [
+        0,
+        4,
+        6,
+        7,
+        5,
+        11
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "complete",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-0",
+      "native": 0,
+      "missing": [
+        0
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-1",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-2",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-3",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-4",
+      "native": 0,
+      "missing": [
+        4
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-5",
+      "native": 0,
+      "missing": [
+        5
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-6",
+      "native": 0,
+      "missing": [
+        6
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-7",
+      "native": 0,
+      "missing": [
+        7
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-8",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-9",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-10",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-11",
+      "native": 0,
+      "missing": [
+        11
+      ]
+    },
+    {
+      "mode": [
+        2,
+        2,
+        3,
+        1
+      ],
+      "case": "missing-12",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "empty",
+      "native": 0,
+      "missing": [
+        0,
+        4,
+        2,
+        6
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "override",
+      "native": 1,
+      "missing": [
+        0,
+        4,
+        2,
+        6
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "complete",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-0",
+      "native": 0,
+      "missing": [
+        0
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-1",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-2",
+      "native": 0,
+      "missing": [
+        2
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-3",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-4",
+      "native": 0,
+      "missing": [
+        4
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-5",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-6",
+      "native": 0,
+      "missing": [
+        6
+      ]
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-7",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-8",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-9",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-10",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-11",
+      "native": 1,
+      "missing": []
+    },
+    {
+      "mode": [
+        1,
+        3,
+        1,
+        0
+      ],
+      "case": "missing-12",
+      "native": 1,
+      "missing": []
+    }
+  ],
+  "limitations": [
+    "Synthetic RAM; only the bounded 56-byte copy is substituted.",
+    "Predicate agreement does not establish capture completion."
+  ]
+}

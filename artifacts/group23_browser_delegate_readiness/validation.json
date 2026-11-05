@@ -1,0 +1,1939 @@
+{
+  "result": "delegate-readiness-missing-index-six",
+  "seconds_after_full": 2.0192540416666667,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [
+    "0x1026cdf0"
+  ],
+  "observed_counts": {
+    "0x10394762": 23,
+    "0x103e6e94": 3,
+    "0x102422ec": 2,
+    "0x10394d06": 8,
+    "0x1022de1a": 3,
+    "0x1022de46": 3,
+    "0x102e9b08": 1,
+    "0x1026cdf0": 32,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10394db0": 1,
+    "0x1022f4a2": 1,
+    "0x1022f4aa": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "a9fd0fd9d91a5a4dc72f495cb58ec0a89626db814ff9a6517afb0f7492183f86",
+    "trace.jsonl": "c8015d30a64f769a7e26b89aef12b42bdae0477e78e9b380d91965f696d4f7ff",
+    "conditions.json": "573efacecc69220606dbd228be9cd81c34bf852f08feab721eaefc4783abf3f7",
+    "arguments.json": "613746477c86013c49ae0f11f85fb82aec321d3acc3db79398733a4bfc27c244",
+    "storage.json": "4c81e8945e8e69f060305ffcc348d35251785f30b4d1702badd0617f065e4e13",
+    "qemu.log": "09055e2c438e6adfff82958dcde0a46f20432ab096dd6dd5528cf3fb0a1258b9",
+    "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-delegate-readiness.py": "085cfa480bd2019c53fe1a39e3c412eef567afe86a29d40a8e5638d9d4225aa0",
+    ".local/repeat-playback/trace_delegate_readiness_contacts.py": "11f77d152d56d72dbbf65c58c161edb295a0bab7bffe13ab8565bb5cd8f181ab",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "65865b15299925c3ce02ed3b4fc73ed60e9b676117608d18aaa7315d801856a6",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established.",
+    "Readiness breakpoint exhausted 32 hits; final stopped-machine snapshot independently confirms missing index 6."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "final_delegate_readiness": {
+    "predicate": "0x1026f6a4",
+    "pending": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "processed": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "mode_bytes": [
+      0,
+      3,
+      0
+    ],
+    "required_indices": [
+      0,
+      4,
+      2,
+      6
+    ],
+    "missing_indices": [
+      6
+    ],
+    "override": false,
+    "ready": false
+  },
+  "final_tail_queue": {
+    "address": "0xb25ef114",
+    "pending": "0x16",
+    "head": "0xb2cca580",
+    "count": 1,
+    "contexts": [
+      {
+        "address": "0xb2d3c1c0",
+        "parameter_2b4": "0x1",
+        "nested": "0xb3c87080",
+        "metadata_buffer": {
+          "selector": 0,
+          "slots": {
+            "0x310": "0x0",
+            "0x46c": "0xb2cbee5c"
+          },
+          "selected_offset": "0x46c",
+          "selected": "0xb2cbee5c"
+        },
+        "nested_2844": "0x0",
+        "nested_2848": "0x0"
+      }
+    ]
+  },
+  "native_readiness_checks": [
+    {
+      "ticks": 151015221,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 151027238,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 151411366,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          0,
+          4,
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 151561241,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          0,
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 152650873,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 152650902,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 154308604,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 155977986,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 157642712,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 159308931,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 160975157,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 162642500,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 164309187,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 165975453,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 167642502,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 169308782,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 170974598,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 172642136,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 174309030,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 175974558,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 177642311,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 179308863,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 180974975,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 182642572,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 184308110,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 185975134,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 187642154,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 189309157,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 190975413,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 192641632,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 194308726,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    },
+    {
+      "ticks": 195975725,
+      "result": "0x0",
+      "snapshot": {
+        "predicate": "0x1026f6a4",
+        "pending": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "processed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mode_bytes": [
+          0,
+          3,
+          0
+        ],
+        "required_indices": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "missing_indices": [
+          6
+        ],
+        "override": false,
+        "ready": false
+      }
+    }
+  ]
+}
