@@ -2083,6 +2083,7 @@ def snapshot(remote):
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
         release_request=dict(context='0xb23f7e64',
             active_mask=hex(word(0xb23f7e6c)),
+            configuration_mask=hex(word(0xb23f7edc)),
             inhibit=remote.read(0xb23f7e81, 1)[0],
             state=remote.read(0xb23f7ee6, 1)[0]),
         input_channel_scan_count=24, input_channels=input_channels,

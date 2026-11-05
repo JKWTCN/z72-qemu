@@ -1,0 +1,121 @@
+{
+  "result": "half-press-configuration-mask-add-and-release-clear-paired",
+  "source_revision": "5f75c56",
+  "conditions": {
+    "source_sha256": {
+      ".local/repeat-playback/run-default-request-watch.py": "45bd15bb202c38638e690a981e69596d97099b52444773eb2bb3a8c72391337d",
+      ".local/repeat-playback/trace_release_request_watch.py": "75963dbbe4baed3da7b73aabd6be47a5bb6b0479956874ae9beb5843455fa5d0",
+      "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+      "tools/body_shutter_gate_probe.py": "554f807b273dfb975f0928b07d8f62a1dfce2cedd003b273ac8fa8de535baec5",
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+    },
+    "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e"
+  },
+  "native_ready": {
+    "gate": 0,
+    "driver": 9,
+    "tv": 304,
+    "controller_mode": 3
+  },
+  "trace": {
+    "watch_events": [
+      {
+        "name": "configuration-mask-write",
+        "pc": "0x1022d3ae",
+        "thread": 2,
+        "ticks": 120415095,
+        "registers": {
+          "r0": "0xb23f7edc",
+          "r1": "0x4",
+          "r2": "0x1",
+          "r3": "0x4",
+          "r4": "0xb51e4068",
+          "r5": "0x0",
+          "r6": "0xb23f7edc",
+          "r7": "0xb1819024",
+          "lr": "0x1022c553"
+        },
+        "before": 0,
+        "after": 4
+      },
+      {
+        "name": "configuration-mask-write",
+        "pc": "0x1022d0ca",
+        "thread": 2,
+        "ticks": 158330723,
+        "registers": {
+          "r0": "0xb23f7edc",
+          "r1": "0x0",
+          "r2": "0x4",
+          "r3": "0x0",
+          "r4": "0x4",
+          "r5": "0xb51e4078",
+          "r6": "0xb1818bd0",
+          "r7": "0x0",
+          "lr": "0x1022c5c7"
+        },
+        "before": 4,
+        "after": 0
+      }
+    ],
+    "start_ticks": 120314109,
+    "full_ticks": 145344259,
+    "end_ticks": 241637162,
+    "frequency": 48000000,
+    "released": true,
+    "phase": 2,
+    "events": 30,
+    "counts": {
+      "0x1022c528": 1,
+      "0x1022c552": 1,
+      "0x1022b19c": 2,
+      "0x103f28f6": 1,
+      "0x103f2906": 1,
+      "0x103f290c": 1,
+      "0x103f2926": 1,
+      "0x1022c41c": 1,
+      "0x1022c42a": 1,
+      "0x1022c45a": 1,
+      "0x1022ac2e": 2,
+      "0x1022ac40": 2,
+      "0x1022ac44": 2,
+      "0x1022ac48": 2,
+      "0x1022ace0": 2,
+      "0x1022c460": 1,
+      "0x1022b7a4": 2,
+      "0x1022b7b4": 2,
+      "0x1022c46a": 1,
+      "0x103f292a": 1,
+      "0x1022c5ac": 1,
+      "0x1022c5c6": 1
+    }
+  },
+  "after": {
+    "context": "0xb23f7e64",
+    "active_mask": "0x0",
+    "inhibit": 0,
+    "state": 5
+  },
+  "primary_frames": 0,
+  "evidence": {
+    "report.json": "83aa965cb16d01eb75a2ae6ac410e4a96427b30dbed3b3558841a433895ef00b",
+    "trace.jsonl": "965304017ea32a63bb0ae792611bfd4c4f944a4ee851b0e4039446e9c2a1c226",
+    "conditions.json": "7bbf4c956238e38641897eb0c0b3cb1cd95f2cd8c443a6c7128f3943366defdf",
+    "qemu.log": "328dc9fc5dd43a78b3f77e60926ae8fd95fddac0b9670d6d3ac37ea4c9c1c573",
+    "storage.json": "599a30ecda330dcc68b4df66b4c7928347d4a62b68e3b43eb812b676d9640684",
+    "before.png": "1efe06901cbef228086346e76c7b14551f46fb794bffb419e4bdc1583c024b2d",
+    "after.png": "88677430ca6a36280d31019dbfe19e3488f6d1032daa02178e439a35d3021458"
+  },
+  "interpretation": "The half-press path sets mask bit four at 0x1022d3ae and release clears it at 0x1022d0ca. The mask is zero at both endpoints; it is not a persistent unmatched request. Release state remains five.",
+  "next_step": "Trace the upper state query used by configuration dispatch before control initialization.",
+  "limitations": [
+    "One press after verified native readiness and normal M-mode and dial input.",
+    "CPU write observation at one four-byte mask, not an exhaustive device or firmware trace.",
+    "No diagnostic capture calls, preprocessing skip or saved-image claim."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}
