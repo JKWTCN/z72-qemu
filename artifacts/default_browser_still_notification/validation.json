@@ -1,0 +1,107 @@
+{
+  "result": "native-full-input-without-observed-still-notification",
+  "native_ready": {
+    "gate": 0,
+    "driver": 9,
+    "tv": 304,
+    "controller_mode": 3
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "primary_frames": 0,
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1
+  },
+  "unseen_points": [
+    "0x1022a444",
+    "0x1022a4f6",
+    "0x1022d32a",
+    "0x1022d384",
+    "0x1022b81e",
+    "0x103edaea",
+    "0x103ec25a"
+  ],
+  "seconds_after_full": 2.0104493333333333,
+  "request_sequence_events": [
+    {
+      "event": "body-half-deferred-callback",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "application-release-gate-result",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "application-qualification-result",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "body-full-deferred-callback",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "full-input-focus-control",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "application-release-gate-result",
+      "state": 1,
+      "phase": 0
+    },
+    {
+      "event": "application-qualification-result",
+      "state": 1,
+      "phase": 0
+    },
+    {
+      "event": "application-release-gate-result",
+      "state": 0,
+      "phase": 0
+    },
+    {
+      "event": "application-qualification-result",
+      "state": 0,
+      "phase": 0
+    }
+  ],
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "source_sha256": {
+    ".local/repeat-playback/run-default-still-notification.py": "6f86ff284a572d53c84b9856679f6b60e8c618b8b2c48aef2ce16497734ee2bc",
+    ".local/repeat-playback/trace_still_notification_contacts.py": "b21fa08ed5386eb6aff0b807577d9aa2f68559ba34b15007fafae38dd3df375e",
+    "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+    "tools/body_shutter_gate_probe.py": "7643850e5f1e854ee941468caa4df215017b4acd0a6706bccd46e13418cf33cf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "evidence": {
+    "report.json": "abd221c48b0bfcf5f3bbc5998a59944b23985a6407ff92f170fd92d61b302eb5",
+    "trace.jsonl": "82bfd0869cc4989b558f178cd0078da819b5643e2f02b0848b5fe5ad5870c12b",
+    "conditions.json": "adae0d47eb61d025ee25312857cb6b0e1a7b8f05ad0557be988fb1b53c99a982",
+    "qemu.log": "ef47905f85d4a789fc98de10e131443b8a0ae7c23272fa8e3af5a9ad9ae6d46b",
+    "storage.json": "a4987e2ebe8a9317b5ecf61a265b7c7b4eb51065afc414eed76498664ac8dd18",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "2cd344ea62db99fc5c92e4acd40284cceea760a4acbc26a9fb9a00e33379a819"
+  },
+  "limitations": [
+    "Bounded native M/TV304 default no-lens run; no claim that every request path is covered.",
+    "No still notification entry exhausted its sample quota.",
+    "Sequence state +0x12 differs from configuration state +0x82."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}

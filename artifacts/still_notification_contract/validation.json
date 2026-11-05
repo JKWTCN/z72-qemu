@@ -23,6 +23,43 @@
       "payload_unchanged": true
     }
   ],
+  "event_two_choices": [
+    {
+      "state": 0,
+      "event": 2,
+      "choice": 7
+    },
+    {
+      "state": 1,
+      "event": 2,
+      "choice": 3
+    },
+    {
+      "state": 2,
+      "event": 2,
+      "choice": 3
+    },
+    {
+      "state": 3,
+      "event": 2,
+      "choice": 7
+    },
+    {
+      "state": 4,
+      "event": 2,
+      "choice": 7
+    },
+    {
+      "state": 5,
+      "event": 2,
+      "choice": 7
+    },
+    {
+      "state": 6,
+      "event": 2,
+      "choice": 7
+    }
+  ],
   "scope": "Original broadcaster, opcode wrapper and dispatcher execute with a synthetic subscription and payload.",
   "limitations": [
     "Stops before the consumer body and capture initialization.",

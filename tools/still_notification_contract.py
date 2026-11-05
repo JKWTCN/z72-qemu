@@ -49,8 +49,15 @@ def check(image):
         assert u.reg_read(UC_ARM_REG_PC) == (0x103edaea if count else native.STOP)
         assert bytes(u.mem_read(payload, 48)) == bytes(range(48))
         cases.append(dict(subscribers=count, events=events, payload_unchanged=True))
+    native = RegionProbe(image)
+    choices = []
+    for state, expected in ((0, 7), (1, 3), (2, 3), (3, 7), (4, 7), (5, 7), (6, 7)):
+        actual = native.call(0x1022b718 - 0x10020000, state, 2)
+        assert actual == expected, (state, actual)
+        choices.append(dict(state=state, event=2, choice=actual))
     return dict(result='passed-original-notification-route',
                 firmware_sha256=hashlib.sha256(image).hexdigest(), cases=cases,
+                event_two_choices=choices,
                 scope='Original broadcaster, opcode wrapper and dispatcher execute with a synthetic subscription and payload.',
                 limitations=['Stops before the consumer body and capture initialization.',
                              'Does not prove runtime registration, shutter admission, sensor completion or photo output.'])
