@@ -1,0 +1,314 @@
+{
+  "result": "passed-cold-boot-playback-of-original-saved-photo",
+  "source_revision": "2ab3585",
+  "source_card": {
+    "path": "D:\\code\\z72-qemu\\.local\\playback_return_body_save.raw",
+    "bytes": 4294967296,
+    "sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966"
+  },
+  "source_card_sha256_after": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+  "source_card_unchanged": true,
+  "reference_photos": [
+    {
+      "name": "DCIM/100NZ7_2/DSC_0001.JPG",
+      "bytes": 3656721,
+      "sha256": "49479a263a2e980ad5ef6ceca1b87ffa67e3df2e313796cc72c2b50a018e31dc",
+      "previews": [
+        {
+          "offset": "0x310000",
+          "size": [
+            1620,
+            1080
+          ],
+          "plane_sha256": [
+            "7a61b7fa380eabed29d2d3cfd90894ef0fb03fd4b9d564cbe4a9e5958ec974ba",
+            "b655f885b851ba0de06ce56bd1abcf5a53dcd4f8459e605c0b2c3793163de307"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DCIM/100NZ7_2/DSC_0002.JPG",
+      "bytes": 3407179,
+      "sha256": "b6cfd3f6bb4f70c76e48f1b8ccd44aeff1c72ec778a456344fba4e770df456d4",
+      "previews": [
+        {
+          "offset": "0x2d6400",
+          "size": [
+            1620,
+            1080
+          ],
+          "plane_sha256": [
+            "26c8fedad8567d14cd6cf59dc5000c2090c7e0e99fecb80f789d55064d7909ce",
+            "b655f885b851ba0de06ce56bd1abcf5a53dcd4f8459e605c0b2c3793163de307"
+          ]
+        }
+      ]
+    }
+  ],
+  "decoded_observations": [
+    {
+      "planes": [
+        {
+          "register": "0x430",
+          "address": "0xdb5b6500",
+          "width": 1620,
+          "height": 1080,
+          "stride": 1632,
+          "active_bytes": 1749600,
+          "active_sha256": "26c8fedad8567d14cd6cf59dc5000c2090c7e0e99fecb80f789d55064d7909ce",
+          "minimum": 0,
+          "maximum": 255,
+          "unique_bytes": 256
+        },
+        {
+          "register": "0x434",
+          "address": "0xdb764a00",
+          "width": 1620,
+          "height": 1080,
+          "stride": 1632,
+          "active_bytes": 1749600,
+          "active_sha256": "b655f885b851ba0de06ce56bd1abcf5a53dcd4f8459e605c0b2c3793163de307",
+          "minimum": 128,
+          "maximum": 128,
+          "unique_bytes": 1
+        }
+      ],
+      "matches": [
+        "DCIM/100NZ7_2/DSC_0002.JPG"
+      ]
+    }
+  ],
+  "visual": {
+    "sha256": "07a4e16c2db838d11a1e520856e4182b2984b239d9d920152d6512b7cc210eda",
+    "bytes": 252505,
+    "observation": "Gray diagonal source scene displayed; file name DSC_0002.JPG, NORMAL, 8256x5504 and 2/2 upright.",
+    "scope": "Modeled display inspected, not physical panel output."
+  },
+  "playback_key": {
+    "requested": true,
+    "released": true,
+    "press_ticks": 77524731,
+    "release_ticks": 89555058,
+    "held_counter_seconds": 0.2506318125
+  },
+  "final_application": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": null,
+    "uptime": 216,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 2,
+    "held": [],
+    "mode_position": 0,
+    "dial_pending": [
+      false,
+      false
+    ],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a50",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a64",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "controller_faults": [
+    "0x0",
+    "0x0"
+  ],
+  "native_build": {
+    "qemu_version": "10.2.4",
+    "upstream_archive_sha256": "821b545b92f165e57dddccac5077d76d4d436a226595b8813ad59306bbfd0746",
+    "binary": "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e",
+    "sources": {
+      "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+      "qemu/nikon-z72-counter.c": "ba50891427eca39b4a64378f3869cc422ceb1f4a6eea260137eb42e46bea4d4e",
+      "qemu/nikon-z72-uart.c": "08ec5ce4b84240a9a5927cbb4f4474844ca0c862d1c7be7013f33abff77d5b35",
+      "qemu/nikon-z72-input-config.c": "8b034b56b6a38e301e08fb120376ee753971402604b7c4a84d4510db6baa3d65",
+      "qemu/nikon-z72-memory.c": "fe6f4ba67d4e59bf7895b642b06fac5c0f43843d6a5d40559cecf5506ef7b260",
+      "qemu/nikon-z72-notify.c": "bad15570a609b929b1504199cec777cfd209586333f914edf9bca474e873c4da",
+      "qemu/nikon-z72-timer.c": "722ac507981fa6e3b7d9c72156ec77f14f23912589dcdc54732bd268e9556137",
+      "qemu/nikon-z72-spi.c": "799cd2478577c71e3ae2c11bb0caf006f6a8fdfc883d1efd4c124602c05ce01a",
+      "qemu/nikon-z72-controller.c": "cc4d607101adab830ceab63e7e697cc06d30ea67014723be74dabc89fecdfd21",
+      "qemu/nikon-z72-controller-gpio.c": "b1686283afaa8a96abe63d33d23f7de0335f41cf68c5a12c94cc763d7ca65184",
+      "qemu/nikon-z72-controller-rtc.c": "6587e27259f58a2ff8fd55cc32577fbbacbe72f6d1736e250f22c79ce422461e",
+      "qemu/nikon-z72-controller-i2c.c": "97c41f29313cb3c699253729dba98dc07f0de16ea6132275d72a2366980c09cc",
+      "qemu/nikon-z72-controller-supply.c": "7eb1d7339adcd2cca4ba8f088761f61c09c4ae2fe537edb97cc217a456192f6b",
+      "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
+      "qemu/nikon-z72-controller-dma.c": "906905542ed7835b663327af5564d1cc40c5ea26456d14b2312b2f5dc91a6da3",
+      "qemu/nikon-z72-controller-timer.c": "c0d2e49f43a4af14b0a46c50f283f62e062d04ad409e776d6eb7cb47247ef1d4",
+      "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
+      "qemu/nikon-z72-controller-registers.c": "68a3025b7066b2a32d65e3c2eed9d681dfe69f858e6c01b28bf318f8e876d9f1",
+      "qemu/nikon-z72-controller-panel.c": "5e41ad2134d0006ee8bdfbef28a1025b8864bbf797fa7cb3cb8705c025cfe1ca",
+      "qemu/nikon-z72-controller-spi.c": "26fea948b8bd73eb6d8639733dcb3ec04e48cf7c0408efebd1d4902a6509bd16",
+      "qemu/nikon-z72-controller.h": "94be28e6185bf7f6050e67e718de16dbd8c0acc1ddde91874680b0a6c6bc9cf0",
+      "qemu/nikon-z72-profile.h": "99edc9cf88299442d1379b005287134322da2beef6235ebbe30685657eedd729",
+      "qemu/prepare_source.py": "58d0bdc3f5df9386d1778cd6af56e0c6aaef6629f1514b0f1aaa389921af6a14",
+      "qemu/trace-events": "472a4768ea99b0e289eef4d3f961a969df51ef905b2461bd9a0c81fa5dcd2d08",
+      "qemu/nikon-z72-delay.c": "809388428bedfab42d010253589a303267ac1f897ef88eae33620e80a64b6e44",
+      "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6",
+      "qemu/nikon-z72-graphics.c": "979313c9e118618e96da49d4e71cc48e3df5da0aad10787b3d50b90596473fb1",
+      "qemu/nikon-z72-nvme.c": "17fdbfb19139bfcc91592fdd95398f78597fbde9e325b030bc0b9b987c3feeb4",
+      "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+      "qemu/nikon-z72-spi.h": "a7f9ee6d7a0806637581a90c8a8544864504485acb95e08d8eec80b2f2cb26b9",
+      "qemu/nikon-z72-hdmac.c": "cbd2b8c9f47e3950bb72f2064271041263ba02aca33fd4876b6651571152b72d",
+      "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752"
+    },
+    "configure": [
+      "--target-list=arm-softmmu",
+      "--without-default-devices",
+      "--disable-docs",
+      "--disable-tools",
+      "--disable-user",
+      "--disable-werror",
+      "--disable-gtk",
+      "--disable-sdl",
+      "--disable-vnc",
+      "--disable-opengl",
+      "--disable-guest-agent",
+      "--disable-slirp",
+      "--disable-rust",
+      "--disable-debug-info"
+    ],
+    "prepared_nvme_sources": {
+      "hw/nvme/ctrl.c": "095bc02557adacdb84acb58c8087f3776e01ba1c19a38f97be78d7d1a05ab0bb",
+      "hw/nvme/nvme.h": "aa86dffd9187bac62856b54e377fe763c62e06d9867b7d936fb64a963d622c27"
+    },
+    "source_revision": "2ab3585a922becf801502df062886676946f9b52"
+  },
+  "arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--trace-sd-host",
+    "--display-complete",
+    "--frame-phase",
+    "--input-stop-complete",
+    "--frame-generate",
+    "--frame-notify",
+    "--frame-process",
+    "--processing-resource-header",
+    "--aux-image-process",
+    "--controller-step-link",
+    "--controller-actuator",
+    "--sampling-output-complete",
+    "--icount-shift",
+    "2",
+    "--watch",
+    "180",
+    "--out",
+    "D:\\code\\z72-qemu\\.local\\capture-report-archive\\cold_playback_saved_card\\report.json",
+    "--controller-step-feedback",
+    "--trace-controller-gpio",
+    "--sample-group1",
+    "--sensor-image",
+    "D:\\code\\z72-qemu\\.local\\color-pipeline\\scene.ppm",
+    "--nvme-card",
+    "D:\\code\\z72-qemu\\.local\\playback_return_body_save.raw",
+    "--playback",
+    "--playback-click",
+    "--sensor-timing-profile",
+    "--virtual-lens"
+  ],
+  "source_sha256": {
+    ".local/repeat-playback/capture-cold-playback.py": "67f1b712aa57f87c485dd7b56c1b960fbb3b07efd0293f06be20ea0bac275983",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6",
+    ".local/repeat-playback/snapshot-active-lcd.py": "4c08f0ffe760eca689b4137a69bfa553b2e114281fb700766938a45cf77c4693",
+    "tools/create_lab_parameters.py": "239f18a41a70d9543cdaf42d36a62db6dcc363ad0bb85bedc556342bc08f834e",
+    "qemu/nikon-z72-lens.c": "73a0c282c74a1fa5ed7bae6f7dc9b0ac521cf9d3addd463783bd23541492ebfc",
+    "qemu/trace-events": "472a4768ea99b0e289eef4d3f961a969df51ef905b2461bd9a0c81fa5dcd2d08",
+    "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "tools/body_shutter_gate_probe.py": "32ad48f0d0580b92e140f2da923ae007c83dceb88b7db8849f4700627dfb1a22",
+    "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167"
+  },
+  "evidence": {
+    "report.json": {
+      "bytes": 1124706,
+      "sha256": "868e07e49b98b4dead418a1000972462cc145ef032759ab2d6894a71b41e64bc"
+    },
+    "conditions.json": {
+      "bytes": 6857,
+      "sha256": "51f6a9b30cde01af0359d1a1850a8a5c3ae8b785c33972b600691285d520bde4"
+    },
+    "qemu.log": {
+      "bytes": 435956,
+      "sha256": "e88dd49b0ff7c87558cea8935c8a445bff7055ba41b9230cedd9b19b02329d75"
+    }
+  },
+  "limitations": [
+    "One retained card and the selected latest photo verified; other card formats and firmware versions not exercised.",
+    "Functional decode and display backend, not physical pixel or panel calibration."
+  ],
+  "checker_sha256": "43fb9f608bf0bdf3da02d012103a75f38098e39eb2efff1bf4699a9e20a2e30a",
+  "cleanup": {
+    "codec_files": [],
+    "intermediate_codec_files_removed": true,
+    "temporary_vm_work_removed": true,
+    "temporary_lcd_rgb_removed": true,
+    "temporary_playback_png_removed": true,
+    "original_card_retained": true
+  }
+}
