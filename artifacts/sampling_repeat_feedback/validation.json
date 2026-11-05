@@ -1,0 +1,288 @@
+{
+  "observation": "two_body_captures_with_late_sampling_feedback",
+  "source_sha256": {
+    "tools/body_shutter_gate_probe.py": "e738a0a10515642c1ac09b330b7e9940cf330434a6b67b697f703b7a4025fe3b",
+    "tools/web_console.py": "1c8f09ac2a60b274515af55ac327b809d202b9c202e78cc2a77bff0c289f2d9f",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167",
+    "qemu/nikon-z72.c": "5f5db53b8e3cce7776c049c5f8240fac8db1db334395b60e3da37a374d914c32",
+    "qemu/nikon-z72-delay.c": "1249088c0f3340e17830f2d305be5cda3630a244af8b38470735f36cf108d555"
+  },
+  "binary_sha256": "5199a435a0566cfc1b82345ba0de17ca3c78aa9df24bce3d04b2e30a6dd0eeb2",
+  "report_sha256": "4844972f9a996d7b4b8cd89cd2a0cbd98f31d1041de6ee1dcc8c35e612a9a987",
+  "card_sha256": "418b7a986d67059721b590d4c0e2c079a774538fc1f066ebffb2a74f8097a6d8",
+  "original_card_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+  "original_files_unchanged": true,
+  "body_repeat_capture": {
+    "requested": true,
+    "shots": [
+      {
+        "requested": true,
+        "released": true,
+        "press_ticks": 112839537,
+        "shot": 1,
+        "release_ticks": 124860012,
+        "held_counter_seconds": 0.2504265625
+      },
+      {
+        "requested": true,
+        "released": true,
+        "press_ticks": 175373677,
+        "shot": 2,
+        "release_ticks": 187466730,
+        "held_counter_seconds": 0.2519386041666667
+      }
+    ]
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "driver_state": 9,
+  "status_codes": [],
+  "system_input_class": 1,
+  "delegate_readiness": {
+    "predicate": "0x1026f6a4",
+    "pending": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "processed": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "mode_bytes": [
+      1,
+      3,
+      0
+    ],
+    "required_indices": [
+      0,
+      4,
+      2,
+      6,
+      5
+    ],
+    "missing_indices": [],
+    "override": false,
+    "ready": true
+  },
+  "tail": {
+    "address": "0xb25ef114",
+    "pending": "0x0",
+    "head": "0x0",
+    "count": 0,
+    "contexts": []
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107094",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a64",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "primary_frames": 2,
+  "counter_window": {
+    "requested_seconds": 1.0,
+    "reached": true
+  },
+  "jpeg_validation": {
+    "filesystem_test": "passed",
+    "images": [
+      {
+        "name": "DSC_0003.JPG",
+        "bytes": 1489370,
+        "dimensions": [
+          8256,
+          5504
+        ],
+        "sha256": "ab94e9441397130a620f404c5736fdfba14289689203321bbb8ce432321bc1e5",
+        "fully_decoded": true,
+        "grid_center_check": {
+          "samples": 48,
+          "maximum_channel_error": 1,
+          "tolerance": 8,
+          "passed": true
+        }
+      },
+      {
+        "name": "DSC_0004.JPG",
+        "bytes": 1489370,
+        "dimensions": [
+          8256,
+          5504
+        ],
+        "sha256": "5b158cdb33d1ea2100a7cbd3d98f4910b486faa0e947daf0f5ef4fdf64010be5",
+        "fully_decoded": true,
+        "grid_center_check": {
+          "samples": 48,
+          "maximum_channel_error": 1,
+          "tolerance": 8,
+          "passed": true
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "entry": "body-short-exposure-full-press",
+      "counter_ticks": 112839537,
+      "shot": 1
+    },
+    {
+      "entry": "body-sampling-capture-second-edge",
+      "counter_ticks": 128018556,
+      "capture_state": [
+        8,
+        0
+      ],
+      "status_codes": [],
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x1",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "capture-sampling-final-notification",
+      "counter_ticks": 128095180,
+      "capture_state": [
+        8,
+        0
+      ]
+    },
+    {
+      "entry": "body-repeat-ready",
+      "counter_ticks": 151330845,
+      "capture_state": [
+        2,
+        0
+      ],
+      "status_codes": [],
+      "primary_frames": 1
+    },
+    {
+      "entry": "body-short-exposure-full-press",
+      "counter_ticks": 175373677,
+      "shot": 2
+    },
+    {
+      "entry": "body-sampling-capture-second-edge",
+      "counter_ticks": 189689407,
+      "capture_state": [
+        8,
+        0
+      ],
+      "status_codes": [],
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x1",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "capture-sampling-final-notification",
+      "counter_ticks": 189766112,
+      "capture_state": [
+        8,
+        0
+      ]
+    }
+  ],
+  "limitations": [
+    "Two successive single captures, not a sustained burst-rate test.",
+    "Explicit preprocessing skips and static color test input remain enabled.",
+    "Physical hardware timing and older firmware versions are unverified."
+  ],
+  "temporary_card_removed": true,
+  "final_application": {
+    "index": 3,
+    "held": [],
+    "ready": true
+  },
+  "runtime": {
+    "firmware": "C1.70",
+    "initial_mode_position": 3,
+    "body_exposure": 1000,
+    "sampling_feedback": true,
+    "sampling_output_complete": true,
+    "sampling_output_frame_start": true,
+    "sample_group1": true,
+    "controller_step_feedback": true,
+    "virtual_lens": false,
+    "skip_still_preprocessing": true,
+    "sensor_input": "static 8x6 RGB color grid",
+    "external_capture_events": false
+  },
+  "observed_host_seconds": 880.438,
+  "busy_rejection_count": 0,
+  "missing_feedback_count": 0
+}
