@@ -90,6 +90,14 @@ graphics failures; the existing grayscale viewer shows the diagnostic photo
 and original interface. See [playback evidence](artifacts/playback_native_texture_verified/validation.json)
 and [JPEG playback research](research/z7ii/jpeg_decode.md). This does not establish
 physical scanout, calibrated color or every playback control.
+The [target-row correction](artifacts/playback_target_row_mapping/validation.json)
+also verifies a color scene with upright playback text, and the
+[native menu check](artifacts/playback_menu_row_order/validation.json) confirms
+that MENU opens an upright playback menu after two focused captures.
+A [fresh boot from the retained card](artifacts/cold_playback_saved_card/validation.json)
+decodes the previously saved second photo exactly and leaves the original
+card hash unchanged. These focused results do not establish default-profile
+capture, rotation-menu operations or physical GPU equivalence.
 The body probe's optional `--playback-after-capture SECONDS` also verifies one
 static grayscale scene capture followed by playback in the same guest, with
 native card creation and no host card edits between stages; see the

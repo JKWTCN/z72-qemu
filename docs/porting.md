@@ -59,10 +59,25 @@ The following interfaces are supported by firmware analysis and execution tests.
 
 ## Remaining implementation
 
-Complete startup requires recovery of the master boot RAM and peripheral
-interfaces, followed by the image-memory, power and application-ready routines
-and their calling contracts. Menu support additionally requires menu-level GPU
-command flows, LCD scanout and fuller input event routing.
+The combined machine already reaches shooting, native menus and playback.
+Focused runs save two original JPEGs, return to playback, open an upright menu,
+and read a retained saved photo after a fresh boot. The
+[capture and playback record](../research/z7ii/repeated_capture_playback.md)
+links the runtime evidence and its explicit conditions.
+
+The next implementation priority is complete capture through the default
+interactive profile. Current successful body captures use explicit exposure,
+silent-mode and preprocessing-skip conditions; they do not prove the browser's
+default shutter path. Original DSP execution, calibrated sensor color and
+exposure, additional pixel layouts, complete playback controls and historical
+firmware compatibility remain unverified. New device behavior needs original
+runtime or register-contract evidence before extending these boundaries.
+
+## Earlier boot-stage evidence
+
+The following probes document the individual stages that established the
+combined machine. Their local stopping points describe those experiments,
+rather than the current end-to-end startup limit.
 
 The [reset-prefix probe](../research/z7ii/reset_prefix.md) now establishes the
 uninterrupted core-zero path through MMU enable and stack initialization.

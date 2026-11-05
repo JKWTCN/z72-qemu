@@ -55,6 +55,12 @@ JPEG 硬件使用替代后端；不能据此声称默认浏览器交互台已具
 诊断照片及原厂界面，见[回放验证](artifacts/playback_native_texture_verified/validation.json)
 及 [JPEG 回放研究](research/z7ii/jpeg_decode.md)。物理扫描、校准彩色及所有
 回放控件尚未由此验证。
+后续[目标行映射修正](artifacts/playback_target_row_mapping/validation.json)
+验证了彩色场景和正向回放文字；[原厂菜单检查](artifacts/playback_menu_row_order/validation.json)
+确认两次定向拍照后按 MENU 可打开正向的回放菜单。
+[保留卡冷启动检查](artifacts/cold_playback_saved_card/validation.json)还确认新会话
+能精确解码此前保存的第二张照片，原卡整卡摘要不变。这些定向结果仍不代表
+默认配置拍照、旋转菜单操作或物理 GPU 等价性已经验证。
 机身探针的可选 `--playback-after-capture SECONDS` 还验证了一次静态灰度场景
 拍摄后在同一虚拟机中回放，文件由原厂写卡，阶段之间没有宿主改卡，见
 [组合验证](artifacts/body_capture_playback_scene/validation.json)。
