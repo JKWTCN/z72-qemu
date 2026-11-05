@@ -1,0 +1,31 @@
+{
+  "result": "passed-original-notification-route",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "cases": [
+    {
+      "subscribers": 0,
+      "events": [],
+      "payload_unchanged": true
+    },
+    {
+      "subscribers": 1,
+      "events": [
+        {
+          "entry": "0x103ed470",
+          "opcode": "0x41000ac",
+          "payload": "0x50000100"
+        },
+        {
+          "consumer": "0x103edaea",
+          "payload": "0x50000100"
+        }
+      ],
+      "payload_unchanged": true
+    }
+  ],
+  "scope": "Original broadcaster, opcode wrapper and dispatcher execute with a synthetic subscription and payload.",
+  "limitations": [
+    "Stops before the consumer body and capture initialization.",
+    "Does not prove runtime registration, shutter admission, sensor completion or photo output."
+  ]
+}
