@@ -52,6 +52,6 @@
     "Functional coupling and one-millisecond response are assumptions, not measured physical routing or timing.",
     "No firmware-address-dependent stimulus in the device model.",
     "Migration format advanced to 63; migration round trip not tested.",
-    "Full firmware repeated-save observation is separate and still in progress."
+    "Full firmware repeated-save evidence is recorded separately in group23_browser_automatic_feedback."
   ]
 }
