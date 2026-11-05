@@ -1,0 +1,121 @@
+{
+  "result": "lens-preparation-completes-but-release-control-remains-state-five",
+  "configuration": "Browser defaults plus explicit virtual lens; native M dial and one shutter step; body contacts only.",
+  "source_sha256": {
+    ".local/repeat-playback/run-lens-release-property.py": "258d19911828758a42c5193b1566a5612cd341cf405d95462a018e1a56ca0bc3",
+    ".local/repeat-playback/trace_release_property_boot.py": "7a105637c688b93d0a42dc136f1059204d67f5687db6bca3fc04b97f2cd7e102",
+    ".local/repeat-playback/trace_release_property_contacts.py": "10eba7c267bd59daf942ad0a1d58fafa3d8dfe5c43e743241d74f4cb3571a7cd",
+    "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+    "tools/body_shutter_gate_probe.py": "fe6c9eb8100684ef513c9d0d1750d6602adf483b75215f61741e229cd6f72486",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e",
+  "native_ready": {
+    "gate": 0,
+    "driver": 9,
+    "tv": 304,
+    "controller_mode": 3
+  },
+  "boot": {
+    "finished": true,
+    "sync_ticks": 53533250,
+    "end_ticks": 246624524,
+    "state": 5,
+    "counts": {
+      "0x1022c02a": 1,
+      "0x10227fb4": 6,
+      "0x10227ff4": 6,
+      "0x10227ffe": 1,
+      "0x1022b19c": 3,
+      "0x10228164": 1,
+      "0x103e9d24": 10,
+      "0x103e98e8": 2,
+      "0x103e9900": 2,
+      "0x103e9952": 1,
+      "0x103e9962": 1,
+      "0x1022b174": 2,
+      "0x1022d1a6": 2,
+      "0x102d949e": 1,
+      "0x106d202a": 8
+    }
+  },
+  "preparation_transitions": [
+    {
+      "previous": "0x0",
+      "next": "0x2",
+      "property_2014": 0
+    },
+    {
+      "previous": "0x2",
+      "next": "0x3",
+      "property_2014": 1
+    }
+  ],
+  "service_result": {
+    "pc": "0x1022d2bc",
+    "return_value": "0x1",
+    "request_mask": "0x1"
+  },
+  "release_request": {
+    "context": "0xb23f7e64",
+    "active_mask": "0x0",
+    "configuration_mask": "0x0",
+    "inhibit": 0,
+    "state": 5
+  },
+  "release_service": {
+    "context": "0xb1869318",
+    "state": 1,
+    "request_masks": [
+      "0x1",
+      "0x0",
+      "0x0",
+      "0x0"
+    ]
+  },
+  "release_preparation": {
+    "context": "0xb186963c",
+    "header": [
+      3,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "property_2014": 1
+  },
+  "primary_frames": 0,
+  "primary_configuration_commits": 0,
+  "fault_fields_zero": true,
+  "contacts_released": true,
+  "seconds_after_full": 2.0194802708333333,
+  "evidence": {
+    "arguments.json": "8b26f8ffb90eefd4eab18f493b0d5b70bb3224d42f6281dfd1b26e0489b1ce97",
+    "report.json": "e738ae111b64275d622f856de5c9fd89bafce2ff9a35b4c3599a390a597c23ac",
+    "boot-trace.jsonl": "dc7dd7533cc0e6e5694ba8f7f7899b9264502ad8205876063ddd68ca77ec75da",
+    "trace.jsonl": "0de39658d3bfa61b605c316dd5dbd353f95f014c739bc60c27f36d820dcc2c1b",
+    "conditions.json": "7ae2e35aedf2d577908e33efcef4934e0f38f3f1ec51d2dea367da560df98d0e",
+    "qemu.log": "3d97bc4ab604dda7d555a5e37a3f08810d0dde2e8bcadb404cdeacb557260c88",
+    "storage.json": "f68ed4fd197c1004a07771c1eb8d133592917c468de7ae1b15fb50526694fde2",
+    "before.png": "a4214b929925534ece923b160fbaea92755892d0bfc90c79bdbea7ce9ea32904",
+    "after.png": "4e4cd9fc765a2880ac7b74e835a00e83e9aecf3875a095c9fed022c6cbff59f8"
+  },
+  "limitations": [
+    "A separate configuration comparison, not proof of default no-lens capture.",
+    "Request bit fifteen is not the only condition retaining service state one.",
+    "The observed control early return is not yet proven to be the sole cause of missing still capture.",
+    "Private event label property-status-update at 0x106d202a does not prove a property writer."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}
