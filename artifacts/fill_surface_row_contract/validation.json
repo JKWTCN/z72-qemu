@@ -1,0 +1,235 @@
+{
+  "result": "passed-original-fill-address-origin-conversion",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "selector": [
+    "0x1068c1e0",
+    "0x1068c1f2"
+  ],
+  "fill": "0x1068bec2",
+  "original_size_helper": "0x106821d4",
+  "cases": [
+    {
+      "origin": 0,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 1,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b006",
+        "0x8": "0xcc18b012",
+        "0xc": "0x12345678",
+        "0x10": "0x1",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 0,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 2,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b00c",
+        "0x8": "0xcc18b024",
+        "0xc": "0x12345678",
+        "0x10": "0x1",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 0,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 4,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b018",
+        "0x8": "0xcc18b048",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 0,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 1,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b008",
+        "0x8": "0xcc18b018",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    },
+    {
+      "origin": 0,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 2,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b010",
+        "0x8": "0xcc18b030",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    },
+    {
+      "origin": 0,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 4,
+      "selected_height": 0,
+      "storage_start_y": 1,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b020",
+        "0x8": "0xcc18b060",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 1,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b01e",
+        "0x8": "0xcc18b02a",
+        "0xc": "0x12345678",
+        "0x10": "0x1",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 2,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b03c",
+        "0x8": "0xcc18b054",
+        "0xc": "0x12345678",
+        "0x10": "0x1",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 6,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 4,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b078",
+        "0x8": "0xcc18b0a8",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20006"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 1,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b028",
+        "0x8": "0xcc18b038",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 2,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b050",
+        "0x8": "0xcc18b070",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    },
+    {
+      "origin": 1,
+      "width": 8,
+      "height": 8,
+      "y": 1,
+      "rows": 2,
+      "bpp": 4,
+      "selected_height": 8,
+      "storage_start_y": 5,
+      "descriptor": {
+        "0x0": "0x0",
+        "0x4": "0xcc18b0a0",
+        "0x8": "0xcc18b0e0",
+        "0xc": "0x12345678",
+        "0x10": "0x201",
+        "0x1c": "0x20008"
+      }
+    }
+  ],
+  "finding": "The caller selects surface height for query byte1=1; the fill builder converts y to height-y-rows before constructing the address interval.",
+  "scope": "Original caller fragment and complete fill descriptor builder with synthetic query bytes; descriptor submission intercepted.",
+  "limitations": [
+    "This contiguous fill path does not establish textured GPU rasterization row semantics.",
+    "No hardware execution, clipping-path validation or rendering correction."
+  ],
+  "checker_sha256": "5150c3fb049ce15af6cad6830c8ad21e3a1278ea33f40557dbb95f846a5eb0ee"
+}
