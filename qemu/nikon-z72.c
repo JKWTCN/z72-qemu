@@ -626,6 +626,8 @@ struct NikonZ72BootConfig {
     bool sampling_feedback_request;
     bool sampling_feedback_ready;
     bool sampling_feedback_fired;
+    bool sampling_feedback_output_pending;
+    bool sampling_feedback_second;
     int64_t sampling_feedback_epoch;
     QEMUTimer *sampling_feedback_timer;
     qemu_irq sampling_capture_irq[2];
@@ -978,7 +980,7 @@ static void sampling_gpio_input(void *opaque, int line, int level)
 
 /* Optional functional response, not a recovered physical connection.
  * Capture eligibility keeps preparation probes distinct from an armed shot.
- * The one-millisecond response is measured from the request's rising edge. */
+ * Response deadlines are functional choices measured from the request edge. */
 static bool sampling_feedback_active(NikonZ72BootConfig *s)
 {
     return s->sampling_feedback && s->master_role && s->sensor_sample &&
@@ -991,8 +993,9 @@ static void sampling_feedback_complete(void *opaque)
     NikonZ72BootConfig *s = opaque;
     if (sampling_feedback_active(s) && !s->sampling_feedback_fired) {
         s->sampling_feedback_fired = true;
-        qemu_set_irq(s->sampling_capture_irq[0], 1);
-        qemu_set_irq(s->sampling_capture_irq[0], 0);
+        unsigned index = s->sampling_feedback_second ? 1 : 0;
+        qemu_set_irq(s->sampling_capture_irq[index], 1);
+        qemu_set_irq(s->sampling_capture_irq[index], 0);
     }
 }
 
@@ -1007,7 +1010,8 @@ static void sampling_feedback_update(NikonZ72BootConfig *s)
     } else {
         timer_mod(s->sampling_feedback_timer,
             MAX(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
-                s->sampling_feedback_epoch + 1000000));
+                s->sampling_feedback_epoch +
+                (s->sampling_feedback_second ? 5000000 : 1000000)));
     }
 }
 
@@ -1299,6 +1303,12 @@ static void sampling_output_expire(NikonZ72BootConfig *s, unsigned index)
         if (index == 1 && sampling_feedback_active(s)) {
             qemu_set_irq(s->sampling_capture_irq[1], 1);
             qemu_set_irq(s->sampling_capture_irq[1], 0);
+        } else if (index == 1 && s->sampling_feedback &&
+                   s->sampling_feedback_ready && !s->sampling_feedback_request) {
+            /* Retain completion until the next request. Its second response
+             * allows the requester to arm capture; five milliseconds is a
+             * functional delay, not a measured physical latency. */
+            s->sampling_feedback_output_pending = true;
         }
         *boot_config_value(s, 0x20060038) |= bit;
         sync_update_irqs(s);
@@ -1358,6 +1368,7 @@ static void sampling_output_write(NikonZ72BootConfig *s, hwaddr address,
         s->sampling_output_active &= ~value;
         if (value & 16) {
             s->sampling_output_wait_frame = false;
+            s->sampling_feedback_output_pending = false;
         }
     }
     for (unsigned i = 0; i < ARRAY_SIZE(sampling_output_bases); i++) {
@@ -1369,6 +1380,7 @@ static void sampling_output_write(NikonZ72BootConfig *s, hwaddr address,
             s->sampling_output_epoch[i] = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
             s->sampling_output_fired &= ~bit;
             if (i == 1) {
+                s->sampling_feedback_output_pending = false;
                 s->sampling_output_wait_frame = address == 0x20060020 &&
                     s->sampling_output_frame_start &&
                     *boot_config_value(s, base + 0x1c) == 0x06000006;
@@ -3195,6 +3207,11 @@ static void boot_config_write(void *opaque, hwaddr offset,
         *stored = (*stored & ~mask) | ((uint32_t)value & mask);
         if (address == 0x0428201c && ((*stored ^ previous) & (1u << 11))) {
             s->sampling_feedback_request = !!(*stored & (1u << 11));
+            s->sampling_feedback_second = s->sampling_feedback_request &&
+                s->sampling_feedback_output_pending;
+            if (s->sampling_feedback_request) {
+                s->sampling_feedback_output_pending = false;
+            }
             s->sampling_feedback_fired = false;
             s->sampling_feedback_epoch = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
             sampling_feedback_update(s);
@@ -4611,6 +4628,8 @@ static void boot_config_reset(Object *obj, ResetType type)
     s->sampling_feedback_request = false;
     s->sampling_feedback_ready = false;
     s->sampling_feedback_fired = false;
+    s->sampling_feedback_output_pending = false;
+    s->sampling_feedback_second = false;
     s->sampling_feedback_epoch = 0;
     sampling_feedback_update(s);
     s->sampling_output_gates = 0;
@@ -4754,8 +4773,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 64,
-    .minimum_version_id = 64,
+    .version_id = 65,
+    .minimum_version_id = 65,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4770,6 +4789,8 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(sampling_feedback_request, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback_ready, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback_fired, NikonZ72BootConfig),
+        VMSTATE_BOOL(sampling_feedback_output_pending, NikonZ72BootConfig),
+        VMSTATE_BOOL(sampling_feedback_second, NikonZ72BootConfig),
         VMSTATE_INT64(sampling_feedback_epoch, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(sampling_feedback_timer, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_output_complete, NikonZ72BootConfig),

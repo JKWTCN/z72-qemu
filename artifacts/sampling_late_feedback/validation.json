@@ -1,0 +1,256 @@
+{
+  "observation": "optional_sampling_feedback_after_output_completion",
+  "default_enabled": false,
+  "first_response_ns": 1000000,
+  "late_second_response_ns": 5000000,
+  "physical_timing_verified": false,
+  "vmstate_version": 65,
+  "migration_roundtrip_verified": false,
+  "build_passed": true,
+  "tests_passed": [
+    "tests/test_sampling_feedback.py",
+    "tests/test_frame_sync.py"
+  ],
+  "source_sha256": {
+    "tools/body_shutter_gate_probe.py": "e738a0a10515642c1ac09b330b7e9940cf330434a6b67b697f703b7a4025fe3b",
+    "tools/web_console.py": "1c8f09ac2a60b274515af55ac327b809d202b9c202e78cc2a77bff0c289f2d9f",
+    "tools/native_capture_caller.py": "cfb40e8005c4a4a870896081f7641bd32e5afc18947868fa918dd55cb16ee167",
+    "qemu/nikon-z72.c": "5f5db53b8e3cce7776c049c5f8240fac8db1db334395b60e3da37a374d914c32",
+    "qemu/nikon-z72-delay.c": "1249088c0f3340e17830f2d305be5cda3630a244af8b38470735f36cf108d555",
+    "tests/test_sampling_feedback.py": "a9e066a1c5e17bcabdb1ff4dd32b3f89f62d236a7a6f8cda36e5675251a06f03",
+    "tests/test_frame_sync.py": "4e41feedb4801a00ea87ffbcec3ab93d71b8ed778b5eb0f46548fd39153aae24"
+  },
+  "binary_sha256": "5199a435a0566cfc1b82345ba0de17ca3c78aa9df24bce3d04b2e30a6dd0eeb2",
+  "native_result": {
+    "report_sha256": "4b838a351566dddfaceae841091a05bcc5d2fdd3a1241cf72364186b4309cc9e",
+    "card_sha256": "5883ff333b6b0cd1309efc813ef8d5e308aa61d3b5d97a5c82af5eb2b791f191",
+    "original_card_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "original_files_unchanged": true,
+    "capture_state": [
+      2,
+      0
+    ],
+    "status_codes": [],
+    "system_input_class": 1,
+    "delegate_readiness": {
+      "predicate": "0x1026f6a4",
+      "pending": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "processed": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "mode_bytes": [
+        1,
+        3,
+        0
+      ],
+      "required_indices": [
+        0,
+        4,
+        2,
+        6,
+        5
+      ],
+      "missing_indices": [],
+      "override": false,
+      "ready": true
+    },
+    "tail": {
+      "address": "0xb25ef114",
+      "pending": "0x0",
+      "head": "0x0",
+      "count": 0,
+      "contexts": []
+    },
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10107070",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x1010707c",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a48",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a64",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ],
+    "counter_window": {
+      "requested_seconds": 1.0,
+      "reached": true
+    },
+    "busy_rejection_count": 0,
+    "jpeg": {
+      "name": "DSC_0003.JPG",
+      "bytes": 1489370,
+      "dimensions": [
+        8256,
+        5504
+      ],
+      "sha256": "fdbbedca7715082f16d94fced99e8131485921abca00a2c350923f9f770bce70",
+      "fully_decoded": true,
+      "filesystem_test": "passed",
+      "grid_center_check": {
+        "samples": 48,
+        "maximum_channel_error": 1,
+        "tolerance": 8,
+        "passed": true
+      },
+      "visual_check": "Full-frame colored test grid without a blank left region; not a real scene photograph."
+    },
+    "temporary_card_removed": true
+  },
+  "feedback_order": [
+    {
+      "entry": "body-sampling-signal-request",
+      "pc": "0x102e7e22",
+      "counter_ticks": 116194049,
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x0",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "body-sampling-signal-request",
+      "pc": "0x102e7e22",
+      "counter_ticks": 116209193,
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x0",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "capture-sampling-second-output-callback",
+      "pc": "0x102e9af6",
+      "counter_ticks": 127790751
+    },
+    {
+      "entry": "body-sampling-signal-request",
+      "pc": "0x102e7e22",
+      "counter_ticks": 127790934,
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x0",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "capture-sampling-second-arm-timer-callback",
+      "pc": "0x102e83ce",
+      "counter_ticks": 127926402
+    },
+    {
+      "entry": "body-sampling-capture-second-edge",
+      "pc": "0x102e8568",
+      "counter_ticks": 128041004,
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x1",
+        "0x54": "0x0",
+        "0x58": "0x0",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "body-sampling-signal-request",
+      "pc": "0x102e7e22",
+      "counter_ticks": 128116652,
+      "sampling_capture_fields": {
+        "0x40": "0xb1803edc",
+        "0x4c": "0x0",
+        "0x50": "0x0",
+        "0x54": "0x0",
+        "0x58": "0x1",
+        "0xbc": "0x1",
+        "0xe8": "0x0",
+        "0xec": "0x0"
+      }
+    },
+    {
+      "entry": "capture-sampling-final-notification",
+      "pc": "0x102e9816",
+      "counter_ticks": 128116853
+    }
+  ],
+  "limitations": [
+    "One capture verified; repeated capture not verified.",
+    "Explicit preprocessing skips and static color test input remain enabled.",
+    "Five milliseconds is a functional timing choice, not measured hardware latency."
+  ]
+}

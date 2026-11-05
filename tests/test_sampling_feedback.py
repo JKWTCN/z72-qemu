@@ -163,6 +163,46 @@ def check(qemu):
             assert read(0x2c010710) == 0
             command('clock_step 1')
             assert read(0x2c010710) == (4 if completes else 0)
+            # Completion before a request is retained for one second response.
+            # A new output or board reset must discard an unconsumed completion.
+            for action in ('deliver', 'release', 'output-reset', 'output-stop', 'reset'):
+                monitor('system_reset')
+                arm()
+                for offset, value in enumerate(values):
+                    write(base + offset * 4, value)
+                write(0x2006000c, 0x20)
+                write(base + 0x20, 1)
+                write(0x20060020, 16)
+                command('clock_step 2000000')
+                assert read(0x2c010710) == 0
+                assert read(0x04282028) & 0x1000 == 0
+                if action == 'output-reset':
+                    write(base + 0x20, 1)
+                elif action == 'output-stop':
+                    write(0x20060024, 16)
+                elif action == 'reset':
+                    monitor('system_reset')
+                    arm()
+                request(1)
+                command('clock_step 1000000')
+                ordinary = action in ('output-reset', 'output-stop', 'reset')
+                assert read(0x2c010710) == (4 if completes and ordinary else 0)
+                write(0x2c010710, 6)
+                if action == 'release':
+                    request(0)
+                command('clock_step 3999999')
+                assert read(0x2c010710) == 0
+                command('clock_step 1')
+                assert read(0x2c010710) == (2 if completes and action == 'deliver' else 0)
+                write(0x2c010710, 6)
+                request(1)
+                command('clock_step 5000000')
+                assert read(0x2c010710) == (4 if completes and action == 'release' else 0)
+                write(0x2c010710, 6)
+                request(0)
+                request(1)
+                command('clock_step 1000000')
+                assert read(0x2c010710) == (4 if completes else 0)
         finally:
             if stream is not None:
                 stream.close()
