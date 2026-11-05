@@ -1928,15 +1928,19 @@ def snapshot(remote):
         callback=hex(word(0xb18697e4)), enabled_notifications=hex(word(0xb18697e8)),
         operation13_pending=word(0xb23f6a7c), operation13_callback=hex(word(0xb23f7018)),
         bitmaps=[])
-    for address in (0xb1869818, 0xb1869820):
-        capacity, pointer = struct.unpack('<2I', remote.read(address, 8))
-        row = dict(descriptor=hex(address), capacity=capacity, pointer=hex(pointer))
-        if 0 < capacity <= 128 and 0xb1800000 <= pointer <= 0xb5effff0:
-            values = struct.unpack('<' + 'I' * ((capacity + 31) // 32),
-                                   remote.read(pointer, ((capacity + 31) // 32) * 4))
-            row['set_bits'] = [index for index in range(capacity)
-                               if values[index // 32] & 1 << (index % 32)]
-        readiness['bitmaps'].append(row)
+    admission = dict(context='0xb1869878', primary=word(0xb1869878),
+                     secondary=word(0xb186987c), callback=hex(word(0xb1869880)), bitmaps=[])
+    for owner, addresses in ((readiness, (0xb1869818, 0xb1869820)),
+                             (admission, (0xb1869898, 0xb18698a0, 0xb18698a8, 0xb18698b0))):
+        for address in addresses:
+            capacity, pointer = struct.unpack('<2I', remote.read(address, 8))
+            row = dict(descriptor=hex(address), capacity=capacity, pointer=hex(pointer))
+            if 0 < capacity <= 128 and 0xb1800000 <= pointer <= 0xb5effff0:
+                values = struct.unpack('<' + 'I' * ((capacity + 31) // 32),
+                                       remote.read(pointer, ((capacity + 31) // 32) * 4))
+                row['set_bits'] = [index for index in range(capacity)
+                                   if values[index // 32] & 1 << (index % 32)]
+            owner['bitmaps'].append(row)
     delay_channels = []
     for channel in range(12):
         base = 0x2c010100 + channel * 0x100
@@ -2082,6 +2086,8 @@ def snapshot(remote):
             words={hex(offset): hex(word(0xb186935c + offset))
                    for offset in (0x24, 0x28, 0x34, 0x38, 0x3c, 0x40, 0x44)}),
         release_request=dict(context='0xb23f7e64',
+            sequence_state=remote.read(0xb23f7e76, 1)[0],
+            sequence_phase=remote.read(0xb23f7e77, 1)[0],
             active_mask=hex(word(0xb23f7e6c)),
             configuration_mask=hex(word(0xb23f7edc)),
             inhibit=remote.read(0xb23f7e81, 1)[0],
@@ -2094,6 +2100,7 @@ def snapshot(remote):
         release_preparation=dict(context='0xb186963c',
             header=list(remote.read(0xb186963c, 12)),
             property_2014=word(0xb255255c)),
+        release_admission=admission,
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,

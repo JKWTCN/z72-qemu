@@ -55,9 +55,22 @@ def check(image):
         actual = native.call(0x1022b718 - 0x10020000, state, 2)
         assert actual == expected, (state, actual)
         choices.append(dict(state=state, event=2, choice=actual))
+    intersections = []
+    left, right = native.DATA + 0x400, native.DATA + 0x408
+    for descriptor, storage in ((left, native.DATA + 0x500), (right, native.DATA + 0x510)):
+        native.u.mem_write(descriptor, struct.pack('<II', 124, storage))
+    for a, b, expected in (([], [], 0), ([0], [123], 0), ([0], [0], 1),
+                            ([3, 123], [123], 1)):
+        for storage, bits in ((native.DATA + 0x500, a), (native.DATA + 0x510, b)):
+            mask = sum(1 << bit for bit in bits)
+            native.u.mem_write(storage, mask.to_bytes(16, 'little'))
+        actual = native.call(0x1022983c - 0x10020000, left, right)
+        assert actual == expected, (a, b, actual)
+        intersections.append(dict(left=a, right=b, intersects=actual))
     return dict(result='passed-original-notification-route',
                 firmware_sha256=hashlib.sha256(image).hexdigest(), cases=cases,
                 event_two_choices=choices,
+                bitmap_intersection_cases=intersections,
                 scope='Original broadcaster, opcode wrapper and dispatcher execute with a synthetic subscription and payload.',
                 limitations=['Stops before the consumer body and capture initialization.',
                              'Does not prove runtime registration, shutter admission, sensor completion or photo output.'])
@@ -71,7 +84,7 @@ def main():
     result = check(args.master.read_bytes())
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
-    print('PASS original still notification route and empty subscription control')
+    print('PASS original notification route, sequence choices and bitmap intersection')
 
 
 if __name__ == '__main__':

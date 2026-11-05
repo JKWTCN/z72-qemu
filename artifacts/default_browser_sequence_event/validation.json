@@ -1,0 +1,166 @@
+{
+  "result": "native-sequence-events-zero-and-one-without-event-two",
+  "seconds_after_full": 2.00747125,
+  "capture_state": [
+    2,
+    0
+  ],
+  "primary_frames": 0,
+  "counts": {
+    "0x1022aa82": 1,
+    "0x1022b8bc": 2,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1,
+    "0x1022b7a4": 2,
+    "0x1022b7b4": 2
+  },
+  "events": [
+    {
+      "name": "service-notification",
+      "phase": 0,
+      "registers": {
+        "r0": "0x4100003",
+        "r1": "0x33",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0x1",
+        "r5": "0x0",
+        "r6": "0xb23f7edc",
+        "r7": "0x1",
+        "r8": "0x1",
+        "r9": "0x200",
+        "r10": "0x400000a",
+        "r11": "0x410001a",
+        "lr": "0x1022d2f5"
+      },
+      "sequence_admission_words": "0000000000000000"
+    },
+    {
+      "name": "service-notification",
+      "phase": 0,
+      "registers": {
+        "r0": "0x4100004",
+        "r1": "0x75",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb186815c",
+        "r5": "0x2",
+        "r6": "0x0",
+        "r7": "0x0",
+        "r8": "0x18",
+        "r9": "0xb51dba18",
+        "r10": "0x1",
+        "r11": "0xb51db964",
+        "lr": "0x1026afe7"
+      },
+      "sequence_admission_words": "0000000000000000"
+    },
+    {
+      "name": "sequence-event",
+      "phase": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x4",
+        "r2": "0xb1869878",
+        "r3": "0x1",
+        "r4": "0xb23f7e64",
+        "r5": "0xb23f7edc",
+        "r6": "0x1",
+        "r7": "0x0",
+        "r8": "0x1",
+        "r9": "0x200",
+        "r10": "0x400000a",
+        "r11": "0x410001b",
+        "lr": "0x1022c467"
+      },
+      "sequence_admission_words": "0000000000000000"
+    },
+    {
+      "name": "sequence-choice",
+      "phase": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb23f7e64",
+        "r5": "0xb23f7edc",
+        "r6": "0x0",
+        "r7": "0x0",
+        "r8": "0x1",
+        "r9": "0x200",
+        "r10": "0x400000a",
+        "r11": "0x410001b",
+        "lr": "0x1022b79f"
+      },
+      "sequence_admission_words": "0000000000000000"
+    },
+    {
+      "name": "sequence-event",
+      "phase": 2,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x4",
+        "r2": "0xb1869878",
+        "r3": "0x0",
+        "r4": "0xb23f7e64",
+        "r5": "0xb1818f60",
+        "r6": "0xb1818bd0",
+        "r7": "0x0",
+        "r8": "0x1",
+        "r9": "0x200",
+        "r10": "0x400000a",
+        "r11": "0x410001d",
+        "lr": "0x1022c4bf"
+      },
+      "sequence_admission_words": "0000000000000000"
+    },
+    {
+      "name": "sequence-choice",
+      "phase": 2,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0x1",
+        "r2": "0x1",
+        "r3": "0x0",
+        "r4": "0xb23f7e64",
+        "r5": "0xb1818f60",
+        "r6": "0x1",
+        "r7": "0x0",
+        "r8": "0x1",
+        "r9": "0x200",
+        "r10": "0x400000a",
+        "r11": "0x410001d",
+        "lr": "0x1022b747"
+      },
+      "sequence_admission_words": "0000000000000000"
+    }
+  ],
+  "source_sha256": {
+    ".local/repeat-playback/run-default-sequence-event.py": "e8d56eebb76944c1cd739efa7e1f27d2e2f109b3c1dab5009acf36b6ab80d71b",
+    ".local/repeat-playback/trace_sequence_event_contacts.py": "6c94960c045f0d0e01b836902208a15287ec448ed21dcf0a1d8634f7730cb558",
+    "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+    "tools/body_shutter_gate_probe.py": "7643850e5f1e854ee941468caa4df215017b4acd0a6706bccd46e13418cf33cf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "evidence": {
+    "report.json": "87c8a810e8f88a3dcfe3092d04ab22dd395832265a07ea29264231b676a30076",
+    "trace.jsonl": "298ff218a57e489c495055fe64ef89d65ff5286f3b439091d5b5e6442ab76999",
+    "conditions.json": "fa32a886884c28c788d5e6f1b1b0cd514bb62cfef142ff2de1b33e5ee6884251",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "88677430ca6a36280d31019dbfe19e3488f6d1032daa02178e439a35d3021458"
+  },
+  "contacts_released": true,
+  "core_fault_fields_zero": true,
+  "limitations": [
+    "Bounded default no-lens native M/TV304 run; no claim about other profiles."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}

@@ -60,6 +60,41 @@
       "choice": 7
     }
   ],
+  "bitmap_intersection_cases": [
+    {
+      "left": [],
+      "right": [],
+      "intersects": 0
+    },
+    {
+      "left": [
+        0
+      ],
+      "right": [
+        123
+      ],
+      "intersects": 0
+    },
+    {
+      "left": [
+        0
+      ],
+      "right": [
+        0
+      ],
+      "intersects": 1
+    },
+    {
+      "left": [
+        3,
+        123
+      ],
+      "right": [
+        123
+      ],
+      "intersects": 1
+    }
+  ],
   "scope": "Original broadcaster, opcode wrapper and dispatcher execute with a synthetic subscription and payload.",
   "limitations": [
     "Stops before the consumer body and capture initialization.",
