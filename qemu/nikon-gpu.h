@@ -588,8 +588,7 @@ static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, uns
                         fprintf(stderr, "Z72_GRAPHICS_UNSUPPORTED target=0x%08x format=0x%x mode=0x%x path=%s key=%08x\n", r[0x1a4], r[0x1a2], r[0x184]&255, p ? p->valid ? "valid" : "invalid" : "missing", r[0xa6]);
                         fprintf(stderr, "Z72_GRAPHICS_FORMAT target_size=%08x target_1a5=%08x source=%08x source_format=%08x source_size=%08x source_158=%08x\n",
                                 r[0x1a3], r[0x1a5], r[0x155], r[0x156], r[0x152], r[0x158]);
-                        /* 10453858..74 emits 1b5 for target formats105/107;
-                         * 104539a0..b2 emits15a from image+a0 for textures. */
+                        /* Report both target and texture second-plane slots. */
                         fprintf(stderr, "Z72_GRAPHICS_PLANES target_second=%08x source_second=%08x target_flags=%08x source_flags=%08x target_ch0_second=%08x\n",
                                 r[0x1b5], r[0x15a], r[0x1a7], r[0x153], g->regs[0][0x1b5]);
                     }
