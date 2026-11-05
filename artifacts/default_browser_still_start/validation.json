@@ -1,0 +1,59 @@
+{
+  "result": "native-full-input-without-observed-still-start-entry",
+  "native_ready": {
+    "gate": 0,
+    "driver": 9,
+    "tv": 304,
+    "controller_mode": 3
+  },
+  "capture_state": [
+    2,
+    0
+  ],
+  "primary_frames": 0,
+  "focus_mode": 0,
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1
+  },
+  "unseen_points": [
+    "0x103ee082",
+    "0x103e785e",
+    "0x103e7312",
+    "0x103e6e94",
+    "0x103ba164",
+    "0x103ba6ea"
+  ],
+  "seconds_after_full": 2.018996104166667,
+  "fault_fields_zero": true,
+  "contacts_released": true,
+  "source_sha256": {
+    ".local/repeat-playback/run-default-still-start.py": "3936e722a7ebdc1567951110f7f15f6df4c883fbf3fdf7080e583ac9b0b62293",
+    ".local/repeat-playback/trace_still_start_contacts.py": "46b6afb0f58fa213dcef9529fba68b304ac59b57bfcbdf1261f68a3e76e5601e",
+    "tools/web_console.py": "ebc9d5ed922d730e87b550e63299b7826b091197947ac687aa0b5228f6d07a71",
+    "tools/body_shutter_gate_probe.py": "fe6c9eb8100684ef513c9d0d1750d6602adf483b75215f61741e229cd6f72486",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d06bd397b1c3aa8c0d909f851616b016013a15d862c08c82efccec8128f9551e",
+  "evidence": {
+    "report.json": "10c87fc1a50598aa23418d196fd338987b2fb44a43161e05c3fec5bebda09bab",
+    "trace.jsonl": "25f4d16073dbbff5f0023b9b1a3c13315b67ce303bf7f73c46f1e5c9dfd961a9",
+    "conditions.json": "60e82f6bea0df1c9ac01a612aabd44b6bbb2585a9d71d7ad311c85d23bbfcda9",
+    "qemu.log": "df0adc8740f2e6da69c681c875a3f995d34a2a7c1439c603a6f9f7c81612ec32",
+    "storage.json": "c9af81d7c1d2d831b02caa978ee2c8a3a4306d01ab43070efdeddba4aac7120f",
+    "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+    "after.png": "2cd344ea62db99fc5c92e4acd40284cceea760a4acbc26a9fb9a00e33379a819"
+  },
+  "limitations": [
+    "Bounded observation of listed entry points, not proof that all possible submission paths are absent.",
+    "Focus-control state five is not established as the cause of missing capture."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}

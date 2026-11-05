@@ -1,0 +1,36 @@
+{
+  "result": "passed-original-focus-mode-getter",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "property": "0x1625",
+  "descriptor": "0x119018b4",
+  "address": "0xb2551808",
+  "ptp_property": "0x500a",
+  "ptp_record": "0x119e9ad0",
+  "getter": "0x104cda3a",
+  "cases": [
+    {
+      "internal": 0,
+      "ptp": "0x1"
+    },
+    {
+      "internal": 1,
+      "ptp": "0x8010"
+    },
+    {
+      "internal": 2,
+      "ptp": "0x8011"
+    },
+    {
+      "internal": 3,
+      "ptp": "0x8010"
+    },
+    {
+      "internal": 4,
+      "ptp": "0x8013"
+    }
+  ],
+  "scope": "Original getter and conversion executed with synthetic property RAM; no whole-guest writes.",
+  "limitations": [
+    "Does not prove autofocus, capture admission or hardware readiness."
+  ]
+}

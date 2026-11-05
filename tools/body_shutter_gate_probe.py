@@ -2088,6 +2088,7 @@ def snapshot(remote):
             state=remote.read(0xb23f7ee6, 1)[0]),
         release_service=dict(context='0xb1869318',
             state=remote.read(0xb1869318, 1)[0],
+            focus_mode=word(0xb2551808),
             request_masks=[hex(word(0xb1869328 + index * 4))
                            for index in range(4)]),
         release_preparation=dict(context='0xb186963c',
