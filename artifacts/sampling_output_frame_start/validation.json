@@ -674,11 +674,153 @@
       "temporary_card_removed": true
     }
   ],
-  "native_experiment": "pending",
+  "native_experiment": "saved_one_jpeg_with_capture_status_26",
   "limitations": [
     "Frame-start behavior is an explicit timing hypothesis, not a recovered physical control-bit definition.",
     "Original DSP processing is still skipped in native capture experiments.",
-    "No successful native capture is claimed for this option yet.",
-    "VMState format 64; migration roundtrip unverified."
-  ]
+    "VMState format 64; migration roundtrip unverified.",
+    "One saved test JPEG does not establish error-free recovery or repeated capture; status 0x26 and input class 4 remain."
+  ],
+  "native_result": {
+    "outcome": "saved_one_jpeg_with_capture_status_26",
+    "report_sha256": "6e3c9f8fd09f1584bd9e0a92b62b07a741b3b260b4d1cca8c5094a8598ff1e51",
+    "card_sha256": "0ae1e7b75641b0a3d7afc849b3a98bda0841cfa7f880a4d10cdfa75f9b8dfa40",
+    "original_card_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "original_files_unchanged": true,
+    "capture_state": [
+      2,
+      0
+    ],
+    "status_codes": [
+      "0x26"
+    ],
+    "system_input_class": 4,
+    "delegate_readiness": {
+      "predicate": "0x1026f6a4",
+      "pending": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "processed": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "mode_bytes": [
+        1,
+        3,
+        0
+      ],
+      "required_indices": [
+        0,
+        4,
+        2,
+        6,
+        5
+      ],
+      "missing_indices": [],
+      "override": false,
+      "ready": true
+    },
+    "tail": {
+      "address": "0xb25ef114",
+      "pending": "0x0",
+      "head": "0x0",
+      "count": 0,
+      "contexts": []
+    },
+    "cores": [
+      {
+        "thread": 1,
+        "pc": "0x10107094",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 2,
+        "pc": "0x10107078",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 3,
+        "pc": "0x10038a4c",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      },
+      {
+        "thread": 4,
+        "pc": "0x10038a68",
+        "faults": {
+          "DFAR_S": "0x0",
+          "IFAR_S": "0x0",
+          "DFSR_S": "0x0",
+          "IFSR_S": "0x0"
+        }
+      }
+    ],
+    "counter_window": {
+      "requested_seconds": 1.0,
+      "reached": true
+    },
+    "busy_rejection_count": 0,
+    "jpeg": {
+      "name": "DSC_0003.JPG",
+      "bytes": 1489370,
+      "dimensions": [
+        8256,
+        5504
+      ],
+      "sha256": "645ac8e743c9e627d73d9cd27f2b46ccf60bdd64442dd177f23411fd05ba5549",
+      "fully_decoded": true,
+      "filesystem_test": "passed",
+      "visual_check": "Full-frame colored test grid, without the earlier blank left region; not a real scene photograph.",
+      "grid_center_check": {
+        "samples": 48,
+        "maximum_channel_error": 1,
+        "tolerance": 8,
+        "passed": true
+      }
+    },
+    "limitations": [
+      "Second capture feedback error 0x26 remains; repeated capture not verified.",
+      "Explicit preprocessing skips and static test input remain enabled."
+    ],
+    "temporary_card_removed": true
+  }
 }
