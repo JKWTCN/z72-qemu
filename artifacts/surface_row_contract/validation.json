@@ -1,0 +1,331 @@
+{
+  "result": "passed-original-surface-query-and-linear-pixel-row-contract",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "functions": [
+    "0x105a692e",
+    "0x106da63c",
+    "0x106da650"
+  ],
+  "surface_fields": {
+    "layout": "0xdc",
+    "origin": "0xe8"
+  },
+  "queries": [
+    {
+      "layout": "0x3fde",
+      "origin": 0,
+      "flags": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "layout": "0x3fde",
+      "origin": 1,
+      "flags": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "layout": "0x3fde",
+      "origin": 2,
+      "flags": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "layout": "0x3fdf",
+      "origin": 0,
+      "flags": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "layout": "0x3fdf",
+      "origin": 1,
+      "flags": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "layout": "0x3fdf",
+      "origin": 2,
+      "flags": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "format": "0x0",
+      "alpha_bits": 8,
+      "origin": 0,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        2151686144,
+        2151686145,
+        2151686146,
+        2151686147,
+        2151686148,
+        2151686149,
+        2151686150,
+        2151686151,
+        2151686152,
+        2151686153,
+        2151686154,
+        2151686155
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x0",
+      "alpha_bits": 8,
+      "origin": 1,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        2151686152,
+        2151686153,
+        2151686154,
+        2151686155,
+        2151686148,
+        2151686149,
+        2151686150,
+        2151686151,
+        2151686144,
+        2151686145,
+        2151686146,
+        2151686147
+      ],
+      "reversed_rows": true
+    },
+    {
+      "format": "0x0",
+      "alpha_bits": 8,
+      "origin": 2,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        2151686144,
+        2151686145,
+        2151686146,
+        2151686147,
+        2151686148,
+        2151686149,
+        2151686150,
+        2151686151,
+        2151686152,
+        2151686153,
+        2151686154,
+        2151686155
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x105",
+      "alpha_bits": 8,
+      "origin": 0,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502335,
+        356279551,
+        373122559,
+        389899775,
+        406742783,
+        423519999,
+        440363007,
+        457140223,
+        473983231,
+        490760447,
+        507603455,
+        524380671
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x105",
+      "alpha_bits": 8,
+      "origin": 1,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        473983231,
+        490760447,
+        507603455,
+        524380671,
+        406742783,
+        423519999,
+        440363007,
+        457140223,
+        339502335,
+        356279551,
+        373122559,
+        389899775
+      ],
+      "reversed_rows": true
+    },
+    {
+      "format": "0x105",
+      "alpha_bits": 8,
+      "origin": 2,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502335,
+        356279551,
+        373122559,
+        389899775,
+        406742783,
+        423519999,
+        440363007,
+        457140223,
+        473983231,
+        490760447,
+        507603455,
+        524380671
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 8,
+      "origin": 0,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502080,
+        356279313,
+        373122338,
+        389899571,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        473983112,
+        490760345,
+        507603370,
+        524380603
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 8,
+      "origin": 1,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        473983112,
+        490760345,
+        507603370,
+        524380603,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        339502080,
+        356279313,
+        373122338,
+        389899571
+      ],
+      "reversed_rows": true
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 8,
+      "origin": 2,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502080,
+        356279313,
+        373122338,
+        389899571,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        473983112,
+        490760345,
+        507603370,
+        524380603
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 4,
+      "origin": 0,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502080,
+        356279313,
+        373122338,
+        389899571,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        473983112,
+        490760345,
+        507603370,
+        524380603
+      ],
+      "reversed_rows": false
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 4,
+      "origin": 1,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        473983112,
+        490760345,
+        507603370,
+        524380603,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        339502080,
+        356279313,
+        373122338,
+        389899571
+      ],
+      "reversed_rows": true
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 4,
+      "origin": 2,
+      "sampled_pixels": 12,
+      "packed_pixels": [
+        339502080,
+        356279313,
+        373122338,
+        389899571,
+        406742596,
+        423519829,
+        440362854,
+        457140087,
+        473983112,
+        490760345,
+        507603370,
+        524380603
+      ],
+      "reversed_rows": false
+    }
+  ],
+  "scope": "Original surface query and CPU pixel reader executed on synthetic linear buffers; all pixels checked against asymmetric row data.",
+  "limitations": [
+    "No native playback surface descriptor captured.",
+    "CPU row selection does not establish GPU flag semantics or display scanout orientation.",
+    "Tiled pixel addressing and texture format 0x0d are not tested.",
+    "No rendering behavior changed and no native boot performed."
+  ],
+  "checker_sha256": "4b0788be1f2acfb25e06c676f43ceaa494454c66a10b302fb7b407585803bb52"
+}
