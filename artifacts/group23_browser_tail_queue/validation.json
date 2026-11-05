@@ -1,0 +1,272 @@
+{
+  "result": "tail-queue-pending-mask16-after-sync-and-handshakes",
+  "seconds_after_full": 2.013046458333333,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [],
+  "observed_counts": {
+    "0x103e6e94": 3,
+    "0x102422ec": 2,
+    "0x10394d06": 8,
+    "0x1022de1a": 3,
+    "0x1022de46": 3,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10394db0": 1,
+    "0x1022f4a2": 1,
+    "0x1022f4aa": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "a93a15022f6e8a404c4a20827ba26b1c7e6e6473c7c32d67664dee0c06e3f825",
+    "trace.jsonl": "b86563b2011a705d5d537b795811fe515563e7b0882ce935ade928bc74ee7b56",
+    "conditions.json": "07cdc64898c8448e69fc1b0f38c6732670f4b57e49c3ea3c431127db087d8c5d",
+    "arguments.json": "fd8853fec84815c2231eaa3c32d75d17230358b445e293b80902129a776b1b01",
+    "storage.json": "71a4a55f110e1982c6326ab74cbb42e83fb412face39a6dba325ad4cc7d6313e",
+    "qemu.log": "c33485f98cd903dd69aa6a3971b94c72aa8e731669ea68f9743a9333455ee03b",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-tail-queue.py": "fb80a33d95fd5629c548d3e3afeb4104e500ac827b6f1ec7631fcdd0282addfe",
+    ".local/repeat-playback/trace_tail_queue_contacts.py": "5aa9f9028cab59b373be63f86a14327d7dc77ebf1669ad32ef618d205290b282",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "3f470f95b38373dacb13306c055b563020df3203238413b28a59e7508deedc91",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "final_tail_queue": {
+    "address": "0xb25ef114",
+    "pending": "0x16",
+    "head": "0xb2cca580",
+    "count": 1
+  },
+  "queue_transitions": [
+    {
+      "name": "tail-queue-before",
+      "ticks": 151029938,
+      "tail_pending": "0x1f",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x0",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103d5945"
+      },
+      "sampling_header": "0600001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "tail-queue-after",
+      "ticks": 151029940,
+      "tail_pending": "0x1f",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0xffffffff",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb2d3c280",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x0",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103d5905"
+      },
+      "sampling_header": "0600001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "tail-queue-before",
+      "ticks": 151030426,
+      "tail_pending": "0x1f",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0x0",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x8",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103d5945"
+      },
+      "sampling_header": "0600001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "tail-queue-after",
+      "ticks": 151030433,
+      "tail_pending": "0x17",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0xffffffff",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb2d3c280",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x8",
+        "r8": "0x0",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x0",
+        "lr": "0x103d5905"
+      },
+      "sampling_header": "0600001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "sampling-first-output-callback",
+      "ticks": 151059609,
+      "tail_pending": "0x17",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x41080c00",
+        "r1": "0x8",
+        "r2": "0x102e9b09",
+        "r3": "0x158",
+        "r4": "0x3",
+        "r5": "0x1",
+        "r6": "0x8",
+        "r7": "0x20060000",
+        "r8": "0xb1806d64",
+        "r9": "0x41080c00",
+        "r10": "0xffff802a",
+        "r11": "0xb534948c",
+        "lr": "0x102dc61b"
+      },
+      "sampling_header": "0700001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "sampling-second-output-callback",
+      "ticks": 151067628,
+      "tail_pending": "0x17",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x41080c00",
+        "r1": "0x10",
+        "r2": "0x102e9af7",
+        "r3": "0x158",
+        "r4": "0x4",
+        "r5": "0x1",
+        "r6": "0x10",
+        "r7": "0x20060000",
+        "r8": "0xb1806d64",
+        "r9": "0x41080c00",
+        "r10": "0xb53aa000",
+        "r11": "0xffffffff",
+        "lr": "0x102dc61b"
+      },
+      "sampling_header": "0700001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "tail-queue-before",
+      "ticks": 152685343,
+      "tail_pending": "0x17",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0x0",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x1",
+        "r8": "0xb23ed698",
+        "r9": "0x0",
+        "r10": "0xb1868610",
+        "r11": "0xb23ed660",
+        "lr": "0x103d5945"
+      },
+      "sampling_header": "0700001200000000000200000000000002000300030303000012000000000000"
+    },
+    {
+      "name": "tail-queue-after",
+      "ticks": 152685350,
+      "tail_pending": "0x16",
+      "tail_queue_count": 1,
+      "registers": {
+        "r0": "0x0",
+        "r1": "0xffffffff",
+        "r2": "0x0",
+        "r3": "0x1",
+        "r4": "0xb2d3c280",
+        "r5": "0xb1887df0",
+        "r6": "0x1",
+        "r7": "0x1",
+        "r8": "0xb23ed698",
+        "r9": "0x0",
+        "r10": "0xb1868610",
+        "r11": "0xb23ed660",
+        "lr": "0x103d5905"
+      },
+      "sampling_header": "0700001200000000000200000000000002000300030303000012000000000000"
+    }
+  ]
+}
