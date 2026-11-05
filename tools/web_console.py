@@ -378,6 +378,8 @@ class Machine:
                       if getattr(self.args, 'aux_image_process', False) else ()) +
                      (('nikon-z72-controller-actuator.enabled=on',)
                       if getattr(self.args, 'controller_actuator', False) else ()) +
+                     (('nikon-z72-boot-config.sampling-feedback=on',)
+                      if getattr(self.args, 'sampling_feedback', False) else ()) +
                      (('nikon-z72-boot-config.sampling-output-complete=on',)
                       if getattr(self.args, 'sampling_output_complete', False) else ()) +
                      (('nikon-z72-boot-config.primary-exposure-sync=on',)
@@ -1168,6 +1170,8 @@ def main():
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--sample-group1', action='store_true',
                         help='Enable the optional group-1 frame synchronization event source')
+    parser.add_argument('--sampling-feedback', action='store_true',
+                        help='Enable experimental request/capture feedback; requires sampling-output-complete')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental sampling comparison and finite tail output timers')
     parser.add_argument('--controller-actuator', action='store_true',

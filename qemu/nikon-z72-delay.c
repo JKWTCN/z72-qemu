@@ -32,10 +32,22 @@ struct NikonZ72Delay {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
     uint32_t regs[WORDS];
+    qemu_irq capture_ready[2];
     uint8_t capture_levels[4];
     uint8_t capture_pin_levels[2];
     Z72DelayChannel channels[CHANNELS];
 };
+
+/* Eligibility is derived from the same gates as an external capture. */
+static void delay_capture_ready(NikonZ72Delay *s)
+{
+    for (unsigned i = 0; i < 2; i++) {
+        unsigned channel = 5 + i;
+        qemu_set_irq(s->capture_ready[i], s->channels[channel].clocked &&
+            (REG(s, B(channel) + 0x10) & 1) &&
+            !(REG(s, A(channel) + 8) & 0x20));
+    }
+}
 
 static bool delay_enabled(Z72DelayChannel *ch)
 {
@@ -163,6 +175,7 @@ static void delay_expire(void *opaque)
         }
         delay_irq(ch);
         delay_schedule(ch);
+        delay_capture_ready(ch->owner);
     }
 }
 
@@ -241,6 +254,7 @@ static void delay_write(void *opaque, hwaddr offset, uint64_t value,
         delay_irq(&s->channels[i]);
         delay_schedule(&s->channels[i]);
     }
+    delay_capture_ready(s);
 }
 
 static const MemoryRegionOps delay_ops = {
@@ -261,6 +275,7 @@ static void delay_reset(Object *obj, ResetType type)
     for (unsigned i = 0; i < CHANNELS; i++) {
         delay_clear_channel(&s->channels[i]);
     }
+    delay_capture_ready(s);
 }
 
 static int delay_post_load(void *opaque, int version_id)
@@ -270,6 +285,7 @@ static int delay_post_load(void *opaque, int version_id)
     for (unsigned i = 0; i < CHANNELS; i++) {
         delay_irq(&s->channels[i]);
     }
+    delay_capture_ready(s);
     return 0;
 }
 
@@ -308,6 +324,7 @@ static void delay_init(Object *obj)
     memory_region_init_io(&s->iomem, obj, &delay_ops, s,
                           TYPE_NIKON_Z72_DELAY, 0x2000);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
+    qdev_init_gpio_out_named(DEVICE(s), s->capture_ready, "capture-ready", 2);
     qdev_init_gpio_in_named(DEVICE(s), delay_capture, "capture-event", 4);
     qdev_init_gpio_in_named(DEVICE(s), delay_capture_level, "capture-level", 2);
     for (unsigned i = 0; i < CHANNELS; i++) {

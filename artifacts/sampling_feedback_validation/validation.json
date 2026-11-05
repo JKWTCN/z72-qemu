@@ -1,0 +1,57 @@
+{
+  "result": "passed",
+  "firmware_included": false,
+  "binary_sha256": "12edd3d44a835526e6ff1c6ba20cf90ea6450f5c2bb7cda7d228c28daa3645ef",
+  "source_sha256": {
+    "qemu/nikon-z72.c": "a01b10a4ff9abd4a149001826bd26b332b5771420eb84927123d1b7ef28fcd85",
+    "qemu/nikon-z72-delay.c": "1249088c0f3340e17830f2d305be5cda3630a244af8b38470735f36cf108d555",
+    "tests/test_sampling_feedback.py": "a05a83597b9e0cf664b2e80363dac408f39a0c1ae7ecbf3c0f7883b07bef409d",
+    "tests/test_engine_gpio.py": "f04016367e7f8964b56d074150b70f1208b7b05f1440662cadac63ebc779f382",
+    "tests/test_delay_counter.py": "6a7372b7729de04cebcb0465fc64ccaabd87c96fa5ea9a934c29e2b7289676bd",
+    "tests/test_frame_sync.py": "acd289b7fe849b0070f0c77cdd41bfe3b87dbb7305762ed5eafae67781ba5524",
+    "tools/web_console.py": "c8ae5530dd285fdda67a2c08f700ce4ddae0d4d87a1e7ddc75a25e79d36240fc",
+    "tools/body_shutter_gate_probe.py": "cdb8ff97a012c6063b2a47eac5422072b90367ea1c9ee071dec282f120234690"
+  },
+  "tests": [
+    {
+      "script": "tests/test_sampling_feedback.py",
+      "result": "passed"
+    },
+    {
+      "script": "tests/test_engine_gpio.py",
+      "result": "passed"
+    },
+    {
+      "script": "tests/test_delay_counter.py",
+      "result": "passed"
+    },
+    {
+      "script": "tests/test_frame_sync.py",
+      "result": "passed"
+    }
+  ],
+  "profiles": [
+    "master enabled",
+    "master disabled",
+    "slave enabled",
+    "automatic completion disabled",
+    "sample source disabled",
+    "sampling outputs disabled"
+  ],
+  "checks": [
+    "Unarmed preparation request leaves feedback low and produces no capture",
+    "One-millisecond deadline from selected request rising edge",
+    "Late capture arming does not restart the request deadline",
+    "First capture latch, pending cause, IRQ mask and W1C",
+    "Output-16 completion feeds second capture latch once",
+    "Held request does not retrigger",
+    "Request release, capture stop, alternate mode and reset cancel response",
+    "Existing GPIO, dual delay counters and synchronization tests pass"
+  ],
+  "limitations": [
+    "Functional coupling and one-millisecond response are assumptions, not measured physical routing or timing.",
+    "No firmware-address-dependent stimulus in the device model.",
+    "Migration format advanced to 63; migration round trip not tested.",
+    "Full firmware repeated-save observation is separate and still in progress."
+  ]
+}

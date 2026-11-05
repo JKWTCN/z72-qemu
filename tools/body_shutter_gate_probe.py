@@ -4246,6 +4246,7 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                     controller_step_link=getattr(machine.args, 'controller_step_link', False),
                     controller_step_feedback=getattr(machine.args, 'controller_step_feedback', False),
                     controller_actuator=getattr(machine.args, 'controller_actuator', False),
+                    sampling_feedback=getattr(machine.args, 'sampling_feedback', False),
                     sampling_output_complete=getattr(machine.args, 'sampling_output_complete', False),
                     primary_exposure_sync=getattr(machine.args, 'primary_exposure_sync', False),
                     controller_step_trigger=dict(requested=controller_step_trigger,
@@ -4445,6 +4446,8 @@ def main():
                         help='Enable the experimental engine handshake to controller G8 connection')
     parser.add_argument('--controller-step-feedback', action='store_true',
                         help='Use native controller D7 pulses for the experimental engine GPIO handshake')
+    parser.add_argument('--sampling-feedback', action='store_true',
+                        help='Enable experimental request/capture feedback; requires sampling-output-complete')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental sampling comparison and finite tail output events')
     parser.add_argument('--primary-exposure-sync', action='store_true',
@@ -4629,6 +4632,7 @@ def main():
             report = dict(observation='shooting-startup-deadline', boot=state,
                           boot_watch_seconds=args.boot_watch,
                           icount_shift=args.icount_shift,
+                          sampling_feedback=args.sampling_feedback,
                           sampling_output_complete=args.sampling_output_complete,
                           primary_exposure_sync=args.primary_exposure_sync,
                           preserved_card_name=args.capture_card_copy.name if args.capture_card_copy else None,
