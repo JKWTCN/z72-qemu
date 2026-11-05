@@ -1,0 +1,186 @@
+{
+  "result": "passed-original-source-flag-construction",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x106b4b4a",
+  "stop": "0x106b4b78",
+  "register": "0x153",
+  "submission_header": "0x1531004",
+  "byte_write_mask": 1,
+  "formula": "(image_u32_1c == 12 ? 0x20 : 0) | ((image_u8_24 & 4) && context_u32_a0 == 4 ? 6 : 0) | (image_u16_48 == 4 ? 1 : 0)",
+  "cases": [
+    {
+      "image_1c": 12,
+      "image_24": 0,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 32
+    },
+    {
+      "image_1c": 12,
+      "image_24": 0,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 33
+    },
+    {
+      "image_1c": 12,
+      "image_24": 0,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 32
+    },
+    {
+      "image_1c": 12,
+      "image_24": 0,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 33
+    },
+    {
+      "image_1c": 12,
+      "image_24": 4,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 32
+    },
+    {
+      "image_1c": 12,
+      "image_24": 4,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 33
+    },
+    {
+      "image_1c": 12,
+      "image_24": 4,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 38
+    },
+    {
+      "image_1c": 12,
+      "image_24": 4,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 39
+    },
+    {
+      "image_1c": 12,
+      "image_24": 132,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 32
+    },
+    {
+      "image_1c": 12,
+      "image_24": 132,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 33
+    },
+    {
+      "image_1c": 12,
+      "image_24": 132,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 38
+    },
+    {
+      "image_1c": 12,
+      "image_24": 132,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 39
+    },
+    {
+      "image_1c": 13,
+      "image_24": 0,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 0
+    },
+    {
+      "image_1c": 13,
+      "image_24": 0,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 1
+    },
+    {
+      "image_1c": 13,
+      "image_24": 0,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 0
+    },
+    {
+      "image_1c": 13,
+      "image_24": 0,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 1
+    },
+    {
+      "image_1c": 13,
+      "image_24": 4,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 0
+    },
+    {
+      "image_1c": 13,
+      "image_24": 4,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 1
+    },
+    {
+      "image_1c": 13,
+      "image_24": 4,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 6
+    },
+    {
+      "image_1c": 13,
+      "image_24": 4,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 7
+    },
+    {
+      "image_1c": 13,
+      "image_24": 132,
+      "context_a0": 3,
+      "image_48": 3,
+      "source_flags": 0
+    },
+    {
+      "image_1c": 13,
+      "image_24": 132,
+      "context_a0": 3,
+      "image_48": 4,
+      "source_flags": 1
+    },
+    {
+      "image_1c": 13,
+      "image_24": 132,
+      "context_a0": 4,
+      "image_48": 3,
+      "source_flags": 6
+    },
+    {
+      "image_1c": 13,
+      "image_24": 132,
+      "context_a0": 4,
+      "image_48": 4,
+      "source_flags": 7
+    }
+  ],
+  "scope": "Original branch and flag construction instructions with synthetic image and context fields. Command literal checked separately; submission and intervening calls not executed.",
+  "limitations": [
+    "Field meanings and row-order semantics remain unknown.",
+    "No full image preparation, GPU rendering, original boot or physical display claim."
+  ],
+  "checker_sha256": "fdcd488d30f8813308dc75dff4b1c9d28e4706cb0fdbc8ad73ba27c6803fe8f7"
+}
