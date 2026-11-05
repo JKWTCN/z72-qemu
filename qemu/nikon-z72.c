@@ -623,6 +623,7 @@ struct NikonZ72BootConfig {
     bool input_handshake_output;
     QEMUTimer *input_handshake_timer;
     bool sampling_feedback;
+    bool audio_output;
     bool sampling_feedback_request;
     bool sampling_feedback_ready;
     bool sampling_feedback_fired;
@@ -4773,8 +4774,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 65,
-    .minimum_version_id = 65,
+    .version_id = 66,
+    .minimum_version_id = 66,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4786,6 +4787,7 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_BOOL(input_handshake_output, NikonZ72BootConfig),
         VMSTATE_TIMER_PTR(input_handshake_timer, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback, NikonZ72BootConfig),
+        VMSTATE_BOOL(audio_output, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback_request, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback_ready, NikonZ72BootConfig),
         VMSTATE_BOOL(sampling_feedback_fired, NikonZ72BootConfig),
@@ -5315,6 +5317,7 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("auto-complete", NikonZ72BootConfig, auto_complete, true),
         DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
         DEFINE_PROP_BOOL("sampling-feedback", NikonZ72BootConfig, sampling_feedback, false),
+        DEFINE_PROP_BOOL("audio-output", NikonZ72BootConfig, audio_output, false),
         DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
         DEFINE_PROP_BOOL("sampling-output-frame-start", NikonZ72BootConfig, sampling_output_frame_start, false),
         DEFINE_PROP_BOOL("primary-exposure-sync", NikonZ72BootConfig, primary_exposure_sync, false),
@@ -6080,6 +6083,16 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
                 qdev_connect_gpio_out_named(spi, "dma", port * 2 + direction,
                                             qdev_get_gpio_in(split, 0));
             }
+        }
+    }
+    if (!slave && NIKON_Z72_BOOT_CONFIG(config)->audio_output) {
+        DeviceState *audio = qdev_new("nikon-z72-audio");
+        sysbus_realize_and_unref(SYS_BUS_DEVICE(audio), &error_fatal);
+        memory_region_add_subregion_overlap(view, 0x2c080000,
+            sysbus_mmio_get_region(SYS_BUS_DEVICE(audio), 0), 1);
+        for (unsigned channel = 0; channel < 2; channel++) {
+            sysbus_connect_irq(SYS_BUS_DEVICE(audio), channel,
+                               qdev_get_gpio_in(gic, 167 + channel - 32));
         }
     }
     DeviceState *delay = qdev_new("nikon-z72-delay");

@@ -1,0 +1,67 @@
+{
+  "observation": "optional_master_audio_polling_output",
+  "default_enabled": false,
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "binary_sha256": "339a0050cba80e5e3017e2d383176a580796e38efb6900ee51e4a93a74587663",
+  "source_sha256": {
+    "qemu/nikon-z72-audio.c": "929b2210ed2d264eee13027d2bf5f2850b6560f018918dd0d7bfa24b7baa389e",
+    "qemu/nikon-z72.c": "686713a395e49764464c5ff725ecb47e05cc8c519bd21d0ee5c708e67affff8a",
+    "qemu/prepare_source.py": "52cb7fa95b36d2fa84543eade82415a110720d9e4af31fab469d662a5186d602",
+    "tests/test_audio_output.py": "6185fbf47c13c19f8508a8b254ec845b0b45ecb8ab88b41994f5729abaecba4a"
+  },
+  "build_passed": true,
+  "tests_passed": [
+    "tests/test_audio_output.py",
+    "tests/test_sampling_feedback.py"
+  ],
+  "native_polling": {
+    "function": "0x1036e4c4",
+    "scope": "isolated original polling routine, not full firmware boot",
+    "results": [
+      {
+        "separate": false,
+        "words": 4,
+        "returned_pc": "0x10021000",
+        "consumed_index": 4,
+        "monitors": [
+          3,
+          4660
+        ],
+        "queued_occupancy": "0x3"
+      },
+      {
+        "separate": true,
+        "words": 6,
+        "returned_pc": "0x10021000",
+        "consumed_index": 6,
+        "monitors": [
+          3,
+          4
+        ],
+        "queued_occupancy": "0x3"
+      }
+    ]
+  },
+  "functional_assumptions": {
+    "clock_hz": 48000000,
+    "queue_capacities": [
+      1,
+      16
+    ],
+    "free_slot_thresholds": [
+      1,
+      12,
+      8,
+      4
+    ],
+    "monitor": "combined low/high16; separate low16 per lane",
+    "separate_ready": "space in either lane; per-lane writes enforce capacity"
+  },
+  "limitations": [
+    "No full native boot or playback verified with this option.",
+    "No host sound output or physical PCM interpretation.",
+    "Input, DMA and block-transfer activation are unsupported.",
+    "The enabled audio device is not migratable.",
+    "Slave audio ownership and historical firmware remain unverified."
+  ]
+}

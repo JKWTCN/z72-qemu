@@ -435,6 +435,15 @@ the original random data
 read and delivers the configuration message without the previous bus fault.
 See the [random source contract](../research/z7ii/controller_rng.md).
 
+`tests/test_audio_output.py` checks the optional master audio output device:
+one-word and sixteen-word queues, paired lane consumption, timed backpressure,
+interrupt masks and underrun acknowledgement, divider fields, stop and reset.
+The default-off and slave-role checks preserve the existing mapping. The
+[audio contract](../research/z7ii/display_audio.md) distinguishes functional
+queue/timing choices from recovered register behavior. An isolated original
+polling routine also returns after submitting combined and separate words;
+full native audio playback, input, DMA and host sound remain unverified.
+
 `tools/graphics_boot_probe.py --icount-shift 0` selects the instruction timing
 used for the resident-data observation. The default remains 4. Reports record
 the selected shift and the system controller mode, configuration flags and

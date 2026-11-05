@@ -24,7 +24,8 @@ def prepare(root):
                  'nikon-z72-controller.h',
                  'nikon-z72-profile.h', 'nikon-z72-graphics.c', 'nikon-gpu.h',
                  'nikon-z72-nvme.c', 'nikon-z72-lens.c', 'nikon-z72-spi.h',
-                 'nikon-z72-hdmac.c', 'nikon-z72-body-vr.c', 'nikon-z72-eye.c'):
+                 'nikon-z72-hdmac.c', 'nikon-z72-body-vr.c', 'nikon-z72-eye.c',
+                 'nikon-z72-audio.c'):
         source, destination = project / name, root / 'hw/arm' / name
         if not destination.exists() or source.read_bytes() != destination.read_bytes():
             shutil.copyfile(source, destination)
@@ -84,6 +85,9 @@ def prepare(root):
             delay = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-delay.c'))\n"
             if delay.strip() not in data:
                 data += delay
+            audio = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-audio.c'))\n"
+            if audio.strip() not in data:
+                data += audio
             engine_i2c = "arm_ss.add(when: 'CONFIG_NIKON_Z72_LAB', if_true: files('nikon-z72-i2c.c'))\n"
             if engine_i2c.strip() not in data:
                 data += engine_i2c
