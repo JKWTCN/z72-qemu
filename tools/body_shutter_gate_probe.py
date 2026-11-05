@@ -2086,6 +2086,13 @@ def snapshot(remote):
             configuration_mask=hex(word(0xb23f7edc)),
             inhibit=remote.read(0xb23f7e81, 1)[0],
             state=remote.read(0xb23f7ee6, 1)[0]),
+        release_service=dict(context='0xb1869318',
+            state=remote.read(0xb1869318, 1)[0],
+            request_masks=[hex(word(0xb1869328 + index * 4))
+                           for index in range(4)]),
+        release_preparation=dict(context='0xb186963c',
+            header=list(remote.read(0xb186963c, 12)),
+            property_2014=word(0xb255255c)),
         input_channel_scan_count=24, input_channels=input_channels,
         input_completed_queues=[word(0xb26b3924 + index * 32 + 8) for index in range(4)],
         input_completed_heads=completed_heads,

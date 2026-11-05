@@ -1,0 +1,124 @@
+{
+  "result": "preparation-state-one-with-service-requests-zero-and-fifteen",
+  "native_ready": {
+    "gate": 0,
+    "driver": 9,
+    "tv": 304,
+    "controller_mode": 3
+  },
+  "boot": {
+    "finished": true,
+    "sync_ticks": 40923311,
+    "end_ticks": 233343893,
+    "state": 5,
+    "counts": {
+      "0x1022c02a": 1,
+      "0x10227fb4": 5,
+      "0x10227ff4": 5,
+      "0x10227ffe": 1,
+      "0x1022b19c": 2,
+      "0x10228164": 1,
+      "0x103e9d24": 10,
+      "0x103e98e8": 2,
+      "0x103e9900": 2,
+      "0x1022b174": 1,
+      "0x1022d1a6": 1,
+      "0x102d949e": 1,
+      "0x106d202a": 8
+    }
+  },
+  "preparation_choices": [
+    {
+      "pc": "0x103e9900",
+      "registers": {
+        "r0": "0x6",
+        "r1": "0x0",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb186963c",
+        "r5": "0x1",
+        "r6": "0x0",
+        "r7": "0xb23f7d94",
+        "lr": "0x103e98ff"
+      },
+      "context": "000000000000000000000000"
+    },
+    {
+      "pc": "0x103e9900",
+      "registers": {
+        "r0": "0x1",
+        "r1": "0x6",
+        "r2": "0x0",
+        "r3": "0x0",
+        "r4": "0xb186963c",
+        "r5": "0x1",
+        "r6": "0x0",
+        "r7": "0xb23f7d94",
+        "lr": "0x103e98ff"
+      },
+      "context": "060000000000000000000000"
+    }
+  ],
+  "service_result": {
+    "name": "configuration-start-service-result",
+    "pc": "0x1022d2bc",
+    "thread": 2,
+    "phase": 0,
+    "registers": {
+      "r0": "0x1",
+      "r1": "0x0",
+      "r2": "0xb1869878",
+      "r3": "0x0",
+      "r4": "0x1",
+      "r5": "0x0",
+      "r6": "0xb23f7edc",
+      "r7": "0x1",
+      "r8": "0x1",
+      "r9": "0x200",
+      "r10": "0x400000a",
+      "r11": "0x410001a",
+      "lr": "0x1022d2bd"
+    },
+    "ticks": 273094498,
+    "gate": 0,
+    "capture": [
+      9,
+      5
+    ],
+    "property_2014": 0,
+    "preparation_context": "010100000000000000000000",
+    "service_context": "010000000000000000000000bdb8221001800000000000000000000000000000b200000119000000289386b1190000002c9386b119000000309386b103000000349386b1",
+    "release_context": "01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200030020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000050000000000000000000000000000000000000000000000000001000001000000000000000000000000000000000000000000000000000000000000000000000000150000013fa3221000000000160000016fa322100000000004000001e5a92210f4010000001822372c0200008000000000160100f04dd1b2e453d1b2",
+    "request_bytes": null
+  },
+  "release_request": {
+    "context": "0xb23f7e64",
+    "active_mask": "0x0",
+    "configuration_mask": "0x0",
+    "inhibit": 0,
+    "state": 5
+  },
+  "primary_frames": 0,
+  "property_2014_observed": 0,
+  "fault_fields_zero": true,
+  "observation_seconds_after_full": 2.0191211041666666,
+  "evidence": {
+    "report.json": "375c8b1ac5e8d8ecb56d331df07c7037da01029ba0905903c3609d363c9c15bf",
+    "boot-trace.jsonl": "4ae88254f0398700b62460fb81cabfdb035b9cf8e120ee13f1841ab3ebfd7a90",
+    "trace.jsonl": "2cc10dfce4f363bc02731d0f5dae111fc83154e781e2f894438055d7fbda5255",
+    "conditions.json": "d1dd2f12d44f18301c7a01e8a0351b549f3e66cff79c511635e9d3ee99bb753c",
+    "qemu.log": "8e9053a29cdd2734f1f14f7b3cbd6da7244a5d2b5436a65b0cef37231f0d67af",
+    "storage.json": "2aa80a2ed3baeaeb8d00c41f9ecf5ed90383fbe82db6d6c562977b99e96ac5d9",
+    "before.png": "1efe06901cbef228086346e76c7b14551f46fb794bffb419e4bdc1583c024b2d",
+    "after.png": "77f73c5f31dea3fe35655f00d4239a23d09eb7c24eeb5e188d0fa9a7872cffd0"
+  },
+  "limitations": [
+    "Bounded observation, not exhaustive memory writes.",
+    "The private event label property-status-update at 0x106d202a denotes a consumer observation; it does not establish a property writer.",
+    "Physical meanings of remaining requests and property 0x2014 are unconfirmed."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true
+  }
+}
