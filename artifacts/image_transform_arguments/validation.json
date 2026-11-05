@@ -1,0 +1,147 @@
+{
+  "result": "passed-original-zero-rotation-transform-arguments",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x105a9ca6",
+  "stop": "0x105aa1bc",
+  "cases": [
+    {
+      "source_size": [
+        1632,
+        1080
+      ],
+      "target_size": [
+        1024,
+        682
+      ],
+      "rotation": 0,
+      "calls": [
+        {
+          "target": "0x1064335e",
+          "words": [
+            "0x3f20a000",
+            "0xbf21a800"
+          ],
+          "values": [
+            0.62744140625,
+            -0.6314697265625
+          ]
+        },
+        {
+          "target": "0x10643342",
+          "words": [
+            "0x0",
+            "0xc4d5c976"
+          ],
+          "values": [
+            0.0,
+            -1710.295654296875
+          ]
+        },
+        {
+          "target": "0x10643396",
+          "words": [
+            "0x0"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "source_size": [
+        720,
+        480
+      ],
+      "target_size": [
+        1024,
+        682
+      ],
+      "rotation": 0,
+      "calls": [
+        {
+          "target": "0x1064335e",
+          "words": [
+            "0x3fb60b00",
+            "0xbfb5dd80"
+          ],
+          "values": [
+            1.422210693359375,
+            -1.4208221435546875
+          ]
+        },
+        {
+          "target": "0x10643342",
+          "words": [
+            "0x0",
+            "0xc3a8ea91"
+          ],
+          "values": [
+            0.0,
+            -337.8325500488281
+          ]
+        },
+        {
+          "target": "0x10643396",
+          "words": [
+            "0x0"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "source_size": [
+        640,
+        424
+      ],
+      "target_size": [
+        640,
+        424
+      ],
+      "rotation": 0,
+      "calls": [
+        {
+          "target": "0x1064335e",
+          "words": [
+            "0x3f800000",
+            "0xbf800000"
+          ],
+          "values": [
+            1.0,
+            -1.0
+          ]
+        },
+        {
+          "target": "0x10643342",
+          "words": [
+            "0x0",
+            "0xc3d40000"
+          ],
+          "values": [
+            0.0,
+            -424.0
+          ]
+        },
+        {
+          "target": "0x10643396",
+          "words": [
+            "0x0"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Original zero-rotation branch and arithmetic helpers with synthetic stack/object geometry. Three transformation APIs intercepted before mutation.",
+  "limitations": [
+    "No complete caller, matrix API, command submission, renderer or physical display execution.",
+    "Dimensions include the observed photo storage width; stack roles are exercised with synthetic values.",
+    "Negative y is established as an upstream argument, not as a justified correction at a downstream layer."
+  ],
+  "checker_sha256": "1129f2d7ed2cfc4c23739a2f077e33540eb73511d356a3e369709d76bfad1630"
+}
