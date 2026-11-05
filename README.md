@@ -100,6 +100,11 @@ preview with a held or short half-press; see the
 With the explicit focused exposure/silent and preprocessing profile, a body
 capture after that return also saves a second scene JPEG while preserving the
 first photo; see the [saved-file validation](artifacts/playback_return_body_save/validation.json).
+With the virtual lens, nonzero experimental timing input and explicit preprocessing
+skip, `--repeat-body-capture` also saves two scene JPEGs in one guest. The
+[repeated-capture receipt](research/z7ii/repeated_scene_capture.md) checks both
+card files, eight decoded images and native metadata buffers independently.
+It does not establish the default profile, physical exposure or original DSP execution.
 The default console profile now returns from the menu to shooting and reopens
 the menu through normal input; auto-menu waits for the same rendering readiness
 as the browser buttons. See the [menu cycle validation](artifacts/menu_reopen_default/validation.json).

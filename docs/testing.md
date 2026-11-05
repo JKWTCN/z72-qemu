@@ -1172,3 +1172,14 @@ executes four `1020c23c` cases to distinguish commit masks from run masks and
 check write order. The body snapshot check keeps commit counts separate from
 completed-frame counts. See [configuration ownership](../research/z7ii/input_commit.md).
 The source workflow includes the new device check; no remote CI run is claimed.
+
+The [current repeated-capture receipt](../research/z7ii/repeated_scene_capture.md)
+records two separate original-firmware runs under the virtual-lens, nonzero
+resource-timing and explicit DSP preprocessing skip profile. Both use settings
+APIs and two body-contact presses, with no reboot or capture-API call. Independent
+card inspection confirms two files, eight complete JPEG images, matching native
+RAM encoding bodies, 3,456 color samples, retained source-card bytes and no SD
+writes. The second input is a local full frame after the first split input.
+The owned card clone and 32 intermediate codec images are removed; exported
+original JPGs remain private and ignored by Git. Historical null-descriptor
+failure is not reproduced in this profile or attributed to one isolated change.
