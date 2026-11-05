@@ -1,0 +1,184 @@
+{
+  "result": "tail-output-channel-armed-without-callback",
+  "seconds_after_full": 2.019787104166667,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [],
+  "observed_counts": {
+    "0x10394762": 23,
+    "0x103e6e94": 3,
+    "0x102422ec": 2,
+    "0x10394d06": 8,
+    "0x1022de1a": 3,
+    "0x1022de46": 3,
+    "0x102c9cfa": 1,
+    "0x102e9b08": 1,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10394db0": 1,
+    "0x1022f4a2": 1,
+    "0x1022f4aa": 1
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "5b5bf4237c640e5e8ac7641ab2eca24ed2dc914aa2b3aacc01e8ae5edb0b3a7b",
+    "trace.jsonl": "15685037edfae923e05353f7ce42bfafda3a6688bbc32145725f0d0bd42ce95f",
+    "conditions.json": "e2d4b792a7ee036935c6578b330438866985c03cc6120a9626ae8d56f3c2dfb3",
+    "arguments.json": "64a19273e01e3f38c56a6887119f653ad1bb18b1d7c796f9e38df3976bfa3dc1",
+    "storage.json": "5048ee887735aa0c8a51045209b82406df913f9b535c543bfb8d7f344b275acc",
+    "qemu.log": "6e717a794e41a8e46315909aa95a4b859e5486468e9e095a37ae422f3cbc92e8",
+    "before.png": "34abf372702f34d17442f9038a530992f1fe39776df6f75b8494987e362893d6",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-output-tail.py": "2aa85c335ed9ff91fae90eeb3e81b192f383b659db59a8d0f8fca671025354b7",
+    ".local/repeat-playback/trace_output_tail_contacts.py": "17fa1a606be8ff76fe4d76d308f6f1f8c76898cede0c85bd97a3605bc275a7d4",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "65865b15299925c3ce02ed3b4fc73ed60e9b676117608d18aaa7315d801856a6",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established.",
+    "Retained gate registers show last writes, not reconstructed accumulated gate state; physical edge/IRQ timing remains unverified."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "final_delegate_readiness": {
+    "predicate": "0x1026f6a4",
+    "pending": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "processed": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "mode_bytes": [
+      0,
+      3,
+      0
+    ],
+    "required_indices": [
+      0,
+      4,
+      2,
+      6
+    ],
+    "missing_indices": [
+      6
+    ],
+    "override": false,
+    "ready": false
+  },
+  "final_sampling_control": {
+    "0x0": "0x0",
+    "0x4": "0x0",
+    "0x8": "0x20",
+    "0xc": "0x20",
+    "0x10": "0x0",
+    "0x14": "0x0",
+    "0x18": "0x0",
+    "0x1c": "0x0",
+    "0x20": "0x40",
+    "0x24": "0x10",
+    "0x28": "0x1",
+    "0x2c": "0x1",
+    "0x30": "0x0",
+    "0x34": "0x59",
+    "0x38": "0x0",
+    "0x40": "0x27feb7",
+    "0x44": "0x0",
+    "0x4c": "0x0",
+    "0x50": "0x1"
+  },
+  "tail_output_observations": [
+    {
+      "name": "tail-output-arm",
+      "ticks": 150945772,
+      "tail_output_context": "02000f0300000000edd026101c2880b1542880b1dc4580b1000000000000000000000000",
+      "tail_output_banks": {
+        "0x20063190": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "0x200631d0": "00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "r0": "0x40"
+    }
+  ],
+  "last_tail_output_observation": {
+    "name": "tail-queue-lookup-result",
+    "ticks": 152602037,
+    "tail_output_context": "02000f0300000000edd026101c2880b1542880b1dc4580b1000000000000000000000000",
+    "tail_output_banks": {
+      "0x20063190": "ffffffffffffff00ffff0000000040e3000000000900000000000000000000060100000001000000",
+      "0x200631d0": "00000000000000000000000000000000000000000000000000000000000000000000000001000000"
+    }
+  }
+}

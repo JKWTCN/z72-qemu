@@ -2184,6 +2184,9 @@ def snapshot(remote):
         delegate_state=remote.read(0xb1868510, 1)[0],
         delegate_kind=remote.read(0xb1868511, 1)[0],
         delegate_readiness=delegate_readiness_snapshot(remote),
+        tail_output=dict(context=list(remote.read(0xb1868988, 0x24)),
+            channels={hex(mask): [hex(x) for x in struct.unpack('<10I', remote.read(address, 40))]
+                      for mask, address in ((0x40, 0x20063190), (0x80, 0x200631d0))}),
         sampling_control=[hex(word(0x200632e0 + i * 4)) for i in range(2)],
         sampling_header=list(remote.read(0xb1868628, 0x100)),
         sampling_counter_context=list(remote.read(0xb1868880, 0x50)),

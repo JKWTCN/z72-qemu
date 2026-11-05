@@ -1,0 +1,201 @@
+{
+  "result": "passed",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "notifications": [
+    {
+      "state": 1,
+      "mode": 0,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200301",
+          "r1": "0x0"
+        }
+      ]
+    },
+    {
+      "state": 1,
+      "mode": 1,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200301",
+          "r1": "0x0"
+        }
+      ]
+    },
+    {
+      "state": 1,
+      "mode": 2,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200303",
+          "r1": "0x1"
+        }
+      ]
+    },
+    {
+      "state": 1,
+      "mode": 2,
+      "count": 1,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200301",
+          "r1": "0x0"
+        }
+      ]
+    },
+    {
+      "state": 2,
+      "mode": 0,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200301",
+          "r1": "0x0"
+        }
+      ]
+    },
+    {
+      "state": 3,
+      "mode": 0,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200303",
+          "r1": "0x1"
+        }
+      ]
+    },
+    {
+      "state": 4,
+      "mode": 0,
+      "count": 0,
+      "observed": [
+        {
+          "boundary": "0x5002f000",
+          "r0": "0x4200304",
+          "r1": "0x0"
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "state": 16,
+      "observed": []
+    },
+    {
+      "state": 17,
+      "observed": [
+        {
+          "boundary": "0x1026f714",
+          "r0": "0x6",
+          "r1": "0x0"
+        }
+      ]
+    },
+    {
+      "state": 18,
+      "observed": []
+    }
+  ],
+  "deadlines": [
+    {
+      "mask": "0x40",
+      "start": 0,
+      "width": 1000,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x1c200000",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x40",
+      "start": 100,
+      "width": 1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x1c271c20",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x40",
+      "start": 1000,
+      "width": 500,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x27501940",
+        "0x1",
+        "0x1",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x80",
+      "start": 0,
+      "width": 1000,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x1c200000",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x80",
+      "start": 100,
+      "width": 1,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x1c271c20",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "mask": "0x80",
+      "start": 1000,
+      "width": 500,
+      "registers": [
+        "0xffffffff",
+        "0xffffff",
+        "0xffff",
+        "0x27501940",
+        "0x1",
+        "0x1",
+        "0x0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic callback registration and state; stop before delegate setter.",
+    "Sampling command (2, 0) returns zero at an explicit boundary.",
+    "Does not generate hardware events or establish whole-machine capture completion."
+  ]
+}
