@@ -1,0 +1,43 @@
+{
+  "scope": "Isolated original output format, configuration, start and stop on both channels; no full playback or input recording.",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "results": [
+    {
+      "channel": 0,
+      "mode": "0x6800000",
+      "status": "0xc2000000",
+      "block_control": 0,
+      "output_count": 4660,
+      "callback": "0x10021001",
+      "started_control": "0x2200",
+      "stopped_control": "0x200"
+    },
+    {
+      "channel": 1,
+      "mode": "0x6800000",
+      "status": "0xc2000000",
+      "block_control": 0,
+      "output_count": 4660,
+      "callback": "0x10021001",
+      "started_control": "0x2200",
+      "stopped_control": "0x200"
+    }
+  ],
+  "windows": [
+    {
+      "start": "0x1036da06",
+      "end": "0x1036da82",
+      "sha256": "74687f668cd098cfe929c1b2553e23c0c57ad4af05de25766da00d8cd2e425d8"
+    },
+    {
+      "start": "0x1036dd04",
+      "end": "0x1036dd3a",
+      "sha256": "c60819cfd57f8ea476b215e2cc90b7fe0ff21473409345543d8569dc758db617"
+    },
+    {
+      "start": "0x1036dd7c",
+      "end": "0x1036ddd6",
+      "sha256": "9124a05c0b62405c96ca29a8c7e0d0b29a0903d769301d4d36863a1610bf0948"
+    }
+  ]
+}

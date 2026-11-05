@@ -14,6 +14,7 @@ typedef struct AudioChannel {
     Z72Audio *owner;
     unsigned index;
     uint32_t control, mode, status, divider, port;
+    uint32_t block_control, block_count[2];
     uint32_t monitor[2];
     Fifo32 queue[2];
     QEMUTimer *timer;
@@ -112,6 +113,7 @@ static void audio_clear(AudioChannel *c)
 {
     timer_del(c->timer);
     c->control = c->mode = c->status = c->divider = c->port = 0;
+    c->block_control = c->block_count[0] = c->block_count[1] = 0;
     c->monitor[0] = c->monitor[1] = 0;
     fifo32_reset(&c->queue[0]);
     fifo32_reset(&c->queue[1]);
@@ -140,6 +142,8 @@ static MemTxResult audio_read(void *opaque, hwaddr offset, uint64_t *value,
     case 16: *value = audio_status(c); break;
     case 20: *value = c->divider; break;
     case 24: *value = c->port; break;
+    case 0x40: *value = c->block_control; break;
+    case 0x44: case 0x48: *value = c->block_count[((offset & 0xff) - 0x44) / 4]; break;
     case 28: case 0x54: case 0x58: break; /* Disconnected input. */
     case 32:
         for (unsigned lane = 0; lane < 2; lane++) {
@@ -186,6 +190,7 @@ static MemTxResult audio_write(void *opaque, hwaddr offset, uint64_t value,
     case 8:
         /* Input and separate-lane DMA require providers not yet wired. */
         if ((value & ~0xff8fff03u) || (value & (1u << 12)) ||
+            ((value & (1u << 13)) && (c->block_control & 0x100)) ||
             ((value & 2) && ((value & (1u << 15)) || (c->status & (1u << 29)))) ||
             (((value ^ c->control) & 2) && audio_used(c))) {
             return MEMTX_ERROR;
@@ -218,6 +223,22 @@ static MemTxResult audio_write(void *opaque, hwaddr offset, uint64_t value,
         }
         c->port = value;
         break;
+    case 0x40:
+        /* C1.70 configures these fields even for ordinary non-block output.
+         * Retain programming, but do not start unmodelled block transfers. */
+        if ((value & ~0x101u) ||
+            ((value & 0x100) && audio_enabled(c)) ||
+            (((value ^ c->block_control) & 0x100) && audio_used(c))) {
+            return MEMTX_ERROR;
+        }
+        c->block_control = value;
+        break;
+    case 0x44: case 0x48:
+        if (value & ~0xffffu) {
+            return MEMTX_ERROR;
+        }
+        c->block_count[((offset & 0xff) - 0x44) / 4] = value;
+        break;
     case 4: case 0x3c:
         if (c->control & 2) {
             return MEMTX_ERROR;
@@ -231,7 +252,8 @@ static MemTxResult audio_write(void *opaque, hwaddr offset, uint64_t value,
             return MEMTX_ERROR;
         }
     enqueue:
-        if (fifo32_num_used(&c->queue[lane]) == audio_capacity(c)) {
+        if ((c->block_control & 0x100) ||
+            fifo32_num_used(&c->queue[lane]) == audio_capacity(c)) {
             return MEMTX_ERROR;
         }
         fifo32_push(&c->queue[lane], value);

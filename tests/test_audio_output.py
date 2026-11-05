@@ -81,13 +81,31 @@ def check(qemu):
                 monitor0, monitor1 = channel + 0x5c, channel + 0x60
                 assert read(control) == 0x200
                 assert read(status) == 1 << 25
+                assert read(channel + 0x40) == 0
+                assert read(channel + 0x44) == 0 and read(channel + 0x48) == 0
+                write(channel + 0x44, 0x1234)
+                write(channel + 0x48, 0xffff)
+                write(channel + 0x48, 0x10000)
+                assert read(channel + 0x44) == 0x1234
+                assert read(channel + 0x48) == 0xffff
+                write(channel + 0x40, 0x101)
+                write(channel + 0x40, 0x102)
+                assert read(channel + 0x40) == 0x101
+                write(control, 1 << 13)
+                write(output, 0xdeadbeef)
+                assert read(control) == 0x200 and read(occupancy) == 0
+                write(channel + 0x40, 0)
                 # Filling the one-word queue removes both polling-ready causes.
                 write(output, 0x12345678)
+                write(channel + 0x40, 0x100)
+                assert read(channel + 0x40) == 0  # No mode switch with queued data.
                 assert read(occupancy) == 3
                 assert not read(control) & 0x200
                 assert not read(status) & (1 << 25)
                 write(output, 0xdeadbeef)  # Full writes must not replace queued data.
                 write(control, 1 << 13)
+                write(channel + 0x40, 0x100)
+                assert read(channel + 0x40) == 0  # No block enable while running.
                 command('clock_step 1000000')
                 assert read(occupancy) == 3  # Clock disabled.
                 write(divider, 1 << 30)
@@ -122,6 +140,8 @@ def check(qemu):
                 write(base, 1 << index)
                 assert read(control) == 0x200 and read(occupancy) == 0
                 assert read(monitor0) == 0 and read(monitor1) == 0
+                assert read(channel + 0x40) == 0
+                assert read(channel + 0x44) == 0 and read(channel + 0x48) == 0
                 write(output, 0xdeadbeef)
                 assert read(occupancy) == 0
                 write(base, 0)
