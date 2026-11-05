@@ -1,0 +1,191 @@
+{
+  "result": "group1-tail-notification-observed-without-capture-completion",
+  "seconds_after_full": 2.0059259583333335,
+  "capture_state": [
+    8,
+    0
+  ],
+  "driver_state": 15,
+  "pending_driver_state": 20,
+  "delegate_state": 17,
+  "processing_command": 5,
+  "processing_state": 2,
+  "sampling_control": [
+    "0x18",
+    "0x1"
+  ],
+  "sampling_state": 7,
+  "controller_header": [
+    9,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "primary_frames": 1,
+  "preprocessing_checkpoint_counts": {
+    "0x102c3fb6": 0,
+    "0x1012c648": 0,
+    "0x102c4040": 0,
+    "0x1012c6d2": 0,
+    "0x102c43d0": 0,
+    "0x102c44be": 0,
+    "0x1012c85c": 0,
+    "0x1012c94c": 0
+  },
+  "exhausted_observation_points": [
+    "0x102d6c38",
+    "0x1026d402",
+    "0x1026f714"
+  ],
+  "observed_counts": {
+    "0x1022aa82": 1,
+    "0x1022b8bc": 9,
+    "0x104e6c28": 3,
+    "0x104e6c70": 3,
+    "0x102d6c38": 32,
+    "0x1026d402": 32,
+    "0x1022b886": 1,
+    "0x1022b88c": 1,
+    "0x1022b8b6": 1,
+    "0x1022b7a4": 3,
+    "0x1022b7b4": 3,
+    "0x1022aa5c": 1,
+    "0x103f28f6": 1,
+    "0x1022b81e": 1,
+    "0x1022d32a": 1,
+    "0x1022d384": 1,
+    "0x1022a444": 1,
+    "0x1022a4f6": 1,
+    "0x103edaea": 1,
+    "0x103ec25a": 1,
+    "0x103e4b8c": 4,
+    "0x103e4b9c": 14,
+    "0x103e4b9e": 14,
+    "0x103e9d24": 4,
+    "0x103e785e": 1,
+    "0x103e786c": 1,
+    "0x103e7882": 1,
+    "0x103e78b6": 1,
+    "0x103e7312": 3,
+    "0x103e7334": 3,
+    "0x103e6e94": 3,
+    "0x10242124": 2,
+    "0x102422ec": 2,
+    "0x10328e52": 1,
+    "0x103eb604": 1,
+    "0x10394d06": 8,
+    "0x102962ea": 4,
+    "0x102e9b08": 1,
+    "0x1026f714": 32,
+    "0x102e9af6": 1,
+    "0x10394710": 1,
+    "0x10296324": 2
+  },
+  "core_fault_fields_zero": true,
+  "contacts_released": true,
+  "card": {
+    "source_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "output_sha256": "1689ce6ccc76f6e51246b58a100b5958f2f90014ade57a89aa0b8d0657379966",
+    "identical_to_source": true,
+    "mode": "independent persistent copy; same card mode as preprocessing-entry comparison"
+  },
+  "evidence": {
+    "report.json": "32290c30d3da4decd36f9876b5c380f947759256e39e095528040f4872ebf705",
+    "trace.jsonl": "20b22da39497fe6f91c9df99d4c7836f1a85c060759969f38c91f57c35e528b8",
+    "conditions.json": "963dbab3346cd18bd6f4c51f1e7099dcdf6cc840d02e5eedf873db4b47a6fb14",
+    "arguments.json": "695f7c31c6e95d9a0fa23be6b76f85d9d0262fe37c7548f46fa633fd6ecc0b60",
+    "storage.json": "35afae7c44f59f66f501d5f3a059d35d1df0b139dc99e5803d6b7ca22ff7f001",
+    "qemu.log": "53d4a24e66e650b9f657f8f023bacb9e8cb0c1cb321608978c9d7b24179cc712",
+    "before.png": "6b1f278ac019457ecfd03168f8be6b5fb7546f2cc7f2a56a7b3edbfa2c0214f9",
+    "after.png": "ef8d58680382579158041f692b590b4cab3de960434ccb721b223e3845d41235"
+  },
+  "source_sha256": {
+    ".local/repeat-playback/run-group23-group1.py": "91b5112b2fe95a5168ace2c58ac47f2edf5b0103d541d1cc72631a6863496136",
+    ".local/repeat-playback/trace_group1_contacts.py": "6459bf3cf75126ae81a8d62190e193a6ab067e1266c329ca42c7200fded6b0e3",
+    "tools/web_console.py": "696d29663aeb1ed3347a67865b9608654b653cf09febca055bc406d2c0471ec7",
+    "tools/body_shutter_gate_probe.py": "f2ab7cebe4d1011895663e5ed64c878f530ef067e98422a4bbdcd8cd9de3fcaf",
+    "qemu/nikon-z72.c": "8c715ae739ca56c05ae14aafaf7ce479c675081730f0f0861d08fb43a644148f",
+    "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6"
+  },
+  "binary_sha256": "d6ad5fbbb6c1d7608f74ee8db364973e2da97e578b198e49a981d0d05a300e41",
+  "limitations": [
+    "No preprocessing parameter write executed because neither entry was reached.",
+    "One functional RAW frame uses the default monochrome test pattern.",
+    "Observation is bounded; capture completion and a new JPEG are not established."
+  ],
+  "cleanup": {
+    "vm_work_removed": true,
+    "pngs_removed": true,
+    "unchanged_output_card_removed": true
+  },
+  "tail_notifications": [
+    {
+      "value": "0x4200182",
+      "ticks": 151025111
+    },
+    {
+      "value": "0x4200181",
+      "ticks": 151047521
+    },
+    {
+      "value": "0x4200184",
+      "ticks": 151061875
+    },
+    {
+      "value": "0x4200185",
+      "ticks": 151069719
+    },
+    {
+      "value": "0x4200181",
+      "ticks": 151461923
+    },
+    {
+      "value": "0x4200181",
+      "ticks": 151605850
+    },
+    {
+      "value": "0x4200186",
+      "ticks": 151609865
+    },
+    {
+      "value": "0x4200183",
+      "ticks": 152686343
+    }
+  ],
+  "delegate_registration_indices": [
+    "0x1",
+    "0x3",
+    "0x2",
+    "0x4",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0"
+  ]
+}
