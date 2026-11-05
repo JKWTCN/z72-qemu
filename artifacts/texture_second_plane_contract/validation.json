@@ -1,0 +1,41 @@
+{
+  "result": "passed-original-texture-second-plane-tail",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "entry": "0x10646248",
+  "image_field": "0xa0",
+  "emitter": "0x106453cc",
+  "header": "0x015af004",
+  "cases": [
+    {
+      "second_plane": "0x0",
+      "emitted": []
+    },
+    {
+      "second_plane": "0xdb764a00",
+      "emitted": [
+        [
+          1342185472,
+          0,
+          22736900,
+          3681962496
+        ]
+      ]
+    },
+    {
+      "second_plane": "0xb2345600",
+      "emitted": [
+        [
+          1342185472,
+          0,
+          22736900,
+          2989774336
+        ]
+      ]
+    }
+  ],
+  "scope": "Original branch/load/call tail only; emitter intercepted and stack/context synthetic. Zero address omits submission; nonzero addresses forwarded unchanged.",
+  "limitations": [
+    "No complete image descriptor setup, row-order semantics, GPU execution or physical display claim."
+  ],
+  "checker_sha256": "96e094f4747a707dafbf9d8dcdb67afbc164fd37fce90af6b748356f889c7d93"
+}
