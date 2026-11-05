@@ -1415,6 +1415,16 @@ def playback_transform_snapshot(remote, registers):
         values = struct.unpack('<9i', remote.read(address, 36))
         result.update(mode=hex(mode), matrix_address=hex(address), matrix_q16=list(values),
                       context_29c=hex(int.from_bytes(remote.read(context + 0x29c, 4), 'little')))
+        surface = int.from_bytes(remote.read(context + 0x28, 4), 'little')
+        result['surface'] = dict(address=hex(surface))
+        if (0xb1800000 <= surface <= 0xb5efff10 or
+                0xbb300000 <= surface <= 0xbc09ff10):
+            data = remote.read(surface, 0xf0)
+            result['surface']['words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
+                for offset in (8, 0x10, 0x1c, 0x2c, 0x30, 0x74, 0x88, 0x8c, 0x90,
+                               0xa4, 0xa8, 0xcc, 0xd0, 0xd4, 0xd8, 0xdc, 0xe8)}
+        else:
+            result['surface']['unavailable'] = 'Surface outside supported parameter and secondary-buffer RAM'
     else:
         result['matrix_unavailable'] = 'Context outside supported parameter and secondary-buffer RAM'
     return result

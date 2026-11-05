@@ -18,6 +18,7 @@ class Remote:
             context + 0x104: struct.pack('<I', 0x1401),
             context + 0x348: struct.pack('<9i', 65536, 0, 0, 0, -65536, 0, 0, 682 * 65536, 65536),
             context + 0x29c: bytes(4),
+            context + 0x28: struct.pack('<I', 0),
         }
 
     def get(self, registers, name):
@@ -39,6 +40,28 @@ class TransformSnapshotTests(unittest.TestCase):
                 self.assertEqual(result['matrix_q16'][4], -65536)
                 self.assertEqual(result['matrix_address'], hex(context + 0x348))
                 self.assertEqual(result['mode'], '0x1401')
+
+    def test_surface_fields_and_pointer_bounds(self):
+        for surface in (0xb1900000, 0xb5efff10, 0xbb300000, 0xbc09ff10,
+                        0, 0xb5efff14, 0xbc09ff14, 0x20144000):
+            with self.subTest(surface=hex(surface)):
+                context = 0xbc010b20
+                remote = Remote(context)
+                remote.data[context + 0x28] = struct.pack('<I', surface)
+                valid = surface in (0xb1900000, 0xb5efff10, 0xbb300000, 0xbc09ff10)
+                if valid:
+                    data = bytearray(0xf0)
+                    struct.pack_into('<I', data, 0xdc, 0x3fde)
+                    struct.pack_into('<I', data, 0xe8, 1)
+                    remote.data[surface] = bytes(data)
+                result = playback_transform_snapshot(remote, dict(sp=0x50000000, r4=0))['surface']
+                self.assertEqual(result['address'], hex(surface))
+                if valid:
+                    self.assertEqual(result['words']['0xdc'], '0x3fde')
+                    self.assertEqual(result['words']['0xe8'], '0x1')
+                else:
+                    self.assertIn('unavailable', result)
+                    self.assertNotIn(surface, remote.reads)
 
     def test_outside_pool_is_explicit_without_pointer_dereference(self):
         for context in (0, 0xbc09fa04, 0x20144000):
