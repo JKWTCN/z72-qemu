@@ -1,0 +1,189 @@
+{
+  "result": "passed-original-target-plane-address-submission",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "writer": "0x1064609a",
+  "accessor": "0x106d57ac",
+  "cases": [
+    {
+      "format": "0x0",
+      "alpha_bits": 8,
+      "physical_cached": false,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        0,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x0",
+      "alpha_bits": 8,
+      "physical_cached": true,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        0,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x105",
+      "alpha_bits": 8,
+      "physical_cached": false,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        261,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x105",
+      "alpha_bits": 8,
+      "physical_cached": true,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        261,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 8,
+      "physical_cached": false,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        263,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 8,
+      "physical_cached": true,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        263,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 4,
+      "physical_cached": false,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        16777479,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    },
+    {
+      "format": "0x107",
+      "alpha_bits": 4,
+      "physical_cached": true,
+      "burst": [
+        25436164,
+        0,
+        27271172,
+        0,
+        27430916,
+        16777479,
+        27586564,
+        3424169984
+      ],
+      "second_plane": [
+        [
+          28700676,
+          3424868352
+        ]
+      ],
+      "physical_after": "0xcc18b000",
+      "cpu_cache_after": "0xd018b000"
+    }
+  ],
+  "scope": "Original target writer and address accessor executed with synthetic state; command sinks intercepted and byte-copy boundary reproduced.",
+  "finding": "Target primary and secondary command addresses use handle +8, populating it from +0 when empty; +4 CPU cache is preserved and not submitted.",
+  "limitations": [
+    "Normal target path only; alternate mask target path is not tested.",
+    "No hardware row-order semantics or physical panel behavior established."
+  ],
+  "checker_sha256": "aa80d56bbc0d90e352fa6673a2b25cd7d1b1e9a0a593917a2f9b60f4cca35c14"
+}
