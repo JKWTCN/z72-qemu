@@ -2064,6 +2064,7 @@ def snapshot(remote):
                         ('image-stage2', 0xb1864bb0),
                         ('still-stage0', 0xb1864e64), ('still-stage1', 0xb1864e98))},
         input_context_queues=input_context_snapshot(remote),
+        input_tail_queue=input_tail_queue_snapshot(remote),
         input_mask8_owner=hex(word(0xb25ef024)),
         auxiliary_image=auxiliary_image_snapshot(remote),
         primary_input=primary_input_snapshot(remote),
