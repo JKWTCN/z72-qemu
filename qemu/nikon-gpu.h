@@ -578,8 +578,8 @@ static void nikon_gpu_execute(NikonGPU *g, unsigned ch, const uint8_t *data, uns
                         }
                         fprintf(stderr, "Z72_GPU_YUV_DRAW target=%08x format=%08x color=%08x blend=%08x clip=%08x/%08x flags=%08x key=%08x\n",
                                 r[0x1a4], r[0x1a2], r[0x185], r[0x186], r[0xc0], r[0xc1], r[0x1a0], r[0xa6]);
-                        fprintf(stderr,"Z72_GPU_GEOMETRY target=%08x size=%08x state=%08x path_y=%g..%g source=%08x source_size=%08x source_flags=%08x target_flags=%08x\n",
-                                r[0x1a4],r[0x1a3],p?p->regs[0x65]:0,lo,hi,r[0x155],r[0x152],r[0x153],r[0x1a7]);
+                        fprintf(stderr,"Z72_GPU_GEOMETRY target=%08x size=%08x state=%08x path_y=%g..%g source=%08x source_size=%08x source_flags=%08x target_flags=%08x target_11c=%08x target_1a5=%08x source_format=%08x\n",
+                                r[0x1a4],r[0x1a3],p?p->regs[0x65]:0,lo,hi,r[0x155],r[0x152],r[0x153],r[0x1a7],r[0x11c],r[0x1a5],r[0x156]);
                         fprintf(stderr,"Z72_GPU_TEXTURE_MATRIX target=%08x source=%08x mode=%08x raw=%08x/%08x/%08x/%08x/%08x/%08x/%08x/%08x/%08x\n",
                                 r[0x1a4],r[0x155],r[0x184],
                                 r[0x10c],r[0x10d],r[0x10e],r[0x10f],r[0x110],

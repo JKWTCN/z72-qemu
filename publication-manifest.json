@@ -822,7 +822,7 @@
     "docs/z72-k8-recovery.zh-CN.md": "1edd9795af73d2dee43eab8530634f1fce51a3957df9a25748ad43c0dbd3909a",
     "docs/z72-ptp-observation.zh-CN.md": "39b4e1c206554a6b4abd87e3ca1517aaa8297416d344cdb1eb5fc9dbf72e00b4",
     "docs/z72-ptp-read-paths.zh-CN.md": "c9e11ac40bbb203e8b808c9659e40f7c4f6b534d1555e92ab9b982440133370c",
-    "qemu/nikon-gpu.h": "409187602efb96332585783981280223acd8798490496d3956bbf4cd3a2cb624",
+    "qemu/nikon-gpu.h": "615a928048508687c87a3889e4586ca3af53fb8be6f37bf392e05a8377642395",
     "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
     "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
     "qemu/nikon-z72-controller-battery.c": "a48fa6d28da7316a306525af69363fbe1ee1cb434b80aeb0c390e0e293dcf6b7",
