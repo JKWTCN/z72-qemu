@@ -46,6 +46,21 @@ class LCDTests(unittest.TestCase):
                 self.assertLessEqual(max(abs(a - b) for a, b in
                                          zip(actual[at * 3:at * 3 + 3], expected)), 1)
 
+    def test_packed_alpha_order_levels_and_row_padding(self):
+        rgb = lcd_rgb(4, 2, 0, (bytes([41] * 8), 4),
+                      (bytes([240, 110] * 4), 4),
+                      (bytes([81, 81, 90, 240] * 4), 8),
+                      (bytes([0xf0, 0x48, 0xaa, 0x0f, 0x84, 0xbb]), 3), alpha_bits=4)
+        self.assertEqual(rgb, bytes([0, 0, 255, 255, 0, 0, 136, 0, 119, 68, 0, 187,
+                                     255, 0, 0, 0, 0, 255, 68, 0, 187, 136, 0, 119]))
+
+    def test_invalid_alpha_depth_stride_and_length(self):
+        for depth, alpha in ((2, (bytes(2), 2)), (4, (bytes(1), 1)), (4, (bytes(1), 2))):
+            with self.subTest(depth=depth, alpha=alpha):
+                with self.assertRaises(ValueError):
+                    lcd_rgb(4, 1, 0, (bytes(4), 4), (bytes(4), 4),
+                            (bytes(8), 8), alpha, alpha_bits=depth)
+
     def test_neutral_endpoints_and_invalid_planes(self):
         self.assertEqual(lcd_rgb(2, 1, 0, (bytes([16, 235]), 2),
                                  (bytes([128, 128]), 2)), bytes([0, 0, 0, 255, 255, 255]))
@@ -60,7 +75,7 @@ class LCDTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 lcd_rgb(*arguments)
 
-    def machine(self, running=True, broken_uv=False, active_slot=0, overlay_slot=None):
+    def machine(self, running=True, broken_uv=False, active_slot=0, overlay_slot=None, overlay_format=6):
         machine = Machine.__new__(Machine)
         machine.io = threading.Lock()
         machine.lcd_cache = (0, b'')
@@ -81,9 +96,10 @@ class LCDTests(unittest.TestCase):
             registers[0x20144210 + slot * 4] = 0xb1000000 + slot * 0x2000
             registers[0x20144220 + slot * 4] = 0xb1001000 + slot * 0x2000
         if overlay_slot is not None:
-            registers.update({0x20146110: 1, 0x20146200: 6, 0x20146400: 0x20002,
+            registers.update({0x20146110: 1, 0x20146200: overlay_format, 0x20146400: 0x20002,
                               0x20146214: overlay_slot << 16 | ((overlay_slot + 1) % 4) << 8,
-                              0x20146500: 4, 0x20146540: 2, 0x201464c0: 0xb2100000})
+                              0x20146500: 4, 0x20146540: 1 if overlay_format == 5 else 2,
+                              0x201464c0: 0xb2100000})
             for slot in range(4):
                 registers[0x20146440 + slot * 4] = 0xb2000000 + slot * 0x1000
         machine._words = lambda address, count: [registers[address]]
@@ -92,7 +108,7 @@ class LCDTests(unittest.TestCase):
         def read(address, length):
             reads.append((address, length))
             if address == 0xb2100000:
-                return bytes([255, 0, 255, 0])
+                return bytes([0xf0, 0x0f]) if overlay_format == 5 else bytes([255, 0, 255, 0])
             if 0xb2000000 <= address < 0xb2004000:
                 return bytes([145, 145, 54, 34] * 2)
             if address & 0x1000:
@@ -143,6 +159,14 @@ class LCDTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Read failed'):
                 machine.lcd_png()
             self.assertEqual(calls, ['query-status', 'stop', 'cont'] if running else ['query-status'])
+
+    def test_snapshot_packed_alpha_plane_size_and_pixels(self):
+        machine, calls, reads = self.machine(overlay_slot=2, overlay_format=5)
+        image = machine.lcd_png()
+        self.assertEqual(reads[-1], (0xb2100000, 2))
+        self.assertEqual(calls, ['query-status', 'stop', 'cont'])
+        with Image.open(BytesIO(image)) as frame:
+            self.assertEqual(frame.tobytes(), bytes([255, 0, 0, 0, 255, 1, 0, 255, 1, 255, 0, 0]))
 
 
 if __name__ == '__main__':

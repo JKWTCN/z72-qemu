@@ -12,8 +12,8 @@ def _rgb(y, u, v):
                   298 * c + 516 * d + 128))
 
 
-def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None):
-    """Compose NV16/NV12 background and optional equal-size YYUV+A8 UI.
+def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None, *, alpha_bits=8):
+    """Compose NV16/NV12 background and optional equal-size YYUV+A4/A8 UI.
 
     Each plane is a (bytes, byte stride) pair. The conversion and straight
     alpha composition follow the existing functional pixel backend; this
@@ -23,6 +23,7 @@ def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None)
             format_ in (0, 4) and (format_ != 4 or not height & 1),
             'Unsupported display background format or geometry')
     require((overlay is None) == (alpha is None), 'Incomplete display overlay planes')
+    require(alpha_bits in (4, 8), 'Unsupported display alpha depth')
 
     def check(plane, minimum, rows):
         data, stride = plane
@@ -34,7 +35,7 @@ def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None)
     uv, uvs = check(chroma, width, height // 2 if format_ == 4 else height)
     if overlay is not None:
         foreground, fs = check(overlay, width * 2, height)
-        opacity, os = check(alpha, width, height)
+        opacity, os = check(alpha, width // 2 if alpha_bits == 4 else width, height)
     output = bytearray(width * height * 3)
     for row in range(height):
         uv_row = (row // 2 if format_ == 4 else row) * uvs
@@ -44,7 +45,10 @@ def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None)
                 x = column + pixel
                 color = _rgb(y[row * ys + x], u, v)
                 if overlay is not None:
-                    a = opacity[row * os + x]
+                    if alpha_bits == 4:
+                        a = ((opacity[row * os + x // 2] >> ((x & 1) * 4)) & 15) * 17
+                    else:
+                        a = opacity[row * os + x]
                     if a:
                         at = row * fs + column * 2
                         front = _rgb(foreground[at + pixel], foreground[at + 2], foreground[at + 3])

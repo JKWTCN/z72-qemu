@@ -910,7 +910,7 @@ class Machine:
         return encoded
 
     def lcd_png(self):
-        """Read coherent channel-1 Y/UV and format-6 YYUV+A8 UI planes."""
+        """Read coherent channel-1 Y/UV and format-5/6 YYUV+A4/A8 UI planes."""
         now = time.monotonic()
         if self.lcd_cache and now - self.lcd_cache[0] < self.lcd_interval:
             return self.lcd_cache[1]
@@ -941,17 +941,22 @@ class Machine:
                 chroma = plane(0x20144220 + slot * 4, 0x20144250, width,
                                height // 2 if format_ == 4 else height)
                 overlay = alpha = None
+                alpha_bits = 8
                 if self._words(0x20146110, 1)[0] & 1:
-                    if (self._words(0x20146200, 1)[0] & 31 != 6 or
+                    overlay_format = self._words(0x20146200, 1)[0] & 31
+                    if (overlay_format not in (5, 6) or
                             self._words(0x20146400, 1)[0] != geometry or width & 1):
                         raise ValueError('Unsupported display overlay format or geometry')
+                    alpha_bits = 4 if overlay_format == 5 else 8
                     overlay_slot = (self._words(0x20146214, 1)[0] >> 16) & 3
                     overlay = plane(0x20146440 + overlay_slot * 4, 0x20146500, width * 2)
-                    alpha = plane(0x201464c0, 0x20146540, width)
+                    alpha = plane(0x201464c0, 0x20146540,
+                                  width // 2 if alpha_bits == 4 else width)
             finally:
                 if running:
                     self.qmp.command('cont')
-        rows = lcd_rgb(width, height, format_, luminance, chroma, overlay, alpha)
+        rows = lcd_rgb(width, height, format_, luminance, chroma, overlay, alpha,
+                       alpha_bits=alpha_bits)
         data = b'P6\n%d %d\n255\n' % (width, height) + rows
         encoded = ppm_to_png(data)
         self.lcd_cache = (time.monotonic(), encoded)
