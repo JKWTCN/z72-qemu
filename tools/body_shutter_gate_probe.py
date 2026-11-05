@@ -545,6 +545,7 @@ IMAGE_WORK_WAIT_POINTS = {
     0x10369968: 'image-device-bank1-interrupt',
 }
 AFTER_PLAYBACK = {
+    0x10645504: 'playback-gpu-target-surface',
     0x105a9ca6: 'playback-image-transform-before',
     0x105aa1bc: 'playback-image-transform-after',
     0x105a9c5a: 'playback-image-import-primary',
@@ -1415,18 +1416,29 @@ def playback_transform_snapshot(remote, registers):
         values = struct.unpack('<9i', remote.read(address, 36))
         result.update(mode=hex(mode), matrix_address=hex(address), matrix_q16=list(values),
                       context_29c=hex(int.from_bytes(remote.read(context + 0x29c, 4), 'little')))
+    else:
+        result['matrix_unavailable'] = 'Context outside supported parameter and secondary-buffer RAM'
+    return result
+
+
+def playback_surface_snapshot(remote, registers):
+    # At 10645504, R4 is the submission context used by the target-state writer.
+    context = remote.get(registers, 'r4')
+    result = dict(submission_context=hex(context))
+    if (0xb1800000 <= context <= 0xb5efffd4 or
+            0xbb300000 <= context <= 0xbc09ffd4):
         surface = int.from_bytes(remote.read(context + 0x28, 4), 'little')
-        result['surface'] = dict(address=hex(surface))
+        result['address'] = hex(surface)
         if (0xb1800000 <= surface <= 0xb5efff10 or
                 0xbb300000 <= surface <= 0xbc09ff10):
             data = remote.read(surface, 0xf0)
-            result['surface']['words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
+            result['words'] = {hex(offset): hex(struct.unpack_from('<I', data, offset)[0])
                 for offset in (8, 0x10, 0x1c, 0x2c, 0x30, 0x74, 0x88, 0x8c, 0x90,
                                0xa4, 0xa8, 0xcc, 0xd0, 0xd4, 0xd8, 0xdc, 0xe8)}
         else:
-            result['surface']['unavailable'] = 'Surface outside supported parameter and secondary-buffer RAM'
+            result['unavailable'] = 'Surface outside supported parameter and secondary-buffer RAM'
     else:
-        result['matrix_unavailable'] = 'Context outside supported parameter and secondary-buffer RAM'
+        result['unavailable'] = 'Submission context outside supported parameter and secondary-buffer RAM'
     return result
 
 
@@ -3228,6 +3240,10 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
                     if playback:
                         record['application_index'] = remote.read(0xb1811e50, 1)[0]
+                        if pc == 0x10645504:
+                            record['target_surface'] = playback_surface_snapshot(remote, registers)
+                            hits[pc] = hits.get(pc, 0) + 1
+                            repeat = hits[pc] < 128
                         if pc in (0x105a9ca6, 0x105aa1bc):
                             record['image_transform'] = playback_transform_snapshot(remote, registers)
                         if pc in (0x105a9c5a, 0x105aa7b4, 0x105aaeb4):

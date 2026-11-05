@@ -6,7 +6,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from tools.body_shutter_gate_probe import playback_transform_snapshot
+from tools.body_shutter_gate_probe import playback_transform_snapshot, playback_surface_snapshot
 
 
 class Remote:
@@ -40,6 +40,7 @@ class TransformSnapshotTests(unittest.TestCase):
                 self.assertEqual(result['matrix_q16'][4], -65536)
                 self.assertEqual(result['matrix_address'], hex(context + 0x348))
                 self.assertEqual(result['mode'], '0x1401')
+                self.assertNotIn(context + 0x28, remote.reads)
 
     def test_surface_fields_and_pointer_bounds(self):
         for surface in (0xb1900000, 0xb5efff10, 0xbb300000, 0xbc09ff10,
@@ -54,7 +55,7 @@ class TransformSnapshotTests(unittest.TestCase):
                     struct.pack_into('<I', data, 0xdc, 0x3fde)
                     struct.pack_into('<I', data, 0xe8, 1)
                     remote.data[surface] = bytes(data)
-                result = playback_transform_snapshot(remote, dict(sp=0x50000000, r4=0))['surface']
+                result = playback_surface_snapshot(remote, dict(r4=context))
                 self.assertEqual(result['address'], hex(surface))
                 if valid:
                     self.assertEqual(result['words']['0xdc'], '0x3fde')
@@ -62,6 +63,13 @@ class TransformSnapshotTests(unittest.TestCase):
                 else:
                     self.assertIn('unavailable', result)
                     self.assertNotIn(surface, remote.reads)
+
+    def test_invalid_submission_context_is_not_dereferenced(self):
+        for context in (0, 0xb5efffd8, 0xbc09ffd8, 0x20144000):
+            remote = Remote(context)
+            result = playback_surface_snapshot(remote, dict(r4=context))
+            self.assertIn('unavailable', result)
+            self.assertEqual(remote.reads, [])
 
     def test_outside_pool_is_explicit_without_pointer_dereference(self):
         for context in (0, 0xbc09fa04, 0x20144000):
