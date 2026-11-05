@@ -1,0 +1,138 @@
+{
+  "observation": "C1.70 audio register contract and current mapping gap",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "image_base": "0x10020000",
+  "windows": [
+    {
+      "address": "0x1036d758",
+      "end_exclusive": "0x1036d7b6",
+      "file_offset": "0x34d758",
+      "length": 94,
+      "sha256": "1892fceefe4db9aa49476ca94ad87124815002d83868c82e2c76a3707f71a755",
+      "purpose": "status decoding and error acknowledgement"
+    },
+    {
+      "address": "0x1036d7fa",
+      "end_exclusive": "0x1036d826",
+      "file_offset": "0x34d7fa",
+      "length": 44,
+      "sha256": "942e8631717b624e4ad7e58ab0bc39e19a7628f503c5ad0fce05a7e11eccdeba",
+      "purpose": "interrupt registration"
+    },
+    {
+      "address": "0x1036d844",
+      "end_exclusive": "0x1036d866",
+      "file_offset": "0x34d844",
+      "length": 34,
+      "sha256": "dd3053cc9bcfaa8c1f8b1196c253b1ca33c5c0d5ca6ef9e52cc4661a42d285a7",
+      "purpose": "reset-bit clearing"
+    },
+    {
+      "address": "0x1036da06",
+      "end_exclusive": "0x1036db3e",
+      "file_offset": "0x34da06",
+      "length": 312,
+      "sha256": "e0c87b0c819a485e4061c422517150867f55efca3ead2586b4a638952b874518",
+      "purpose": "format configuration and divider programming"
+    },
+    {
+      "address": "0x1036e3a4",
+      "end_exclusive": "0x1036e3b4",
+      "file_offset": "0x34e3a4",
+      "length": 16,
+      "sha256": "2a3f1ca3cfb3dad95cf29891cc24520d9f08c8e02ddbe9d80a14b4d329acfcd4",
+      "purpose": "output monitor reads"
+    },
+    {
+      "address": "0x1036e4b6",
+      "end_exclusive": "0x1036e4c4",
+      "file_offset": "0x34e4b6",
+      "length": 14,
+      "sha256": "a23d0c07f7db96afcb9e65435dd09acee393aad3a33f611d30708c59bba1a114",
+      "purpose": "channel register displacement"
+    },
+    {
+      "address": "0x1036e4c4",
+      "end_exclusive": "0x1036e542",
+      "file_offset": "0x34e4c4",
+      "length": 126,
+      "sha256": "dd7cb12ca710c085ed68debf862db9e5b1c32c72587575d3fc4891cbeb278354",
+      "purpose": "polling output transfer"
+    },
+    {
+      "address": "0x1036e542",
+      "end_exclusive": "0x1036e5cc",
+      "file_offset": "0x34e542",
+      "length": 138,
+      "sha256": "63b2377885b7e5cc61460c099823ebf0169bb3c03cfeaece401a0551998af6cc",
+      "purpose": "output DMA request selection"
+    }
+  ],
+  "register_base": "0x2c080000",
+  "channel_bases": [
+    "0x2c080100",
+    "0x2c080200"
+  ],
+  "interrupts": [
+    167,
+    168
+  ],
+  "output_poll": {
+    "function": "0x1036e4c4",
+    "loop": "0x1036e4fe",
+    "ready_when": "channel status bit25 OR control bit9",
+    "combined_write_offset": "0x04",
+    "separate_write_offsets": [
+      "0x30",
+      "0x34"
+    ],
+    "selection": "control bit1; even source index uses 0x30, odd uses 0x34"
+  },
+  "divider": {
+    "function": "0x1036db04",
+    "offset": "0x14",
+    "fields": [
+      {
+        "lsb": 24,
+        "width": 5
+      },
+      {
+        "lsb": 18,
+        "width": 3
+      },
+      {
+        "lsb": 16,
+        "width": 2
+      }
+    ],
+    "enable_bit": 30,
+    "programming": "clear enable, update fields, set enable"
+  },
+  "output_monitors": [
+    "0x5c",
+    "0x60"
+  ],
+  "dma_request_selectors": [
+    3,
+    7
+  ],
+  "current_mapping": {
+    "machine": "nikon-z72-lab",
+    "source": "QMP human-monitor-command info mtree",
+    "covering_region": "z72-release-block-lab",
+    "start": "0x2c010000",
+    "end_inclusive": "0x2c08ffff",
+    "kind": "ram",
+    "priority": 0,
+    "audio_device_present": false
+  },
+  "unverified": [
+    "PCM sample packing and physical channel ordering",
+    "FIFO depth and threshold behavior",
+    "Physical input clock and sample frequency",
+    "Full native audio initialization and playback",
+    "Slave-role audio ownership and wiring",
+    "DMA request routing beyond recovered selector values"
+  ],
+  "binary_sha256": "31e7ce8b92d461f721e32845d79929a8ee38efc3e7aaa791b6a91b825c493ce6"
+}
