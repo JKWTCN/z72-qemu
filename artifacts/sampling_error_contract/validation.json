@@ -1,0 +1,94 @@
+{
+  "result": "passed",
+  "master_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "cases": [
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 7,
+      "mask": "0x10000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 3,
+      "state": 7,
+      "mask": "0x20000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 5,
+      "state": 7,
+      "mask": "0x80000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 7,
+      "mask": "0x30000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 7,
+      "mask": "0x90000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 3,
+      "state": 7,
+      "mask": "0xa0000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 7,
+      "mask": "0xb0000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 17,
+      "mask": "0x10000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 3,
+      "state": 17,
+      "mask": "0x20000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 5,
+      "state": 17,
+      "mask": "0x80000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 17,
+      "mask": "0x30000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 17,
+      "mask": "0x90000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 3,
+      "state": 17,
+      "mask": "0xa0000"
+    },
+    {
+      "notification": "0x4200181",
+      "index": 2,
+      "state": 17,
+      "mask": "0xb0000"
+    }
+  ],
+  "limitations": [
+    "Synthetic delegate state and callback registration.",
+    "Stops before notification consumer; no device error or status is injected."
+  ]
+}
