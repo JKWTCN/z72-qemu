@@ -237,6 +237,43 @@ int main(void) {
     for(unsigned y=0;y<6;y++) {
         for(unsigned x=0;x<8;x++) { CHECK(!memcmp(memory+0x1000+(y*8+x)*4,row_colors[y],4)); }
     }
+    /* Distinct pixels distinguish all four rotations and both row directions. */
+    for(unsigned j=0;j<p->edges->len;j++) {
+        NikonGPUEdge *e=&g_array_index(p->edges,NikonGPUEdge,j);
+        e->x0=e->ux0/2; e->x1=e->ux1/2;
+        e->y0=e->uy0*2/3; e->y1=e->uy1*2/3;
+    }
+    r[0x1a3]=r[0x152]=(4<<16)|4; r[0xc0]=r[0xc1]=3<<16;
+    uint8_t asymmetric[64];
+    for(unsigned y=0;y<4;y++) {
+        for(unsigned x=0;x<4;x++) {
+            memcpy(asymmetric+(y*4+x)*4,(uint8_t[]){x*60,y*60,(x+y)*30,255},4);
+        }
+    }
+    memcpy(memory+0x3000,asymmetric,sizeof(asymmetric));
+    static const uint32_t rotations[][9]={
+        {0x3d0000,0,0,0,0xbd0000,0x3f0000,0,0,0x3f0000},
+        {0,0xbd0000,0x3f0000,0xbd0000,0,0x3f0000,0,0,0x3f0000},
+        {0xbd0000,0,0x3f0000,0,0x3d0000,0,0,0,0x3f0000},
+        {0,0x3d0000,0,0x3d0000,0,0,0,0,0x3f0000}};
+    for(unsigned rotation=0;rotation<4;rotation++) {
+        memcpy(r+0x10c,rotations[rotation],sizeof(rotations[rotation]));
+        CHECK(nikon_gpu_draw(&g,r,p));
+        for(unsigned y=0;y<4;y++) {
+            for(unsigned x=0;x<4;x++) {
+                unsigned sx=rotation==0?x:rotation==1?y:rotation==2?3-x:3-y;
+                unsigned sy=rotation==0?y:rotation==1?3-x:rotation==2?3-y:x;
+                CHECK(!memcmp(memory+0x1000+(y*4+x)*4,asymmetric+(sy*4+sx)*4,4));
+            }
+        }
+    }
+    /* The intermediate RGBA target can be sampled again without a host flip. */
+    memcpy(r+0x10c,rotations[0],sizeof(rotations[0]));
+    CHECK(nikon_gpu_draw(&g,r,p));
+    r[0x155]=r[0x1a4]; r[0x1a4]=0xa1002000;
+    CHECK(nikon_gpu_draw(&g,r,p));
+    CHECK(!memcmp(memory+0x2000,asymmetric,sizeof(asymmetric)));
+    CHECK(!memcmp(memory+0x1000,asymmetric,sizeof(asymmetric)));
     nikon_gpu_path_free(p);
     printf("PASS %u synthetic renderer checks\n",checks); return 0;
 }
