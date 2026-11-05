@@ -1,0 +1,79 @@
+{
+  "result": "passed-latest-photo-exact-active-decode",
+  "reference_decode": "Pillow directly in YCbCr mode without RGB conversion",
+  "references": [
+    {
+      "photo": "DSC_0001.JPG",
+      "offset": "0x138200",
+      "size": [
+        1620,
+        1080
+      ],
+      "sha256": "35cc1ecb45d63ba2e6e6fce563b265b97906fc0401753718142478f4ef88913f",
+      "independent_plane_sha256": [
+        "32cc697ba151496e023b73fbccf84f7b29dfe0fd91223caa36b39227a34a25c4",
+        "cbec73307da9338ef3d33c25373e110e729476b683253af534c0a3d3f366e64b"
+      ]
+    },
+    {
+      "photo": "DSC_0002.JPG",
+      "offset": "0x139000",
+      "size": [
+        1620,
+        1080
+      ],
+      "sha256": "612618ba3d2b6ceeaa9f33b7971076c82a6887832f8239d2f585d1a74330cb32",
+      "independent_plane_sha256": [
+        "49e75ed013bafaa067592b546907e7def5e24080c97f2b86c911a108e46bfd80",
+        "16f6dfdf4e41f2d379f8695508d004a6cbabd18e32e650164dca23ee6938ddd6"
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "entry": "playback-jpeg-interrupt",
+      "counter_ticks": 326195825,
+      "planes": [
+        {
+          "register": "0x430",
+          "address": "0xdb5b6500",
+          "width": 1620,
+          "height": 1080,
+          "stride": 1632,
+          "active_bytes": 1749600,
+          "active_sha256": "49e75ed013bafaa067592b546907e7def5e24080c97f2b86c911a108e46bfd80",
+          "minimum": 11,
+          "maximum": 101,
+          "unique_bytes": 57
+        },
+        {
+          "register": "0x434",
+          "address": "0xdb764a00",
+          "width": 1620,
+          "height": 1080,
+          "stride": 1632,
+          "active_bytes": 1749600,
+          "active_sha256": "16f6dfdf4e41f2d379f8695508d004a6cbabd18e32e650164dca23ee6938ddd6",
+          "minimum": 88,
+          "maximum": 172,
+          "unique_bytes": 77
+        }
+      ],
+      "matches": [
+        {
+          "photo": "DSC_0002.JPG",
+          "offset": "0x139000",
+          "size": [
+            1620,
+            1080
+          ],
+          "sha256": "612618ba3d2b6ceeaa9f33b7971076c82a6887832f8239d2f585d1a74330cb32",
+          "independent_plane_sha256": [
+            "49e75ed013bafaa067592b546907e7def5e24080c97f2b86c911a108e46bfd80",
+            "16f6dfdf4e41f2d379f8695508d004a6cbabd18e32e650164dca23ee6938ddd6"
+          ]
+        }
+      ]
+    }
+  ]
+}

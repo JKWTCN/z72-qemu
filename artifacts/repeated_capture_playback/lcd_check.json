@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "result": "passed-second-photo-color-background-with-reversed-storage-rows",
+  "lcd": {
+    "width": 1024,
+    "height": 682,
+    "format": 0,
+    "luminance": {
+      "address": "0xcc18b000",
+      "stride": 1024,
+      "rows": 682
+    },
+    "chroma": {
+      "address": "0xcc235800",
+      "stride": 1024,
+      "rows": 682
+    },
+    "bytes": 2095104,
+    "sha256": "fdac8fa0e3f30af59d08233002ef0202b2503432de9dbf16fc3f5c3001109e37",
+    "was_running": true,
+    "ui_overlay_included": false
+  },
+  "comparisons": [
+    {
+      "photo": "DSC_0001.JPG",
+      "maximum_rgb_error": 85,
+      "mean_maximum_channel_error": 74.875,
+      "reversed_row_maximum_rgb_error": 5,
+      "reversed_row_mean_maximum_channel_error": 3.375,
+      "rgb_samples": 432
+    },
+    {
+      "photo": "DSC_0002.JPG",
+      "maximum_rgb_error": 84,
+      "mean_maximum_channel_error": 75.875,
+      "reversed_row_maximum_rgb_error": 2,
+      "reversed_row_mean_maximum_channel_error": 0.75,
+      "rgb_samples": 432
+    }
+  ],
+  "allowed_rgb_error": 3,
+  "method": "432 interior palette samples per photo at equal normalized x and reversed reference y; forward-row comparisons retained as controls.",
+  "row_direction": "Observed raw background storage versus JPEG order, not a decoded physical display orientation bit.",
+  "display_registers": {
+    "0x200": "0x300000",
+    "0x204": "0x2aa0400",
+    "0x240": "0x400",
+    "0x250": "0x400",
+    "0x410": "0x200",
+    "0x414": "0xc00100",
+    "0x418": "0xc0",
+    "0x41c": "0x0",
+    "0x420": "0x80000000",
+    "0x424": "0x8000",
+    "0x600": "0x0",
+    "0x604": "0x0"
+  },
+  "ui_overlay_included": false,
+  "gpu_background_draw": "Z72_GPU_GEOMETRY target=cc18b000 source=db5b6500 source_size=06600438",
+  "physical_scanout_verified": false,
+  "full_arbitrary_scene_pixel_comparison": false
+}

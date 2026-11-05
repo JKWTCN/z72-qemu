@@ -4154,6 +4154,15 @@ def observe(machine, seconds, playback=False, local_stop_events=False, returning
         machine.set_key(24, 1)
 
 
+def post_capture_playback_ready(trace, application, expected_presses):
+    shots = trace['body_repeat_capture']['shots']
+    captured = trace['after']
+    return (len(shots) == expected_presses and all(shot['released'] for shot in shots) and
+            trace['shutter_click']['released'] and captured['capture_state'] == [2, 0] and
+            captured['capture_driver_state'] == 9 and captured['status_codes'] == [] and
+            application['index'] == 3)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
@@ -4199,7 +4208,7 @@ def main():
     parser.add_argument('--playback-click', action='store_true',
                         help='Release the playback key after a quarter counter second')
     parser.add_argument('--playback-after-capture', type=int, default=0, metavar='SECONDS',
-                        help='After one focused body capture recovers, short-press playback in the same guest and observe for 10..3600 host seconds (0 disables)')
+                        help='After the requested focused body captures recover, short-press playback in the same guest and observe for 10..3600 host seconds (0 disables)')
     parser.add_argument('--local-stop-events', action='store_true',
                         help='Laboratory input: pulse the enabled synchronization line at each local stop wait')
     parser.add_argument('--round-trip', action='store_true',
@@ -4437,8 +4446,8 @@ def main():
             'Post-capture playback time out of bounds')
     require(not args.playback_after_capture or args.body_exposure is not None and
             args.capture_focus and args.shutter_click and persistent_card and
-            not (args.playback or args.repeat_body_capture),
-            'Post-capture playback requires one focused body shot, released contacts and a private card copy')
+            not args.playback,
+            'Post-capture playback requires focused body capture, released contacts and a private card copy')
     require(not args.round_trip or args.playback, 'Round trip requires playback')
     require(not args.return_click or args.round_trip, 'Return click requires a round trip')
     require(not args.gpio_handshake_events or args.round_trip,
@@ -4593,12 +4602,11 @@ def main():
             report['input_dma_before'] = initial_dma
         report['final_application'] = machine.status()
         if args.playback_after_capture:
-            captured = report['trace']['after']
-            ready = (report['trace']['shutter_click']['released'] and
-                     captured['capture_state'] == [2, 0] and
-                     captured['capture_driver_state'] == 9 and captured['status_codes'] == [] and
-                     report['final_application']['index'] == 3)
-            stage = report['playback_after_capture'] = dict(requested=True, started=ready)
+            expected_presses = 2 if args.repeat_body_capture else 1
+            ready = post_capture_playback_ready(report['trace'], report['final_application'], expected_presses)
+            stage = report['playback_after_capture'] = dict(requested=True, started=ready,
+                expected_body_presses=expected_presses,
+                observed_body_presses=len(report['trace']['body_repeat_capture']['shots']))
             if ready:
                 stage['native_lcd_before'] = lcd_snapshot(machine)
                 stage['trace'] = observe(machine, args.playback_after_capture, playback=True, playback_click=True,
@@ -4606,7 +4614,7 @@ def main():
                 stage['application'] = machine.status()
                 report['final_application'] = stage['application']
             else:
-                stage['reason'] = 'Body capture did not recover to shooting with released contacts and no status codes'
+                stage['reason'] = 'Body capture did not recover after the requested presses with released contacts and no status codes'
         if args.playback or args.playback_after_capture and stage['started']:
             with machine.io:
                 report['jpeg_decoded_counts'] = [dict(master=machine.qmp.command('qom-get',

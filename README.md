@@ -104,6 +104,9 @@ With the virtual lens, nonzero experimental timing input and explicit preprocess
 skip, `--repeat-body-capture` also saves two scene JPEGs in one guest. The
 [repeated-capture receipt](research/z7ii/repeated_scene_capture.md) checks both
 card files, eight decoded images and native metadata buffers independently.
+The same profile can then enter playback with `--playback-after-capture SECONDS`;
+the [combined receipt](research/z7ii/repeated_capture_playback.md) matches the
+entire native decode to the second card photo and checks its color background.
 It does not establish the default profile, physical exposure or original DSP execution.
 The default console profile now returns from the menu to shooting and reopens
 the menu through normal input; auto-menu waits for the same rendering readiness

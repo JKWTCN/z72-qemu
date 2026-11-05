@@ -1183,3 +1183,19 @@ writes. The second input is a local full frame after the first split input.
 The owned card clone and 32 intermediate codec images are removed; exported
 original JPGs remain private and ignored by Git. Historical null-descriptor
 failure is not reproduced in this profile or attributed to one isolated change.
+
+`python tests/test_post_capture_playback.py` checks admission of playback after
+one or two requested body presses. All requested contacts must be released,
+the shooting application must be foreground, the native capture/driver states
+must have recovered and the status list must be empty. Missing presses, held
+contacts and incomplete recovery keep playback from starting. The body probe
+allows `--repeat-body-capture` with `--playback-after-capture SECONDS` under the
+existing focused-body and private-card prerequisites, and records the expected
+and observed press counts separately.
+
+The [same-guest observation](../research/z7ii/repeated_capture_playback.md)
+independently verifies both card files and matches all 3,499,200 active native
+decode bytes to the second photo. Raw LCD background checks retain forward-row
+and reversed-row results; physical panel orientation and UI are unverified.
+Exported JPGs stay private, and the owned card clone and intermediate pixel
+files are removed after verification.
