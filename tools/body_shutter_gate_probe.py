@@ -2126,10 +2126,13 @@ def lcd_snapshot(machine):
         try:
             size = machine._words(0x20144204, 1)[0]
             width, height = size & 0xffff, (size >> 16) & 0x3fff
-            planes = [machine._words(address, 1)[0] for address in (0x20144210, 0x20144220)]
-            result = dict(width=width, height=height, planes=[hex(value) for value in planes],
+            slot = (machine._words(0x20144260, 1)[0] >> 16) & 3
+            planes = [machine._words(address + slot * 4, 1)[0]
+                      for address in (0x20144210, 0x20144220)]
+            result = dict(width=width, height=height, active_background_slot=slot,
+                          planes=[hex(value) for value in planes],
                           registers={hex(offset): hex(machine._words(0x20144000 + offset, 1)[0])
-                                     for offset in (0x200, 0x204, 0x240, 0x250,
+                                     for offset in (0x200, 0x204, 0x240, 0x250, 0x260,
                                                     0x410, 0x414, 0x418, 0x41c, 0x420, 0x424,
                                                     0x600, 0x604)})
             candidates = {}

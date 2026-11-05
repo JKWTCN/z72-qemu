@@ -1,0 +1,79 @@
+{
+  "result": "passed-original-background-slot-readback",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "getter": "0x1046c3ae",
+  "control_resolver": "0x1046e27e",
+  "address_resolver": "0x1046e250",
+  "cases": [
+    {
+      "plane": 0,
+      "control": "0x20144260",
+      "control_value": "0x80000155",
+      "requested_slot": 1,
+      "readback_slot": 0,
+      "address_register": "0x20144210"
+    },
+    {
+      "plane": 0,
+      "control": "0x20144260",
+      "control_value": "0x80010255",
+      "requested_slot": 2,
+      "readback_slot": 1,
+      "address_register": "0x20144214"
+    },
+    {
+      "plane": 0,
+      "control": "0x20144260",
+      "control_value": "0x80020355",
+      "requested_slot": 3,
+      "readback_slot": 2,
+      "address_register": "0x20144218"
+    },
+    {
+      "plane": 0,
+      "control": "0x20144260",
+      "control_value": "0x80030055",
+      "requested_slot": 0,
+      "readback_slot": 3,
+      "address_register": "0x2014421c"
+    },
+    {
+      "plane": 1,
+      "control": "0x20144260",
+      "control_value": "0x80000155",
+      "requested_slot": 1,
+      "readback_slot": 0,
+      "address_register": "0x20144220"
+    },
+    {
+      "plane": 1,
+      "control": "0x20144260",
+      "control_value": "0x80010255",
+      "requested_slot": 2,
+      "readback_slot": 1,
+      "address_register": "0x20144224"
+    },
+    {
+      "plane": 1,
+      "control": "0x20144260",
+      "control_value": "0x80020355",
+      "requested_slot": 3,
+      "readback_slot": 2,
+      "address_register": "0x20144228"
+    },
+    {
+      "plane": 1,
+      "control": "0x20144260",
+      "control_value": "0x80030055",
+      "requested_slot": 0,
+      "readback_slot": 3,
+      "address_register": "0x2014422c"
+    }
+  ],
+  "scope": "Original getters and address lookup executed with synthetic display register RAM; channel offset 0x4000.",
+  "limitations": [
+    "Does not establish when hardware latches requested slots or generates completion.",
+    "No original runtime with a nonzero active slot or orientation correction demonstrated."
+  ],
+  "checker_sha256": "da79b6fa06c77c6cc587b9bb89717b71d73bd8beb5d1fe3496d62c7e54a7c47e"
+}

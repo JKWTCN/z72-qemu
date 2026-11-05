@@ -936,8 +936,9 @@ class Machine:
                         raise ValueError('Display output plane is not configured')
                     return bytes(self._bytes(address, stride * rows)), stride
 
-                luminance = plane(0x20144210, 0x20144240, width)
-                chroma = plane(0x20144220, 0x20144250, width,
+                slot = (self._words(0x20144260, 1)[0] >> 16) & 3
+                luminance = plane(0x20144210 + slot * 4, 0x20144240, width)
+                chroma = plane(0x20144220 + slot * 4, 0x20144250, width,
                                height // 2 if format_ == 4 else height)
                 overlay = alpha = None
                 if self._words(0x20146110, 1)[0] & 1:

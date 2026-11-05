@@ -60,7 +60,7 @@ class LCDTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 lcd_rgb(*arguments)
 
-    def machine(self, running=True, broken_uv=False):
+    def machine(self, running=True, broken_uv=False, active_slot=0):
         machine = Machine.__new__(Machine)
         machine.io = threading.Lock()
         machine.lcd_cache = (0, b'')
@@ -75,14 +75,17 @@ class LCDTests(unittest.TestCase):
 
         machine.qmp = Monitor()
         registers = {0x20144204: 0x20002, 0x20144200: 4,
-                     0x20144210: 0xb1000000, 0x20144240: 2,
-                     0x20144220: 0xb1001000, 0x20144250: 2, 0x20146110: 0}
+                     0x20144240: 2, 0x20144250: 2, 0x20146110: 0,
+                     0x20144260: active_slot << 16 | ((active_slot + 1) % 4) << 8}
+        for slot in range(4):
+            registers[0x20144210 + slot * 4] = 0xb1000000 + slot * 0x2000
+            registers[0x20144220 + slot * 4] = 0xb1001000 + slot * 0x2000
         machine._words = lambda address, count: [registers[address]]
         reads = []
 
         def read(address, length):
             reads.append((address, length))
-            if address == 0xb1001000:
+            if address & 0x1000:
                 if broken_uv:
                     raise ValueError('Read failed')
                 return bytes([90, 240])
@@ -90,6 +93,16 @@ class LCDTests(unittest.TestCase):
 
         machine._bytes = read
         return machine, calls, reads
+
+    def test_snapshot_uses_active_background_slot_not_requested_slot(self):
+        for slot in range(4):
+            with self.subTest(slot=slot):
+                machine, _, reads = self.machine(active_slot=slot)
+                image = machine.lcd_png()
+                self.assertEqual(reads, [(0xb1000000 + slot * 0x2000, 4),
+                                         (0xb1001000 + slot * 0x2000, 2)])
+                with Image.open(BytesIO(image)) as frame:
+                    self.assertEqual(frame.tobytes(), bytes([255, 0, 0] * 4))
 
     def test_snapshot_reads_half_height_uv_and_caches_png(self):
         machine, calls, reads = self.machine()
