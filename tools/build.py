@@ -29,7 +29,7 @@ SOURCES = ['qemu/nikon-z72.c', 'qemu/nikon-z72-counter.c', 'qemu/nikon-z72-uart.
            'qemu/nikon-z72-controller.h',
            'qemu/nikon-z72-lens.c', 'qemu/nikon-z72-hdmac.c',
            'qemu/nikon-z72-spi.h', 'qemu/nikon-z72-body-vr.c',
-           'qemu/nikon-z72-profile.h', 'qemu/prepare_source.py']
+           'qemu/nikon-z72-profile.h', 'qemu/nikon-z72-eye.c', 'qemu/prepare_source.py']
 
 def digest(path):
     h = hashlib.sha256()

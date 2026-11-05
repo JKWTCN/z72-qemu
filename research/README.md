@@ -5,6 +5,7 @@
 实验运行方法见项目 README。
 
 - [容器和成员](z7ii/container.md)
+- [可选眼距传感器寄存器模型](z7ii/eye_sensor.md)
 - [多核、双 EXPEED 与任务配置](z7ii/platform_comparison.md)
 - [启动、初始化表与独立主从实验](z7ii/startup_structure.md)
 - [原厂复位启动前段与首次外设边界](z7ii/reset_prefix.md)
