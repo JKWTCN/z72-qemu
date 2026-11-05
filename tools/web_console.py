@@ -380,6 +380,8 @@ class Machine:
                       if getattr(self.args, 'aux_image_process', False) else ()) +
                      (('nikon-z72-controller-actuator.enabled=on',)
                       if getattr(self.args, 'controller_actuator', False) else ()) +
+                     (('nikon-z72-boot-config.audio-output=on',)
+                      if getattr(self.args, 'audio_output', False) else ()) +
                      (('nikon-z72-boot-config.sampling-feedback=on',)
                       if getattr(self.args, 'sampling_feedback', False) else ()) +
                      (('nikon-z72-boot-config.sampling-output-complete=on',)
@@ -1178,6 +1180,8 @@ def main():
                         help='Enable the optional group-1 frame synchronization event source')
     parser.add_argument('--sampling-feedback', action='store_true',
                         help='Enable experimental request/capture feedback; requires sampling-output-complete')
+    parser.add_argument('--audio-output', action='store_true',
+                        help='Enable functional audio output queues and DMA; no host sound rendering')
     parser.add_argument('--sampling-output-complete', action='store_true',
                         help='Enable experimental sampling comparison and finite tail output timers')
     parser.add_argument('--sampling-output-frame-start', action='store_true',

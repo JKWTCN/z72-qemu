@@ -1,0 +1,124 @@
+{
+  "status": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 36,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "mode_position": 0,
+    "dial_pending": [
+      false,
+      false
+    ],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x10107078",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107090",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a50",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a4c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "audio_registers": {
+    "0x2c080000": "0x0",
+    "0x2c080108": "0x200",
+    "0x2c08010c": "0x0",
+    "0x2c080110": "0x2000000",
+    "0x2c080114": "0x43030000",
+    "0x2c080208": "0x200",
+    "0x2c08020c": "0x0",
+    "0x2c080210": "0x2000000",
+    "0x2c080214": "0x43030000"
+  },
+  "audio_devices": [
+    "device[20]"
+  ],
+  "mapping": [
+    "000000002c080000-000000002c0803ff (prio 1, i/o): nikon-z72-audio",
+    "000000002c080000-000000002c0803ff (prio 1, i/o): nikon-z72-audio"
+  ],
+  "card_sha256_before": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+  "card_sha256_after": "2cb636bdd90d913b1b34d842ed3f99079b7c00db9ab08aa693648f79725ee7b8",
+  "binary_sha256": "b3d2ea77cdde4430f1c0124528479059dc084ac0228d03e82c9c77931e183be5",
+  "source_sha256": {
+    "tools/web_console.py": "9857a1a3a5e80f0fcde4a870326836af35ab4ac8327b148f0300372adbe21041",
+    "tools/body_shutter_gate_probe.py": "b4d865c8582435912e97f75946513b9792fc05ca9b9d91b157d03045e36dfbfe",
+    "qemu/nikon-z72.c": "9e9750c6795bc5d4c79c2c22e905911517235d915c6e65351c58c58dfc74e15d",
+    "qemu/nikon-z72-audio.c": "dd0ac98e9825ce19c1dd0bfcc119d68e70888a9e90f746abcc640e1a79ca9aec"
+  },
+  "observation": "stock C1.70 console startup with audio output enabled",
+  "runtime": {
+    "audio_output": true,
+    "live_view": true,
+    "display_complete": true,
+    "processing_resource_header": true,
+    "still_preprocessing_skip": false,
+    "capture_triggered": false
+  },
+  "tests_passed": {
+    "web_console_checks": 29,
+    "body_probe_cli_help": true
+  },
+  "limitations": [
+    "Output enable bit13 remains clear; no playback exercised.",
+    "No host sound, recording or sample-rate calibration verified.",
+    "Only C1.70 stock startup covered."
+  ],
+  "cleanup": {
+    "temporary_run_directory_removed": true,
+    "temporary_update_store_absent": true,
+    "emulator_exited": true
+  }
+}

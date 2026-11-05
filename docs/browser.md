@@ -224,6 +224,14 @@ node --check web/console.js
 ```
 
 
+## 音频设备实验
+
+控制台也接受 `--audio-output`，显式启用主引擎的音频寄存器、输出队列
+和 DMA 模型，默认关闭。机身探针接受同名选项并在观察报告中记录。
+该选项尚不向宿主扬声器输出声音，也不提供录音输入。C1.70 启动及
+两路分频初始化已验证；完整播放流程仍需继续核对，见
+[音频设备记录](../research/z7ii/display_audio.md)。
+
 ## 静态场景输入
 
 增加 `--live-view --sensor-image /path/to/scene.pgm`，可用本地图像替换
