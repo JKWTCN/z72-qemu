@@ -428,7 +428,10 @@ Serial transfers and menu output remain unverified. See the
 
 `tests/test_controller_rng.py` checks random data readiness and consumption,
 retained unread data when disabled, interrupt masking, reset, access bounds and
-disabled completion. Stock combined execution crosses the original random data
+disabled completion. It also checks explicit fixed inputs of zero, a mixed-bit
+word and all ones, configuration retention across reset, and that setting an
+input word alone does not enable fixed mode. Stock combined execution crosses
+the original random data
 read and delivers the configuration message without the previous bus fault.
 See the [random source contract](../research/z7ii/controller_rng.md).
 

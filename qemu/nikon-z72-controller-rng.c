@@ -18,6 +18,8 @@ struct Z72ControllerRNG {
     uint32_t status;
     uint32_t data;
     bool completion;
+    bool fixed_input;
+    uint32_t input_word;
     QEMUTimer *timer;
     qemu_irq irq;
 };
@@ -38,7 +40,11 @@ static void rng_schedule(Z72ControllerRNG *s)
 static void rng_complete(void *opaque)
 {
     Z72ControllerRNG *s = opaque;
-    qemu_guest_getrandom_nofail(&s->data, sizeof(s->data));
+    if (s->fixed_input) {
+        s->data = s->input_word;
+    } else {
+        qemu_guest_getrandom_nofail(&s->data, sizeof(s->data));
+    }
     s->status |= 1;
     rng_irq(s);
 }
@@ -102,7 +108,8 @@ static int rng_post_load(void *opaque, int version)
 {
     Z72ControllerRNG *s = opaque;
     if ((s->control & ~0xcu) || (s->status & ~1u) ||
-        (timer_pending(s->timer) && (!(s->control & 4) || s->status))) {
+        (timer_pending(s->timer) &&
+         (!(s->control & 4) || s->status || !s->completion))) {
         return -EINVAL;
     }
     rng_irq(s);
@@ -110,12 +117,15 @@ static int rng_post_load(void *opaque, int version)
 }
 
 static const VMStateDescription rng_state = {
-    .name = TYPE_Z72_CONTROLLER_RNG, .version_id = 1, .minimum_version_id = 1,
+    .name = TYPE_Z72_CONTROLLER_RNG, .version_id = 2, .minimum_version_id = 2,
     .post_load = rng_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32(control, Z72ControllerRNG),
         VMSTATE_UINT32(status, Z72ControllerRNG),
         VMSTATE_UINT32(data, Z72ControllerRNG),
+        VMSTATE_BOOL(completion, Z72ControllerRNG),
+        VMSTATE_BOOL(fixed_input, Z72ControllerRNG),
+        VMSTATE_UINT32(input_word, Z72ControllerRNG),
         VMSTATE_TIMER_PTR(timer, Z72ControllerRNG),
         VMSTATE_END_OF_LIST()
     },
@@ -123,6 +133,9 @@ static const VMStateDescription rng_state = {
 
 static const Property rng_properties[] = {
     DEFINE_PROP_BOOL("completion", Z72ControllerRNG, completion, true),
+    /* Explicit reproducible test input; this mode supplies no entropy. */
+    DEFINE_PROP_BOOL("fixed-input", Z72ControllerRNG, fixed_input, false),
+    DEFINE_PROP_UINT32("input-word", Z72ControllerRNG, input_word, 0),
 };
 
 static void rng_init(Object *obj)
