@@ -144,7 +144,9 @@ class Machine:
         self.next_key_ticks = {}
         self.dial_events = [deque(), deque()]
         self.next_dial_ticks = [0, 0]
-        self.mode_position = 0
+        self.mode_position = getattr(args, 'mode_position', 0)
+        require(type(self.mode_position) is int and
+                0 <= self.mode_position < len(MODE_COUNTS), 'Invalid initial mode position')
         self.key_deadline = 0
         self.started_at = None
         self.menu_open_pending = False
@@ -1145,6 +1147,8 @@ def main():
                         help='Raw SD image attached through the original slave '
                              'controller; session writes use a temporary overlay')
     parser.add_argument('--port', type=int, default=8666)
+    parser.add_argument('--mode-position', type=int, choices=range(len(MODE_COUNTS)), default=0,
+                        help='Initial physical mode dial position (0=P, 1=S, 2=A, 3=M)')
     parser.add_argument('--wsl', action='store_true', help='Run the Linux QEMU build through WSL on Windows')
     parser.add_argument('--display-complete', action='store_true',
                         help='Pulse the recovered display completion lines '

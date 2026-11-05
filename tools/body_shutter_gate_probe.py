@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import require
 from analyze.qemu_display import Remote
-from tools.web_console import Machine
+from tools.web_console import Machine, MODE_COUNTS
 
 ACTION = 0x1053ba0e
 ENGINE_ABORT_POINTS = {
@@ -4327,6 +4327,8 @@ def main():
     parser.add_argument('--trace-controller-gpio', action='store_true',
                         help='Record controller output and engine GPIO latch transitions with virtual time')
     parser.add_argument('--display-complete', action='store_true')
+    parser.add_argument('--mode-position', type=int, choices=range(len(MODE_COUNTS)), default=0,
+                        help='Initial physical mode dial position (0=P, 1=S, 2=A, 3=M)')
     parser.add_argument('--input-handshake', action='store_true',
                         help='Enable the optional output-triggered laboratory GPIO handshake response')
     parser.add_argument('--frame-phase', action='store_true',
