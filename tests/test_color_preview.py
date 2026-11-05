@@ -93,6 +93,7 @@ def check(qemu, scene):
         command(f'set_irq_in {path} frame-sync-enable 0 1')
         write(0x20068004, 0x200)
         write(0x20068010, 0x200)
+        write(0x20068100, 0x80)
         write(0x20068008, 0x200)
         # A late invalid plane must prevent writes to the earlier outputs.
         write(0x20100568, 32)

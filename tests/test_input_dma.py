@@ -87,6 +87,7 @@ def check(qemu):
                 return monitor('qom-get', dict(path=path, property='input-dma-count'))
 
             def tick():
+                write(0x20068100, 0x80)
                 command('clock_step 33333333')
 
             def start():

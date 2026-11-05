@@ -2156,6 +2156,8 @@ def input_dma_snapshot(machine):
             address = machine.qmp.command('qom-get', dict(path=path, property='input-dma-address'))
             stride = machine._words(0x20069a08, 1)[0]
             result = dict(frames=count, address=hex(address), stride=stride)
+            result['configuration_commits'] = {kind: machine.qmp.command('qom-get',
+                dict(path=path, property=kind + '-input-config-commits')) for kind in ('preview', 'primary')}
             for kind in ('preview', 'primary'):
                 result[kind + '_scene'] = {
                     key: machine.qmp.command('qom-get', dict(path=path, property=kind + '-scene-' + name))

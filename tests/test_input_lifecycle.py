@@ -106,6 +106,7 @@ def check(qemu):
                 write(address, value)
             for slot in range(4):
                 write(0x20069a50 + slot * 4, target)
+            write(0x20068100, 0x80)
             command(f'set_irq_in {path} frame-sync-enable 0 1')
             write(0x20068010, 0x200)
             write(0x20068008, 0x200)

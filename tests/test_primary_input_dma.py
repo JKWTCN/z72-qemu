@@ -26,6 +26,7 @@ def linear_case(command, monitor, read, write, data_at, path, active, notifying,
         return monitor('qom-get', dict(path=path, property='primary-input-dma-count'))
 
     def tick():
+        write(0x20068100, 0x100)
         command('clock_step 33333333')
 
     def expected(y, phase):
@@ -230,6 +231,7 @@ def check(qemu, scene, first_case=0, color_scene=False):
                 return property_value('primary-input-dma-count')
 
             def tick():
+                write(0x20068100, 0x100)
                 command('clock_step 33333333')
 
             def exposure():
@@ -473,6 +475,25 @@ def check(qemu, scene, first_case=0, color_scene=False):
                         write(0x20068010, 0x400)
                         tick()
                         assert count() == expected, 'Primary restore replayed a cancelled run'
+                    write(0x20069850, 0)
+                    write(0x20069500, 7)
+                    write(0x20068008, 0x400)
+                    command('clock_step 33333333')
+                    assert count() == 6, 'Staging replaced committed primary configuration'
+                    write(0x20068104, 0x80)
+                    command('clock_step 33333333')
+                    assert count() == 7, 'Preview commit replaced primary configuration'
+                    write(0x20068210, 0xffffffff)
+                    write(0x20068104, 0x100)
+                    command('clock_step 33333333')
+                    assert count() == 7 and read(0x20068210) == 0
+                    write(0x20069850, first)
+                    write(0x20069500, geometry_mode)
+                    command('clock_step 33333333')
+                    assert count() == 7, 'Primary repair became active before commit'
+                    write(0x20068100, 0x100)
+                    command('clock_step 33333333')
+                    assert count() == 8
             monitor('system_reset')
             assert property_value('input-running') == 0
             assert count() == 0 and property_value('primary-input-dma-address') == 0

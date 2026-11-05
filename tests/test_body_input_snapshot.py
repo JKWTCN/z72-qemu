@@ -26,6 +26,7 @@ class Machine:
         return {'master-role': True, 'input-dma-count': 1,
                 'input-dma-address': 0x51000000, 'primary-input-dma-count': 2,
                 'primary-input-dma-address': 0x52000000,
+                'preview-input-config-commits': 8, 'primary-input-config-commits': 4,
                 'preview-scene-aperture': 192, 'preview-scene-factor-q16': 32768,
                 'primary-scene-aperture': 576, 'primary-scene-factor-q16': 8192,
                 'primary-input-second-dma-address': self.peer}.get(args['property'], 0)
@@ -50,6 +51,8 @@ def check():
         result = input_dma_snapshot(machine)
         require(result['primary_frames'] == 2 and result['first_row']['bytes'] == 8,
                 'Reconfiguration lost counters or independent preview observation')
+        require(result['configuration_commits'] == dict(preview=8, primary=4),
+                'Configuration commits were mixed with completed-frame counts')
         require(result['preview_scene'] == dict(aperture=192, factor_q16=32768) and
                 result['primary_scene'] == dict(aperture=576, factor_q16=8192),
                 'Reconfiguration lost completed-frame scene observations')

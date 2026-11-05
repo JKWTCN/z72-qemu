@@ -712,6 +712,9 @@ struct NikonZ72BootConfig {
     bool jpeg_color_checker;
     bool frame_notify;
     uint32_t input_running;
+    uint8_t preview_input_config[32];
+    uint8_t primary_input_config[20 + 2 * 0x70];
+    uint64_t preview_input_commits, primary_input_commits;
     uint64_t input_dma_count;
     uint32_t input_dma_address;
     uint64_t input_grid_count;
@@ -2345,6 +2348,49 @@ static bool input_primary_remap(NikonZ72BootConfig *s, uint32_t bus,
     return matches == 1;
 }
 
+static void input_config_commit(NikonZ72BootConfig *s, hwaddr address,
+                                uint32_t value)
+{
+    AddressSpace *view = CPU(s->cpu)->as;
+    uint8_t preview[32], primary[20 + 2 * 0x70] = { 0 };
+    uint8_t *first = primary + 20, *second = first + 0x70;
+    uint32_t updated = 0;
+
+    if ((value & 0x80) &&
+        address_space_read(view, 0x20069514, MEMTXATTRS_UNSPECIFIED,
+                           preview, 12) == MEMTX_OK &&
+        address_space_read(view, 0x20069a08, MEMTXATTRS_UNSPECIFIED,
+                           preview + 12, 4) == MEMTX_OK &&
+        address_space_read(view, 0x20069a50, MEMTXATTRS_UNSPECIFIED,
+                           preview + 16, 16) == MEMTX_OK) {
+        memcpy(s->preview_input_config, preview, sizeof(preview));
+        s->preview_input_commits++;
+        updated |= 0x80;
+    }
+    if ((value & 0x100) &&
+        address_space_read(view, 0x20069500, MEMTXATTRS_UNSPECIFIED,
+                           primary, 20) == MEMTX_OK &&
+        address_space_read(view, 0x20069808, MEMTXATTRS_UNSPECIFIED,
+                           first + 8, 4) == MEMTX_OK &&
+        address_space_read(view, 0x20069814, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x14, 8) == MEMTX_OK &&
+        address_space_read(view, 0x2006983c, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x3c, 20) == MEMTX_OK &&
+        address_space_read(view, 0x20069850, MEMTXATTRS_UNSPECIFIED,
+                           first + 0x50, 32) == MEMTX_OK &&
+        address_space_read(view, 0x20069908, MEMTXATTRS_UNSPECIFIED,
+                           second + 8, 4) == MEMTX_OK &&
+        address_space_read(view, 0x20069950, MEMTXATTRS_UNSPECIFIED,
+                           second + 0x50, 32) == MEMTX_OK) {
+        memcpy(s->primary_input_config, primary, sizeof(primary));
+        s->primary_input_commits++;
+        updated |= 0x100;
+    }
+    trace_z72_input_commit(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
+        s->master_role, address, value, updated,
+        s->preview_input_commits, s->primary_input_commits);
+}
+
 typedef struct NikonZ72PrimaryWrite {
     uint32_t address;
     uint16_t row;
@@ -2366,26 +2412,13 @@ static void input_generate_primary(NikonZ72BootConfig *s)
     const unsigned height = 5520;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
-        !(s->input_running & 0x400)) {
+        !(s->input_running & 0x400) || !s->primary_input_commits) {
         return;
     }
     view = CPU(s->cpu)->as;
-    if (address_space_read(view, 0x20069500, MEMTXATTRS_UNSPECIFIED,
-                           geometry, sizeof(geometry)) != MEMTX_OK ||
-        address_space_read(view, 0x20069808, MEMTXATTRS_UNSPECIFIED,
-                           first + 8, 4) != MEMTX_OK ||
-        address_space_read(view, 0x20069814, MEMTXATTRS_UNSPECIFIED,
-                           first + 0x14, 8) != MEMTX_OK ||
-        address_space_read(view, 0x2006983c, MEMTXATTRS_UNSPECIFIED,
-                           first + 0x3c, 20) != MEMTX_OK ||
-        address_space_read(view, 0x20069850, MEMTXATTRS_UNSPECIFIED,
-                           first + 0x50, 32) != MEMTX_OK ||
-        address_space_read(view, 0x20069908, MEMTXATTRS_UNSPECIFIED,
-                           second + 8, 4) != MEMTX_OK ||
-        address_space_read(view, 0x20069950, MEMTXATTRS_UNSPECIFIED,
-                           second + 0x50, 32) != MEMTX_OK) {
-        return;
-    }
+    memcpy(geometry, s->primary_input_config, sizeof(geometry));
+    memcpy(first, s->primary_input_config + sizeof(geometry), sizeof(first));
+    memcpy(second, s->primary_input_config + sizeof(geometry) + sizeof(first), sizeof(second));
     if (ldl_le_p(geometry + 12) > 1) {
         return;
     }
@@ -2560,18 +2593,13 @@ static void input_generate_frame(NikonZ72BootConfig *s)
     g_autofree uint8_t *pixels = NULL;
 
     if (!s->frame_generate || !s->master_role || !s->sensor_sample ||
-        !(s->input_running & 0x200)) {
+        !(s->input_running & 0x200) || !s->preview_input_commits) {
         return;
     }
     view = CPU(s->cpu)->as;
-    if (address_space_read(view, 0x20069514, MEMTXATTRS_UNSPECIFIED,
-                           geometry, sizeof(geometry)) != MEMTX_OK ||
-        address_space_read(view, 0x20069a08, MEMTXATTRS_UNSPECIFIED,
-                           word, sizeof(word)) != MEMTX_OK ||
-        address_space_read(view, 0x20069a50, MEMTXATTRS_UNSPECIFIED,
-                           planes, sizeof(planes)) != MEMTX_OK) {
-        return;
-    }
+    memcpy(geometry, s->preview_input_config, sizeof(geometry));
+    memcpy(word, s->preview_input_config + sizeof(geometry), sizeof(word));
+    memcpy(planes, s->preview_input_config + sizeof(geometry) + sizeof(word), sizeof(planes));
     width = ldl_le_p(geometry + 4) >> 16;
     height = ldl_le_p(geometry + 8) >> 16;
     stride = ldl_le_p(word);
@@ -2962,6 +2990,11 @@ static void boot_config_write(void *opaque, hwaddr offset,
             }
         }
         input_trace_control(s, address, value, previous);
+        return;
+    }
+    if (address == 0x20068100 || address == 0x20068104) {
+        *stored = (uint32_t)value;
+        input_config_commit(s, address, value);
         return;
     }
     if (address >= 0x20068210 && address <= 0x200682f0 &&
@@ -4508,6 +4541,9 @@ static void boot_config_reset(Object *obj, ResetType type)
     timer_del(s->frame_sync_timer);
     s->frame_sync_count = 0;
     s->input_running = 0;
+    memset(s->preview_input_config, 0, sizeof(s->preview_input_config));
+    memset(s->primary_input_config, 0, sizeof(s->primary_input_config));
+    s->preview_input_commits = s->primary_input_commits = 0;
     s->input_dma_count = 0;
     s->input_dma_address = 0;
     s->preview_scene_aperture = s->primary_scene_aperture = 0;
@@ -4596,8 +4632,8 @@ static int boot_config_post_load(void *opaque, int version_id)
 
 static const VMStateDescription boot_config_vmstate = {
     .name = TYPE_NIKON_Z72_BOOT_CONFIG,
-    .version_id = 60,
-    .minimum_version_id = 60,
+    .version_id = 61,
+    .minimum_version_id = 61,
     .post_load = boot_config_post_load,
     .fields = (const VMStateField[]) {
         VMSTATE_UINT32_ARRAY(values, NikonZ72BootConfig, BOOT_CONFIG_WORDS),
@@ -4638,6 +4674,10 @@ static const VMStateDescription boot_config_vmstate = {
         VMSTATE_TIMER_PTR(frame_sync_timer, NikonZ72BootConfig),
         VMSTATE_UINT64(frame_sync_count, NikonZ72BootConfig),
         VMSTATE_UINT32(input_running, NikonZ72BootConfig),
+        VMSTATE_UINT8_ARRAY(preview_input_config, NikonZ72BootConfig, 32),
+        VMSTATE_UINT8_ARRAY(primary_input_config, NikonZ72BootConfig, 20 + 2 * 0x70),
+        VMSTATE_UINT64(preview_input_commits, NikonZ72BootConfig),
+        VMSTATE_UINT64(primary_input_commits, NikonZ72BootConfig),
         VMSTATE_UINT64(input_dma_count, NikonZ72BootConfig),
         VMSTATE_UINT32(input_dma_address, NikonZ72BootConfig),
         VMSTATE_UINT64(input_grid_count, NikonZ72BootConfig),
@@ -4774,6 +4814,10 @@ static void boot_config_init(Object *obj)
     object_property_add_uint32_ptr(obj, "input-grid-address", &s->input_grid_address,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint64_ptr(obj, "primary-input-dma-count", &s->primary_dma_count,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "preview-input-config-commits", &s->preview_input_commits,
+                                  OBJ_PROP_FLAG_READ);
+    object_property_add_uint64_ptr(obj, "primary-input-config-commits", &s->primary_input_commits,
                                   OBJ_PROP_FLAG_READ);
     object_property_add_uint32_ptr(obj, "primary-input-dma-address", &s->primary_dma_address,
                                   OBJ_PROP_FLAG_READ);

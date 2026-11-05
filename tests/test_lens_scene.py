@@ -112,6 +112,7 @@ def check(qemu, scene, color):
         command(f'set_irq_in {config} frame-sync-enable 0 1')
         write(0x20068004, 0x200)
         write(0x20068010, 0x200)
+        write(0x20068100, 0x80)
         write(0x20068008, 0x200)
 
         def inspect(expected=None):
@@ -158,11 +159,13 @@ def check(qemu, scene, color):
         previous = (prop('preview-scene-aperture', config), prop('preview-scene-factor-q16', config))
         for i in range(4):
             write(0x20069a50 + i*4, 0)
+        write(0x20068100, 0x80)
         advance(150000000)
         assert prop('input-dma-count', config) == completed
         assert previous == (prop('preview-scene-aperture', config), prop('preview-scene-factor-q16', config))
         for i in range(4):
             write(0x20069a50 + i*4, target)
+        write(0x20068100, 0x80)
         advance(33333333)
         inspect(1152)
         write(0x2006800c, 0x200)

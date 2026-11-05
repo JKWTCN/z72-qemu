@@ -58,6 +58,14 @@ def probe(image):
             require(engine.writes == [(0x20068000 + port, mask)], 'Input lifecycle command differs')
             writes.append(dict(entry=hex(entry), flag=flag, address=hex(0x20068000 + port)))
         lifecycle_controls.append(dict(mask=hex(mask), commands=writes))
+    start_sequences = []
+    for selector, commit, run in ((0, 0x100, 0x400), (1, 0x80, 0x200), (2, 0x180, 0x600), (3, 0, 0)):
+        engine.writes.clear()
+        result = engine.call(0x1020c23c - 0x10020000, selector)
+        expected = [(0x20068100, commit), (0x20068104, commit), (0x20068008, run)] if commit else []
+        require(result == int(selector == 3) and engine.writes == expected, 'Input commit/run sequence differs')
+        start_sequences.append(dict(selector=selector, result=result,
+            writes=[dict(address=hex(address), value=hex(value)) for address, value in engine.writes]))
     cases = []
     for entry, command, logical, status, events in (
             (0x10209020, 3, 0x600, [0, 0x110, 0, 0, 0, 0, 0, 0], [4, 4]),
@@ -166,6 +174,7 @@ def probe(image):
                 decoder='0x1020a71a', callback='0x1020c0a8', cases=cases,
                 run_controls=run_controls,
                 lifecycle_controls=lifecycle_controls,
+                start_sequences=start_sequences,
                 disable_cases=disable_cases, disable_task_notification='0x041a0004',
                 independent_disable=dict(pending='0x80', physical='0x2', bank=7, bits='0x8',
                     logical='0x2', callback='0x102394dc', interrupt_group=4,

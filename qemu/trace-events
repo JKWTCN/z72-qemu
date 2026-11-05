@@ -13,3 +13,4 @@ z72_scene_raw(int64_t virtual_ns, bool primary, uint64_t frame, unsigned channel
 
 # nikon-z72.c
 z72_input_control(int64_t virtual_ns, bool master, uint64_t address, uint32_t value, uint32_t previous, uint32_t running, uint32_t released, uint32_t enabled) "virtual_ns=%" PRId64 " master=%d address=0x%" PRIx64 " value=0x%x previous=0x%x running=0x%x released=0x%x enabled=0x%x"
+z72_input_commit(int64_t virtual_ns, bool master, uint64_t address, uint32_t mask, uint32_t updated, uint64_t preview_commits, uint64_t primary_commits) "virtual_ns=%" PRId64 " master=%d address=0x%" PRIx64 " mask=0x%x updated=0x%x preview_commits=%" PRIu64 " primary_commits=%" PRIu64

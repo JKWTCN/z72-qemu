@@ -1161,3 +1161,14 @@ release and enable their units before issuing a run command.
 The [lifecycle receipt](../research/z7ii/input_lifecycle.md) separates the old
 admission failure, final device checks and original-firmware observation.
 The source workflow includes the lifecycle check; no remote CI run is claimed.
+
+`tests/test_input_commit.py --qemu <qemu-system-arm>` checks independent preview
+and primary commit groups, both ports, pre-commit silence, staged readback,
+unrelated/mixed masks, invalid committed geometry, repair and reset. The primary
+batch also checks real split RAW transfers retain committed geometry/addresses
+until their own group is selected. Existing pixel fixtures explicitly commit
+each candidate configuration before testing it. The original control contract
+executes four `1020c23c` cases to distinguish commit masks from run masks and
+check write order. The body snapshot check keeps commit counts separate from
+completed-frame counts. See [configuration ownership](../research/z7ii/input_commit.md).
+The source workflow includes the new device check; no remote CI run is claimed.
