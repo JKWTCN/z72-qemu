@@ -13,7 +13,8 @@ def _rgb(y, u, v):
 
 
 def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None, *,
-            alpha_bits=8, overlay_rect=None, overlay_scale=(1, 1, 1, 1)):
+            alpha_bits=8, overlay_rect=None, overlay_scale=(1, 1, 1, 1),
+            background_origin=(0, 0), background_scale=(1, 1, 1, 1), canvas_size=None):
     """Compose NV16/NV12 background and an optional positioned YYUV+A4/A8 UI.
 
     Each plane is a (bytes, byte stride) pair. The conversion and straight
@@ -45,32 +46,39 @@ def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None,
         foreground, fs = check(overlay, overlay_width * 2, overlay_height)
         alpha_width = overlay_width // 2 if alpha_bits == 4 else overlay_width
         opacity, os = check(alpha, alpha_width, overlay_height)
-    output = bytearray(width * height * 3)
-    for row in range(height):
-        uv_row = (row // 2 if format_ == 4 else row) * uvs
-        source_y = None
-        if overlay is not None and top <= row < bottom:
+    canvas_width, canvas_height = (width, height) if canvas_size is None else canvas_size
+    require(0 < canvas_width <= 4096 and 0 < canvas_height <= 4096, 'Unsupported display canvas size')
+    output = bytearray(canvas_width * canvas_height * 3)
+    background_x, background_y = background_origin
+    horizontal_num, horizontal_den, vertical_num, vertical_den = background_scale
+    require(all(0 < value <= 31 for value in background_scale), 'Invalid background scale ratio')
+    last_row = min(canvas_height, background_y + height * vertical_num // vertical_den)
+    last_column = min(canvas_width, background_x + width * horizontal_num // horizontal_den)
+    for row in range(max(0, background_y), last_row):
+        source_row = (row - background_y) * vertical_den // vertical_num
+        uv_row = (source_row // 2 if format_ == 4 else source_row) * uvs
+        for x in range(max(0, background_x), last_column):
+            source_column = (x - background_x) * horizontal_den // horizontal_num
+            pair = uv_row + (source_column & ~1)
+            at = (row * canvas_width + x) * 3
+            output[at:at + 3] = bytes(_rgb(y[source_row * ys + source_column], uv[pair], uv[pair + 1]))
+    if overlay is not None:
+        for row in range(max(0, top), min(canvas_height, bottom)):
             source_y = (row - top) * y_den // y_num
-        for column in range(0, width, 2):
-            u, v = uv[uv_row + column:uv_row + column + 2]
-            for pixel in range(2):
-                x = column + pixel
-                color = _rgb(y[row * ys + x], u, v)
-                if source_y is not None and left <= x < right:
-                    source_x = (x - left) * x_den // x_num
-                    if alpha_bits == 4:
-                        packed = opacity[source_y * os + source_x // 2]
-                        a = ((packed >> ((source_x & 1) * 4)) & 15) * 17
-                    else:
-                        a = opacity[source_y * os + source_x]
-                    if a:
-                        at = source_y * fs + (source_x // 2) * 4
-                        front = _rgb(foreground[at + (source_x & 1)],
-                                     foreground[at + 2], foreground[at + 3])
-                        color = tuple((f * a + b * (255 - a) + 127) // 255
-                                      for f, b in zip(front, color))
-                at = (row * width + x) * 3
-                output[at:at + 3] = bytes(color)
+            for x in range(max(0, left), min(canvas_width, right)):
+                source_x = (x - left) * x_den // x_num
+                if alpha_bits == 4:
+                    packed = opacity[source_y * os + source_x // 2]
+                    a = ((packed >> ((source_x & 1) * 4)) & 15) * 17
+                else:
+                    a = opacity[source_y * os + source_x]
+                if a:
+                    at = source_y * fs + (source_x // 2) * 4
+                    front = _rgb(foreground[at + (source_x & 1)],
+                                 foreground[at + 2], foreground[at + 3])
+                    dest = (row * canvas_width + x) * 3
+                    output[dest:dest + 3] = bytes((f * a + b * (255 - a) + 127) // 255
+                                                  for f, b in zip(front, output[dest:dest + 3]))
     return bytes(output)
 
 
@@ -92,6 +100,18 @@ def read_display_planes(words, read_bytes, base):
             raise ValueError('Display output plane is not configured')
         return bytes(read_bytes(address, stride * rows)), stride
 
+    def scale(offset):
+        enabled, horizontal, vertical = words(base + offset, 3)
+        if not enabled:
+            return (1, 1, 1, 1)
+        if enabled != 1 or horizontal >> 24:
+            raise ValueError('Unsupported display scale configuration')
+        return (horizontal & 31, (horizontal >> 8) & 31,
+                vertical & 31, (vertical >> 8) & 31)
+
+    position = words(base + 0x600, 1)[0]
+    background_origin = (position & 0xffff, (position >> 16) & 0x3fff)
+    background_scale = scale(0x400)
     slot = (words(base + 0x260, 1)[0] >> 16) & 3
     luminance = plane(base + 0x210 + slot * 4, base + 0x240, width)
     chroma = plane(base + 0x220 + slot * 4, base + 0x250, width,
@@ -109,12 +129,7 @@ def read_display_planes(words, read_bytes, base):
             raise ValueError('Unsupported display overlay format or geometry')
         left = (origin & 0x7fff) - (origin & 0x8000)
         overlay_rect = (left, (origin >> 16) & 0x3fff, overlay_width, overlay_height)
-        enabled, horizontal, vertical = words(base + 0x2810, 3)
-        if enabled:
-            if enabled != 1 or horizontal >> 24:
-                raise ValueError('Unsupported display overlay scale configuration')
-            overlay_scale = (horizontal & 31, (horizontal >> 8) & 31,
-                             vertical & 31, (vertical >> 8) & 31)
+        overlay_scale = scale(0x2810)
         alpha_bits = 4 if overlay_format == 5 else 8
         overlay_slot = (words(base + 0x2214, 1)[0] >> 16) & 3
         overlay = plane(base + 0x2440 + overlay_slot * 4, base + 0x2500, overlay_width * 2, overlay_height)
@@ -122,4 +137,5 @@ def read_display_planes(words, read_bytes, base):
                       overlay_width // 2 if alpha_bits == 4 else overlay_width, overlay_height)
     return dict(width=width, height=height, format_=format_, luminance=luminance,
                 chroma=chroma, overlay=overlay, alpha=alpha, alpha_bits=alpha_bits,
-                overlay_rect=overlay_rect, overlay_scale=overlay_scale)
+                overlay_rect=overlay_rect, overlay_scale=overlay_scale,
+                background_origin=background_origin, background_scale=background_scale)

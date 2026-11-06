@@ -91,6 +91,7 @@ class LCDTests(unittest.TestCase):
 
         machine.qmp = Monitor()
         registers = {0x20145100: 3, 0x20144204: 0x20002, 0x20144200: 4,
+                     0x20144600: 0, 0x20144400: 0, 0x20144404: 0x101, 0x20144408: 0x101,
                      0x20144240: 2, 0x20144250: 2, 0x20146110: 0,
                      0x20144260: active_slot << 16 | ((active_slot + 1) % 4) << 8}
         for slot in range(4):
@@ -133,6 +134,23 @@ class LCDTests(unittest.TestCase):
                                          (0xb1001000 + slot * 0x2000, 2)])
                 with Image.open(BytesIO(image)) as frame:
                     self.assertEqual(frame.tobytes(), bytes([255, 0, 0] * 4))
+
+    def test_output_layout_uses_separate_canvas_and_cache(self):
+        machine, _, _ = self.machine()
+        source = machine.lcd_png()
+        png, headers = machine.lcd_frame(output_layout=True)
+        self.assertEqual(headers['X-Output-Layout'], '1')
+        with Image.open(BytesIO(png)) as frame:
+            self.assertEqual(frame.size, (4, 3))
+            self.assertEqual(frame.tobytes(), (bytes([255, 0, 0] * 2) + bytes(6)) * 2 + bytes(12))
+        self.assertEqual(source, machine.lcd_png())
+
+    def test_background_scale_and_origin_apply_before_overlay(self):
+        rgb = lcd_rgb(2, 1, 0, (bytes([16, 235]), 2), (bytes([128, 128]), 2),
+                      (bytes([81, 81, 90, 240]), 4), (bytes([255, 0]), 2),
+                      background_origin=(1, 1), background_scale=(2, 1, 1, 1),
+                      overlay_rect=(3, 1, 2, 1), canvas_size=(5, 2))
+        self.assertEqual(rgb, bytes(24) + bytes([255, 0, 0, 255, 255, 255]))
 
     def test_snapshot_reads_half_height_uv_and_caches_png(self):
         machine, calls, reads = self.machine()

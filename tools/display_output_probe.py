@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import struct
 import sys
 import time
 
@@ -143,15 +144,17 @@ def snapshot(machine, full_frames=False):
 def trace_output_delivery(remote, request, descriptor):
     """Observe delivery and the matching request callback in either order."""
     returned, wait_done, callback = 0x1057bc1c, 0x1057bc54, 0x10631758
+    panel_entry, panel_return = 0x1046e496, 0x1044935e
     pending = set()
+    panel_call = None
     result = {}
     try:
-        for pc in (returned, wait_done, callback):
+        for pc in (returned, wait_done, callback, panel_entry, panel_return):
             remote.breakpoint(pc)
             pending.add(pc)
         started = time.monotonic()
         deadline = started + OUTPUT_TIMEOUT
-        while pending:
+        while pending.difference((panel_entry, panel_return)):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 break
@@ -163,13 +166,28 @@ def trace_output_delivery(remote, request, descriptor):
                 remote.interrupt()
                 break
             remote.sock.settimeout(10)
-            _, regs = stop_registers(remote, packet)
+            thread, regs = stop_registers(remote, packet)
             pc = remote.get(regs, 'pc')
             if pc not in pending:
                 raise RuntimeError(f'Unexpected output observation at {pc:#x}')
-            matches = remote.get(regs, 'r1' if pc == callback else 'r4') == request
+            if pc == panel_entry:
+                matches = remote.get(regs, 'lr') == panel_return + 1
+            elif pc == panel_return:
+                matches = panel_call == (thread, remote.get(regs, 'sp'))
+            else:
+                matches = remote.get(regs, 'r1' if pc == callback else 'r4') == request
             if matches:
-                if pc == returned:
+                if pc == panel_entry:
+                    config = remote.get(regs, 'r1')
+                    panel_call = thread, remote.get(regs, 'sp')
+                    result['panel_program'] = dict(
+                        argument=hex(config), mode=remote.get(regs, 'r2'),
+                        parameters=list(struct.unpack('<10H', remote.read(config + 0x2c, 20))))
+                elif pc == panel_return:
+                    result['panel_program'].update(
+                        result=remote.get(regs, 'r0'),
+                        registers=list(struct.unpack('<10I', remote.read(0x2014c03c, 40))))
+                elif pc == returned:
                     message = remote.get(regs, 'r0')
                     result['message'] = hex(message)
                     if message:
@@ -187,7 +205,7 @@ def trace_output_delivery(remote, request, descriptor):
             if not matches:
                 remote.command('s')
                 remote.breakpoint(pc)
-        result['unobserved'] = [hex(pc) for pc in sorted(pending)]
+        result['unobserved'] = [hex(pc) for pc in sorted(pending - {panel_entry, panel_return})]
         return result
     finally:
         remote.sock.settimeout(10)

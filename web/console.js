@@ -347,10 +347,12 @@ async function lcd() {
   lcdAt = now;
   lcdBusy = true;
   try {
-    const response = await fetch('/lcd', {signal: AbortSignal.timeout(10000)});
+    const outputLayout = $('lcd-layout').checked;
+    const response = await fetch(outputLayout ? '/lcd?layout=output' : '/lcd',
+      {signal: AbortSignal.timeout(10000)});
     if (!response.ok) throw new Error('LCD 输出暂不可用');
     const blob = await response.blob();
-    if (!running) return;
+    if (!running || outputLayout !== $('lcd-layout').checked) return;
     const url = URL.createObjectURL(blob);
     $('lcd').src = url;
     if (lcdUrl) URL.revokeObjectURL(lcdUrl);

@@ -543,6 +543,12 @@ footer {
   background:#050505;
   padding:10px
 }
+.lcd-viewer .screen:has(#lcd:not([hidden])) {
+  aspect-ratio:auto
+}
+.lcd-viewer #lcd[hidden] {
+  display:none
+}
 .lcd-viewer #lcd {
   display:block;
   width:100%;

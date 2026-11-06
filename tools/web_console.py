@@ -963,11 +963,12 @@ class Machine:
     def lcd_png(self):
         return self.lcd_frame()[0]
 
-    def lcd_frame(self):
+    def lcd_frame(self, output_layout=False):
         """Read coherent channel-1 Y/UV and format-5/6 YYUV+A4/A8 UI planes."""
         now = time.monotonic()
         cached_at, frame = self.lcd_cache
-        if frame and now - cached_at < self.lcd_interval:
+        if (frame and now - cached_at < self.lcd_interval and
+                ('X-Output-Layout' in frame[1]) == output_layout):
             return frame
         with self.io:
             self._ready()
@@ -981,8 +982,9 @@ class Machine:
             finally:
                 if running:
                     self.qmp.command('cont')
-        rows = lcd_rgb(**planes)
-        data = b'P6\n%d %d\n255\n' % (planes['width'], planes['height']) + rows
+        size = (output_width, output_height) if output_layout else (planes['width'], planes['height'])
+        rows = lcd_rgb(**planes, canvas_size=size)
+        data = b'P6\n%d %d\n255\n' % size + rows
         encoded = ppm_to_png(data)
         headers = {
             'X-Display-Route': route,
@@ -990,6 +992,8 @@ class Machine:
         }
         if output_width and output_height:
             headers['X-Output-Size'] = f'{output_width}x{output_height}'
+        if output_layout:
+            headers['X-Output-Layout'] = '1'
         frame = encoded, headers
         self.lcd_cache = (time.monotonic(), frame)
         return frame
@@ -1120,8 +1124,8 @@ def make_handler(machine):
                     self.send(200, (WEB / name).read_bytes(), kind)
                 elif self.path == '/frame':
                     self.send(200, machine.frame_png(), 'image/png')
-                elif self.path == '/lcd':
-                    png, headers = machine.lcd_frame()
+                elif self.path in ('/lcd', '/lcd?layout=output'):
+                    png, headers = machine.lcd_frame(output_layout=self.path != '/lcd')
                     self.send(200, png, 'image/png', headers)
                 elif self.path == '/shoulder':
                     self.send(200, json.dumps(machine.shoulder(),
