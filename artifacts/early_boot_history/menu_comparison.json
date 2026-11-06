@@ -1,0 +1,181 @@
+{
+  "seconds_per_window": 8,
+  "maximum_windows_per_stage": 24,
+  "settle_seconds": 0,
+  "resource_header": true,
+  "sync_pulse_requested": true,
+  "counter_frequency": 48000000,
+  "runs": [
+    {
+      "version": "1.01",
+      "package": "Z7_2_0101.bin",
+      "firmware_sha256": {
+        "master": "d84d5399b7fc9a3c198410e4989a8bd784fda746dc991c018bde3cb93075a701",
+        "slave": "def08adcb490acb30f83706bb035b7a92fa28732c361c130f8886673290a2d86"
+      },
+      "controller_sha256": "977eb3050622729dc0fe8f2241ebdee1a5752c4dcf1578f49d78d178be66bb14",
+      "sync_pulse": null,
+      "passed": false,
+      "observation_windows": 24,
+      "stages": [
+        {
+          "stage": "baseline",
+          "counter_ticks": 14413595,
+          "foreground": 0,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 0
+        },
+        {
+          "stage": "baseline",
+          "counter_ticks": 324903960,
+          "foreground": 0,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 0
+        }
+      ],
+      "error": "baseline did not reach the expected state"
+    },
+    {
+      "version": "1.70",
+      "package": "Z7_2_0170.bin",
+      "firmware_sha256": {
+        "master": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+        "slave": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb"
+      },
+      "controller_sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+      "sync_pulse": {
+        "line": 15,
+        "status_bit": 4,
+        "irq": 87,
+        "wait_address": "0x102d949e",
+        "mask": "0x27feb7",
+        "counter_ticks": 55737420
+      },
+      "passed": true,
+      "observation_windows": 18,
+      "stages": [
+        {
+          "stage": "baseline",
+          "counter_ticks": 14496329,
+          "foreground": 0,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 0
+        },
+        {
+          "stage": "baseline",
+          "counter_ticks": 67761818,
+          "foreground": 3,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 3200643584
+        },
+        {
+          "stage": "pressed",
+          "counter_ticks": 81124193,
+          "foreground": 3,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": true,
+          "graphics_surface": 3200643584
+        },
+        {
+          "stage": "menu-start",
+          "counter_ticks": 93869721,
+          "foreground": 3,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": true,
+          "graphics_surface": 3200643584
+        },
+        {
+          "stage": "menu-start",
+          "counter_ticks": 212038466,
+          "foreground": 1,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": true,
+          "graphics_surface": 3200643584
+        },
+        {
+          "stage": "released",
+          "counter_ticks": 225485831,
+          "foreground": 1,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 3200643584
+        },
+        {
+          "stage": "menu-steady",
+          "counter_ticks": 238938436,
+          "foreground": 1,
+          "ready": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "menu_bit": false,
+          "graphics_surface": 3200643584
+        }
+      ],
+      "error": null,
+      "surface": {
+        "size": [
+          720,
+          480
+        ],
+        "nonblack_pixels": 282736,
+        "nonblack_rows": 480
+      }
+    }
+  ]
+}

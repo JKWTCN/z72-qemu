@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Observe a menu-key press and release through the original input path."""
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import shlex
 import socket
+import struct
 import subprocess
 import sys
 import tempfile
@@ -15,9 +15,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from analyze.decode_z72 import require
-from analyze.firmware_structure import analyze_eg
-from tools.controller_core_probe import CONTROLLER_SHA256
+from analyze.decode_z72 import BASE, digest, require
+from analyze.firmware_structure import application_manager, PROFILES
 from tools.graphics_boot_probe import (application_observation,
                                        capture_health_observation,
                                        controller_input_observation,
@@ -41,10 +40,19 @@ def run(args):
     require(0 < args.windows <= 24, 'Window count must be in (0, 24]')
     require(0 <= args.settle_seconds <= 10, 'Settling time must be in [0, 10]')
     master, slave = args.master.read_bytes(), args.slave.read_bytes()
-    identities = {role: analyze_eg(data, role)['sha256']
-                  for role, data in (('master', master), ('slave', slave))}
-    require(hashlib.sha256(args.controller.read_bytes()).hexdigest() ==
-            CONTROLLER_SHA256, 'Expected the original controller image')
+    identities = dict(master=digest(master), slave=digest(slave))
+    controller_hash = digest(args.controller.read_bytes())
+    history = json.loads((ROOT / 'artifacts/early_boot_history/report.json').read_text())
+    matches = [p for p in history['packages']
+               if {e['role']: e['sha256'] for e in p['engines']} == identities and
+               p['controller_request']['sha256'] == controller_hash]
+    require(len(matches) == 1, 'Expected three firmware members from the same historical update')
+    manager, getters = application_manager(master)
+    switch_word = matches[0]['controller_request']['menu_samples'][0]['switch_address']
+    current_profile = identities['master'] == PROFILES['master'].sha256
+    wait_setup = bytes.fromhex('40ea04086a4632230821a7f15000')
+    require(master.count(wait_setup) == 1, 'Expected one synchronization wait setup')
+    wait = BASE + master.index(wait_setup) + len(wait_setup)
     launched = []
     original = subprocess.Popen
     with socket.socket() as server:
@@ -88,7 +96,8 @@ def run(args):
         subprocess.Popen = WslProcess
         remote = wire = None
         report = dict(format=1, passed=False, menu_pin=MENU_PIN,
-                      firmware_sha256=identities, controller_sha256=CONTROLLER_SHA256,
+                      firmware_sha256=identities, controller_sha256=controller_hash,
+                      package=matches[0]['package'],
                       firmware_modified=False, experimental_nonce_bridge=True,
                       factory_calibration=False, full_boot_verified=False,
                       menu_verified=False, resource_header_only=args.resource_header,
@@ -153,7 +162,7 @@ def run(args):
                     r"(device\[\d+\]) \(child<nikon-z72-boot-config>\)", listing.decode())
                 configs.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
                 require(len(configs) == 2, 'Expected two engine synchronization receivers')
-                require(remote.command('Z0,102d949e,2') == 'OK',
+                require(remote.command(f'Z0,{wait:x},2') == 'OK',
                         'Could not observe the original synchronization wait')
             for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1),
                                       (6, 7, 1), (1, 11, 1), (6, 14, 1), (6, 15, 1)):
@@ -173,8 +182,8 @@ def run(args):
                     require(match is not None, 'Missing synchronization stop thread')
                     remote.select_thread(int(match[1], 16))
                     registers = remote.regs()
-                    require(remote.get(registers, 'pc') == 0x102d949e and
-                            remote.get(registers, 'r0') == 0xb18a764c and
+                    require(remote.get(registers, 'pc') == wait and
+                            remote.get(registers, 'r0') == remote.get(registers, 'r7') - 0x50 and
                             remote.get(registers, 'r1') == 8 and
                             remote.get(registers, 'r3') == 50,
                             'Unexpected original synchronization wait')
@@ -186,9 +195,9 @@ def run(args):
                         require(wire.recv(1024).strip() == b'OK', 'Synchronization input failed')
                     report['sync_pulse_supplied'] = True
                     report['sync_pulse'] = dict(line=15, status_bit=4, irq=87,
-                        wait_address='0x102d949e', mask=hex(mask),
+                        wait_address=hex(wait), mask=hex(mask),
                         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
-                    require(remote.command('z0,102d949e,2') == 'OK',
+                    require(remote.command(f'z0,{wait:x},2') == 'OK',
                             'Could not remove synchronization observation point')
                     try:
                         remote.command('vCont;c')
@@ -196,12 +205,20 @@ def run(args):
                         remote.interrupt()
 
             def sample(stage):
-                observation = dict(stage=stage,
-                    application=application_observation(remote),
-                    system=system_observation(remote),
-                    graphics=graphics_observation(remote),
-                    capture_health=capture_health_observation(remote),
-                    controller_input=controller_input_observation(remote))
+                app = application_observation(remote, manager)
+                if app['initialization_complete']:
+                    require(tuple(int(item['getter'], 16) for item in app['applications']) == getters,
+                            'Runtime application table differs from firmware')
+                observation = dict(stage=stage, application=app, graphics=graphics_observation(remote))
+                if current_profile:
+                    observation.update(system=system_observation(remote),
+                                       capture_health=capture_health_observation(remote),
+                                       controller_input=controller_input_observation(remote))
+                else:
+                    remote.select_thread(1)
+                    words = struct.unpack('<3I', remote.read(switch_word - 4, 12))
+                    observation['controller_input'] = dict(decoded_switch_words=list(map(hex, words)),
+                                                           decoded_menu_bit=bool(words[1] & 0x8000))
                 remote.select_thread(1)
                 observation['counter_ticks'] = int.from_bytes(
                     remote.read(0x04266008, 8), 'little')
