@@ -80,6 +80,26 @@ def mode_event_sites(master):
     return BASE + start, BASE + start + site
 
 
+def mode_gate_sites(master):
+    entry = bytes.fromhex('2de9f0410129984692b016460f4604464ff00105')
+    checks = bytes.fromhex('8847c0b9d4f8bc10204688478df800508df8015078b9')
+    require(master.count(entry) == 1, 'Expected one system event dispatcher')
+    start = master.index(entry)
+    body = master[start:start + 0xc0]
+    require(body.count(checks) == 1, 'Expected one startup event gate')
+    site = BASE + start + body.index(checks)
+    sender = bytes.fromhex('feb50446d0f80801052849d10020c4f80801')
+    require(master.count(sender) == 1, 'Expected one startup notification producer')
+    ready = bytes.fromhex('2068d0f8a4108847e0b10520c4f808012068d0f8b0108847'
+                          '05462068d0f8b400804705402068d0f8b4008047854211d1')
+    require(master.count(ready) == 1, 'Expected one mode entry readiness check')
+    gate = BASE + master.index(ready)
+    return {BASE + master.index(sender): 'producer', BASE + start: 'dispatch',
+            site + 2: 'mode_check', site + 20: 'system_check',
+            gate + 8: 'entry_check', gate + 24: 'available_bits',
+            gate + 44: 'required_bits'}
+
+
 def linux(path):
     text = str(path)
     return re.sub(r'([A-Za-z]):[\\/][^,]*',
@@ -215,7 +235,10 @@ def run(args):
                 report['mode_calls'] = []
                 event_entry, notify = mode_event_sites(master)
                 report['mode_events'] = []
-                for pc in (*layout[2:], event_entry, notify):
+                gates = mode_gate_sites(master)
+                report['mode_gates'] = []
+                trace_sites = (*layout[2:], event_entry, notify, *gates)
+                for pc in trace_sites:
                     remote.breakpoint(pc)
             if args.sync_pulse:
                 configs = re.findall(
@@ -243,13 +266,20 @@ def run(args):
                     remote.sock.settimeout(10)
                     thread, registers = stop_registers(remote, response)
                     pc = remote.get(registers, 'pc')
-                    if trace_modes and pc in (*layout[2:], event_entry, notify):
+                    if trace_modes and pc in trace_sites:
                         require(thread in (1, 2), 'Mode call stopped outside master')
                         ctx, r1, r2, r3 = (remote.get(registers, f'r{i}') for i in range(4))
                         call = dict(pc=hex(pc), r1=r1, r2=r2, r3=r3,
                                     caller_return=hex(remote.get(registers, 'lr') & ~1),
                                     counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
-                        if pc in layout[2:]:
+                        if pc in gates:
+                            call.update(kind=gates[pc], r0=ctx)
+                            if gates[pc] == 'producer':
+                                call['substate'] = int.from_bytes(remote.read(ctx + 0x108, 4), 'little')
+                            elif gates[pc] == 'required_bits':
+                                call['matched_bits'] = remote.get(registers, 'r5')
+                            report['mode_gates'].append(call)
+                        elif pc in layout[2:]:
                             call.update(kind='select' if pc == layout[2] else 'defer',
                                         current=remote.read(ctx + 0x158, 1)[0])
                             report['mode_calls'].append(call)

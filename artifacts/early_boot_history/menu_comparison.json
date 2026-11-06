@@ -421,5 +421,225 @@
         "error": "menu-start did not reach the expected state"
       }
     ]
+  },
+  "mode_gate_comparison": {
+    "seconds_per_window": 6,
+    "maximum_windows_per_stage": 9,
+    "settle_seconds": 0,
+    "resource_header": true,
+    "sync_pulse_requested": true,
+    "counter_frequency": 48000000,
+    "runs": [
+      {
+        "package": "Z7_2_0101.bin",
+        "gates": [
+          {
+            "pc": "0x10204bde",
+            "r1": 3,
+            "r2": 3038535600,
+            "r3": 0,
+            "caller_return": "0x102468d8",
+            "counter_ticks": 16950015,
+            "kind": "dispatch",
+            "r0": 2978041260
+          },
+          {
+            "pc": "0x102468da",
+            "r1": 0,
+            "r2": 270821595,
+            "r3": 2985730144,
+            "caller_return": "0x1020d214",
+            "counter_ticks": 43550991,
+            "kind": "producer",
+            "r0": 2978044424,
+            "substate": 5
+          },
+          {
+            "pc": "0x10204bde",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x1024697a",
+            "counter_ticks": 43551002,
+            "kind": "dispatch",
+            "r0": 2978041260
+          },
+          {
+            "pc": "0x10245aea",
+            "r1": 270589613,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10245aea",
+            "counter_ticks": 43551017,
+            "kind": "entry_check",
+            "r0": 1
+          },
+          {
+            "pc": "0x10245afa",
+            "r1": 270589631,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10245afa",
+            "counter_ticks": 43551019,
+            "kind": "available_bits",
+            "r0": 2
+          },
+          {
+            "pc": "0x10245b0e",
+            "r1": 270589631,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10245b0e",
+            "counter_ticks": 43551024,
+            "kind": "required_bits",
+            "r0": 3,
+            "matched_bits": 2
+          }
+        ],
+        "selected_modes": [
+          0,
+          1
+        ],
+        "last_stage": "baseline",
+        "last_counter_ticks": 71903944,
+        "error": "baseline did not reach the expected state"
+      },
+      {
+        "package": "Z7_2_0170.bin",
+        "gates": [
+          {
+            "pc": "0x10204bda",
+            "r1": 3,
+            "r2": 3038666672,
+            "r3": 0,
+            "caller_return": "0x10247b5c",
+            "counter_ticks": 17063647,
+            "kind": "dispatch",
+            "r0": 2978057168
+          },
+          {
+            "pc": "0x10247b5e",
+            "r1": 0,
+            "r2": 270826335,
+            "r3": 2985818548,
+            "caller_return": "0x1020d26c",
+            "counter_ticks": 44392555,
+            "kind": "producer",
+            "r0": 2978060360,
+            "substate": 5
+          },
+          {
+            "pc": "0x10204bda",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10247bfe",
+            "counter_ticks": 44392582,
+            "kind": "dispatch",
+            "r0": 2978057168
+          },
+          {
+            "pc": "0x10246d0e",
+            "r1": 270589707,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10246d0e",
+            "counter_ticks": 44392649,
+            "kind": "entry_check",
+            "r0": 1
+          },
+          {
+            "pc": "0x10246d1e",
+            "r1": 270589725,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10246d1e",
+            "counter_ticks": 44392669,
+            "kind": "available_bits",
+            "r0": 3
+          },
+          {
+            "pc": "0x10246d32",
+            "r1": 270589725,
+            "r2": 1,
+            "r3": 1,
+            "caller_return": "0x10246d32",
+            "counter_ticks": 44392669,
+            "kind": "required_bits",
+            "r0": 3,
+            "matched_bits": 3
+          },
+          {
+            "pc": "0x10204bda",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10247bfe",
+            "counter_ticks": 44392692,
+            "kind": "dispatch",
+            "r0": 2978057168
+          },
+          {
+            "pc": "0x10204c38",
+            "r1": 2987206804,
+            "r2": 2,
+            "r3": 2,
+            "caller_return": "0x102a7048",
+            "counter_ticks": 44392728,
+            "kind": "mode_check",
+            "r0": 0
+          },
+          {
+            "pc": "0x10204c4a",
+            "r1": 270589731,
+            "r2": 2,
+            "r3": 2,
+            "caller_return": "0x10204c42",
+            "counter_ticks": 44392742,
+            "kind": "system_check",
+            "r0": 0
+          },
+          {
+            "pc": "0x10204bda",
+            "r1": 8,
+            "r2": 1,
+            "r3": 0,
+            "caller_return": "0x10246fa0",
+            "counter_ticks": 44392776,
+            "kind": "dispatch",
+            "r0": 2978057168
+          },
+          {
+            "pc": "0x10204bda",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10247e16",
+            "counter_ticks": 55907535,
+            "kind": "dispatch",
+            "r0": 2978057168
+          },
+          {
+            "pc": "0x10204bda",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x102470da",
+            "counter_ticks": 55907694,
+            "kind": "dispatch",
+            "r0": 2978057168
+          }
+        ],
+        "selected_modes": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "last_stage": "menu-start",
+        "last_counter_ticks": 149756957,
+        "error": "menu-start did not reach the expected state"
+      }
+    ]
   }
 }
