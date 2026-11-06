@@ -1,0 +1,45 @@
+{
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "scope": "Static original transaction and sample-decoding evidence; new optional endpoint verified with timed engine-I2C tests, not original calibration or UI execution.",
+  "build": "PASS QEMU 10.2.4 incremental compile/link",
+  "test": "PASS tests/test_acceleration.py",
+  "attachment": "nikon-z72-acceleration,bus=master-i2c2,address=29",
+  "defaults": "Device absent unless explicitly attached; sample-present defaults false.",
+  "sample_check": {
+    "axes": [
+      -2048,
+      2047,
+      -1
+    ],
+    "bytes": [
+      128,
+      0,
+      127,
+      240,
+      255,
+      240
+    ]
+  },
+  "windows": [
+    {
+      "start": "0x103d4752",
+      "end": "0x103d4848",
+      "sha256": "e6b50d6695c20678dba33228689ce82b28185ec0c2e26df54b5175624e9df969"
+    },
+    {
+      "start": "0x103d48d0",
+      "end": "0x103d4a54",
+      "sha256": "3060530307fabb2eb72a2b3435f77f94c8f8932d9acb055cf624c05549f476ea"
+    },
+    {
+      "start": "0x103d51cc",
+      "end": "0x103d525a",
+      "sha256": "8c9b1506e503278d4a7642156103db7f4d58860125c77ac05d9ec4aea6be2ec8"
+    },
+    {
+      "start": "0x103d57e6",
+      "end": "0x103d584c",
+      "sha256": "ba1c3ad06e11888297736e7f762b2af18ce142937f97c925daf952a60a7469bd"
+    }
+  ]
+}

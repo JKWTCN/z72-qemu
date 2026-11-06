@@ -1232,3 +1232,10 @@ task stack, zero four-core fault fields and an unchanged source card. A stopped
 loop may retain queued words. The probe restores its callback and scratch memory
 after return, tears down its owned VM and store, and retains only the requested
 JSON report. It does not verify file playback, physical PCM or host sound.
+
+`python tests/test_acceleration.py --qemu .build/build/qemu-system-arm`
+checks the optional [raw acceleration input](../research/z7ii/acceleration_input.md)
+through timed engine I2C transfers. It covers missing input, bounded programming,
+activation, signed 12-bit encoding, invalid writes, overreads, reset and axis
+range rejection. The source workflow includes this check; no remote CI run or
+full original calibration/UI execution is claimed.
