@@ -4,6 +4,7 @@
   "package_signature_checked": false,
   "full_boot_verified": false,
   "scope": "Independent core-zero engine reset through the call to system initialization.",
+  "dual_transport_requested": true,
   "packages": [
     {
       "package": "Z7_2_0101.bin",
@@ -97,7 +98,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0110_01.bin",
@@ -191,7 +199,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0120.bin",
@@ -285,7 +300,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0121.bin",
@@ -379,7 +401,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0130.bin",
@@ -473,7 +502,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0131.bin",
@@ -567,7 +603,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0140.bin",
@@ -661,7 +704,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0150.bin",
@@ -755,7 +805,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 266110,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0160.bin",
@@ -849,7 +906,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0161.bin",
@@ -943,7 +1007,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 265782,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0162.bin",
@@ -1037,7 +1108,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 266110,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     },
     {
       "package": "Z7_2_0170.bin",
@@ -1131,7 +1209,14 @@
           "stop_offset": 916,
           "system_initialization_executed": false
         }
-      ]
+      ],
+      "dual_transport": {
+        "receiver_offset": 266110,
+        "receiver_thread": 3,
+        "written": 1,
+        "consumed": 1,
+        "alias_header_matches": true
+      }
     }
   ]
 }
