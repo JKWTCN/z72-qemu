@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Check the C1.70 eye proximity getter before and after enabling measurement."""
+"""Check the C1.70 eye proximity getter with measurement enabled by original startup."""
 import argparse
 from pathlib import Path
 import struct
@@ -23,7 +23,10 @@ class BootProbe(Machine):
             require((mode, address) == (1, 0x38), 'Unexpected eye sensor bus descriptor')
             return remote.read(tx, size), rx, count
 
-        for expected in ('4000', '41000000', '4a0000000000', '530000', '4100', '4100', '4300'):
+        _, regs = reach(remote, 0x10400264)
+        config = remote.get(regs, 'r1')
+        require(remote.read(config + 0x40, 4) == b'\x41\0\0\0', 'Eye configuration missing')
+        for expected in ('4000', '41000000', '4a0000000000', '530000', '4100', '4141', '4300'):
             _, regs = reach(remote, 0x103ffb88)
             payload, _, count = transfer(regs)
             require(payload == bytes.fromhex(expected) and count == 0,
@@ -39,11 +42,6 @@ class BootProbe(Machine):
         frame = (remote.get(regs, 'sp') - 32) & ~7
         remote.set(sp=frame)
 
-        def call(address, argument):
-            remote.set(pc=address, r0=argument, lr=resume | 1)
-            _, regs = reach(remote, resume)
-            return remote.get(regs, 'r0')
-
         def check_sample(expected):
             output = frame + 20
             remote.write(output, b'\xa5' * 4)
@@ -58,16 +56,10 @@ class BootProbe(Machine):
             require(remote.get(regs, 'r0') == 0 and remote.read(output, 4) == struct.pack('<I', expected),
                     'Unexpected original getter result')
 
-        check_sample(0)
-        handle = call(0x10368b28, 3)
-        require(call(0x103886a8, handle) == 0, 'Could not acquire the bus')
-        remote.write(frame, struct.pack('<3I', 0x41, frame + 16, 1))
-        remote.write(frame + 16, b'\x41')
-        require(call(0x103ffb4c, frame) == 1, 'Measurement enable failed')
-        call(0x103886e6, handle)
-        call(0x103dc538, 30)
+        remote.set(pc=0x103dc538, r0=30, lr=resume | 1)
+        reach(remote, resume)
         check_sample(self.args.eye_proximity)
-        print(f'PASS original proximity getter: standby=0, enabled={self.args.eye_proximity:#x}')
+        print(f'PASS firmware-enabled proximity getter: sample={self.args.eye_proximity:#x}')
 
 
 def main():

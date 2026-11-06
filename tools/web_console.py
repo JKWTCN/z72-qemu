@@ -271,7 +271,9 @@ class Machine:
         (work / 'aux.bin').write_bytes(auxiliary)
         resource = (resource_timing_image() if getattr(self.args, 'sensor_timing_profile', False)
                     else resource_header_image())
-        parameters = parameter_images(getattr(self.args, 'acceleration_records', None))
+        proximity = getattr(self.args, 'eye_proximity', None)
+        parameters = parameter_images(getattr(self.args, 'acceleration_records', None),
+                                      eye_measurement=proximity is not None)
         for name, data in zip(('group17.bin', 'group18.bin', 'group32.bin'),
                               (*parameters, resource)):
             (work / name).write_bytes(data)
@@ -291,7 +293,6 @@ class Machine:
                          for name, address in auxiliary)
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
-        proximity = getattr(self.args, 'eye_proximity', None)
         if getattr(self.args, 'eye_sensor', False) or proximity is not None:
             devices += (f'nikon-z72-eye,bus=master-i2c2,address=56,proximity={proximity or 0}',)
         acceleration = getattr(self.args, 'acceleration_sample', None)
@@ -1211,7 +1212,7 @@ def main():
     parser.add_argument('--eye-sensor', action='store_true',
                         help='Attach the optional eye sensor register profile')
     parser.add_argument('--eye-proximity', type=int, metavar='COUNT',
-                        help='Attach the eye sensor with a fixed raw proximity count (0 through 4095)')
+                        help='Enable eye measurement with a fixed raw proximity count (0 through 4095)')
     add_acceleration_options(parser)
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
