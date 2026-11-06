@@ -227,9 +227,33 @@ static void expander_init(Object *obj)
     qdev_init_gpio_out(DEVICE(obj), &s->irq, 1);
 }
 
+static int expander_post_load(void *opaque, int version_id)
+{
+    Z72Expander *s = opaque;
+    if (!expander_register(s->pointer) || s->levels > 0xffffff) {
+        return -EINVAL;
+    }
+    qemu_set_irq(s->irq, !(s->pending[0] | s->pending[1] | s->pending[2]));
+    return 0;
+}
+
 static const VMStateDescription expander_state = {
     .name = TYPE_Z72_EXPANDER,
-    .unmigratable = true,
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .post_load = expander_post_load,
+    .fields = (const VMStateField[]) {
+        VMSTATE_I2C_SLAVE(parent_obj, Z72Expander),
+        VMSTATE_UINT8_ARRAY(registers, Z72Expander, 0x77),
+        VMSTATE_UINT8_ARRAY(seen, Z72Expander, 3),
+        VMSTATE_UINT8_ARRAY(pending, Z72Expander, 3),
+        VMSTATE_UINT8_ARRAY(latched, Z72Expander, 3),
+        VMSTATE_UINT32(levels, Z72Expander),
+        VMSTATE_UINT8(pointer, Z72Expander),
+        VMSTATE_BOOL(expect_pointer, Z72Expander),
+        VMSTATE_BOOL(increment, Z72Expander),
+        VMSTATE_END_OF_LIST()
+    },
 };
 
 static void expander_realize(DeviceState *dev, Error **errp)

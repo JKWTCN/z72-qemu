@@ -1,12 +1,15 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Exercise the input expander through its controller bus and external pins."""
 import argparse
+from pathlib import Path
 import socket
+import tempfile
 from test_controller_gpio import run
 from analyze.decode_z72 import require
+from tools.web_console import QmpClient, free_port
 
 
-def check(port):
+def check(port, monitor_port):
     def checks(remote, access):
         base = 0x40005400
         wire = socket.create_connection(('127.0.0.1', port), timeout=5)
@@ -106,6 +109,36 @@ def check(port):
             require(irq is True, 'Input acknowledgement did not release interrupt')
             levels(0xffffff)
             get(0)
+            # Menu is active low on pin 9. Hold its pulse while the controller
+            # is midway through an auto-increment write to a different port.
+            write(0x55, (0xfd,))
+            write(0x49, (2,))
+            levels(0xfffdff)
+            levels(0xffffff)
+            address()
+            access(base + 16, 0x8e)
+            access(base + 16, 0xff)
+            monitor = QmpClient(monitor_port)
+            try:
+                for action in ('savevm menu', 'loadvm menu'):
+                    result = monitor.command('human-monitor-command', {'command-line': action})
+                    require(not result, f'{action}: {result}')
+                    qtest('readl 0x40005400')
+                    require(irq is False, 'Latched menu pulse did not assert IRQ')
+                    access(base + 16, 0x52)
+                    stop()
+                    require(get(0x40, 1) == [0x52], 'Held write lost its register pointer')
+                    require(get(0x59, 1) == [2] and get(0x6d, 1) == [255] and
+                            get(1, 1) == [253] and get(1, 1) == [255],
+                            'Restored menu pulse or physical release differs')
+                    qtest('readl 0x40005400')
+                    require(irq is True, 'Menu acknowledgement did not release IRQ')
+                    if action.startswith('savevm'):
+                        write(0x40, (0,))
+                        write(0x55, (0xff,))
+                        levels(0xfffdff)
+            finally:
+                monitor.close()
             write(0x48, (1, 0, 0))
             levels(0xfffffe)
             levels(0xffffff)
@@ -157,7 +190,7 @@ def check(port):
         finally:
             stream.close()
             wire.close()
-        print('PASS input expander: pins, direction, polarity, IRQ, latch, edge, pointer groups and reset')
+        print('PASS input expander: pins, IRQ, latch, menu pulse and held write across snapshot, and reset')
     return checks
 
 
@@ -168,6 +201,12 @@ if __name__ == '__main__':
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
-    run(args.qemu, check(port), ('-device',
-        'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys',
-        '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off'))
+        monitor_port = free_port()
+    with tempfile.TemporaryDirectory() as directory:
+        disk = Path(directory) / 'scratch.raw'
+        disk.write_bytes(bytes(512))
+        run(args.qemu, check(port, monitor_port), ('-device',
+            'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys',
+            '-drive', f'if=none,id=scratch,file={disk},format=raw,snapshot=on',
+            '-qmp', f'tcp:127.0.0.1:{monitor_port},server=on,wait=off',
+            '-qtest', f'tcp:127.0.0.1:{port},server=on,wait=off'))
