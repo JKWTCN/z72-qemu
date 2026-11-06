@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 from analyze.decode_z72 import crc
-from analyze.update_store import UpdateStore, installable_master
+from analyze.update_store import UpdateStore, image_version, installable_master
 from checks.synthetic_master import build
 
 
@@ -42,6 +42,12 @@ class InstallableMasterTests(unittest.TestCase):
         image += struct.pack('>H', crc(bytes(image)))
         with self.assertRaisesRegex(ValueError, 'Ver'):
             installable_master(bytes(image))
+
+    def test_historical_version_suffix(self):
+        self.assertEqual(image_version(bytes(32) + b'Ver.01.60.b1'), 'Ver.01.60.b1')
+        for version in (b'Ver.01.60.g1', b'Ver.01.6a.b1'):
+            with self.assertRaises(ValueError):
+                image_version(bytes(32) + version)
 
     def test_rejects_changed_boot_layout(self):
         image = bytearray(self.image[:-2])

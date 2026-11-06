@@ -22,7 +22,7 @@ from analyze.firmware_structure import (PROFILES, boot_prefix, branch_target,
                                         communication_header, scatter_records)
 
 MANIFEST_FORMAT = 1
-VERSION_PATTERN = re.compile(rb'Ver\.\d{2}\.\d{2}\.\d{2}')
+VERSION_PATTERN = re.compile(rb'Ver\.\d{2}\.\d{2}\.[0-9a-f]{2}')
 # The master window ends at 0x14000000; the image starts at BASE.
 MAXIMUM_LENGTH = 0x14000000 - BASE
 

@@ -1,0 +1,1137 @@
+{
+  "qemu_version": "QEMU emulator version 10.2.4",
+  "member_and_container_crcs_checked": true,
+  "package_signature_checked": false,
+  "full_boot_verified": false,
+  "scope": "Independent core-zero engine reset through the call to system initialization.",
+  "packages": [
+    {
+      "package": "Z7_2_0101.bin",
+      "sha256": "6e06b6ef9f0b86f9c20a6cb1a2a86b719674ae4cc9416e4d65430b9413f43099",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_01010",
+          "sha256": "d84d5399b7fc9a3c198410e4989a8bd784fda746dc991c018bde3cb93075a701",
+          "version": "Ver.01.01.00",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_01010",
+          "sha256": "def08adcb490acb30f83706bb035b7a92fa28732c361c130f8886673290a2d86",
+          "version": "Ver.01.01.00",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0110_01.bin",
+      "sha256": "05ac894df6d20afa3a88fe01eabce1adf61e57e4f7d9644fc94635ca8fbc2b2e",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0110e",
+          "sha256": "7b7ff96dbe2d0ef79941dd21726a56893b722b5d3636e51ae1839d34c18e7b64",
+          "version": "Ver.01.10.e0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0110e",
+          "sha256": "6e577407ac8f01ab50c0c7b3c11f902ba3a57e4622647bd504f0fc4b9325f85f",
+          "version": "Ver.01.10.e0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0120.bin",
+      "sha256": "78d2b91abbb9cca6c438538bc2d4a59cb604187296dfe8d7ed75f6853a53beb9",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0120c",
+          "sha256": "1b9295d9185b92d3a1a0f0e2ab753a1d70ab7c89f979a821585387a7379be528",
+          "version": "Ver.01.20.c0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0120c",
+          "sha256": "b4d5ffa0d9d7bb885acf07172af4b33ae2eb5ef175b569a504895ae1218d332a",
+          "version": "Ver.01.20.c0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0121.bin",
+      "sha256": "cd70fe4acf53bc56c9b8380b6368d3ed40b25fd4f17dbd3c21f9e0a2ea6789c7",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_01210",
+          "sha256": "775f596a3b9655121ac83f088dcadc6473f903b00872303a694216004e44d991",
+          "version": "Ver.01.21.00",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_01210",
+          "sha256": "e43e50cb86aa669f79ef7fdf0b82af6da8c04b8ca568ce5843c59af6744d4de9",
+          "version": "Ver.01.21.00",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0130.bin",
+      "sha256": "ed096994c005fff0692255d93fba2917f823f1e982ea541655f8631aedff910a",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0130f",
+          "sha256": "05bd4aca38a0d3abdc1247163b1d8a56effe0f18ea2c9f2d26476c21f7a8b65d",
+          "version": "Ver.01.30.f0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0130f",
+          "sha256": "edb66b15e2304e4e822fb2feda96327119ba6d73b6b81760ab40a4ad6ce5d1dd",
+          "version": "Ver.01.30.f0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0131.bin",
+      "sha256": "17b424a2d3f0de715be013ff88699623ed14786adac381144f0656c2fc7d1cb3",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0131a",
+          "sha256": "82021770cca00be44d84b3faa19a23019ddaa8b2e91fbaa4e7f8bda17b591615",
+          "version": "Ver.01.31.a0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0131a",
+          "sha256": "3a93fa113dab1c76e1c3fcc3f72c78c6346db4bc42fa8fad1d0737ea88d2e6fb",
+          "version": "Ver.01.31.a0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0140.bin",
+      "sha256": "fe52d3135c01a91bd88ccb923390de05e73e8231a818d560a3aa9022a057e58e",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0140d",
+          "sha256": "61da9ba974d98ae0a52e1cdb5c9bf14a9eea3858f51a649ba6e5a06e43158394",
+          "version": "Ver.01.40.d0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0140d",
+          "sha256": "f461186a03d4605cb72d6bec8dbb59300530dc6759cb582867795dfcf11fa686",
+          "version": "Ver.01.40.d0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0150.bin",
+      "sha256": "5ed3dd815e95061d2daabef4ffb69a2a401e00e1624180ba5ea420d0547ff2b1",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0150c",
+          "sha256": "0448fc1b768fdc41fd18529c72cda60a90d03347b748787caa8fb5b8600adcbc",
+          "version": "Ver.01.50.c0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0150c",
+          "sha256": "c46a32c6de8db8c13e2122a4dcf2d622bf9cbaf17e479f39313d5440fed073f6",
+          "version": "Ver.01.50.c0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0160.bin",
+      "sha256": "921a9f92cfc394300fc9c26a92d9e3fa15c2be37ca3eb01862711c4609799904",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0160b",
+          "sha256": "eb8dc5838605a0feda7e3c9e6e433713ff88143d6f1a068383eb564faa46a6b6",
+          "version": "Ver.01.60.b1",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0160b",
+          "sha256": "315e959cb5eb21d43588a96c523f2f99cbe1bb1548d15b3f827501403cdcc8bb",
+          "version": "Ver.01.60.b1",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0161.bin",
+      "sha256": "3872c2b0929d6afbd3108ddb9e122424170124a8c4e43dbdadad388ecab29eaf",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_01610",
+          "sha256": "33d3dd78aee5be9608462ef7a90c0eeff2d1f9fcd258d8cdfe7d18943996a698",
+          "version": "Ver.01.61.00",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_01610",
+          "sha256": "8e4bf306f7fba697426f9625d2771272d61575e9502d4ace205263fef50fa028",
+          "version": "Ver.01.61.00",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0162.bin",
+      "sha256": "4e1b865bda9a3fda1cbce09be4cae3b67d5a05551f44720306c6f426aad7941c",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_0162a",
+          "sha256": "d063cfecc196f1d4b4b3e5581348801f5e0d1041db0627f41f997d207d380c9d",
+          "version": "Ver.01.62.a0",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_0162a",
+          "sha256": "26a2ad1381cf07c710faf25620972946370da1af895531fad45d4093ea942f3b",
+          "version": "Ver.01.62.a0",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    },
+    {
+      "package": "Z7_2_0170.bin",
+      "sha256": "fc0e94f57500a1f0e287c6b9a036c81a5ffceccb8432a377d645b3fa35a19b6a",
+      "engines": [
+        {
+          "role": "master",
+          "member": "eg1840_mas_01700",
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "version": "Ver.01.70.02",
+          "entry_offset": 48264,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55296,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55296,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        },
+        {
+          "role": "slave",
+          "member": "eg1840_sla_01700",
+          "sha256": "e0d2589cf036bbf8ce6e4c32f5f2bab61fe35e863660bf6a0ee8082d8a64e1bb",
+          "version": "Ver.01.70.02",
+          "entry_offset": 48340,
+          "prefix_instructions": 72,
+          "delay_loops": [
+            {
+              "offset": 55360,
+              "initial_count": 40000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            },
+            {
+              "offset": 55360,
+              "initial_count": 8000,
+              "terminal_r0": 4294967295,
+              "stock_loop_executed": true
+            }
+          ],
+          "register_results": [
+            {
+              "address": 69615616,
+              "value": 33
+            },
+            {
+              "address": 69615648,
+              "value": 356190466
+            },
+            {
+              "address": 69734440,
+              "value": 0
+            },
+            {
+              "address": 69734444,
+              "value": 23265280
+            }
+          ],
+          "temporary_stack_verified": true,
+          "stock_page_table_preserved": true,
+          "stop_offset": 916,
+          "system_initialization_executed": false
+        }
+      ]
+    }
+  ]
+}
