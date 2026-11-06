@@ -271,8 +271,9 @@ class Machine:
         (work / 'aux.bin').write_bytes(auxiliary)
         resource = (resource_timing_image() if getattr(self.args, 'sensor_timing_profile', False)
                     else resource_header_image())
+        parameters = parameter_images(getattr(self.args, 'acceleration_records', None))
         for name, data in zip(('group17.bin', 'group18.bin', 'group32.bin'),
-                              (*parameter_images(), resource)):
+                              (*parameters, resource)):
             (work / name).write_bytes(data)
         auxiliary = BOOT_AUXILIARY
         if getattr(self.args, 'processing_resource_header', False):
@@ -1179,6 +1180,8 @@ def main():
                         help='Attach the optional eye sensor register profile without optical samples or measurement interrupts')
     parser.add_argument('--acceleration-sample', nargs=3, type=int, metavar=('X', 'Y', 'Z'),
                         help='Attach a sensor with a fixed raw acceleration sample (-2048 through 2047 per axis)')
+    parser.add_argument('--acceleration-records', nargs=2, type=Path, metavar=('CONFIG', 'CALIBRATION'),
+                        help='Install local ACCELE records in boot parameter storage (256 and 192 bytes)')
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',
