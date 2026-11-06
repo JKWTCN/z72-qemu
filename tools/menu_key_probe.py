@@ -100,6 +100,19 @@ def mode_gate_sites(master):
             gate + 44: 'required_bits'}
 
 
+def readiness_sites(master):
+    sites = {}
+    for name, signature, offset in (
+            ('update_type', '10b501284ff0000406d0022806d00428', 0),
+            ('pending_bits', '009941f6283001f0010252420a409207', 2),
+            ('service_status', '0546087893b0c043e1784007', 4),
+            ('ready_message', '20780128d5f8', 2)):
+        pattern = bytes.fromhex(signature)
+        require(master.count(pattern) == 1, f'Expected one {name} observation point')
+        sites[BASE + master.index(pattern) + offset] = name
+    return sites
+
+
 def linux(path):
     text = str(path)
     return re.sub(r'([A-Za-z]):[\\/][^,]*',
@@ -204,6 +217,14 @@ def run(args):
             devices += tuple(
                 f"nikon-z72-controller-register-bank,bus=master-i2c{i},address=104"
                 for i in range(4))
+            sample_axes = getattr(args, 'acceleration_sample', None)
+            if sample_axes is not None:
+                require(all(-2048 <= axis <= 2047 for axis in sample_axes),
+                        'Acceleration axes must fit signed 12-bit samples')
+                x, y, z = sample_axes
+                devices += ('nikon-z72-acceleration,bus=master-i2c2,address=29,'
+                            f'sample-present=on,sample-x={x},sample-y={y},sample-z={z}',)
+                report['acceleration_sample'] = sample_axes
             if args.resource_header:
                 (work / 'group32.bin').write_bytes(resource_header_image())
                 devices += (f"loader,file={work / 'group32.bin'},"
@@ -236,6 +257,7 @@ def run(args):
                 event_entry, notify = mode_event_sites(master)
                 report['mode_events'] = []
                 gates = mode_gate_sites(master)
+                gates.update(readiness_sites(master))
                 report['mode_gates'] = []
                 trace_sites = (*layout[2:], event_entry, notify, *gates)
                 for pc in trace_sites:
@@ -453,6 +475,8 @@ def main():
                         help='Load an experimental group-32 header with a zero resource body')
     parser.add_argument('--trace-modes', action='store_true',
                         help='Record master mode events, notifications, selections and deferred requests')
+    parser.add_argument('--acceleration-sample', type=int, nargs=3, metavar=('X', 'Y', 'Z'),
+                        help='Attach the acceleration device with three signed 12-bit raw axes')
     parser.add_argument('--sync-pulse', action='store_true',
                         help='Supply one external synchronization pulse at the original wait')
     arguments = parser.parse_args()

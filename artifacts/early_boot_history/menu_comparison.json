@@ -641,5 +641,266 @@
         "error": "menu-start did not reach the expected state"
       }
     ]
+  },
+  "acceleration_readiness_comparison": {
+    "seconds_per_window": 6,
+    "settle_seconds": 0,
+    "resource_header": true,
+    "sync_pulse_requested": true,
+    "counter_frequency": 48000000,
+    "runs": [
+      {
+        "package": "Z7_2_0101.bin",
+        "acceleration_sample": null,
+        "maximum_windows_per_stage": 9,
+        "first_observation_per_value": [
+          {
+            "kind": "update_type",
+            "value": 4,
+            "pc": "0x10347336",
+            "counter_ticks": 18487183
+          },
+          {
+            "kind": "update_type",
+            "value": 1,
+            "pc": "0x10347336",
+            "counter_ticks": 20196207
+          },
+          {
+            "kind": "pending_bits",
+            "value": 9,
+            "pc": "0x1034e0a8",
+            "counter_ticks": 20196285
+          },
+          {
+            "kind": "update_type",
+            "value": 2,
+            "pc": "0x10347336",
+            "counter_ticks": 43522330
+          },
+          {
+            "kind": "pending_bits",
+            "value": 13,
+            "pc": "0x1034e0a8",
+            "counter_ticks": 43527943
+          }
+        ],
+        "selected_modes": [
+          0,
+          1
+        ],
+        "sync_pulse_supplied": false,
+        "menu_key_decoded": false,
+        "last_foreground": 0,
+        "last_counter_ticks": 62038104,
+        "error": "baseline did not reach the expected state"
+      },
+      {
+        "package": "Z7_2_0170.bin",
+        "acceleration_sample": null,
+        "maximum_windows_per_stage": 9,
+        "first_observation_per_value": [
+          {
+            "kind": "update_type",
+            "value": 8,
+            "pc": "0x10350aa6",
+            "counter_ticks": 998875
+          },
+          {
+            "kind": "update_type",
+            "value": 4,
+            "pc": "0x10350aa6",
+            "counter_ticks": 18526573
+          },
+          {
+            "kind": "update_type",
+            "value": 1,
+            "pc": "0x10350aa6",
+            "counter_ticks": 20187097
+          },
+          {
+            "kind": "pending_bits",
+            "value": 11,
+            "pc": "0x10357950",
+            "counter_ticks": 20190199
+          },
+          {
+            "kind": "update_type",
+            "value": 2,
+            "pc": "0x10350aa6",
+            "counter_ticks": 43514364
+          },
+          {
+            "kind": "pending_bits",
+            "value": 15,
+            "pc": "0x10357950",
+            "counter_ticks": 43520555
+          },
+          {
+            "kind": "service_status",
+            "value": 15,
+            "pc": "0x1020f7c8",
+            "counter_ticks": 44275882
+          },
+          {
+            "kind": "ready_message",
+            "value": 1,
+            "pc": "0x1020cc1e",
+            "counter_ticks": 44276862
+          }
+        ],
+        "selected_modes": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "sync_pulse_supplied": true,
+        "menu_key_decoded": true,
+        "last_foreground": 3,
+        "last_counter_ticks": 141348000,
+        "error": "menu-start did not reach the expected state"
+      },
+      {
+        "package": "Z7_2_0101.bin",
+        "acceleration_sample": [
+          0,
+          0,
+          1024
+        ],
+        "maximum_windows_per_stage": 15,
+        "first_observation_per_value": [
+          {
+            "kind": "update_type",
+            "value": 8,
+            "pc": "0x10347336",
+            "counter_ticks": 767722
+          },
+          {
+            "kind": "update_type",
+            "value": 4,
+            "pc": "0x10347336",
+            "counter_ticks": 18482372
+          },
+          {
+            "kind": "update_type",
+            "value": 1,
+            "pc": "0x10347336",
+            "counter_ticks": 20203213
+          },
+          {
+            "kind": "pending_bits",
+            "value": 11,
+            "pc": "0x1034e0a8",
+            "counter_ticks": 20204402
+          },
+          {
+            "kind": "update_type",
+            "value": 2,
+            "pc": "0x10347336",
+            "counter_ticks": 43537743
+          },
+          {
+            "kind": "pending_bits",
+            "value": 15,
+            "pc": "0x1034e0a8",
+            "counter_ticks": 43541970
+          },
+          {
+            "kind": "service_status",
+            "value": 15,
+            "pc": "0x1020f6e2",
+            "counter_ticks": 44457261
+          },
+          {
+            "kind": "ready_message",
+            "value": 1,
+            "pc": "0x1020cbfc",
+            "counter_ticks": 44458890
+          }
+        ],
+        "selected_modes": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "sync_pulse_supplied": true,
+        "menu_key_decoded": true,
+        "last_foreground": 3,
+        "last_counter_ticks": 172753423,
+        "error": "menu-start did not reach the expected state"
+      },
+      {
+        "package": "Z7_2_0110_01.bin",
+        "acceleration_sample": [
+          0,
+          0,
+          1024
+        ],
+        "maximum_windows_per_stage": 10,
+        "first_observation_per_value": [
+          {
+            "kind": "update_type",
+            "value": 8,
+            "pc": "0x103478a6",
+            "counter_ticks": 664354
+          },
+          {
+            "kind": "update_type",
+            "value": 4,
+            "pc": "0x103478a6",
+            "counter_ticks": 18475860
+          },
+          {
+            "kind": "update_type",
+            "value": 1,
+            "pc": "0x103478a6",
+            "counter_ticks": 20098981
+          },
+          {
+            "kind": "pending_bits",
+            "value": 11,
+            "pc": "0x1034e6b4",
+            "counter_ticks": 20101883
+          },
+          {
+            "kind": "update_type",
+            "value": 2,
+            "pc": "0x103478a6",
+            "counter_ticks": 43429017
+          },
+          {
+            "kind": "pending_bits",
+            "value": 15,
+            "pc": "0x1034e6b4",
+            "counter_ticks": 43434777
+          },
+          {
+            "kind": "service_status",
+            "value": 15,
+            "pc": "0x1020f6e2",
+            "counter_ticks": 44243074
+          },
+          {
+            "kind": "ready_message",
+            "value": 1,
+            "pc": "0x1020cbfc",
+            "counter_ticks": 44244876
+          }
+        ],
+        "selected_modes": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "sync_pulse_supplied": true,
+        "menu_key_decoded": false,
+        "last_foreground": 3,
+        "last_counter_ticks": 56589243,
+        "error": "baseline did not reach the expected state"
+      }
+    ]
   }
 }
