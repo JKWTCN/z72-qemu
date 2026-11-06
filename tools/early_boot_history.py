@@ -93,7 +93,54 @@ def trace_receiver(images, signature, qemu):
                 process.wait()
 
 
-def run_package(path, master, qemu, signature=None):
+def trace_controller_request(images, controller, qemu):
+    # The checker sums 256 bytes through r2 and branches on a sum of 0xff.
+    loop = bytes.fromhex('4ff48071491e12f8014b2044c0b2f9d1ff280dd0')
+    require(controller.count(loop) == 1, 'Expected one controller frame checksum loop')
+    offset = controller.index(loop)
+    require(controller[offset + 0x30:offset + 0x34] == bytes.fromhex('0120fbe7'),
+            'Unexpected controller frame success branch')
+    with tempfile.TemporaryDirectory(prefix='z72-controller-link-') as folder:
+        directory = Path(folder)
+        firmware = directory / 'controller.bin'
+        firmware.write_bytes(controller)
+        process, remote = dual_machine(qemu, directory, images['master'], images['slave'],
+            directory / 'console.txt', icount='shift=4,sleep=off', trace=None,
+            controller_firmware=firmware, controller_link=True,
+            devices=('nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',))
+        try:
+            remote.select_thread(5)
+            regs = remote.regs()
+            sp, reset = struct.unpack_from('<2I', controller)
+            require(remote.get(regs, 'pc') == reset & ~1 and remote.get(regs, 'sp') == sp,
+                    'Controller reset vectors differ from the packaged image')
+            remote.sock.settimeout(60)
+            thread, _ = reach(remote, 0x080002e2)
+            require(thread == 5 and remote.read(0xe000ed08, 4) == struct.pack('<I', 0x20000000)
+                    and remote.read(0x20000000, 0x1c4) == controller[:0x1c4],
+                    'Controller reset did not relocate its vector table')
+            thread, regs = reach(remote, 0x08000000 + offset)
+            require(thread == 5, 'Frame checksum ran on the wrong processor')
+            buffer = remote.get(regs, 'r2')
+            frame = remote.read(buffer, 256)
+            require(frame[:4] == bytes((1, 1, 28, 0)) and frame[252:254] == bytes((1, 1))
+                    and sum(frame) & 255 == 255, 'Unexpected engine request frame')
+            thread, regs = reach(remote, 0x08000000 + offset + 0x32)
+            require(thread == 5 and remote.get(regs, 'r0') == 1, 'Controller rejected frame')
+            return dict(sha256=digest(controller), reset_pc=reset & ~1, vector_table=0x20000000,
+                        checker_offset=offset, buffer=buffer, frame_sha256=digest(frame),
+                        payload_bytes=28, frame_bytes=len(frame), accepted=True)
+        finally:
+            remote.sock.close()
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+
+
+def run_package(path, master, qemu, signature=None, controller_link=False):
     raw = path.read_bytes()
     body = raw[32:64] + decode(master, raw[64:], 32)
     members = describe_container(body)['members']
@@ -123,6 +170,14 @@ def run_package(path, master, qemu, signature=None):
     if signature:
         result['dual_transport'] = trace_receiver(images, signature, qemu)
         print(path.name, 'receiver drained ring', flush=True)
+    if controller_link:
+        controllers = [m for m in members if m['name'].startswith('ex1840_')]
+        require(len(controllers) == 1, 'Expected one packaged body controller')
+        member = controllers[0]
+        start = member['offset']
+        result['controller_request'] = trace_controller_request(
+            images, body[start:start + member['length']], qemu)
+        print(path.name, 'body controller accepted engine request', flush=True)
     return result
 
 
@@ -133,6 +188,8 @@ def main():
     parser.add_argument('--transport-reference', type=Path,
                         help='Original C 1.70 slave EG for the dual-engine receiver check')
     parser.add_argument('--qemu', required=True)
+    parser.add_argument('--controller-link', action='store_true',
+                        help='Boot each packaged body controller with its paired engines and verify its first request')
     parser.add_argument('--report', required=True, type=Path)
     args = parser.parse_args()
     paths = sorted(args.packages.glob('Z7_2_*.bin'))
@@ -149,7 +206,8 @@ def main():
                   package_signature_checked=False, full_boot_verified=False,
                   scope='Independent core-zero engine reset through the call to system initialization.',
                   dual_transport_requested=bool(signature),
-                  packages=[run_package(path, master, args.qemu, signature) for path in paths])
+                  packages=[run_package(path, master, args.qemu, signature, args.controller_link)
+                            for path in paths])
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
 

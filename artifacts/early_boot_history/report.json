@@ -118,6 +118,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "977eb3050622729dc0fe8f2241ebdee1a5752c4dcf1578f49d78d178be66bb14",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "c2a1cefa59f56dc9a3621067b06afd4d56b6f9bd20a80a13568a462499871e14",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -232,6 +243,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "f6e3bbe959530f3135e0f02b28b334ee80d2e383bec44aa45413a3f777bde64e",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -346,6 +368,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "0d70a81bec016d8d5df7c67f5d0ca6d64eedd89d18ab4179a449eb57ca732b0d",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -460,6 +493,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "5d739fd61d5c675bc8ad513d6d1f074dad46f37c5780138bcdae43f5d805744b",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -574,6 +618,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "2f3f46fb7f6de6895915bbd1f03e4bd5be6fdf49e9d2adca166c37b8605c6d08",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -688,6 +743,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "e8b95f4c6e37a5a4c1d9b3ccb0726dc36236ecc6780ab0637d3a49c1d97361f9",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -802,6 +868,17 @@
             270558529
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "a1ca6c40526843d79e0af336d8bd826c89ca74afe0dd86ddbb1076f1719f66eb",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213650,
+        "buffer": 536968054,
+        "frame_sha256": "00a6372969adcd913b89665399156e2c1c9e193df57215e7a76010ec88783aa3",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -916,6 +993,17 @@
             270558529
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "553a813ce24726485bd9c60d2aafc46c90cc6e077de53e4611431f23d5b240f2",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213658,
+        "buffer": 536968054,
+        "frame_sha256": "e55817f1b1da1190312cf59298cc881f59b16fc458aebe8fba8d8557da1dbaa4",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -1030,6 +1118,17 @@
             270558529
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "553a813ce24726485bd9c60d2aafc46c90cc6e077de53e4611431f23d5b240f2",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213658,
+        "buffer": 536968054,
+        "frame_sha256": "b1882ed4c9de473b6948ba685dad18858e19d7e47ca5aa1861dab65f9c3a5ad9",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -1144,6 +1243,17 @@
             270558529
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213658,
+        "buffer": 536968054,
+        "frame_sha256": "d335de3aab2bd1cb7a881f7fdac45d96baca1fdb76ffd89163fdb012a000bf38",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -1258,6 +1368,17 @@
             270558533
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213658,
+        "buffer": 536968054,
+        "frame_sha256": "072e04c407d9ff2d9b078d94ec306081870721f8c36c80fc7e80e6e862ef53e1",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     },
     {
@@ -1372,6 +1493,17 @@
             270558537
           ]
         }
+      },
+      "controller_request": {
+        "sha256": "cb10af00b9485567453d448020892836ea48637bd638f4cf7cc1c9777a128a9a",
+        "reset_pc": 134218420,
+        "vector_table": 536870912,
+        "checker_offset": 213658,
+        "buffer": 536968054,
+        "frame_sha256": "8aedb8b77613358218b8b5be795bfd083bd65ade7e7128e50f1591c6bc190e39",
+        "payload_bytes": 28,
+        "frame_bytes": 256,
+        "accepted": true
       }
     }
   ]
