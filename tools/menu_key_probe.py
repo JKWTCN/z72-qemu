@@ -24,6 +24,7 @@ from tools.graphics_boot_probe import (application_observation,
 from tools.battery_boot_probe import shooting_active
 from tools.create_lab_parameters import parameter_images, resource_header_image
 from tools.dual_boot_probe import dual_machine, sample_cores
+from tools.smp_boot_probe import stop_registers
 
 MENU_PIN = 9
 
@@ -46,12 +47,12 @@ def mode_layout(master):
         require(struct.unpack_from('<2H', master, pos + instruction) ==
                 (halfword, register << 12 | (offset + displacement)),
                 'Unexpected deferred mode fields')
-    return table, offset
+    return table, offset, BASE + select[0].start(), BASE + pos + 0x1c
 
 
 def historical_mode(remote, layout):
     remote.select_thread(1)
-    table, groups = layout
+    table, groups = layout[:2]
     obj = int.from_bytes(remote.read(table, 4), 'little')
     context = int.from_bytes(remote.read(obj, 4), 'little')
     if not context:
@@ -87,7 +88,8 @@ def run(args):
     manager, getters = application_manager(master)
     switch_word = matches[0]['controller_request']['menu_samples'][0]['switch_address']
     current_profile = identities['master'] == PROFILES['master'].sha256
-    layout = None if current_profile else mode_layout(master)
+    trace_modes = getattr(args, 'trace_modes', False)
+    layout = mode_layout(master) if trace_modes or not current_profile else None
     wait_setup = bytes.fromhex('40ea04086a4632230821a7f15000')
     require(master.count(wait_setup) == 1, 'Expected one synchronization wait setup')
     wait = BASE + master.index(wait_setup) + len(wait_setup)
@@ -195,6 +197,10 @@ def run(args):
             gpios = re.findall(r"(device\[\d+\]) \(child<nikon-z72-controller-gpio>\)",
                                listing.decode())
             gpios.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
+            if trace_modes:
+                report['mode_calls'] = []
+                for pc in layout[2:]:
+                    remote.breakpoint(pc)
             if args.sync_pulse:
                 configs = re.findall(
                     r"(device\[\d+\]) \(child<nikon-z72-boot-config>\)", listing.decode())
@@ -209,18 +215,31 @@ def run(args):
                 assert wire.recv(1024).strip() == b'OK'
 
             def resume():
-                remote.sock.settimeout(args.seconds)
-                try:
-                    response = remote.command('vCont;c')
-                except TimeoutError:
-                    remote.interrupt()
-                    return
-                if args.sync_pulse and not report['sync_pulse_supplied']:
-                    match = re.search(r'thread:([0-9a-f]+);', response)
-                    require(match is not None, 'Missing synchronization stop thread')
-                    remote.select_thread(int(match[1], 16))
-                    registers = remote.regs()
-                    require(remote.get(registers, 'pc') == wait and
+                deadline = time.monotonic() + args.seconds
+                while time.monotonic() < deadline:
+                    remote.sock.settimeout(max(.1, deadline - time.monotonic()))
+                    try:
+                        response = remote.command('vCont;c')
+                    except TimeoutError:
+                        remote.sock.settimeout(10)
+                        remote.interrupt()
+                        return
+                    remote.sock.settimeout(10)
+                    thread, registers = stop_registers(remote, response)
+                    pc = remote.get(registers, 'pc')
+                    if trace_modes and pc in layout[2:]:
+                        require(thread in (1, 2), 'Mode call stopped outside master')
+                        ctx, r1, r2, r3 = (remote.get(registers, f'r{i}') for i in range(4))
+                        report['mode_calls'].append(dict(
+                            kind='select' if pc == layout[2] else 'defer', pc=hex(pc),
+                            current=remote.read(ctx + 0x158, 1)[0], r1=r1, r2=r2, r3=r3,
+                            caller_return=hex(remote.get(registers, 'lr') & ~1),
+                            counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little')))
+                        remote.breakpoint(pc, False)
+                        stop_registers(remote, remote.command(f'vCont;s:{thread:x}'))
+                        remote.breakpoint(pc)
+                        continue
+                    require(args.sync_pulse and not report['sync_pulse_supplied'] and pc == wait and
                             remote.get(registers, 'r0') == remote.get(registers, 'r7') - 0x50 and
                             remote.get(registers, 'r1') == 8 and
                             remote.get(registers, 'r3') == 50,
@@ -237,10 +256,6 @@ def run(args):
                         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
                     require(remote.command(f'z0,{wait:x},2') == 'OK',
                             'Could not remove synchronization observation point')
-                    try:
-                        remote.command('vCont;c')
-                    except TimeoutError:
-                        remote.interrupt()
 
             def sample(stage):
                 app = application_observation(remote, manager)
@@ -381,6 +396,8 @@ def main():
     parser.add_argument('--settle-seconds', type=float, default=5)
     parser.add_argument('--resource-header', action='store_true',
                         help='Load an experimental group-32 header with a zero resource body')
+    parser.add_argument('--trace-modes', action='store_true',
+                        help='Record mode selection and deferred-request calls as the master executes them')
     parser.add_argument('--sync-pulse', action='store_true',
                         help='Supply one external synchronization pulse at the original wait')
     arguments = parser.parse_args()
