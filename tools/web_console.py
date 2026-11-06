@@ -293,7 +293,9 @@ class Machine:
                          for name, address in auxiliary)
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
-        if getattr(self.args, 'eye_sensor', False) or proximity is not None:
+        self.eye_attached = getattr(self.args, 'eye_sensor', False) or proximity is not None
+        self.eye_detected = False
+        if self.eye_attached:
             devices += (f'nikon-z72-eye,bus=master-i2c2,address=56,proximity={proximity or 0}',)
         acceleration = getattr(self.args, 'acceleration_sample', None)
         if acceleration is not None:
@@ -423,6 +425,8 @@ class Machine:
         require(len(gpios) == 8 and len(configs) == 2 and len(adcs) == 1,
                 'Missing controller or engine inputs')
         self.adc_name = adcs[0]
+        if self.eye_attached:
+            self._drive_eye(False)
         # G0 is the active-low lens detection input.
         for index, pin, level in ((2, 5, 0), (3, 13, 1), (4, 9, 1), (6, 7, 1),
                                   (6, 0, int(not getattr(self.args, 'virtual_lens', False))),
@@ -508,6 +512,8 @@ class Machine:
                     if self.remote.get(self.remote.regs(), 'pc') == ENGINE_ENTRY:
                         break
                     time.sleep(0.05)
+                if self.eye_attached:
+                    self._drive_eye(self.eye_detected)
                 self._boot_dance()
             except BaseException:
                 if self.remote is not None:
@@ -733,6 +739,18 @@ class Machine:
         with self.io:
             self._ready()
             self._set_key_locked(pin, level)
+
+    def _drive_eye(self, detected):
+        self._qtest(f'set_irq_in /machine/unattached/{self.config_names[0]} '
+                    f'gpio-input 14 {int(not detected)}')
+        self.eye_detected = detected
+
+    def set_eye_detected(self, detected):
+        require(type(detected) is bool, 'Expected a boolean detected field')
+        with self.io:
+            self._ready()
+            require(self.eye_attached, 'Start with --eye-sensor or --eye-proximity')
+            self._drive_eye(detected)
 
     def set_acceleration(self, axes):
         require(type(axes) is list and len(axes) in (0, 3) and
@@ -1136,6 +1154,8 @@ def make_handler(machine):
                     machine.set_key(pin, level)
                 elif self.path == '/mode':
                     machine.set_mode(request.get('position'))
+                elif self.path == '/eye':
+                    machine.set_eye_detected(request.get('detected'))
                 elif self.path == '/acceleration':
                     machine.set_acceleration(request.get('axes'))
                 elif self.path == '/dial':

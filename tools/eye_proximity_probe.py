@@ -34,11 +34,21 @@ class BootProbe(Machine):
             _, regs = reach(remote, 0x103ffb8c)
             require(remote.get(regs, 'r0') == 0, 'Boot write failed')
 
-        _, regs = reach(remote, 0x103ffc92)
-        resume = remote.get(regs, 'lr') & ~1
-        _, regs = reach(remote, resume)
-        # The original initialization has released the bus. Reserve scratch space
-        # below its caller, then run the original routines on that thread.
+        def check_event(level):
+            _, regs = reach(remote, 0x103c488e)
+            require(remote.get(regs, 'r0') == 0x43190001 and remote.get(regs, 'r1') == 1 - level,
+                    f'Unexpected upper eye notification for GPIO level {level}')
+            reach(remote, 0x103c48b4)
+
+        check_event(1)
+        reach(remote, 0x103ffc92)
+        for level in (0, 1):
+            self._drive_eye(level == 0)
+            check_event(level)
+        # Step out of the last callback before borrowing its caller's stack.
+        _, regs = reach(remote, 0x103ffcfa)
+        resume = remote.get(regs, 'pc')
+        # Reserve scratch space below the current frame for the original reader.
         frame = (remote.get(regs, 'sp') - 32) & ~7
         remote.set(sp=frame)
 
@@ -59,7 +69,7 @@ class BootProbe(Machine):
         remote.set(pc=0x103dc538, r0=30, lr=resume | 1)
         reach(remote, resume)
         check_sample(self.args.eye_proximity)
-        print(f'PASS firmware-enabled proximity getter: sample={self.args.eye_proximity:#x}')
+        print(f'PASS firmware-enabled proximity getter: GPIO notifications=0/1/0, sample={self.args.eye_proximity:#x}')
 
 
 def main():
