@@ -4912,7 +4912,7 @@ static char *boot_config_input_trace_get(Object *obj, Error **errp)
 
 /* Inspect the existing controller without MMIO reads, which need a running
  * CPU context for its banked registers. This does not acknowledge an IRQ. */
-static char *boot_config_compute_interrupts_get(Object *obj, Error **errp)
+static char *boot_config_interrupts_text(Object *obj, unsigned first, unsigned last)
 {
     NikonZ72BootConfig *s = NIKON_Z72_BOOT_CONFIG(obj);
     GString *text = g_string_new("{");
@@ -4929,14 +4929,14 @@ static char *boot_config_compute_interrupts_get(Object *obj, Error **errp)
                 gic->priority_mask[cpu]);
         }
         g_string_append(text, "],\"interrupts\":[");
-        for (unsigned intid = 227; intid <= 229; intid++) {
+        for (unsigned intid = first; intid <= last; intid++) {
             const gic_irq_state *irq = &gic->irq_state[intid];
 
             g_string_append_printf(text,
                 "%s{\"intid\":%u,\"enabled\":%u,\"pending\":%u,"
                 "\"active\":%u,\"level\":%u,\"target_cpus\":%u,"
                 "\"priority\":%u,\"group\":%u,\"edge_trigger\":%s}",
-                intid == 227 ? "" : ",", intid, irq->enabled, irq->pending,
+                intid == first ? "" : ",", intid, irq->enabled, irq->pending,
                 irq->active, irq->level, gic->irq_target[intid],
                 gic->priority2[intid - GIC_INTERNAL], irq->group,
                 irq->edge_trigger ? "true" : "false");
@@ -4945,6 +4945,16 @@ static char *boot_config_compute_interrupts_get(Object *obj, Error **errp)
     }
     g_string_append_c(text, '}');
     return g_string_free(text, false);
+}
+
+static char *boot_config_compute_interrupts_get(Object *obj, Error **errp)
+{
+    return boot_config_interrupts_text(obj, 227, 229);
+}
+
+static char *boot_config_display_interrupts_get(Object *obj, Error **errp)
+{
+    return boot_config_interrupts_text(obj, 111, 113);
 }
 
 static void boot_config_init(Object *obj)
@@ -5007,6 +5017,8 @@ static void boot_config_init(Object *obj)
                                    OBJ_PROP_FLAG_READ);
     object_property_add_str(obj, "input-trace-log",
                             boot_config_input_trace_get, NULL);
+    object_property_add_str(obj, "display-interrupt-state",
+                            boot_config_display_interrupts_get, NULL);
     object_property_add_str(obj, "compute-interrupt-state",
                             boot_config_compute_interrupts_get, NULL);
     qdev_init_gpio_in(DEVICE(obj), peer_ready_input, 1);
@@ -5979,9 +5991,9 @@ static DeviceState *nikon_z72_engine_init(MachineState *machine, MemoryRegion *v
         sysbus_realize_and_unref(SYS_BUS_DEVICE(display), &error_fatal);
         memory_region_add_subregion_overlap(view, 0x20140000,
             sysbus_mmio_get_region(SYS_BUS_DEVICE(display), 0), 1);
-        for (unsigned line = 0; line < 2; line++) {
+        for (unsigned line = 0; line < 3; line++) {
             sysbus_connect_irq(SYS_BUS_DEVICE(display), line,
-                               qdev_get_gpio_in(gic, 112 - line - 32));
+                               qdev_get_gpio_in(gic, 111 + line - 32));
         }
         /* Frame-timed completion edges for the recovered output lines
          * 48/52 (channel 1 bits 16/20) when display-complete is set. */

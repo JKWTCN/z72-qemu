@@ -14,18 +14,28 @@ OBJECT_DECLARE_SIMPLE_TYPE(Z72Display, Z72_DISPLAY)
 struct Z72Display {
     SysBusDevice parent_obj;
     MemoryRegion iomem;
-    qemu_irq irq[2];
+    qemu_irq irq[3];
     uint32_t registers[DISPLAY_SIZE / 4];
     uint32_t levels[2];
 };
 
 static void display_update_irqs(Z72Display *s)
 {
+    bool asserted[3] = { false };
+
     for (unsigned bank = 0; bank < 2; bank++) {
         unsigned mask = (0x1210 + bank * 0x4000) / 4;
+        unsigned route = s->registers[(0x1100 + bank * 0x4000) / 4] & 0xff;
 
-        qemu_set_irq(s->irq[bank],
-                     (s->registers[mask] & s->registers[mask + 1]) != 0);
+        if (!route) {
+            route = bank ? 1 : 2;
+        }
+        if (route <= ARRAY_SIZE(asserted)) {
+            asserted[route - 1] |= (s->registers[mask] & s->registers[mask + 1]) != 0;
+        }
+    }
+    for (unsigned line = 0; line < ARRAY_SIZE(asserted); line++) {
+        qemu_set_irq(s->irq[line], asserted[line]);
     }
 }
 
@@ -61,7 +71,8 @@ static void display_write(void *opaque, hwaddr offset, uint64_t value,
     } else {
         s->registers[offset / 4] = value;
     }
-    if (offset == 0x1210 || offset == 0x1214 ||
+    if (offset == 0x1100 || offset == 0x5100 ||
+        offset == 0x1210 || offset == 0x1214 ||
         offset == 0x5210 || offset == 0x5214) {
         display_update_irqs(s);
     }
@@ -116,8 +127,8 @@ static void display_init(Object *obj)
     memory_region_init_io(&s->iomem, obj, &display_ops, s,
                           TYPE_Z72_DISPLAY, DISPLAY_SIZE);
     sysbus_init_mmio(SYS_BUS_DEVICE(s), &s->iomem);
-    for (unsigned bank = 0; bank < 2; bank++) {
-        sysbus_init_irq(SYS_BUS_DEVICE(s), &s->irq[bank]);
+    for (unsigned line = 0; line < ARRAY_SIZE(s->irq); line++) {
+        sysbus_init_irq(SYS_BUS_DEVICE(s), &s->irq[line]);
     }
     qdev_init_gpio_in_named(DEVICE(obj), display_event, "output-event", 64);
 }

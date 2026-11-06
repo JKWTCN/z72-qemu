@@ -84,6 +84,9 @@ def snapshot(machine):
                     result['display_task'] = dict(
                         context=hex(context), route_fields=list(route),
                         callback=hex(machine._words(context + 0x514, 1)[0]))
+                result['display_interrupt_controller'] = json.loads(machine.qmp.command(
+                    'qom-get', dict(path=f'/machine/unattached/{machine.config_names[0]}',
+                                    property='display-interrupt-state')))
                 request = machine._words(0xb1fa6dd8, 5)
                 result['shooting_output_request'] = dict(selection=request[0], flags=request[1],
                                                          callback=hex(request[2]), status=request[3],

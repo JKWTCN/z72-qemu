@@ -84,6 +84,16 @@ def check(qemu):
                 signal(bank * 32 + 16, 1)
                 require(access(status) == 0x10000 and pending(irq),
                         'A second display edge was lost')
+            access(0x20145100, 3)
+            clear(111)
+            require(not pending(111) and pending(113), 'Live cause did not move to SPI113')
+            access(0x20141100, 3)
+            access(0x20145214, 0x10000)
+            clear(113)
+            require(pending(113), 'One bank cleared a shared display IRQ prematurely')
+            access(0x20141214, 0x10000)
+            clear(113)
+            require(not pending(113), 'Display IRQ remained asserted after both banks cleared')
             require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK',
                     'Display reset failed')
             for bank in range(2):
@@ -93,7 +103,7 @@ def check(qemu):
                 signal(bank * 32 + 16, 1)
                 require(access(mask + 4) == 0x10000,
                         'Reset retained display input level')
-            print('PASS display events: W1C, masks, retained causes, SPI111/112, '
+            print('PASS display events: W1C, masks, retained causes, SPI111/112/113, '
                   'engine isolation, edges and reset', flush=True)
         finally:
             if stream is not None:
