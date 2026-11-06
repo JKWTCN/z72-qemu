@@ -17,7 +17,7 @@ from tools.smp_boot_probe import reach
 def check(qemu):
     image = struct.pack('<6I', 0xe5810000, 0xe5912000, 0xeafffffe,
                         0xe2500001, 0x1afffffd, 0xeafffffe)
-    target = 'nikon-z72-acceleration,bus=master-i2c2,address=29'
+    target = 'nikon-z72-acceleration,id=acceleration,bus=master-i2c2,address=29'
     with tempfile.TemporaryDirectory() as folder:
         for present in (False, True):
             device = target + (',sample-present=on,sample-x=-2048,sample-y=2047,sample-z=-1'
@@ -108,6 +108,25 @@ def check(qemu):
                 require(read(0) == [0], 'System reset retained activation')
                 transfer((0x2a, 1))
                 require(read(0) == [8 if present else 0], 'Reset lost configured external input')
+                if present:
+                    def publish(value):
+                        cmd = f'qom-set -j /machine/peripheral/acceleration set-sample {value}'
+                        require(remote.command('qRcmd,' + cmd.encode().hex()) == 'OK',
+                                'Could not update acceleration input')
+
+                    transfer((1,))
+                    require(transfer(count=2, hold=True) == [0x80, 0], 'Missing initial X')
+                    publish('[1,-2,3]')
+                    access(20, 4)
+                    remote.set(pc=BASE + 12, cpsr=0xd3, r0=16384)
+                    reach(remote, BASE + 20)
+                    require([access(12, read=True) for _ in range(4)] == [0x7f, 0xf0, 0xff, 0xf0],
+                            'Live update mixed samples across a held receive')
+                    access(0, 0x2b)
+                    require(read(1, 6) == [0, 0x10, 0xff, 0xe0, 0, 0x30], 'Live sample differs')
+                    publish('[]')
+                    require(read(0) == [0], 'Withdrawn sample remained ready')
+                    read(1, 6, accepted=False)
     for axis in ('x', 'y', 'z'):
         for value in (-2049, 2048):
             result = subprocess.run([qemu, '-M', 'nikon-z72-lab', '-display', 'none',

@@ -296,7 +296,7 @@ class Machine:
         acceleration = getattr(self.args, 'acceleration_sample', None)
         if acceleration is not None:
             x, y, z = acceleration
-            devices += ('nikon-z72-acceleration,bus=master-i2c2,address=29,'
+            devices += ('nikon-z72-acceleration,id=acceleration,bus=master-i2c2,address=29,'
                         f'sample-present=on,sample-x={x},sample-y={y},sample-z={z}',)
         card = getattr(self.args, 'sd_card', None)
         card_globals, card_arguments = (), ()
@@ -732,6 +732,17 @@ class Machine:
             self._ready()
             self._set_key_locked(pin, level)
 
+    def set_acceleration(self, axes):
+        require(type(axes) is list and len(axes) in (0, 3) and
+                all(type(v) is int and -2048 <= v <= 2047 for v in axes),
+                'Expected three signed 12-bit axes or an empty list')
+        with self.io:
+            self._ready()
+            require(getattr(self.args, 'acceleration_sample', None) is not None,
+                    'Start the console with --acceleration-sample to attach the sensor')
+            self.qmp.command('qom-set', {'path': '/machine/peripheral/acceleration',
+                                         'property': 'set-sample', 'value': axes})
+
     def set_mode(self, position):
         require(type(position) is int and 0 <= position < len(MODE_COUNTS),
                 'Invalid mode position')
@@ -1120,6 +1131,8 @@ def make_handler(machine):
                     machine.set_key(pin, level)
                 elif self.path == '/mode':
                     machine.set_mode(request.get('position'))
+                elif self.path == '/acceleration':
+                    machine.set_acceleration(request.get('axes'))
                 elif self.path == '/dial':
                     machine.set_dial(request.get('index'), request.get('step'))
                 elif self.path == '/release':
@@ -1158,7 +1171,7 @@ def add_acceleration_options(parser):
         return value
 
     parser.add_argument('--acceleration-sample', nargs=3, type=axis, metavar=('X', 'Y', 'Z'),
-                        help='Attach a sensor with a fixed raw acceleration sample (-2048 through 2047 per axis)')
+                        help='Attach a sensor with an initial raw acceleration sample (-2048 through 2047 per axis)')
     parser.add_argument('--acceleration-records', nargs=2, type=Path, metavar=('CONFIG', 'CALIBRATION'),
                         help='Install local ACCELE records in boot parameter storage (256 and 192 bytes)')
 

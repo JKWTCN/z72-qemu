@@ -6,6 +6,7 @@
 #include "hw/resettable.h"
 #include "migration/vmstate.h"
 #include "qapi/error.h"
+#include "qapi/qapi-builtin-visit.h"
 
 #define TYPE_Z72_ACCELERATION "nikon-z72-acceleration"
 OBJECT_DECLARE_SIMPLE_TYPE(Z72Acceleration, Z72_ACCELERATION)
@@ -38,6 +39,14 @@ static int acceleration_event(I2CSlave *dev, enum i2c_event event)
         }
         s->receiving = true;
         s->cursor = 0;
+        if (s->reg == 1) {
+            int32_t axes[] = {s->x, s->y, s->z};
+            for (unsigned i = 0; i < ARRAY_SIZE(axes); i++) {
+                uint16_t raw = (axes[i] & 0xfff) << 4;
+                s->sample[2 * i] = raw >> 8;
+                s->sample[2 * i + 1] = raw;
+            }
+        }
         break;
     case I2C_FINISH:
         if (!s->receiving && !s->failed && s->selected) {
@@ -123,18 +132,41 @@ static void acceleration_reset(Object *obj, ResetType type)
     s->control = s->reg = 0;
 }
 
+static bool axis_valid(int32_t value)
+{
+    return value >= -2048 && value <= 2047;
+}
+
+static void acceleration_set_sample(Object *obj, Visitor *v, const char *name,
+                                    void *opaque, Error **errp)
+{
+    Z72Acceleration *s = Z72_ACCELERATION(obj);
+    g_autoptr(int32List) axes = NULL;
+    if (!visit_type_int32List(v, name, &axes, errp)) {
+        return;
+    }
+    if (!axes) {
+        s->present = false;
+        return;
+    }
+    int32List *y = axes->next;
+    int32List *z = y ? y->next : NULL;
+    if (!z || z->next || !axis_valid(axes->value) ||
+        !axis_valid(y->value) || !axis_valid(z->value)) {
+        error_setg(errp, "Expected three signed 12-bit axes or an empty list");
+        return;
+    }
+    s->x = axes->value;
+    s->y = y->value;
+    s->z = z->value;
+    s->present = true;
+}
+
 static void acceleration_realize(DeviceState *dev, Error **errp)
 {
     Z72Acceleration *s = Z72_ACCELERATION(dev);
-    int32_t axes[] = {s->x, s->y, s->z};
-    for (unsigned i = 0; i < ARRAY_SIZE(axes); i++) {
-        if (axes[i] < -2048 || axes[i] > 2047) {
-            error_setg(errp, "Acceleration axes must fit signed 12 bits");
-            return;
-        }
-        uint16_t raw = (axes[i] & 0xfff) << 4;
-        s->sample[2 * i] = raw >> 8;
-        s->sample[2 * i + 1] = raw;
+    if (!axis_valid(s->x) || !axis_valid(s->y) || !axis_valid(s->z)) {
+        error_setg(errp, "Acceleration axes must fit signed 12 bits");
     }
 }
 
@@ -156,6 +188,8 @@ static void acceleration_class_init(ObjectClass *klass, const void *data)
     dc->realize = acceleration_realize;
     dc->vmsd = &acceleration_vmstate;
     device_class_set_props(dc, acceleration_properties);
+    object_class_property_add(klass, "set-sample", "int32List", NULL,
+                              acceleration_set_sample, NULL, NULL);
     RESETTABLE_CLASS(klass)->phases.hold = acceleration_reset;
     ic->event = acceleration_event;
     ic->send = acceleration_send;
