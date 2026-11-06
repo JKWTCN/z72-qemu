@@ -1,0 +1,66 @@
+{
+  "scope": "Real first-buffer DMA completion followed by direct invocation of the original DMA dispatcher. Execution stops before the original RTOS event SVC; no event service, second-buffer submission or GIC exception dispatch is claimed.",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "results": [
+    {
+      "channel": 0,
+      "dma_callback": "0x1036de43",
+      "audio_callback": "0x102deb99",
+      "dma_before": "0x29fd0000",
+      "dma_after": "0x29e00000",
+      "saved_status": "0x30005",
+      "event_boundary": {
+        "r0": "0x1234",
+        "r1": "0x2",
+        "r12": "0x802e0200",
+        "pc": "0x10104858",
+        "cpsr": "0x1d3"
+      },
+      "next_buffer": 1
+    },
+    {
+      "channel": 1,
+      "dma_callback": "0x1036de35",
+      "audio_callback": "0x102deb75",
+      "dma_before": "0x29fd0000",
+      "dma_after": "0x29e00000",
+      "saved_status": "0x30005",
+      "event_boundary": {
+        "r0": "0x1234",
+        "r1": "0x4",
+        "r12": "0x802e0200",
+        "pc": "0x10104858",
+        "cpsr": "0x1d3"
+      },
+      "next_buffer": 1
+    }
+  ],
+  "fixture": "RAM descriptors, already-bound DMA resources, two buffers, global DMA enable and nominal audio clock supplied by harness. Event handle 0x1234 is a sentinel, not a valid RTOS object.",
+  "windows": [
+    {
+      "start": "0x102dc2e0",
+      "end": "0x102dc338",
+      "sha256": "bf0f093a8de86f57a0aebe1ebd842c46a86345c9f0a2c7882db5cd6244761539"
+    },
+    {
+      "start": "0x1036de34",
+      "end": "0x1036de50",
+      "sha256": "39190d96dab6d66bc578eabea7f6964806b9786d00a53c34ccb21b206ec07868"
+    },
+    {
+      "start": "0x102deb2a",
+      "end": "0x102debaa",
+      "sha256": "bd1527efe569fcc9469aaf3304ce5bdea44f018fcf1133b8aa4327cc6a406087"
+    },
+    {
+      "start": "0x103610cc",
+      "end": "0x103610d2",
+      "sha256": "2b265b3758212478bde9ed38e09c8fba8cdb88350220bd1cdd486a656da32aee"
+    },
+    {
+      "start": "0x10104844",
+      "end": "0x1010486c",
+      "sha256": "dbccc8f07712dbc3548e7e75c8ce4cff2c90eac8e137cbec46bfb55b048cfda0"
+    }
+  ]
+}
