@@ -23,6 +23,8 @@ def check(qemu, master):
     with tempfile.TemporaryDirectory() as folder, reset_machine(
             qemu, Path(folder) / 'machine', image, 'master',
             icount='shift=4,sleep=off', devices=(device,)) as remote:
+        # Use the firmware's own memory attributes for its unaligned copy.
+        reach(remote, 0x1002bda4)
         bus, delay, result = 0x2c01a000, 0xb1800700, 0xb1800100
         remote.write(delay, struct.pack('<3I', 0xe2500001, 0x1afffffd, 0xeafffffe))
 
@@ -43,31 +45,52 @@ def check(qemu, master):
                     'Bus transaction did not complete')
             return bytes(remote.read(bus + 12, 4)[0] for _ in range(count))
 
-        transfer(0x1d, b'\x2a\x01')
         remote.write(0xb1807efc, b'\x01')  # Select the six-byte device variant.
-        remote.write(result, b'\xa5' * 12)
-        remote.set(pc=0x103d4752, cpsr=0x1f3, sp=0xb1808000, lr=0x10021001, r0=result)
 
         def return_success(regs):
             remote.set(pc=remote.get(regs, 'lr') & ~1, r0=0)
 
-        _, regs = reach(remote, 0x103886a8)  # Bus acquire.
-        return_success(regs)
-        _, regs = reach(remote, 0x1038871c)
-        descriptor = remote.get(regs, 'r1')
-        mode, address, tx, rx, tx_size, rx_size = struct.unpack(
-            '<BxH4I', remote.read(descriptor, 20))
-        require((mode, address, tx_size, rx_size) == (1, 0x1d, 1, 6),
-                'Unexpected sample transfer descriptor')
-        selector = remote.read(tx, tx_size)
-        require(selector == b'\x01', 'Unexpected sample selector')
-        transfer(address, selector)
-        wire = transfer(address, count=rx_size)
-        remote.write(rx, wire)
-        require(remote.command('G' + regs.hex()) == 'OK', 'Could not resume bus caller')
-        return_success(regs)
-        _, regs = reach(remote, 0x103886e6)  # Bus release.
-        return_success(regs)
+        def service(payload, count=0):
+            _, regs = reach(remote, 0x103886a8)  # Bus acquire.
+            return_success(regs)
+            _, regs = reach(remote, 0x1038871c)
+            descriptor = remote.get(regs, 'r1')
+            mode, address, tx, rx, tx_size, rx_size = struct.unpack(
+                '<BxH4I', remote.read(descriptor, 20))
+            require((mode, address, tx_size, rx_size) == (1, 0x1d, len(payload), count),
+                    'Unexpected acceleration transfer descriptor')
+            sent = remote.read(tx, tx_size)
+            require(sent == payload, f'Unexpected programming bytes {sent.hex()}')
+            transfer(address, sent)
+            wire = b''
+            if count:
+                wire = transfer(address, count=count)
+                remote.write(rx, wire)
+            require(remote.command('G' + regs.hex()) == 'OK', 'Could not resume bus caller')
+            return_success(regs)
+            _, regs = reach(remote, 0x103886e6)  # Bus release.
+            return_success(regs)
+            return wire
+
+        # Supply the qualified programming record to the original configuration
+        # routine. The timing field selects its branch without an RTOS sleep.
+        owner, record = 0xb1802000, 0xb1803000
+        remote.write(0xb1807f00, struct.pack('<I', owner))
+        remote.write(owner + 0x1a8, struct.pack('<I', record))
+        config = bytearray(0xb0)
+        config[0x20], config[0x90], config[0x94] = 0x51, 0x2d, 2
+        remote.write(record, config)
+        remote.set(pc=0x103d48d0, cpsr=0x1f3, sp=0xb1810000, lr=0x10021001)
+        for reg, size in ((0x0e, 2), (0x11, 1), (0x15, 1), (0x17, 2), (0x1d, 4)):
+            service(bytes([reg]) + bytes(size))
+        service(b'\x23' + bytes(7) + b'\x2c\x02' + bytes(6))
+        service(b'\x2a\x2d')
+        _, regs = reach(remote, 0x10021000)
+        require(remote.get(regs, 'r0') == 1, 'Firmware configuration failed')
+
+        remote.write(result, b'\xa5' * 12)
+        remote.set(pc=0x103d4752, cpsr=0x1f3, sp=0xb1810000, lr=0x10021001, r0=result)
+        wire = service(b'\x01', 6)
         _, regs = reach(remote, 0x10021000)
         fields = struct.unpack('<HhhhHH', remote.read(result, 12))
         require(remote.get(regs, 'r0') == 1 and fields ==
