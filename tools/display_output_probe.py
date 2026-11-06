@@ -77,6 +77,11 @@ def snapshot(machine):
             if machine.eye_attached:
                 result['eye_detected'] = machine.eye_detected
                 result['eye_property'] = machine._words(EYE_STATE_C170, 1)[0]
+                result['shooting_output_selection'] = machine._words(0xb181b484, 1)[0]
+                request = machine._words(0xb1fa6dd8, 5)
+                result['shooting_output_request'] = dict(selection=request[0], flags=request[1],
+                                                         callback=hex(request[2]), status=request[3],
+                                                         stage=request[4])
             return result
         finally:
             machine.qmp.command('cont')
@@ -99,7 +104,20 @@ def drive_and_trace_eye(machine, detected):
             # the shooting-side caller even when the result lags the edge.
             sp = remote.get(regs, 'sp')
             caller = int.from_bytes(remote.read(sp + 4, 4), 'little') & ~1
-            return dict(observed=True, result=remote.get(regs, 'r0'), return_pc=hex(caller))
+            query = dict(observed=True, result=remote.get(regs, 'r0'), return_pc=hex(caller))
+            if caller == 0x10540c32 and query['result'] == 1:
+                try:
+                    _, regs = reach(remote, 0x1057bc18)
+                except TimeoutError:
+                    query['output_submit'] = dict(observed=False, timeout_seconds=10)
+                else:
+                    descriptor = remote.get(regs, 'r3')
+                    query['output_submit'] = dict(
+                        observed=True, operation=remote.get(regs, 'r0'),
+                        argument=remote.get(regs, 'r1'), count=remote.get(regs, 'r2'),
+                        channel=remote.read(descriptor, 1)[0],
+                        request=hex(remote.get(regs, 'r4')))
+            return query
         finally:
             if remote is not None:
                 try:
