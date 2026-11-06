@@ -127,9 +127,34 @@ def trace_controller_request(images, controller, qemu):
                     and sum(frame) & 255 == 255, 'Unexpected engine request frame')
             thread, regs = reach(remote, 0x08000000 + offset + 0x32)
             require(thread == 5 and remote.get(regs, 'r0') == 1, 'Controller rejected frame')
+            master = images['master']
+            checks = bytes.fromhex('57b348b30020a070206c0121')
+            require(master.count(checks) == 1, 'Expected one master response acceptance path')
+            accepted = master.index(checks) + 6
+            thread, regs = reach(remote, BASE + accepted)
+            require(thread in (1, 2) and remote.get(regs, 'r7') == 1,
+                    'Master response checker did not accept the checksum')
+            rx = remote.get(regs, 'r8')
+            response = remote.read(rx, 256)
+            require(response[:4] == bytes((1, 1, 28, 0)) and response[252:254] == bytes((1, 1))
+                    and sum(response) & 255 == 255, 'Unexpected controller response frame')
+            remote.select_thread(5)
+            tx = int.from_bytes(remote.read(0x40026434, 4), 'little')
+            require(remote.read(tx, 256) == response and remote.read(0x4002642c, 4) == bytes(4),
+                    'Controller DMA and master response differ')
+            ack_body = bytes.fromhex('0120a06104f15000bde810400821')
+            require(controller.count(ack_body) == 1, 'Expected one acknowledgement callback')
+            ack = controller.index(ack_body)
+            thread, _ = reach(remote, 0x08000000 + ack)
+            exception = int.from_bytes(remote.read(0xe000ed04, 4), 'little') & 0x1ff
+            require(thread == 5 and exception == 39 and remote.read(0x40021810, 4)[0] & 0x40,
+                    'Missing controller G6 receive confirmation')
             return dict(sha256=digest(controller), reset_pc=reset & ~1, vector_table=0x20000000,
                         checker_offset=offset, buffer=buffer, frame_sha256=digest(frame),
-                        payload_bytes=28, frame_bytes=len(frame), accepted=True)
+                        payload_bytes=28, frame_bytes=len(frame), accepted=True,
+                        response=dict(frame_sha256=digest(response), master_buffer=rx,
+                                      controller_dma_buffer=tx, acceptance_offset=accepted,
+                                      acknowledgement_offset=ack, exception=exception))
         finally:
             remote.sock.close()
             process.terminate()
@@ -177,7 +202,7 @@ def run_package(path, master, qemu, signature=None, controller_link=False):
         start = member['offset']
         result['controller_request'] = trace_controller_request(
             images, body[start:start + member['length']], qemu)
-        print(path.name, 'body controller accepted engine request', flush=True)
+        print(path.name, 'controller request, response and receive confirmation verified', flush=True)
     return result
 
 
@@ -189,7 +214,7 @@ def main():
                         help='Original C 1.70 slave EG for the dual-engine receiver check')
     parser.add_argument('--qemu', required=True)
     parser.add_argument('--controller-link', action='store_true',
-                        help='Boot each packaged body controller with its paired engines and verify its first request')
+                        help='Verify the first request and response between each packaged controller and its master')
     parser.add_argument('--report', required=True, type=Path)
     args = parser.parse_args()
     paths = sorted(args.packages.glob('Z7_2_*.bin'))
