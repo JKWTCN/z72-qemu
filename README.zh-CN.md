@@ -50,6 +50,7 @@ JPEG 硬件使用替代后端；不能据此声称默认浏览器交互台已具
 交互台还支持 `--live-view --sensor-image scene.pgm` 提供静态八位灰度
 场景；同一场景经定向机身拍摄保存为完整 JPG，已独立核对输入一致性，见
 [场景读卡检查](artifacts/body_scene_capture/card_check.json)。
+交互台和机身探针也可通过 Pillow 读取 JPEG 或 PNG 照片作为传感器输入。
 冷启动回放现可解码原厂保存的 4:2:2 照片，并将 JPEG 纹理采样到原厂
 1024×682 LCD 背景。定向观察完整结束，绘图失败为零；现有灰度查看器可见
 诊断照片及原厂界面，见[回放验证](artifacts/playback_native_texture_verified/validation.json)

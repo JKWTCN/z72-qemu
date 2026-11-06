@@ -4342,7 +4342,7 @@ def main():
     parser.add_argument('--frame-generate', action='store_true',
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
-                        help='Replace the RAW12 checkerboard with an 8-bit binary PGM/PPM scene')
+                        help='Replace the RAW12 checkerboard with a PGM, PPM, JPEG or PNG scene')
     add_acceleration_options(parser)
     parser.add_argument('--sensor-timing-profile', action='store_true',
                         help='Supply explicit nonzero experimental resource timing rows; not physical sensor calibration')

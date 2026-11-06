@@ -245,7 +245,10 @@ node --check web/console.js
 增加 `--live-view --sensor-image /path/to/scene.pgm`，可用本地图像替换
 动态棋盘格。支持二进制 PGM（`P5` 灰度）和 PPM（`P6` RGB），每通道
 八位、maxval 255；彩色图也使用同一参数，例如 `--sensor-image scene.ppm`。
-宽高各为 1..16384，像素载荷不超过 64 MiB，头部不超过 4096 字节。
+也可直接选择照片，例如 `--sensor-image scene.jpg`。交互台和机身探针使用
+Pillow 读取 JPEG 或 PNG，按 EXIF 方向摆正，再以灰度或 RGB 送入同一采集路径。
+如果解码后的照片超过场景尺寸限制，会等比例缩小。
+底层 PGM/PPM 的宽高各为 1..16384，像素载荷不超过 64 MiB，头部不超过 4096 字节。
 支持数字之间的头部注释和 CRLF；截断、额外像素字节、不支持的格式及
 非法尺寸会使启动失败。
 

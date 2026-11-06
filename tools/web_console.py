@@ -123,6 +123,28 @@ class QmpClient:
         self.sock.close()
 
 
+def prepare_sensor_scene(source, destination):
+    require(source.stat().st_size <= 0x4001000, 'Sensor image exceeds 64 MiB plus its header')
+    with source.open('rb') as stream:
+        magic = stream.read(8)
+    if not (magic.startswith(b'\xff\xd8') or magic == b'\x89PNG\r\n\x1a\n'):
+        shutil.copyfile(source, destination)
+        return
+
+    from PIL import Image, ImageOps
+    with Image.open(source, formats=('JPEG', 'PNG')) as image:
+        mode = 'L' if image.mode in ('1', 'L', 'LA', 'I;16') else 'RGB'
+        channels = 1 if mode == 'L' else 3
+        scale = min(1, 16384 / max(image.size),
+                    (0x4000000 / (image.width * image.height * channels)) ** 0.5)
+        if scale < 1:
+            image.thumbnail(tuple(max(1, int(length * scale)) for length in image.size))
+        oriented = ImageOps.exif_transpose(image)
+        if oriented.mode == 'I;16':
+            oriented = oriented.convert('I').point(lambda value: value / 257)
+        oriented.convert(mode).save(destination, format='PPM')
+
+
 def free_port():
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
@@ -232,8 +254,7 @@ class Machine:
         scene = getattr(self.args, 'sensor_image', None)
         if scene is not None:
             require(getattr(self.args, 'frame_generate', False), 'Sensor image requires frame generation')
-            require(scene.stat().st_size <= 0x4001000, 'Sensor image exceeds 64 MiB plus its header')
-            shutil.copyfile(scene, self.work / 'scene.pgm')
+            prepare_sensor_scene(scene, self.work / 'scene.pgm')
         self.wire_port, self.qmp_port = free_port(), free_port()
         original = subprocess.Popen
         work = self.work
@@ -1218,7 +1239,7 @@ def main():
                         help='Enable the experimental moving monochrome sensor source '
                              'and native LCD preview processing (default: enabled)')
     parser.add_argument('--sensor-image', type=Path,
-                        help='Use an 8-bit binary PGM/PPM scene for the functional RAW12 input')
+                        help='Use a PGM, PPM, JPEG or PNG scene for the functional RAW12 input')
     parser.add_argument('--sensor-timing-profile', action='store_true',
                         help='Supply explicit nonzero experimental resource timing rows; not physical sensor calibration')
     parser.add_argument('--processing-resource-header', action='store_true',

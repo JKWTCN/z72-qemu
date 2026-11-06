@@ -74,6 +74,7 @@ scene. A focused body capture saved that scene as a complete JPEG, independently
 checked against its input; see the [scene card check](artifacts/body_scene_capture/card_check.json).
 Binary PPM (`scene.ppm`, P6) additionally selects a functional RGB/Bayer input
 and carries chroma through preview, still processing, thumbnails and JPEG.
+The console and body capture probe also accept JPEG and PNG scene files via Pillow.
 The [color scene contract](research/z7ii/color_scene.md) defines its explicit
 packing and arithmetic assumptions; it does not claim recovered sensor color
 or original DSP execution.
