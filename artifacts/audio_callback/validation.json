@@ -1,0 +1,59 @@
+{
+  "scope": "Isolated original mask setter and IRQ handlers, with callback-entry breakpoints; not GIC exception dispatch, RTOS callback execution or full playback.",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "results": [
+    {
+      "channel": 0,
+      "callback_slot": "0xb1805bc0",
+      "handler": "0x1036d7d6",
+      "ready_callback": [
+        "0x410a1401",
+        "0x18"
+      ],
+      "underrun_callback": [
+        "0x410a1401",
+        "0x38"
+      ],
+      "status_before": "0xa0a0000",
+      "status_after": "0xa080000",
+      "repeated_callback": [
+        "0x410a1401",
+        "0x18"
+      ],
+      "null_callback_return": true
+    },
+    {
+      "channel": 1,
+      "callback_slot": "0xb1805bf4",
+      "handler": "0x1036d7b6",
+      "ready_callback": [
+        "0x410a1500",
+        "0x18"
+      ],
+      "underrun_callback": [
+        "0x410a1500",
+        "0x38"
+      ],
+      "status_before": "0xa0a0000",
+      "status_after": "0xa080000",
+      "repeated_callback": [
+        "0x410a1500",
+        "0x18"
+      ],
+      "null_callback_return": true
+    }
+  ],
+  "fixture": "Guest callback pointers and descriptors are supplied by the harness. Underflow comes from an enabled empty output tick; a project-authored polling loop waits for it. Clock is disabled before invoking the original handler.",
+  "windows": [
+    {
+      "start": "0x1036d758",
+      "end": "0x1036d7fa",
+      "sha256": "27e450398c4eabacb6e9ec34bd772e221057287896e06139a77eca6391381ff6"
+    },
+    {
+      "start": "0x1036e3ec",
+      "end": "0x1036e444",
+      "sha256": "a5a8370f60ac4b55e714330fc49f116f794f50e2d9b6dd4cfad605b9042855d0"
+    }
+  ]
+}
