@@ -1,0 +1,22 @@
+{
+  "scope": "Same-address held I2C restart and rejected-start timer cancellation; synthetic guest MMIO tests, not full calibration execution.",
+  "before": "test_acceleration.py failed: Repeated START committed a control write without STOP",
+  "after": {
+    "build": "PASS incremental compile/link",
+    "test_acceleration": "PASS",
+    "test_engine_i2c_master": "PASS",
+    "test_engine_i2c_slave": "PASS",
+    "test_eye_sensor": "PASS"
+  },
+  "checks": [
+    "held complete control write discarded by repeated send START rather than committed by fabricated STOP",
+    "selector TX followed by held repeated RX returns inactive status",
+    "HOLD release clears bus ownership",
+    "RX START before prior TX deadline NACKs with no later timer completion",
+    "cancelled control write leaves input inactive"
+  ],
+  "limits": [
+    "Address changes retain the existing stop/readdress path.",
+    "No physical timing or full original application execution asserted."
+  ]
+}

@@ -32,14 +32,17 @@ def check(qemu):
                     require(remote.get(regs, 'pc') == pc + 4, 'I2C access aborted')
                     return remote.get(regs, 'r2')
 
-                def transfer(values=(), count=0, accepted=True):
-                    access(0, 0x63 if count else 0x62)
+                def transfer(values=(), count=0, accepted=True, hold=False, restart=False):
+                    if restart:
+                        access(16, 0x2ff)
+                    else:
+                        access(0, 0x63 if count else 0x62)
                     if count:
                         access(20, count)
                     else:
                         for value in values:
                             access(12, value)
-                    access(0, 0x2b if count else 0x2a)
+                    access(0, (0x2b if count else 0x2a) | (0x10 if hold else 0))
                     access(8, 0x1d)
                     remote.set(pc=BASE + 12, cpsr=0xd3, r0=16384)
                     reach(remote, BASE + 20)
@@ -76,6 +79,29 @@ def check(qemu):
                 transfer((0x2a, 0))
                 require(read(0) == [0], 'Standby retained ready state')
                 read(1, 6, accepted=False)
+                # A repeated START is not STOP: discard the staged control.
+                transfer((0x2a, 1), hold=True)
+                require(access(4, read=True) == 0x100, 'HOLD released the bus')
+                transfer((0,), hold=True, restart=True)
+                require(transfer(count=1, hold=True, restart=True) == [0],
+                        'Repeated START committed a control write without STOP')
+                access(0, 0x2b)
+                require(access(4, read=True) == 0, 'HOLD release retained bus ownership')
+                # Restart before the TX deadline. The receive address NACKs
+                # because no selector was sent; the old timer must not finish RX.
+                access(0, 0x62)
+                access(12, 0x2a)
+                access(12, 1)
+                access(0, 0x3a)
+                access(8, 0x1d)
+                access(20, 1)
+                access(0, 0x3b)
+                access(8, 0x1d)
+                remote.set(pc=BASE + 12, cpsr=0xd3, r0=16384)
+                reach(remote, BASE + 20)
+                require(access(16, read=True) == 4 and access(4, read=True) == 0,
+                        'Rejected restart retained a timer or fabricated receive completion')
+                require(read(0) == [0], 'Cancelled write activated input')
                 transfer((0x2a, 1))
                 require(remote.command('qRcmd,' + 'system_reset'.encode().hex()) == 'OK',
                         'System reset failed')

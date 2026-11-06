@@ -140,16 +140,23 @@ static void i2c_write(void *opaque, hwaddr address, uint64_t value, unsigned siz
         }
         break;
     case 8:
-        p->regs[2] = value;
         if (p->regs[0] & 8) {
-            finish_bus(p);
+            /* Retain a held peer across repeated START. Ending it here would
+             * fabricate STOP and commit writes that the guest abandoned. */
+            if (!p->bus_active || (p->regs[2] & 0x7f) != (value & 0x7f)) {
+                finish_bus(p);
+            }
+            timer_del(p->timer);
+            p->active = false;
             if (i2c_start_transfer(p->bus, value & 0x7f, p->regs[0] & 1)) {
                 p->regs[4] |= 4;
+                finish_bus(p);
             } else {
                 p->bus_active = true;
                 schedule(p);
             }
         }
+        p->regs[2] = value;
         break;
     case 12:
         if (p->tx_count < DEPTH) {
