@@ -13,6 +13,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from analyze.qemu_display import Remote
+from tools.smp_boot_probe import reach
 from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, Machine
 
 OUTPUT_BASE = 0x20140000
@@ -80,6 +82,34 @@ def snapshot(machine):
             machine.qmp.command('cont')
 
 
+def drive_and_trace_eye(machine, detected):
+    """Observe a natural C1.70 shooting-side query as the input changes."""
+    with machine.io:
+        machine.qmp.command('stop')
+        remote = None
+        try:
+            remote = Remote(machine.gdb_port)
+            machine._drive_eye(detected)
+            remote.sock.settimeout(10)
+            try:
+                _, regs = reach(remote, 0x106957b2)
+            except TimeoutError:
+                return dict(observed=False, timeout_seconds=10)
+            # This return pops {r4, pc}; the second stack word identifies
+            # the shooting-side caller even when the result lags the edge.
+            sp = remote.get(regs, 'sp')
+            caller = int.from_bytes(remote.read(sp + 4, 4), 'little') & ~1
+            return dict(observed=True, result=remote.get(regs, 'r0'), return_pc=hex(caller))
+        finally:
+            if remote is not None:
+                try:
+                    remote.command('D')
+                finally:
+                    remote.sock.close()
+            else:
+                machine.qmp.command('cont')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
@@ -91,6 +121,8 @@ def main():
     sampling.add_argument('--samples', type=int, default=2)
     sampling.add_argument('--eye-sequence', action='store_true',
                         help='Observe C1.70 live-view outputs with eye input far, near, then far')
+    parser.add_argument('--trace-eye-query', action='store_true',
+                        help='With --eye-sequence, record the native shooting-side query and caller')
     parser.add_argument('--interval', type=float, default=2)
     parser.add_argument('--events', type=int, nargs='+', default=[],
                         help='Pulse physical output-event lines once after the first snapshot')
@@ -102,6 +134,8 @@ def main():
         parser.error('samples must be 1..20 and interval 0..30 seconds')
     if any(not 0 <= event < 64 for event in args.events) or (args.events and args.samples < 2):
         parser.error('events must be 0..63 and require at least two snapshots')
+    if args.trace_eye_query and not args.eye_sequence:
+        parser.error('--trace-eye-query requires --eye-sequence')
     args.realtime = args.auto_menu = False
     args.sd_card = None
     if args.eye_sequence:
@@ -135,7 +169,10 @@ def main():
         for index in range(args.samples):
             if args.eye_sequence:
                 detected = index == 1
-                machine.set_eye_detected(detected)
+                if args.trace_eye_query:
+                    query = drive_and_trace_eye(machine, detected)
+                else:
+                    machine.set_eye_detected(detected)
                 deadline = time.monotonic() + 20
                 while machine.status().get('eye_reported') is not detected:
                     if time.monotonic() >= deadline:
@@ -150,6 +187,8 @@ def main():
                                                f'output-event {event} {level}')
                 time.sleep(args.interval)
             report['samples'].append(snapshot(machine))
+            if args.trace_eye_query:
+                report['samples'][-1]['shooting_eye_query'] = query
             args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
             print(f'Native display snapshot {index + 1}/{args.samples}', flush=True)
     finally:
