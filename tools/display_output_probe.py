@@ -37,6 +37,9 @@ def frame_summary(machine, base, word):
     return dict(
         route=word(0x1100) & 255, slot=slot,
         output_width=word(0x132c), output_height=word(0x1328),
+        background_scaler=[hex(word(reg)) for reg in (0x400, 0x404, 0x408)],
+        overlay_rect=planes['overlay_rect'],
+        overlay_scaler=[hex(word(reg)) for reg in (0x2810, 0x2814, 0x2818)],
         luminance_address=hex(word(0x210 + slot * 4)),
         chroma_address=hex(word(0x220 + slot * 4)),
         planes=summaries,

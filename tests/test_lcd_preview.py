@@ -75,7 +75,8 @@ class LCDTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 lcd_rgb(*arguments)
 
-    def machine(self, running=True, broken_uv=False, active_slot=0, overlay_slot=None, overlay_format=6):
+    def machine(self, running=True, broken_uv=False, active_slot=0, overlay_slot=None,
+                overlay_format=6, origin=0, scaler=(0, 0, 0)):
         machine = Machine.__new__(Machine)
         machine.io = threading.Lock()
         machine.lcd_cache = (0, b'')
@@ -97,6 +98,8 @@ class LCDTests(unittest.TestCase):
             registers[0x20144220 + slot * 4] = 0xb1001000 + slot * 0x2000
         if overlay_slot is not None:
             registers.update({0x20146110: 1, 0x20146200: overlay_format, 0x20146400: 0x20002,
+                              0x20146204: 0x20002, 0x20146208: origin,
+                              0x20146810: scaler[0], 0x20146814: scaler[1], 0x20146818: scaler[2],
                               0x20146214: overlay_slot << 16 | ((overlay_slot + 1) % 4) << 8,
                               0x20146500: 4, 0x20146540: 1 if overlay_format == 5 else 2,
                               0x201464c0: 0xb2100000})
@@ -170,6 +173,25 @@ class LCDTests(unittest.TestCase):
         self.assertEqual(calls, ['query-status', 'stop', 'cont'])
         with Image.open(BytesIO(image)) as frame:
             self.assertEqual(frame.tobytes(), bytes([255, 0, 0, 0, 255, 1, 0, 255, 1, 255, 0, 0]))
+
+    def test_positioned_scaled_overlay_clips_and_preserves_source_alpha(self):
+        machine, _, _ = self.machine(overlay_slot=2, overlay_format=5, origin=0x1ffff,
+                                     scaler=(1, 0x102, 0x101))
+        with Image.open(BytesIO(machine.lcd_png())) as frame:
+            self.assertEqual(list(frame.getdata()),
+                             [(255, 0, 0), (255, 0, 0), (255, 0, 0), (0, 255, 1)])
+
+    def test_invalid_enabled_scaler_resumes_machine(self):
+        machine, calls, _ = self.machine(overlay_slot=0, scaler=(1, 2, 0x101))
+        with self.assertRaisesRegex(ValueError, 'scale ratio'):
+            machine.lcd_png()
+        self.assertIn('cont', calls)
+
+    def test_smaller_overlay_at_odd_origin_uses_its_own_y_and_chroma_pair(self):
+        rgb = lcd_rgb(4, 1, 0, (bytes([16] * 4), 4), (bytes([128] * 4), 4),
+                      (bytes([16, 235, 128, 128]), 4), (bytes([255, 255]), 2),
+                      overlay_rect=(1, 0, 2, 1))
+        self.assertEqual(rgb, bytes([0] * 6 + [255] * 3 + [0] * 3))
 
 
 if __name__ == '__main__':
