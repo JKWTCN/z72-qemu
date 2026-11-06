@@ -8,6 +8,10 @@
 -device nikon-z72-acceleration,bus=master-i2c2,address=29,sample-present=on,sample-x=0,sample-y=0,sample-z=1024
 ```
 
+使用网页控制台时，在启动命令中加入 `--acceleration-sample 0 0 1024`
+即可提供相同的固定样本。参数依次为 X、Y、Z 的原始计数。省略该选项
+时，控制台不会挂接加速度设备。
+
 轴值必须在 `-2048..2047` 内。激活且 `sample-present=on` 时，状态
 寄存器 `0x00` 返回 `0x08`，寄存器 `0x01` 返回六字节，依次为
 X、Y、Z，每轴左移四位后按高字节优先排列。未激活或没有样本时
