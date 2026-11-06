@@ -15,9 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.qemu_display import Remote
 from tools.smp_boot_probe import reach, stop_registers
-from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, Machine
+from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, SHOOTING_OUTPUT_C170, Machine
 
 OUTPUT_BASE = 0x20140000
+# Panel programming during an output change can outlast a short query probe.
+OUTPUT_TIMEOUT = 120
 
 
 def snapshot(machine):
@@ -77,7 +79,7 @@ def snapshot(machine):
             if machine.eye_attached:
                 result['eye_detected'] = machine.eye_detected
                 result['eye_property'] = machine._words(EYE_STATE_C170, 1)[0]
-                result['shooting_output_selection'] = machine._words(0xb181b484, 1)[0]
+                result['shooting_output_selection'] = machine._words(SHOOTING_OUTPUT_C170, 1)[0]
                 context = machine._words(0xb180854c + 0x34, 1)[0]
                 if 0xb0000000 <= context < 0xe0000000 - 0x518:
                     route = machine._bytes(context + 0x510, 3)
@@ -105,7 +107,8 @@ def trace_output_delivery(remote, request, descriptor):
         for pc in (returned, wait_done, callback):
             remote.breakpoint(pc)
             pending.add(pc)
-        deadline = time.monotonic() + 10
+        started = time.monotonic()
+        deadline = started + OUTPUT_TIMEOUT
         while pending:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -134,6 +137,7 @@ def trace_output_delivery(remote, request, descriptor):
                     result['handler_result'] = int.from_bytes(remote.read(descriptor + 32, 4), 'little')
                 else:
                     result['callback_event'] = hex(remote.get(regs, 'r0'))
+                    result['callback_elapsed_seconds'] = round(time.monotonic() - started, 2)
                     result['callback_fields'] = [int.from_bytes(remote.read(request + n, 4), 'little')
                                                  for n in (12, 16)]
                 pending.remove(pc)
@@ -156,6 +160,7 @@ def drive_and_trace_eye(machine, detected):
         remote = None
         try:
             remote = Remote(machine.gdb_port)
+            was_near = machine.eye_detected
             machine._drive_eye(detected)
             remote.sock.settimeout(10)
             try:
@@ -181,6 +186,21 @@ def drive_and_trace_eye(machine, detected):
                         request=hex(remote.get(regs, 'r4')))
                     query['output_submit']['delivery'] = trace_output_delivery(
                         remote, remote.get(regs, 'r4'), descriptor)
+            elif was_near and not detected and caller == 0x10540c32 and query['result'] == 0:
+                # The reverse request uses a different display callback. At this
+                # indirect call its original request and event are both in registers.
+                remote.sock.settimeout(OUTPUT_TIMEOUT)
+                try:
+                    _, regs = reach(remote, 0x1057ba44)
+                except TimeoutError:
+                    query['return_output'] = dict(observed=False, timeout_seconds=OUTPUT_TIMEOUT)
+                else:
+                    request = remote.get(regs, 'r1')
+                    status, selection = (int.from_bytes(remote.read(request + n, 4), 'little')
+                                         for n in (12, 16))
+                    query['return_output'] = dict(observed=True, request=hex(request),
+                        event=hex(remote.get(regs, 'r0')), callback=hex(remote.get(regs, 'r2')),
+                        status=status, selection=selection)
             return query
         finally:
             if remote is not None:

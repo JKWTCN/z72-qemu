@@ -378,6 +378,8 @@ async function status() {
     $('eye-detected').checked = state.eye_detected === true;
     $('eye-reading').hidden = typeof state.eye_reported !== 'boolean';
     $('eye-reported').textContent = state.eye_reported ? '靠近' : '移开';
+    $('eye-output').hidden = !Number.isInteger(state.shooting_output_selection);
+    $('eye-output-id').textContent = state.shooting_output_selection ?? '';
     paintAcceleration(state.acceleration_sample);
     $('auto-menu').checked = state.auto_menu !== 'off';
     $('auto-menu').disabled = restarting;

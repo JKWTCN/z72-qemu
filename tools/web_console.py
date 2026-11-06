@@ -35,6 +35,7 @@ from tools.lcd_preview import lcd_rgb
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
 EYE_STATE_C170 = 0xb23dca78
+SHOOTING_OUTPUT_C170 = 0xb181b484
 MENU_PIN = 9
 SHUTTER_HALF = 24
 SHUTTER_FULL = 25
@@ -1048,6 +1049,8 @@ class Machine:
                     value = self._words(EYE_STATE_C170, 1)[0]
                     if value in (0, 1):
                         state['eye_reported'] = bool(value)
+                    if state['index'] == 3:
+                        state['shooting_output_selection'] = self._words(SHOOTING_OUTPUT_C170, 1)[0]
             self.app_index = state['index']
             state['auto_menu'] = ('off' if not self.auto_menu else
                                   'pressed' if self.auto_menu_done else 'armed')
