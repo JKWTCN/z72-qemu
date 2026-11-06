@@ -388,6 +388,8 @@ class Machine:
                       if getattr(self.args, 'controller_actuator', False) else ()) +
                      (('nikon-z72-boot-config.audio-output=on',)
                       if getattr(self.args, 'audio_output', False) else ()) +
+                     (('nikon-z72-boot-config.acceleration-select=on',)
+                      if acceleration is not None else ()) +
                      (('nikon-z72-boot-config.sampling-feedback=on',)
                       if getattr(self.args, 'sampling_feedback', False) else ()) +
                      (('nikon-z72-boot-config.sampling-output-complete=on',)

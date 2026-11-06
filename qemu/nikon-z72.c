@@ -624,6 +624,7 @@ struct NikonZ72BootConfig {
     QEMUTimer *input_handshake_timer;
     bool sampling_feedback;
     bool audio_output;
+    bool acceleration_select;
     bool sampling_feedback_request;
     bool sampling_feedback_ready;
     bool sampling_feedback_fired;
@@ -2928,7 +2929,14 @@ static uint64_t boot_config_read(void *opaque, hwaddr offset, unsigned size)
     NikonZ72ConfigWord *word = opaque;
     uint32_t value = word->device->values[word->index];
     NikonZ72BootConfig *s = word->device;
-    if (boot_config_addresses[word->index] == 0x04282014) {
+    if (boot_config_addresses[word->index] == 0x04282000 &&
+        s->master_role && s->acceleration_select) {
+        /* The address-0x1d board profile presents high on input P0.5.
+         * Preserve the output latch when firmware drives that pin. */
+        uint32_t outputs = *boot_config_value(s, 0x04282100) &
+                           ~*boot_config_value(s, 0x04282200);
+        value |= (1u << 5) & ~outputs;
+    } else if (boot_config_addresses[word->index] == 0x04282014) {
         uint32_t mask = (s->gpio_input_driven & 0x1ff) << 7;
         value = (value & ~mask) | ((s->gpio_input_levels << 7) & mask);
     } else if (boot_config_addresses[word->index] == 0x04282018) {
@@ -5318,6 +5326,8 @@ static void boot_config_class_init(ObjectClass *oc, const void *data)
         DEFINE_PROP_BOOL("input-handshake", NikonZ72BootConfig, input_handshake, false),
         DEFINE_PROP_BOOL("sampling-feedback", NikonZ72BootConfig, sampling_feedback, false),
         DEFINE_PROP_BOOL("audio-output", NikonZ72BootConfig, audio_output, false),
+        DEFINE_PROP_BOOL("acceleration-select", NikonZ72BootConfig,
+                         acceleration_select, false),
         DEFINE_PROP_BOOL("sampling-output-complete", NikonZ72BootConfig, sampling_output_complete, false),
         DEFINE_PROP_BOOL("sampling-output-frame-start", NikonZ72BootConfig, sampling_output_frame_start, false),
         DEFINE_PROP_BOOL("primary-exposure-sync", NikonZ72BootConfig, primary_exposure_sync, false),
