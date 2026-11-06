@@ -176,6 +176,36 @@ def section_mapping(image, address):
                 execute_never=bool(descriptor & 16))
 
 
+def application_manager(image):
+    """Locate the initialized manager by the five GUI event names in getter order."""
+    names = (b'GuiIdEv1', b'GuiMeEv1', b'GuiPlEv1', b'GuiLvEv1', b'GuiMsEv1')
+    initial = bytes(16) + b'\x05\x05' + bytes(10)
+    matches = []
+    for record in scatter_records(image):
+        if record['kind'] != 'copy':
+            continue
+        start = record['source'] - BASE
+        end = start + record['size']
+        pos = image.find(initial, start, end)
+        while pos >= 0 and pos + 88 <= end:
+            for index, name in enumerate(names):
+                getter, context, ready = struct.unpack_from('<3I', image, pos + 28 + index * 12)
+                entry = getter - BASE - 1
+                if (context or ready or not getter & 1 or not 0 <= entry <= len(image) - 10
+                        or image[entry + 1:entry + 4] != b'\x48\x70\x47'
+                        or image[entry + 9] != 0xa5):
+                    break
+                literal = ((entry + 12) & ~3) + image[entry + 8] * 4
+                if not image.startswith(name + b'\0', literal):
+                    break
+            else:
+                getters = tuple(u32(image, pos + 28 + i * 12) for i in range(len(names)))
+                matches.append((record['destination'] + pos - start, getters))
+            pos = image.find(initial, pos + 1, end)
+    require(len(matches) == 1, 'Expected one five-application GUI manager')
+    return matches[0]
+
+
 def boot_prefix(image, profile):
     """Describe the uninterrupted core-zero path up to its first MMIO store."""
     delta = profile.boot - 0xBC88

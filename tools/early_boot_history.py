@@ -11,13 +11,14 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import BASE, digest, require, validate_master
-from analyze.firmware_structure import PROFILES, boot_prefix, branch_target, scatter_records
+from analyze.firmware_structure import PROFILES, application_manager, boot_prefix, branch_target, scatter_records
 from analyze.update_container import describe_container
 from analyze.update_store import image_version
 from analyze.upgrade_signature import decode
 from tools.boot_probe import reset_machine
 from tools.dual_boot_probe import MASTER_MAGIC, MASTER_MSG, dual_machine
 from tools.early_boot_probe import trace_early
+from tools.graphics_boot_probe import application_observation
 from tools.smp_boot_probe import reach, stop_registers
 
 
@@ -104,6 +105,7 @@ def trace_menu_samples(remote, controller, master):
     decode_menu = bytes.fromhex('94f8431001b111460843c8f80400')
     require(master.count(decode_menu) == 1, 'Expected one master menu decode site')
     decoded = BASE + master.index(decode_menu) + len(decode_menu)
+    manager, getters = application_manager(master)
     for pc in (*sites, decoded):
         remote.breakpoint(pc)
     samples = []
@@ -130,6 +132,12 @@ def trace_menu_samples(remote, controller, master):
                     raise ValueError('Menu sample stopped on an unexpected processor')
                 remote.command(f'vCont;s:{thread:x}')
                 if 'ports' in sample and 'switch_word' in sample:
+                    app = application_observation(remote, manager)
+                    require(tuple(int(item['getter'], 16) for item in app['applications']) == getters,
+                            'Runtime application table differs from the packaged master')
+                    sample.update(manager=manager, foreground=app['current_index'],
+                                  initialized=app['initialization_complete'],
+                                  ready=[item['ready'] for item in app['applications']])
                     samples.append(sample)
                     break
             else:

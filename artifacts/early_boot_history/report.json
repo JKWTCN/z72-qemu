@@ -129,14 +129,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "f5be536ffded36591c755bcdf1795f0cf2f69046385d832d1a8979bdf893dad5",
-          "master_buffer": 2983231368,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -144,7 +136,17 @@
             "ports": "ffffff",
             "master_pc": 272815546,
             "switch_address": 2992440940,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -152,7 +154,17 @@
             "ports": "fffdff",
             "master_pc": 272815546,
             "switch_address": 2992440940,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -160,9 +172,27 @@
             "ports": "ffffff",
             "master_pc": 272815546,
             "switch_address": 2992440940,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "f5be536ffded36591c755bcdf1795f0cf2f69046385d832d1a8979bdf893dad5",
+          "master_buffer": 2983231368,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -288,14 +318,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983240696,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -303,7 +325,17 @@
             "ports": "ffffff",
             "master_pc": 272818218,
             "switch_address": 2992452124,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -311,7 +343,17 @@
             "ports": "fffdff",
             "master_pc": 272818218,
             "switch_address": 2992452124,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -319,9 +361,27 @@
             "ports": "ffffff",
             "master_pc": 272818218,
             "switch_address": 2992452124,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014380,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983240696,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -447,14 +507,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983240824,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -462,7 +514,17 @@
             "ports": "ffffff",
             "master_pc": 272819518,
             "switch_address": 2992458780,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -470,7 +532,17 @@
             "ports": "fffdff",
             "master_pc": 272819518,
             "switch_address": 2992458780,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -478,9 +550,27 @@
             "ports": "ffffff",
             "master_pc": 272819518,
             "switch_address": 2992458780,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983240824,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -606,14 +696,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983240824,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -621,7 +703,17 @@
             "ports": "ffffff",
             "master_pc": 272820038,
             "switch_address": 2992458780,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -629,7 +721,17 @@
             "ports": "fffdff",
             "master_pc": 272820038,
             "switch_address": 2992458780,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -637,9 +739,27 @@
             "ports": "ffffff",
             "master_pc": 272820038,
             "switch_address": 2992458780,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014396,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983240824,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -765,14 +885,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983251320,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -780,7 +892,17 @@
             "ports": "ffffff",
             "master_pc": 272830042,
             "switch_address": 2992473112,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -788,7 +910,17 @@
             "ports": "fffdff",
             "master_pc": 272830042,
             "switch_address": 2992473112,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -796,9 +928,27 @@
             "ports": "ffffff",
             "master_pc": 272830042,
             "switch_address": 2992473112,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983251320,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -924,14 +1074,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983251320,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -939,7 +1081,17 @@
             "ports": "ffffff",
             "master_pc": 272830490,
             "switch_address": 2992473112,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -947,7 +1099,17 @@
             "ports": "fffdff",
             "master_pc": 272830490,
             "switch_address": 2992473112,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -955,9 +1117,27 @@
             "ports": "ffffff",
             "master_pc": 272830490,
             "switch_address": 2992473112,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978014416,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983251320,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -1083,14 +1263,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
-          "master_buffer": 2983281400,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012950,
-          "acknowledgement_offset": 215196,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416172,
@@ -1098,7 +1270,17 @@
             "ports": "ffffff",
             "master_pc": 272836074,
             "switch_address": 2992521960,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978028248,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -1106,7 +1288,17 @@
             "ports": "fffdff",
             "master_pc": 272836074,
             "switch_address": 2992521960,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978028248,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416172,
@@ -1114,9 +1306,27 @@
             "ports": "ffffff",
             "master_pc": 272836074,
             "switch_address": 2992521960,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978028248,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "89d1540c95d9a70ba0b1e34877b9de566ff450f91458b644cc642f86dbc02e74",
+          "master_buffer": 2983281400,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012950,
+          "acknowledgement_offset": 215196,
+          "exception": 39
+        }
       }
     },
     {
@@ -1242,14 +1452,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "d4308ce74a9bd8459cab7ea4883ff19a0bb4d9a0a5f4092273f9b5db51a97e91",
-          "master_buffer": 2983282296,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012950,
-          "acknowledgement_offset": 215204,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416180,
@@ -1257,7 +1459,17 @@
             "ports": "ffffff",
             "master_pc": 272837686,
             "switch_address": 2992523388,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1265,7 +1477,17 @@
             "ports": "fffdff",
             "master_pc": 272837686,
             "switch_address": 2992523388,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1273,9 +1495,27 @@
             "ports": "ffffff",
             "master_pc": 272837686,
             "switch_address": 2992523388,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "d4308ce74a9bd8459cab7ea4883ff19a0bb4d9a0a5f4092273f9b5db51a97e91",
+          "master_buffer": 2983282296,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012950,
+          "acknowledgement_offset": 215204,
+          "exception": 39
+        }
       }
     },
     {
@@ -1401,14 +1641,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "d4308ce74a9bd8459cab7ea4883ff19a0bb4d9a0a5f4092273f9b5db51a97e91",
-          "master_buffer": 2983297384,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012950,
-          "acknowledgement_offset": 215204,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416180,
@@ -1416,7 +1648,17 @@
             "ports": "ffffff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1424,7 +1666,17 @@
             "ports": "fffdff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1432,9 +1684,27 @@
             "ports": "ffffff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "d4308ce74a9bd8459cab7ea4883ff19a0bb4d9a0a5f4092273f9b5db51a97e91",
+          "master_buffer": 2983297384,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012950,
+          "acknowledgement_offset": 215204,
+          "exception": 39
+        }
       }
     },
     {
@@ -1560,14 +1830,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
-          "master_buffer": 2983297384,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012950,
-          "acknowledgement_offset": 215204,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416180,
@@ -1575,7 +1837,17 @@
             "ports": "ffffff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1583,7 +1855,17 @@
             "ports": "fffdff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1591,9 +1873,27 @@
             "ports": "ffffff",
             "master_pc": 272838654,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
+          "master_buffer": 2983297384,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012950,
+          "acknowledgement_offset": 215204,
+          "exception": 39
+        }
       }
     },
     {
@@ -1719,14 +2019,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
-          "master_buffer": 2983297384,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012954,
-          "acknowledgement_offset": 215204,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416180,
@@ -1734,7 +2026,17 @@
             "ports": "ffffff",
             "master_pc": 272839182,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1742,7 +2044,17 @@
             "ports": "fffdff",
             "master_pc": 272839182,
             "switch_address": 2992538372,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1750,9 +2062,27 @@
             "ports": "ffffff",
             "master_pc": 272839182,
             "switch_address": 2992538372,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
+          "master_buffer": 2983297384,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012954,
+          "acknowledgement_offset": 215204,
+          "exception": 39
+        }
       }
     },
     {
@@ -1878,14 +2208,6 @@
         "payload_bytes": 28,
         "frame_bytes": 256,
         "accepted": true,
-        "response": {
-          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
-          "master_buffer": 2983308072,
-          "controller_dma_buffer": 536968602,
-          "acceptance_offset": 2012958,
-          "acknowledgement_offset": 215204,
-          "exception": 39
-        },
         "menu_samples": [
           {
             "pc": 134416180,
@@ -1893,7 +2215,17 @@
             "ports": "ffffff",
             "master_pc": 272843022,
             "switch_address": 2992549552,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1901,7 +2233,17 @@
             "ports": "fffdff",
             "master_pc": 272843022,
             "switch_address": 2992549552,
-            "switch_word": 32768
+            "switch_word": 32768,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           },
           {
             "pc": 134416180,
@@ -1909,9 +2251,27 @@
             "ports": "ffffff",
             "master_pc": 272843022,
             "switch_address": 2992549552,
-            "switch_word": 0
+            "switch_word": 0,
+            "manager": 2978029120,
+            "foreground": 5,
+            "initialized": 0,
+            "ready": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
           }
-        ]
+        ],
+        "response": {
+          "frame_sha256": "52a0db8a17bf8f8efac09910a0426b33fb2d4b3a286b76e5d3f08bec56fa0e13",
+          "master_buffer": 2983308072,
+          "controller_dma_buffer": 536968602,
+          "acceptance_offset": 2012958,
+          "acknowledgement_offset": 215204,
+          "exception": 39
+        }
       }
     }
   ]

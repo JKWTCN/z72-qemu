@@ -30,9 +30,9 @@ def graphics_observation(remote):
     return result
 
 
-def application_observation(remote):
+def application_observation(remote, manager=0xb1811e40):
     remote.select_thread(1)
-    data = remote.read(0xb1811e40, 88)
+    data = remote.read(manager, 88)
     applications = []
     for index, name in enumerate(('APPIDLE', 'APPMENU', 'APPPLAY', 'APPLV', 'APPMSG')):
         getter, context, ready = struct.unpack_from('<3I', data, 28 + index * 12)
