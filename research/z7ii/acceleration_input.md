@@ -21,8 +21,10 @@ X、Y、Z，每轴左移四位后按高字节优先排列。未激活或没有�
 
 ### 运行中更新三轴输入
 
-以 `--acceleration-sample X Y Z` 启动网页控制台后，可以发送一个
-本地请求同时更新三个轴。例如在 PowerShell 中执行：
+以 `--acceleration-sample X Y Z` 启动网页控制台后，在“加速度原始输入”
+中填写 X、Y、Z，再点“应用读数”。“当前样本”显示从设备读回的值；
+点“撤回样本”后显示“无”。也可以发送本地请求同时更新三个轴，
+例如在 PowerShell 中执行：
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8666/acceleration -Method Post -ContentType application/json -Body '{"axes":[31,-72,1000]}'

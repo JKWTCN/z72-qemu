@@ -137,6 +137,18 @@ static bool axis_valid(int32_t value)
     return value >= -2048 && value <= 2047;
 }
 
+static void acceleration_get_sample(Object *obj, Visitor *v, const char *name,
+                                    void *opaque, Error **errp)
+{
+    Z72Acceleration *s = Z72_ACCELERATION(obj);
+    int32List z = { .value = s->z };
+    int32List y = { .value = s->y, .next = &z };
+    int32List x = { .value = s->x, .next = &y };
+    int32List *axes = s->present ? &x : NULL;
+
+    visit_type_int32List(v, name, &axes, errp);
+}
+
 static void acceleration_set_sample(Object *obj, Visitor *v, const char *name,
                                     void *opaque, Error **errp)
 {
@@ -188,7 +200,7 @@ static void acceleration_class_init(ObjectClass *klass, const void *data)
     dc->realize = acceleration_realize;
     dc->vmsd = &acceleration_vmstate;
     device_class_set_props(dc, acceleration_properties);
-    object_class_property_add(klass, "set-sample", "int32List", NULL,
+    object_class_property_add(klass, "set-sample", "int32List", acceleration_get_sample,
                               acceleration_set_sample, NULL, NULL);
     RESETTABLE_CLASS(klass)->phases.hold = acceleration_reset;
     ic->event = acceleration_event;

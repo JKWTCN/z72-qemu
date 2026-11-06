@@ -884,7 +884,7 @@
     "docs/z72-ptp-observation.zh-CN.md": "39b4e1c206554a6b4abd87e3ca1517aaa8297416d344cdb1eb5fc9dbf72e00b4",
     "docs/z72-ptp-read-paths.zh-CN.md": "c9e11ac40bbb203e8b808c9659e40f7c4f6b534d1555e92ab9b982440133370c",
     "qemu/nikon-gpu.h": "97daa53456e7ad1b099b89add02281f6cf693a2e1e1b240a849cb6f1685a35c6",
-    "qemu/nikon-z72-acceleration.c": "227c00906960d38d540c514c50f6b04f8f181b03e3dba3daa41d24c6d30dbe13",
+    "qemu/nikon-z72-acceleration.c": "746e5a9bdb6b951ab93740a794a1f65bab5362ef3637b3b96f4d6c1d2b7713de",
     "qemu/nikon-z72-audio.c": "0f047b6dd04eafeda1c11364d434fb0ee4222d3564d7fd6a7b65d9334b965598",
     "qemu/nikon-z72-body-vr.c": "541f799f88d3a9feda76027f0381f8382a316c2eb821f3248eda3b9c76111752",
     "qemu/nikon-z72-controller-adc.c": "f26da7c7762ed2de11f99fc64eedcc116afc19a1cc3961d5862d8c82c8394b59",
@@ -924,7 +924,7 @@
     "qemu/trace-events": "472a4768ea99b0e289eef4d3f961a969df51ef905b2461bd9a0c81fa5dcd2d08",
     "research/README.md": "3eccd3dc979af247ab4c985f0411c9af5a1896b3f562a79ba730001d9f25ab6a",
     "research/firmware_identity.json": "3ae73f19db98854e0876a3b7da5567ea9149143ff5e5ef0a20dcc54624fede85",
-    "research/z7ii/acceleration_input.md": "af4074f14bd9d82dd17f45fc0fd65b0d346b94532ffc382e08e9cf23c719af20",
+    "research/z7ii/acceleration_input.md": "fedeae80d85506dab5fd4655b4035b55c77c84d88c1e30bb48063d4e882e6bf6",
     "research/z7ii/battery_serial.md": "f648ab6ec403a674338a636e500b50345104adb26a84c3939bf45dce65bf2c1d",
     "research/z7ii/body_shutter.md": "f674f70ccf77eceb1d6534f4d40c4d221f39692f154c200f79a1ece7ec0293a9",
     "research/z7ii/body_vr_member.md": "d2739907e7560b2857a7d3e4df744a4479a49837b074fafa1bfbef9f7a7574d3",
@@ -1269,9 +1269,9 @@
     "tools/usb_debug_probe.py": "cf9b80250db088a609990cf3d290017e7ed053eeac98201fb38f160ad1934ba4",
     "tools/usb_task_probe.py": "9cd9639449226c44ab6694073d7b70290c1f06129d90a9d2317e3a920d1f9cb8",
     "tools/verify_release.py": "06bb98852e7f7f6955457f81412d604d37d065523e19ddd5c94be9c62387a73e",
-    "tools/web_console.py": "991e65cb4926df0fdb14d49f14696052502bf5d81b155b6287b5b4ebf963e761",
-    "web/console.js": "ab2a29061739a45972fb4e05af63d5ef92a62938a7501ac75db7a312f136cf63",
-    "web/index.html": "4a3237d32050754c127b3dbcf9f24c7e384cf5c1259416b7bb291ebe50fcc587",
-    "web/style.css": "ca74715f6680bf694ae1ce76cf67ce82e44a9c37f8fc22369075795193539bf4"
+    "tools/web_console.py": "d06a7c25dfaa5de86b0b2cc06334dbe02971575c2b1399271c72afe1b7eb566e",
+    "web/console.js": "e62f60ee55184afc947d633b8a8a75755515a8860c36e060718df2ae0cb0ddbd",
+    "web/index.html": "b1f101a53a9bc8307dafcba2565b8534fc44abc0f74d48dfce6ab1fb6c459446",
+    "web/style.css": "969fcb4c895ee9e7cfbe0008083318a2bceb883c1a66632400783171ef6cb4ad"
   }
 }

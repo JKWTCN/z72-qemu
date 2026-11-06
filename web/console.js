@@ -116,6 +116,24 @@ document.querySelectorAll('[data-dial]').forEach(button => {
 $('mode-position').onchange = () => {
   if (available) send('/mode', {position: Number($('mode-position').value)});
 };
+const acceleration = $('acceleration');
+const axisInputs = [...acceleration.querySelectorAll('input')];
+acceleration.onsubmit = event => {
+  event.preventDefault();
+  send('/acceleration', {axes: axisInputs.map(input => input.valueAsNumber)});
+};
+$('withdraw-sample').onclick = () => send('/acceleration', {axes: []});
+
+function paintAcceleration(sample) {
+  const attached = Array.isArray(sample);
+  if (attached && acceleration.hidden) {
+    axisInputs.forEach((input, i) => { input.value = sample[i] ?? ''; });
+  }
+  acceleration.hidden = !attached;
+  acceleration.querySelector('fieldset').disabled = !running;
+  $('current-sample').textContent = attached && sample.length ? sample.join(', ') : '无';
+  $('withdraw-sample').disabled = !attached || !sample.length;
+}
 window.addEventListener('blur', releaseAll);
 window.addEventListener('pagehide', releaseAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
@@ -354,6 +372,7 @@ async function status() {
     running = state.phase === 'running' && state.execution === 'running';
     available = running && state.input_ready === true;
     restarting = state.phase === 'starting';
+    paintAcceleration(state.acceleration_sample);
     $('auto-menu').checked = state.auto_menu !== 'off';
     $('auto-menu').disabled = restarting;
     $('connection').textContent = ({starting: '启动中', running: running ? (available ? '运行中' : '初始化中') : '已暂停',
@@ -384,6 +403,7 @@ async function status() {
     if (running && !seenFrame) frame();
   } catch (error) {
     available = running = false;
+    paintAcceleration(null);
     $('connection').textContent = '连接断开';
     $('connection').className = 'pill failed';
     document.querySelectorAll('[data-pin]').forEach(button => { button.disabled = true; });

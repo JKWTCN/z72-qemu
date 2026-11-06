@@ -499,6 +499,24 @@ footer {
   background:#171919;
   border:1px solid #454747
 }
+#acceleration fieldset {
+  margin: 14px 0;
+  border: 1px solid #454747;
+}
+.axis-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.axis-inputs input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px;
+  color: inherit;
+  background: #171919;
+  border: 1px solid #454747;
+}
 /* Shoulder panel observation card */
 .shoulder {
   border:1px solid #252727;

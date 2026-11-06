@@ -74,6 +74,19 @@
         </div>
         <p class="hint">按键可用后轻按 MENU 打开菜单，EXIT（输入 0）返回拍摄画面，随后可再次打开菜单。方向键移动高亮；画面按模拟时钟刷新，慢时钟下图标会逐个出现。</p>
         <button id="release" class="secondary" disabled>释放全部按键 <kbd>Esc</kbd></button>
+        <form id="acceleration" hidden>
+          <fieldset disabled>
+            <legend>加速度原始输入</legend>
+            <div class="axis-inputs">
+              <label>X <input type="number" required min="-2048" max="2047" step="1"></label>
+              <label>Y <input type="number" required min="-2048" max="2047" step="1"></label>
+              <label>Z <input type="number" required min="-2048" max="2047" step="1"></label>
+            </div>
+            <button class="secondary" type="submit">应用读数</button>
+            <button class="text-button" type="button" id="withdraw-sample">撤回样本</button>
+            <p class="hint">当前样本 · <output id="current-sample"></output></p>
+          </fieldset>
+        </form>
         <details>
           <summary>扩展按键 <span>24</span></summary>
           <p class="hint">名称来自固件输入表;11–18 号输入经拨盘路径或未被扫描,按下可能无开关字变化。</p>

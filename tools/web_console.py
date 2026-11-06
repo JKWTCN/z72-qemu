@@ -1008,6 +1008,9 @@ class Machine:
             if self.process.poll() is not None:
                 return dict(state, phase='failed', error='模拟器已退出，请重启')
             state['execution'] = self.qmp.command('query-status')['status']
+            if getattr(self.args, 'acceleration_sample', None) is not None:
+                state['acceleration_sample'] = self.qmp.command('qom-get', {
+                    'path': '/machine/peripheral/acceleration', 'property': 'set-sample'})
             words = self._words(APP_MANAGER, 5)
             state.update(ready=words[0] == 1, index=words[4] & 255,
                          held=sorted(self.held), mode_position=self.mode_position,
