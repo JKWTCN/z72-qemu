@@ -3,6 +3,7 @@
 import argparse
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import tempfile
 
@@ -75,7 +76,57 @@ def check(qemu):
     print('PASS eye sensor: ID, bursts, wrap, read-only data, NACK and both resets')
 
 
+def check_proximity(qemu):
+    bus = 0x2c01a000
+    with subprocess.Popen([qemu, '-M', 'nikon-z72-lab', '-accel', 'qtest',
+                           '-monitor', 'none', '-serial', 'none', '-display', 'none',
+                           '-qtest', 'stdio', '-qtest-log', '/dev/null', '-device',
+                           'nikon-z72-eye,bus=master-i2c2,address=56,proximity=2748'],
+                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as process:
+        def command(line):
+            process.stdin.write(line + '\n')
+            process.stdin.flush()
+            reply = process.stdout.readline().split()
+            require(reply and reply[0] == 'OK', f'Failed qtest command {line}: {reply}')
+            return int(reply[1], 0) if len(reply) > 1 else None
+
+        def transfer(payload=(), count=0):
+            command(f'writel {bus} {0x63 if count else 0x62}')
+            for byte in payload:
+                command(f'writel {bus + 12} {byte}')
+            if count:
+                command(f'writel {bus + 20} {count}')
+            command(f'writel {bus} {0x2b if count else 0x2a}')
+            command(f'writel {bus + 8} 0x38')
+            command('clock_step 1000')
+            require(command(f'readl {bus + 16}') == 3, 'Eye transaction did not complete')
+            return [command(f'readl {bus + 12}') for _ in range(count)]
+
+        def sample():
+            transfer((0x44,))
+            return transfer(count=6)
+
+        try:
+            transfer((0x41, 0x41))
+            command('clock_step 9997999')
+            require(sample() == [0] * 6, 'Early proximity conversion')
+            command('clock_step 1')
+            require(sample() == [0xbc, 0x0a, 0, 0, 0, 0], 'PS or ALS data differs')
+            transfer((0x41, 0))
+            require(sample()[:2] == [0xbc, 0x0a], 'Standby lost the last result')
+            transfer((0x40, 0x80))
+            transfer((0x41, 0x41))
+            transfer((0x41, 0x01))
+            command('clock_step 10000000')
+            require(sample() == [0] * 6, 'Standby kept an interrupted conversion')
+        finally:
+            process.terminate()
+    print('PASS eye proximity: conversion deadline, standby, ALS isolation and reset')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
-    check(parser.parse_args().qemu)
+    qemu = parser.parse_args().qemu
+    check(qemu)
+    check_proximity(qemu)

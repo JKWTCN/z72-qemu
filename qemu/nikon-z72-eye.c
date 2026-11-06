@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* RPR-0521RS register profile. No optical samples or measurement IRQs. */
+/* RPR-0521RS register profile with optional raw proximity input. */
 #include "qemu/osdep.h"
 #include "hw/i2c/i2c.h"
 #include "hw/resettable.h"
+#include "hw/qdev-properties.h"
+#include "qapi/error.h"
 #include "qemu/module.h"
+#include "qemu/timer.h"
 
 #define TYPE_Z72_EYE "nikon-z72-eye"
 OBJECT_DECLARE_SIMPLE_TYPE(Z72Eye, Z72_EYE)
@@ -13,6 +16,8 @@ struct Z72Eye {
     uint8_t regs[0x15];
     unsigned pointer;
     bool command;
+    uint32_t proximity;
+    QEMUTimer *ps_timer;
 };
 
 static bool valid_register(unsigned reg)
@@ -22,6 +27,7 @@ static bool valid_register(unsigned reg)
 
 static void reset_registers(Z72Eye *s)
 {
+    timer_del(s->ps_timer);
     memset(s->regs, 0, sizeof(s->regs));
     s->regs[0] = 0x0a;
     s->regs[2] = 2;
@@ -29,6 +35,27 @@ static void reset_registers(Z72Eye *s)
     s->regs[0x0b] = 0xff;
     s->regs[0x0c] = 0x0f;
     s->regs[0x0f] = s->regs[0x10] = 0xff;
+}
+
+static void eye_ps_complete(void *opaque)
+{
+    Z72Eye *s = opaque;
+    s->regs[4] = s->proximity;
+    s->regs[5] = s->proximity >> 8;
+}
+
+static void eye_ps_start(Z72Eye *s, uint8_t mode)
+{
+    static const unsigned period_ms[16] = {
+        0, 10, 40, 100, 400, 50, 100, 400, 50, 100, 0, 400, 50,
+    };
+    unsigned interval = period_ms[mode & 15];
+    timer_del(s->ps_timer);
+    if ((mode & 0x40) && interval && s->proximity) {
+        /* A fixed input only changes the data registers on its first conversion. */
+        timer_mod(s->ps_timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
+                  interval * SCALE_MS);
+    }
 }
 
 static void advance_pointer(Z72Eye *s)
@@ -75,6 +102,9 @@ static int eye_send(I2CSlave *slave, uint8_t value)
             mask = 3;
         }
         s->regs[reg - 0x40] = value & mask;
+        if (reg == 0x41) {
+            eye_ps_start(s, value);
+        }
     }
     advance_pointer(s);
     return 0;
@@ -104,13 +134,37 @@ static void eye_reset(Object *obj, ResetType type)
     s->command = true;
 }
 
+static void eye_init(Object *obj)
+{
+    Z72Eye *s = Z72_EYE(obj);
+    s->ps_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, eye_ps_complete, s);
+}
+
+static void eye_finalize(Object *obj)
+{
+    timer_free(Z72_EYE(obj)->ps_timer);
+}
+
+static void eye_realize(DeviceState *dev, Error **errp)
+{
+    if (Z72_EYE(dev)->proximity > 0xfff) {
+        error_setg(errp, "Eye proximity must fit unsigned 12 bits");
+    }
+}
+
+static const Property eye_properties[] = {
+    DEFINE_PROP_UINT32("proximity", Z72Eye, proximity, 0),
+};
+
 static void eye_class_init(ObjectClass *klass, const void *data)
 {
     I2CSlaveClass *ic = I2C_SLAVE_CLASS(klass);
     ic->event = eye_event;
     ic->send = eye_send;
     ic->recv = eye_recv;
-    DEVICE_CLASS(klass)->desc = "Eye sensor register profile (no optical input)";
+    DEVICE_CLASS(klass)->desc = "Eye sensor with fixed raw proximity input";
+    DEVICE_CLASS(klass)->realize = eye_realize;
+    device_class_set_props(DEVICE_CLASS(klass), eye_properties);
     RESETTABLE_CLASS(klass)->phases.hold = eye_reset;
 }
 
@@ -118,6 +172,8 @@ static const TypeInfo eye_info = {
     .name = TYPE_Z72_EYE,
     .parent = TYPE_I2C_SLAVE,
     .instance_size = sizeof(Z72Eye),
+    .instance_init = eye_init,
+    .instance_finalize = eye_finalize,
     .class_init = eye_class_init,
 };
 

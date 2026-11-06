@@ -291,8 +291,9 @@ class Machine:
                          for name, address in auxiliary)
         devices += tuple(f'nikon-z72-controller-register-bank,bus=master-i2c{i},address=104'
                          for i in range(4))
-        if getattr(self.args, 'eye_sensor', False):
-            devices += ('nikon-z72-eye,bus=master-i2c2,address=56',)
+        proximity = getattr(self.args, 'eye_proximity', None)
+        if getattr(self.args, 'eye_sensor', False) or proximity is not None:
+            devices += (f'nikon-z72-eye,bus=master-i2c2,address=56,proximity={proximity or 0}',)
         acceleration = getattr(self.args, 'acceleration_sample', None)
         if acceleration is not None:
             x, y, z = acceleration
@@ -1208,7 +1209,9 @@ def main():
     parser.add_argument('--virtual-body-vr', action='store_true',
                         help='Attach body VR communication RAM; sensors and stabilization actuators remain absent')
     parser.add_argument('--eye-sensor', action='store_true',
-                        help='Attach the optional eye sensor register profile without optical samples or measurement interrupts')
+                        help='Attach the optional eye sensor register profile')
+    parser.add_argument('--eye-proximity', type=int, metavar='COUNT',
+                        help='Attach the eye sensor with a fixed raw proximity count (0 through 4095)')
     add_acceleration_options(parser)
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
@@ -1251,6 +1254,8 @@ def main():
                              'update and its manifest (survives restarts)')
     parser.add_argument('--open-browser', action='store_true')
     args = parser.parse_args()
+    if args.eye_proximity is not None and not 0 <= args.eye_proximity <= 4095:
+        parser.error('--eye-proximity requires a count in 0..4095')
     require(1 <= args.port <= 65535, 'Invalid HTTP port')
     require(not args.wsl or os.name == 'nt', '--wsl requires Windows')
     if args.live_view:
