@@ -104,7 +104,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978565968,
+          "table": 2978566008,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -205,7 +218,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978575248,
+          "table": 2978575288,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -306,7 +332,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978575376,
+          "table": 2978575416,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -407,7 +446,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978575376,
+          "table": 2978575416,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -508,7 +560,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978585872,
+          "table": 2978585912,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -609,7 +674,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978585872,
+          "table": 2978585912,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -710,7 +788,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978615888,
+          "table": 2978615928,
+          "functions": [
+            270558525,
+            270558529
+          ]
+        }
       }
     },
     {
@@ -811,7 +902,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978616784,
+          "table": 2978616824,
+          "functions": [
+            270558525,
+            270558529
+          ]
+        }
       }
     },
     {
@@ -912,7 +1016,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978631824,
+          "table": 2978631864,
+          "functions": [
+            270558525,
+            270558529
+          ]
+        }
       }
     },
     {
@@ -1013,7 +1130,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978631824,
+          "table": 2978631864,
+          "functions": [
+            270558525,
+            270558529
+          ]
+        }
       }
     },
     {
@@ -1114,7 +1244,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978631824,
+          "table": 2978631864,
+          "functions": [
+            270558529,
+            270558533
+          ]
+        }
       }
     },
     {
@@ -1215,7 +1358,20 @@
         "receiver_thread": 3,
         "written": 1,
         "consumed": 1,
-        "alias_header_matches": true
+        "alias_header_matches": true,
+        "main_delay": {
+          "call_offset": 1966482,
+          "argument": 1000,
+          "returned": true
+        },
+        "controller_callbacks": {
+          "slot": 2978642512,
+          "table": 2978642552,
+          "functions": [
+            270558533,
+            270558537
+          ]
+        }
       }
     }
   ]

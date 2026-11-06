@@ -3,6 +3,7 @@
 import argparse
 import json
 from pathlib import Path
+import re
 import struct
 import subprocess
 import sys
@@ -10,7 +11,7 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import BASE, digest, require, validate_master
-from analyze.firmware_structure import PROFILES, boot_prefix, branch_target
+from analyze.firmware_structure import PROFILES, boot_prefix, branch_target, scatter_records
 from analyze.update_container import describe_container
 from analyze.update_store import image_version
 from analyze.upgrade_signature import decode
@@ -18,6 +19,27 @@ from tools.boot_probe import reset_machine
 from tools.dual_boot_probe import MASTER_MAGIC, MASTER_MSG, dual_machine
 from tools.early_boot_probe import trace_early
 from tools.smp_boot_probe import reach
+
+
+def controller_callbacks(image):
+    # The first callback returns true; the adjacent one begins backend setup.
+    # Locate their pointer pair inside the initialized data copied into RAM.
+    records = scatter_records(image)
+    tables = []
+    for match in re.finditer(rb'\x01\x20\x70\x47.\x48\x20\x21\x10\xb5', image, re.DOTALL):
+        address = BASE + match.start()
+        pair = struct.pack('<2I', address | 1, (address + 4) | 1)
+        for record in records:
+            if record['kind'] != 'copy':
+                continue
+            start = record['source'] - BASE
+            pos = image.find(pair, start, start + record['size'])
+            if pos >= 0:
+                require(image.find(pair, pos + 1, start + record['size']) < 0,
+                        'Ambiguous controller callback pair')
+                tables.append((record['destination'] + pos - start, pair))
+    require(len(tables) == 1, 'Expected one controller callback table')
+    return tables[0]
 
 
 def trace_receiver(images, signature, qemu):
@@ -40,8 +62,27 @@ def trace_receiver(images, signature, qemu):
                     'Master and receiver ring headers differ')
             written, consumed = struct.unpack_from('<I4xI', header, 8)
             require(0 < written < 0xc0 and written == consumed, 'Receiver ring did not drain')
+            # Observe the main task call its delay and return to the backward branch.
+            call = 0x1e0192
+            master = images['master']
+            require(master[call - 6:call] == bytes.fromhex('40f2e8342046') and
+                    master[call + 4:call + 6] == bytes.fromhex('fbe7'),
+                    'Unexpected main task delay loop')
+            main_thread, regs = reach(remote, BASE + call)
+            delay = remote.get(regs, 'r0')
+            require(main_thread in (1, 2) and delay == 1000, 'Unexpected main task delay')
+            return_thread, _ = reach(remote, BASE + call + 4)
+            require(return_thread in (1, 2), 'Delay returned on the wrong engine')
+            remote.select_thread(return_thread)
+            table, pair = controller_callbacks(master)
+            slot = table - 0x28
+            require(remote.read(slot, 4) == struct.pack('<I', table) and
+                    remote.read(table, 8) == pair, 'Controller callbacks not installed')
             return dict(receiver_offset=offset, receiver_thread=thread,
-                        written=written, consumed=consumed, alias_header_matches=True)
+                        written=written, consumed=consumed, alias_header_matches=True,
+                        main_delay=dict(call_offset=call, argument=delay, returned=True),
+                        controller_callbacks=dict(slot=slot, table=table,
+                                                  functions=struct.unpack('<2I', pair)))
         finally:
             remote.sock.close()
             process.terminate()
