@@ -113,6 +113,25 @@ APPLV，观察窗口在按键前结束。C 1.70 未连接加速度计的对照�
 见 `acceleration_readiness_comparison`。这些轴值为模拟输入，单位为
 有符号 12 位原始码。
 
+### C 1.01 与 C 1.10 的菜单输入
+
+对这两版启用 `--acceleration-sample 0 0 1024 --resource-header --sync-pulse
+--interactive-inputs --settle-seconds 0.5`，在拍摄画面建立半个虚拟秒后
+按住 MENU，两版均进入 APPMENU，释放后仍以菜单为前台。C 1.01 的
+720×480 显示输出可读到 `PLAYBACK MENU`，首项为 `Delete`。
+交互输入配置将按键中断接到控制器 GPIO 8，并在首次同步等待后启用周期
+帧同步，同时提供采样源与计数器。上述运行同时启用这些输入。
+
+C 1.01 用 `--tap-seconds 0.1` 复测。探针在观察到按下且经过指定时长的
+首个采样点松键，两次实际保持约 0.14 和 0.21 个虚拟秒。两次均在释放后
+观察到菜单。保持其它输入相同、跳过按下 MENU 的对照覆盖 3.60 个虚拟秒，
+24 次采样的前台均为 APPLV，菜单键解码位始终为零。
+另用 `--press-on-live-view-entry --settle-seconds 0` 在
+固件把前台索引写为 3 后立即按住 MENU。此时图形表面地址仍为零；C 1.01
+在单次同步和周期同步两种配置下都识别了按键，但在观测窗口内始终停在
+APPLV。逐次计时、按键解码值、前台索引及画面摘要见
+[菜单按键时机对照](../../artifacts/early_boot_history/menu_input_timing.json)。
+
 本轮没有取得真实 B8 或 K8，没有验证任何版本的头部摘要，也没有完成
 菜单整包刷机。结构校验、合成输入执行与真实整包认证分别记录。
 

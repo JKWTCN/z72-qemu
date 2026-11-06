@@ -1,0 +1,366 @@
+{
+  "counter_frequency": 48000000,
+  "resource_header": true,
+  "runs": [
+    {
+      "package": "Z7_2_0101.bin",
+      "seconds_per_window": 6,
+      "windows_per_stage": 18,
+      "settle_seconds": 0,
+      "press_on_entry": true,
+      "entry_store": "0x10293a6a",
+      "tap_seconds": null,
+      "interactive_inputs": false,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 56301137,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0x0"
+        },
+        "decoded_press": {
+          "ticks": 65826358,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 218516804,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": false,
+      "error": "menu-start did not reach the expected state"
+    },
+    {
+      "package": "Z7_2_0170.bin",
+      "seconds_per_window": 6,
+      "windows_per_stage": 18,
+      "settle_seconds": 0,
+      "press_on_entry": true,
+      "entry_store": "0x1029968a",
+      "tap_seconds": null,
+      "interactive_inputs": false,
+      "acceleration_sample": null,
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 56000578,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0x0"
+        },
+        "decoded_press": {
+          "ticks": 64996505,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 210766128,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": false,
+      "error": "menu-start did not reach the expected state"
+    },
+    {
+      "package": "Z7_2_0101.bin",
+      "seconds_per_window": 5,
+      "windows_per_stage": 24,
+      "settle_seconds": 0,
+      "press_on_entry": true,
+      "entry_store": "0x10293a6a",
+      "tap_seconds": null,
+      "interactive_inputs": true,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 56359200,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0x0"
+        },
+        "decoded_press": {
+          "ticks": 61495232,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 234641935,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": false,
+      "error": "menu-start did not reach the expected state"
+    },
+    {
+      "package": "Z7_2_0101.bin",
+      "seconds_per_window": 6,
+      "windows_per_stage": 24,
+      "settle_seconds": 0.5,
+      "press_on_entry": false,
+      "entry_store": null,
+      "tap_seconds": null,
+      "interactive_inputs": true,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 89611079,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xc175d600"
+        },
+        "decoded_press": {
+          "ticks": 99353278,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "decoded_release": {
+          "ticks": 211094813,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "menu_foreground": {
+          "ticks": 203117506,
+          "foreground": 1,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 219877958,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": true,
+      "error": null,
+      "capture": {
+        "sha256": "b24e6732391873edde53ac6a146fe00f9c925c28216c27f62a869e80e1c99823",
+        "width": 720,
+        "height": 480,
+        "nonblack_pixels": 282736,
+        "distinct_colors": 360
+      }
+    },
+    {
+      "package": "Z7_2_0101.bin",
+      "seconds_per_window": 5,
+      "windows_per_stage": 24,
+      "settle_seconds": 0.5,
+      "press_on_entry": false,
+      "entry_store": null,
+      "tap_seconds": 0.1,
+      "interactive_inputs": true,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 87524149,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "decoded_press": {
+          "ticks": 94296481,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xc175d600"
+        },
+        "decoded_release": {
+          "ticks": 102444185,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xc175d600"
+        },
+        "menu_foreground": {
+          "ticks": 200419348,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 200419348,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": true,
+      "error": null,
+      "held_guest_seconds": 0.14109025,
+      "capture": {
+        "sha256": "3a09699f3fa34008bed2a32e7505723b05be073cdd89066902a7cf6246bebb0a",
+        "width": 720,
+        "height": 480,
+        "nonblack_pixels": 33448,
+        "distinct_colors": 4
+      }
+    },
+    {
+      "package": "Z7_2_0110_01.bin",
+      "seconds_per_window": 6,
+      "windows_per_stage": 24,
+      "settle_seconds": 0.5,
+      "press_on_entry": false,
+      "entry_store": null,
+      "tap_seconds": null,
+      "interactive_inputs": true,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 92488438,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "decoded_press": {
+          "ticks": 101652481,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "decoded_release": {
+          "ticks": 211760876,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "menu_foreground": {
+          "ticks": 202813347,
+          "foreground": 1,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 221606980,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": true,
+      "error": null,
+      "held_guest_seconds": 2.2984356041666665,
+      "capture": {
+        "sha256": "b24e6732391873edde53ac6a146fe00f9c925c28216c27f62a869e80e1c99823",
+        "width": 720,
+        "height": 480,
+        "nonblack_pixels": 282736,
+        "distinct_colors": 360
+      }
+    },
+    {
+      "package": "Z7_2_0101.bin",
+      "seconds_per_window": 6,
+      "windows_per_stage": 24,
+      "settle_seconds": 0.5,
+      "press_on_entry": false,
+      "entry_store": null,
+      "tap_seconds": 0.1,
+      "interactive_inputs": true,
+      "acceleration_sample": [
+        0,
+        0,
+        1024
+      ],
+      "sync_pulse_supplied": true,
+      "milestones": {
+        "before_press": {
+          "ticks": 92275212,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "decoded_press": {
+          "ticks": 102452311,
+          "foreground": 3,
+          "menu_key": true,
+          "surface": "0xbec5f200"
+        },
+        "decoded_release": {
+          "ticks": 111043254,
+          "foreground": 3,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "menu_foreground": {
+          "ticks": 204848247,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        },
+        "last": {
+          "ticks": 213890694,
+          "foreground": 1,
+          "menu_key": false,
+          "surface": "0xbec5f200"
+        }
+      },
+      "passed": true,
+      "error": null,
+      "held_guest_seconds": 0.21202289583333334,
+      "capture": {
+        "sha256": "b24e6732391873edde53ac6a146fe00f9c925c28216c27f62a869e80e1c99823",
+        "width": 720,
+        "height": 480,
+        "nonblack_pixels": 282736,
+        "distinct_colors": 360
+      }
+    }
+  ],
+  "no_key_control": {
+    "package": "Z7_2_0101.bin",
+    "acceleration_sample": [
+      0,
+      0,
+      1024
+    ],
+    "interactive_inputs": true,
+    "settle_seconds": 0.5,
+    "seconds_per_window": 6,
+    "menu_input_asserted": false,
+    "sample_count": 24,
+    "baseline_ticks": 91846106,
+    "last_ticks": 264553283,
+    "foreground_indices": [
+      3
+    ],
+    "menu_key_decoded": false
+  }
+}

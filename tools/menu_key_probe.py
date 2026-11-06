@@ -133,6 +133,14 @@ def run(args):
                p['controller_request']['sha256'] == controller_hash]
     require(len(matches) == 1, 'Expected three firmware members from the same historical update')
     manager, getters = application_manager(master)
+    press_on_entry = getattr(args, 'press_on_live_view_entry', False)
+    tap_seconds = getattr(args, 'tap_seconds', None)
+    require(tap_seconds is None or 0 < tap_seconds <= 2, 'Tap duration must be in (0, 2] seconds')
+    interactive_inputs = getattr(args, 'interactive_inputs', False)
+    require(not interactive_inputs or args.sync_pulse,
+            'Interactive inputs require --sync-pulse to start the periodic source')
+    require(not press_on_entry or args.settle_seconds == 0,
+            'Pressing on live-view entry requires --settle-seconds 0')
     switch_word = matches[0]['controller_request']['menu_samples'][0]['switch_address']
     current_profile = identities['master'] == PROFILES['master'].sha256
     trace_modes = getattr(args, 'trace_modes', False)
@@ -203,9 +211,18 @@ def run(args):
             (work / 'aux.bin').write_bytes(auxiliary)
             for name, data in zip(('group17.bin', 'group18.bin'), parameter_images()):
                 (work / name).write_bytes(data)
+            key_irq, frame_inputs = '', ()
+            if interactive_inputs:
+                key_irq = ',interrupt-gpio=/machine/controller/keys-gpio,interrupt-pin=8'
+                frame_inputs = ('nikon-z72-boot-config.frame-sync=on',
+                                'nikon-z72-boot-config.sensor-sample=on',
+                                'nikon-z72-boot-config.sample-counter=on')
+            report['interactive_inputs'] = interactive_inputs
+            report['press_on_live_view_entry'] = press_on_entry
+            report['tap_seconds'] = tap_seconds
             devices = (
                 'nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',
-                'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys',
+                'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys' + key_irq,
                 f"nikon-z72-controller-register-bank,bus=controller-i2c0,"
                 f"address=107,initial-state={work / 'primary.bin'}",
                 f"nikon-z72-controller-register-bank,bus=controller-i2c0,"
@@ -238,7 +255,7 @@ def run(args):
                 controller_link=True,
                 controller_flash_data=work / 'resident.bin',
                 devices=devices,
-                globals_=tuple(
+                globals_=frame_inputs + tuple(
                     f"nikon-z72-controller-adc.channel{channel}={value}"
                     for channel, value in ((0, 1800), (1, 3001), (3, 3001))),
                 extra_arguments=())
@@ -252,6 +269,10 @@ def run(args):
             gpios = re.findall(r"(device\[\d+\]) \(child<nikon-z72-controller-gpio>\)",
                                listing.decode())
             gpios.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
+            foreground_watch = f'2,{manager + 16:x},1'
+            if press_on_entry:
+                require(remote.command('Z' + foreground_watch) == 'OK',
+                        'Could not watch the foreground application index')
             if trace_modes:
                 report['mode_calls'] = []
                 event_entry, notify = mode_event_sites(master)
@@ -288,6 +309,16 @@ def run(args):
                     remote.sock.settimeout(10)
                     thread, registers = stop_registers(remote, response)
                     pc = remote.get(registers, 'pc')
+                    if press_on_entry and 'watch:' in response:
+                        require(remote.command('z' + foreground_watch) == 'OK',
+                                'Could not remove foreground watchpoint')
+                        stop_registers(remote, remote.command(f'vCont;s:{thread:x}'))
+                        if thread in (1, 2) and remote.read(manager + 16, 1) == b'\x03':
+                            report['live_view_entry_store'] = hex(pc)
+                            return
+                        require(remote.command('Z' + foreground_watch) == 'OK',
+                                'Could not restore foreground watchpoint')
+                        continue
                     if trace_modes and pc in trace_sites:
                         require(thread in (1, 2), 'Mode call stopped outside master')
                         ctx, r1, r2, r3 = (remote.get(registers, f'r{i}') for i in range(4))
@@ -328,6 +359,10 @@ def run(args):
                                      f"sync-event 15 {level}\n".encode())
                         require(wire.recv(1024).strip() == b'OK', 'Synchronization input failed')
                     report['sync_pulse_supplied'] = True
+                    if interactive_inputs:
+                        wire.sendall(f'set_irq_in /machine/unattached/{configs[0]} '
+                                     'frame-sync-enable 0 1\n'.encode())
+                        require(wire.recv(1024).strip() == b'OK', 'Periodic frame sync failed')
                     report['sync_pulse'] = dict(line=15, status_bit=4, irq=87,
                         wait_address=hex(wait), mask=hex(mask),
                         counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
@@ -393,6 +428,11 @@ def run(args):
 
             def settled(item):
                 nonlocal settle_start
+                if press_on_entry:
+                    return ('live_view_entry_store' in report and
+                            item['application']['initialization_complete'] == 1 and
+                            item['application']['current_index'] == 3 and
+                            not item['controller_input']['decoded_menu_bit'])
                 if not shooting_active(item) or item['controller_input']['decoded_menu_bit']:
                     settle_start = None
                     return False
@@ -406,25 +446,37 @@ def run(args):
             baseline = observe('baseline', settled)
             require(int(baseline['controller_input']['decoded_switch_words'][0], 16)
                     & 0x0c000000 == 0, 'External shutter inputs remain asserted')
-            # This probe records held-key behavior; it does not establish
-            # the minimum press duration or require a long press on the camera.
+            require(baseline['counter_frequency'] > 0, 'Counter frequency is unavailable')
+
+            def elapsed(item):
+                return (item['counter_ticks'] - baseline['counter_ticks']) / baseline['counter_frequency']
+
+            def menu_active(item):
+                return item['application']['current_index'] == 1
+
             drive(MENU_PIN, 0)
-            pressed = observe('pressed',
-                              lambda item: item['controller_input']['decoded_menu_bit'])
-            menu_opened = observe('menu-start',
-                                  lambda item: item['application']['current_index'] == 1)
+            pressed = observe('pressed', lambda item: item['controller_input']['decoded_menu_bit']
+                              and (tap_seconds is None or elapsed(item) >= tap_seconds))
+            menu_opened = pressed if menu_active(pressed) else None
+            last_held = pressed
+            if tap_seconds is None and menu_opened is None:
+                last_held = observe('menu-start', menu_active)
+                menu_opened = last_held
             drive(MENU_PIN, 1)
-            observe('released',
-                    lambda item: not item['controller_input']['decoded_menu_bit'])
+            report['menu_held_virtual_seconds'] = elapsed(last_held)
+            if menu_opened is not None:
+                report['menu_start_held_virtual_seconds'] = elapsed(menu_opened)
+            released = observe('released', lambda item: not item['controller_input']['decoded_menu_bit'])
             report['key_transport_verified'] = True
-            report['menu_application_observed'] = True
-            report['menu_start_held_virtual_seconds'] = menu_opened.get(
-                'settled_seconds', menu_opened.get('counter_ticks'))
+            if menu_opened is None:
+                menu_opened = released if menu_active(released) else observe('menu-start', menu_active)
             # The menu application must remain foreground after the release.
             stayed = observe('menu-steady',
                              lambda item: item['application']['current_index'] == 1
                              and not item['controller_input']['decoded_menu_bit'])
             report['menu_application_steady'] = stayed['application']['current_index'] == 1
+            report['menu_application_observed'] = True
+            report['menu_start_virtual_seconds_since_press'] = elapsed(menu_opened)
             screenshot = str(args.destination.resolve() / 'interface.ppm')
             if os.name == 'nt':
                 screenshot = linux(screenshot)
@@ -471,6 +523,12 @@ def main():
     parser.add_argument('--seconds', type=int, default=15)
     parser.add_argument('--windows', type=int, default=24)
     parser.add_argument('--settle-seconds', type=float, default=5)
+    parser.add_argument('--press-on-live-view-entry', action='store_true',
+                        help='Press MENU at the native APPLV foreground write (requires --settle-seconds 0)')
+    parser.add_argument('--interactive-inputs', action='store_true',
+                        help='Wire the key interrupt and enable periodic frame and sample inputs')
+    parser.add_argument('--tap-seconds', type=float,
+                        help='Release at the first decoded press sample after this many guest seconds')
     parser.add_argument('--resource-header', action='store_true',
                         help='Load an experimental group-32 header with a zero resource body')
     parser.add_argument('--trace-modes', action='store_true',
