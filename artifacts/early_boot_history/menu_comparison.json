@@ -177,5 +177,48 @@
         "nonblack_rows": 480
       }
     }
-  ]
+  ],
+  "mode_followup": {
+    "package": "Z7_2_0101.bin",
+    "master_sha256": "d84d5399b7fc9a3c198410e4989a8bd784fda746dc991c018bde3cb93075a701",
+    "seconds_per_window": 5,
+    "windows": 15,
+    "mode_object_table": "0xb1815178",
+    "inhibitor_offset": "0x308",
+    "last_counter_ticks": 126132669,
+    "sync_pulse_supplied": false,
+    "menu_input_sent": false,
+    "states": [
+      {
+        "first_counter_ticks": 8632977,
+        "system": {
+          "system_context": "0xb1814dac",
+          "current_mode": 0,
+          "previous_mode": 255,
+          "transition_inhibitors": [
+            2,
+            0,
+            64
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null
+        }
+      },
+      {
+        "first_counter_ticks": 49943877,
+        "system": {
+          "system_context": "0xb1814dac",
+          "current_mode": 1,
+          "previous_mode": 0,
+          "transition_inhibitors": [
+            2,
+            0,
+            64
+          ],
+          "deferred_transition_flags": 0,
+          "deferred_target_mode": null
+        }
+      }
+    ]
+  }
 }

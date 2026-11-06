@@ -16,7 +16,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import BASE, digest, require
-from analyze.firmware_structure import application_manager, PROFILES
+from analyze.firmware_structure import application_manager, PROFILES, thumb_literal
 from tools.graphics_boot_probe import (application_observation,
                                        capture_health_observation,
                                        controller_input_observation,
@@ -26,6 +26,43 @@ from tools.create_lab_parameters import parameter_images, resource_header_image
 from tools.dual_boot_probe import dual_machine, sample_cores
 
 MENU_PIN = 9
+
+
+def mode_layout(master):
+    # The transition routine selects a mode object through a literal pointer
+    # table. Each initialized object's first word points back to the system.
+    select = list(re.finditer(rb'\xf0\xb4\x15\x46\x90\xf9\x58\x21\x8a\x42\x0f\xd0'
+                              rb'\x80\xf8\x59\x21.\x4a\x80\xf8\x58\x11\x52\xf8\x21\x40',
+                              master, re.S))
+    group = list(re.finditer(rb'\x00\xeb\x81\x00\xd0\xf8(.)\x13\x01\x20\x00\x29'
+                             rb'\x00\xd1\x00\x20\x70\x47', master, re.S))
+    require(len(select) == len(group) == 1, 'Expected unique mode selection and inhibitor access')
+    table = thumb_literal(master, select[0].start() + 16, 2)
+    offset = 0x300 + group[0].group(1)[0]
+    # Check the deferred-flags and target-mode stores in the adjacent setter.
+    pos = group[0].start()
+    for instruction, halfword, displacement, register in (
+            (0x26, 0xf8c0, 12, 4), (0x34, 0xf880, 20, 3)):
+        require(struct.unpack_from('<2H', master, pos + instruction) ==
+                (halfword, register << 12 | (offset + displacement)),
+                'Unexpected deferred mode fields')
+    return table, offset
+
+
+def historical_mode(remote, layout):
+    remote.select_thread(1)
+    table, groups = layout
+    obj = int.from_bytes(remote.read(table, 4), 'little')
+    context = int.from_bytes(remote.read(obj, 4), 'little')
+    if not context:
+        return dict(system_context=None)
+    modes = remote.read(context + 0x158, 2)
+    transition = remote.read(context + groups, 24)
+    inhibitors = list(struct.unpack_from('<3I', transition))
+    flags = struct.unpack_from('<I', transition, 12)[0]
+    return dict(system_context=hex(context), current_mode=modes[0], previous_mode=modes[1],
+                transition_inhibitors=inhibitors, deferred_transition_flags=flags,
+                deferred_target_mode=transition[20] if flags & 4 else None)
 
 
 def linux(path):
@@ -50,6 +87,7 @@ def run(args):
     manager, getters = application_manager(master)
     switch_word = matches[0]['controller_request']['menu_samples'][0]['switch_address']
     current_profile = identities['master'] == PROFILES['master'].sha256
+    layout = None if current_profile else mode_layout(master)
     wait_setup = bytes.fromhex('40ea04086a4632230821a7f15000')
     require(master.count(wait_setup) == 1, 'Expected one synchronization wait setup')
     wait = BASE + master.index(wait_setup) + len(wait_setup)
@@ -215,6 +253,7 @@ def run(args):
                                        capture_health=capture_health_observation(remote),
                                        controller_input=controller_input_observation(remote))
                 else:
+                    observation['system'] = historical_mode(remote, layout)
                     remote.select_thread(1)
                     words = struct.unpack('<3I', remote.read(switch_word - 4, 12))
                     observation['controller_input'] = dict(decoded_switch_words=list(map(hex, words)),
