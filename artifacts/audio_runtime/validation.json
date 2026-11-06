@@ -1,0 +1,204 @@
+{
+  "status": {
+    "phase": "running",
+    "error": null,
+    "ready": true,
+    "menu_inhibited": false,
+    "uptime": 31,
+    "firmware": {
+      "source": "stock",
+      "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "length": 38239098,
+      "version": "Ver.01.70.02",
+      "installed_at": "",
+      "note": "",
+      "store_error": null
+    },
+    "staged": null,
+    "update_ready": false,
+    "update_installed": false,
+    "execution": "running",
+    "index": 3,
+    "held": [],
+    "mode_position": 0,
+    "dial_pending": [
+      false,
+      false
+    ],
+    "booted_version": "Ver.01.70.02",
+    "auto_menu": "off",
+    "input_ready": true
+  },
+  "arguments": [
+    "--qemu",
+    "/mnt/d/code/z72-qemu/.build/build/qemu-system-arm",
+    "--wsl",
+    "--master",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_mas_01700.bin",
+    "--slave",
+    "D:\\Temporary\\2610\\07\\Z_72\\eg1840_sla_01700.bin",
+    "--controller",
+    "D:\\Temporary\\2610\\07\\Z_72\\ex1840_013000.bin",
+    "--sd-card",
+    "D:\\code\\z72-qemu\\.local\\fs-card-20261023.raw",
+    "--display-complete",
+    "--processing-resource-header",
+    "--audio-output",
+    "--update-store",
+    "D:\\code\\z72-qemu\\.local\\audio-runtime-state\\store",
+    "--port",
+    "60649"
+  ],
+  "audio_service": [
+    "0x100014b",
+    "0xb18035e4",
+    "0xb180361c",
+    "0xb1803654",
+    "0xb180368c",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "buffer_states": [
+    [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0xb1805ba8",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x1",
+      "0x0",
+      "0x0"
+    ],
+    [
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0xb1805bdc",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x1",
+      "0x0",
+      "0x0"
+    ]
+  ],
+  "audio_descriptors": [
+    [
+      "0x108",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x102deedd",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x7",
+      "0x0"
+    ],
+    [
+      "0x109",
+      "0x1",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x102deedb",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x0",
+      "0x7",
+      "0x0"
+    ]
+  ],
+  "dma_bindings": [
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0",
+    "0x0"
+  ],
+  "registers": [
+    [
+      "0x200",
+      "0x0",
+      "0x2000000",
+      "0x43030000",
+      "0x0"
+    ],
+    [
+      "0x200",
+      "0x0",
+      "0x2000000",
+      "0x43030000",
+      "0x0"
+    ]
+  ],
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x1010707c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10101804",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a64",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ]
+}
