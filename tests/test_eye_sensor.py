@@ -87,12 +87,12 @@ def check_proximity(qemu):
 def check_proximity_state(qemu, disk):
     bus = 0x2c01a000
     port = free_port()
-    with subprocess.Popen([qemu, '-M', 'nikon-z72-slave-lab', '-accel', 'qtest',
+    with subprocess.Popen([qemu, '-M', 'nikon-z72-lab', '-accel', 'qtest',
                            '-drive', f'if=none,id=scratch,file={disk},format=raw,snapshot=on',
                            '-qmp', f'tcp:127.0.0.1:{port},server=on,wait=off',
                            '-serial', 'none', '-display', 'none',
                            '-qtest', 'stdio', '-qtest-log', '/dev/null', '-device',
-                           'nikon-z72-eye,bus=slave-i2c2,address=56,proximity=2748'],
+                           'nikon-z72-eye,bus=master-i2c2,address=56,proximity=2748'],
                           stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as process:
         def command(line):
             process.stdin.write(line + '\n')

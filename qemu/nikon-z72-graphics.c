@@ -9,6 +9,7 @@
 #include "hw/resettable.h"
 #include "system/address-spaces.h"
 #include "migration/vmstate.h"
+#include "migration/qemu-file-types.h"
 #include "nikon-gpu.h"
 
 #define TYPE_Z72_GRAPHICS "nikon-z72-graphics"
@@ -228,10 +229,185 @@ static void graphics_observation(Object *obj, Visitor *visitor, const char *name
     visit_type_uint32(visitor, name, &value, errp);
 }
 
-/* Active path objects require a migration contract before transfer. */
+static void graphics_put_path(QEMUFile *f, NikonGPUPath *p)
+{
+    qemu_put_byte(f, p->valid);
+    for (unsigned i = 0; i < G_N_ELEMENTS(p->regs); i++) {
+        qemu_put_be32(f, p->regs[i]);
+    }
+    GByteArray *arrays[] = { p->segments, p->coordinates };
+    for (unsigned i = 0; i < G_N_ELEMENTS(arrays); i++) {
+        qemu_put_be32(f, arrays[i]->len);
+        if (arrays[i]->len) {
+            qemu_put_buffer(f, arrays[i]->data, arrays[i]->len);
+        }
+    }
+}
+
+static NikonGPUPath *graphics_get_path(QEMUFile *f, bool closed)
+{
+    unsigned valid = qemu_get_byte(f);
+    if (valid > 1) {
+        return NULL;
+    }
+    NikonGPUPath *p = g_new0(NikonGPUPath, 1);
+    p->valid = valid;
+    p->edges = g_array_new(false, false, sizeof(NikonGPUEdge));
+    p->segments = g_byte_array_new();
+    p->coordinates = g_byte_array_new();
+    for (unsigned i = 0; i < G_N_ELEMENTS(p->regs); i++) {
+        p->regs[i] = qemu_get_be32(f);
+    }
+    GByteArray *arrays[] = { p->segments, p->coordinates };
+    for (unsigned i = 0; i < G_N_ELEMENTS(arrays); i++) {
+        uint32_t len = qemu_get_be32(f);
+        if (len > 262144 || qemu_file_get_error(f)) {
+            goto fail;
+        }
+        g_byte_array_set_size(arrays[i], len);
+        if (len && qemu_get_buffer(f, arrays[i]->data, len) != len) {
+            goto fail;
+        }
+    }
+    if (closed && p->valid) {
+        nikon_gpu_flatten(p);
+        if (!p->valid) {
+            goto fail;
+        }
+    }
+    return p;
+
+fail:
+    nikon_gpu_path_free(p);
+    return NULL;
+}
+
+static int graphics_put_paths(QEMUFile *f, void *pv, size_t size,
+                              const VMStateField *field, JSONWriter *vmdesc)
+{
+    NikonGPU *g = container_of(pv, NikonGPU, paths);
+    GHashTableIter iter;
+    gpointer key, value;
+    qemu_put_be32(f, g_hash_table_size(g->paths));
+    g_hash_table_iter_init(&iter, g->paths);
+    while (g_hash_table_iter_next(&iter, &key, &value)) {
+        qemu_put_be32(f, GPOINTER_TO_UINT(key));
+        graphics_put_path(f, value);
+    }
+    qemu_put_byte(f, !!g->active);
+    if (g->active) {
+        graphics_put_path(f, g->active);
+    }
+    return qemu_file_get_error(f);
+}
+
+static int graphics_get_paths(QEMUFile *f, void *pv, size_t size,
+                              const VMStateField *field)
+{
+    NikonGPU *g = container_of(pv, NikonGPU, paths);
+    unsigned count = qemu_get_be32(f);
+    if (count > 4097) {
+        return -EINVAL;
+    }
+    g_autoptr(GHashTable) paths = g_hash_table_new_full(
+        g_direct_hash, g_direct_equal, NULL, nikon_gpu_path_free);
+    for (unsigned i = 0; i < count; i++) {
+        gpointer key = GUINT_TO_POINTER(qemu_get_be32(f));
+        NikonGPUPath *p = graphics_get_path(f, true);
+        if (!p || !g_hash_table_insert(paths, key, p)) {
+            return -EINVAL;
+        }
+    }
+    unsigned present = qemu_get_byte(f);
+    NikonGPUPath *active = NULL;
+    if (present > 1 || qemu_file_get_error(f) ||
+        (present && !(active = graphics_get_path(f, false)))) {
+        return -EINVAL;
+    }
+    g_hash_table_unref(g->paths);
+    g->paths = g_steal_pointer(&paths);
+    g_clear_pointer(&g->active, nikon_gpu_path_free);
+    g->active = active;
+    return 0;
+}
+
+static const VMStateInfo graphics_paths = {
+    .name = "paths", .get = graphics_get_paths, .put = graphics_put_paths,
+};
+
+static int graphics_put_surface(QEMUFile *f, void *pv, size_t size,
+                                const VMStateField *field, JSONWriter *vmdesc)
+{
+    DisplaySurface *surface = qemu_console_surface(*(QemuConsole **)pv);
+    for (int y = 0; y < 480; y++) {
+        uint32_t *row = surface_data(surface) + y * surface_stride(surface);
+        for (int x = 0; x < 720; x++) {
+            qemu_put_be32(f, row[x]);
+        }
+    }
+    return qemu_file_get_error(f);
+}
+
+static int graphics_get_surface(QEMUFile *f, void *pv, size_t size,
+                                const VMStateField *field)
+{
+    QemuConsole *console = *(QemuConsole **)pv;
+    DisplaySurface *surface = qemu_console_surface(console);
+    for (int y = 0; y < 480; y++) {
+        uint32_t *row = surface_data(surface) + y * surface_stride(surface);
+        for (int x = 0; x < 720; x++) {
+            row[x] = qemu_get_be32(f);
+        }
+    }
+    dpy_gfx_update(console, 0, 0, 720, 480);
+    return qemu_file_get_error(f);
+}
+
+static const VMStateInfo graphics_surface = {
+    .name = "surface", .get = graphics_get_surface, .put = graphics_put_surface,
+};
+
+static const VMStateDescription gpu_vmstate = {
+    .name = "nikon-z72-gpu",
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .fields = (const VMStateField[]) {
+        VMSTATE_UINT32_2DARRAY(regs, NikonGPU, 2, 512),
+        VMSTATE_UINT32(present_address, NikonGPU),
+        VMSTATE_UINT32(rendered, NikonGPU),
+        VMSTATE_UINT32(unsupported, NikonGPU),
+        VMSTATE_UINT32(stroke_samples, NikonGPU),
+        VMSTATE_UINT32(icon_samples, NikonGPU),
+        VMSTATE_SINGLE(paths, NikonGPU, 0, graphics_paths, GHashTable *),
+        VMSTATE_SINGLE(console, NikonGPU, 0, graphics_surface, QemuConsole *),
+        VMSTATE_END_OF_LIST()
+    },
+};
+
+static int graphics_post_load(void *opaque, int version)
+{
+    graphics_irqs(opaque);
+    return 0;
+}
+
 static const VMStateDescription graphics_vmstate = {
     .name = TYPE_Z72_GRAPHICS,
-    .unmigratable = true,
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .post_load = graphics_post_load,
+    .fields = (const VMStateField[]) {
+        VMSTATE_UINT32_ARRAY(registers, Z72Graphics, 0x2000 / 4),
+        VMSTATE_BOOL_ARRAY(pending, Z72Graphics, 2),
+        VMSTATE_BOOL(drawing, Z72Graphics),
+        VMSTATE_BOOL(draw_complete, Z72Graphics),
+        VMSTATE_UINT32(completed_draws, Z72Graphics),
+        VMSTATE_UINT32(successful_uploads, Z72Graphics),
+        VMSTATE_UINT32(render_requests, Z72Graphics),
+        VMSTATE_UINT32(failed_requests, Z72Graphics),
+        VMSTATE_TIMER_PTR(timer, Z72Graphics),
+        VMSTATE_STRUCT_POINTER(gpu, Z72Graphics, gpu_vmstate, NikonGPU),
+        VMSTATE_END_OF_LIST()
+    },
 };
 
 static void graphics_class_init(ObjectClass *klass, const void *data)
