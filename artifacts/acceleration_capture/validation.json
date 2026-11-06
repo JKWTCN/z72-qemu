@@ -43,10 +43,49 @@
     "all_differences_in_nikon_tag": "0x0091",
     "shot_info_version": "0803",
     "decoder": "ExifTool 13.61",
-    "orientation_info_xyz_offsets": [12, 44, 76],
+    "orientation_info_xyz_offsets": [
+      12,
+      44,
+      76
+    ],
     "samples_per_axis": 16,
     "encoding": "little-endian signed 16-bit",
     "all_samples_match_respective_capture_axes": true,
-    "roll_pitch_yaw_degrees_in_both_files": [0, 0, 0]
+    "roll_pitch_yaw_degrees_in_both_files": [
+      0,
+      0,
+      0
+    ]
+  },
+  "changing_sample_capture": {
+    "jpeg_sha256": "166588848ee5289d0cbd824876974e3a9591f56ca112afc3d4ea553a4f73a097",
+    "jpeg_bytes": 1489370,
+    "width": 8256,
+    "height": 5504,
+    "exif_orientation": 1,
+    "external_xyz": "(i, -i, 1024-i), increasing i",
+    "host_update_wait_seconds": 0.5,
+    "stored_x_oldest_first": [
+      66,
+      73,
+      80,
+      87,
+      94,
+      101,
+      108,
+      114,
+      121,
+      132,
+      229,
+      330,
+      421,
+      511,
+      599,
+      688
+    ],
+    "y_equals_negative_x": true,
+    "z_equals_1024_minus_x": true,
+    "all_stored_samples_published": true,
+    "physical_sampling_interval_verified": false
   }
 }

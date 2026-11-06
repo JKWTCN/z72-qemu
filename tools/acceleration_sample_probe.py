@@ -97,6 +97,23 @@ def check(qemu, master):
                 (0xa5a5, -2048, 2047, -1, 0, 0xa5a5), 'Unexpected firmware sample result')
         print(f'PASS C1.70 sample reader: wire={wire.hex()}, axes={fields[1:4]}')
 
+        # Exercise the original publication and capture-copy routines with a
+        # full ring whose next write lands in the middle of the array.
+        samples = [(i, -i, 1024 - i) for i in range(1, 17)]
+        next_slot = 5
+        physical = samples[-next_slot:] + samples[:-next_slot]
+        for offset, axis in zip((0x2c, 0x4c, 0x6c), zip(*physical)):
+            remote.write(owner + offset, struct.pack('<16h', *axis))
+        remote.write(owner + 0xac, struct.pack('<I', next_slot))
+        remote.set(pc=0x103d40d0, cpsr=0x1f3, sp=0xb1810000, lr=0x10021001,
+                   r0=0xb1cf7978, r1=owner)
+        reach(remote, 0x10021000)
+        remote.set(pc=0x103d5530, cpsr=0x1f3, sp=0xb1810000, lr=0x10021001, r0=result)
+        reach(remote, 0x10021000)
+        axes = struct.iter_unpack('<16h', remote.read(result + 2, 96))
+        require(list(zip(*axes)) == samples, 'Capture copy changed the order of the ring')
+        print('PASS C1.70 capture history: oldest through newest across ring wrap')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)

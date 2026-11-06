@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Read the sixteen raw three-axis values stored in a Z7 II ShotInfo 0803 JPEG."""
+"""Read sixteen raw three-axis samples, oldest first, from a Z7 II ShotInfo 0803 JPEG."""
 import argparse
 import json
 from pathlib import Path
