@@ -13,7 +13,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.web_console import Machine
+from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, Machine
 
 OUTPUT_BASE = 0x20140000
 
@@ -64,13 +64,18 @@ def snapshot(machine):
                     machine._words(base + 0x50, 8)])
                     for base in range(0x20069800, 0x20069c00, 0x100)])
             capture = machine._bytes(0xb23f6a7c, 0x20)
-            return dict(registers=registers, pipelines=pipelines, input=input_state,
-                        capture=dict(state=capture[4], substate=capture[5],
-                                     pending=hex(int.from_bytes(capture[0x1c:0x20], 'little'))),
-                        operation3=hex(machine._words(0xb23f6ff0, 1)[0]),
-                        operation14=hex(machine._words(0xb23f701c, 1)[0]),
-                        output_notification_index=machine._words(0xb180854c + 0x2c, 1)[0],
-                        display_state=machine._bytes(0xb202be70 + 0x19e, 1).hex())
+            result = dict(
+                registers=registers, pipelines=pipelines, input=input_state,
+                capture=dict(state=capture[4], substate=capture[5],
+                             pending=hex(int.from_bytes(capture[0x1c:0x20], 'little'))),
+                operation3=hex(machine._words(0xb23f6ff0, 1)[0]),
+                operation14=hex(machine._words(0xb23f701c, 1)[0]),
+                output_notification_index=machine._words(0xb180854c + 0x2c, 1)[0],
+                display_state=machine._bytes(0xb202be70 + 0x19e, 1).hex())
+            if machine.eye_attached:
+                result['eye_detected'] = machine.eye_detected
+                result['eye_property'] = machine._words(EYE_STATE_C170, 1)[0]
+            return result
         finally:
             machine.qmp.command('cont')
 
@@ -82,7 +87,10 @@ def main():
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--wsl', action='store_true')
     parser.add_argument('--sd-card', type=Path)
-    parser.add_argument('--samples', type=int, default=2)
+    sampling = parser.add_mutually_exclusive_group()
+    sampling.add_argument('--samples', type=int, default=2)
+    sampling.add_argument('--eye-sequence', action='store_true',
+                        help='Observe C1.70 live-view outputs with eye input far, near, then far')
     parser.add_argument('--interval', type=float, default=2)
     parser.add_argument('--events', type=int, nargs='+', default=[],
                         help='Pulse physical output-event lines once after the first snapshot')
@@ -96,6 +104,13 @@ def main():
         parser.error('events must be 0..63 and require at least two snapshots')
     args.realtime = args.auto_menu = False
     args.sd_card = None
+    if args.eye_sequence:
+        if args.events:
+            parser.error('--eye-sequence cannot be combined with --events')
+        args.samples = 3
+        args.eye_proximity = 0xabc
+        for option in LIVE_VIEW_OPTIONS:
+            setattr(args, option, True)
     args.update_store = ROOT / '.local' / 'display-probe-store'
     args.update_image = None
     machine = Machine(args)
@@ -115,7 +130,17 @@ def main():
         else:
             raise TimeoutError('Shooting application did not become ready')
         report['boot'] = state
+        if args.eye_sequence and state.get('booted_version') != 'Ver.01.70.02':
+            raise ValueError('Eye sequence requires C1.70')
         for index in range(args.samples):
+            if args.eye_sequence:
+                detected = index == 1
+                machine.set_eye_detected(detected)
+                deadline = time.monotonic() + 20
+                while machine.status().get('eye_reported') is not detected:
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError(f'Eye state did not reach {detected}')
+                    time.sleep(0.1)
             if index:
                 if index == 1:
                     with machine.io:
