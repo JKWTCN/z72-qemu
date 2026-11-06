@@ -1216,3 +1216,19 @@ decode bytes to the second photo. Raw LCD background checks retain forward-row
 and reversed-row results; physical panel orientation and UI are unverified.
 Exported JPGs stay private, and the owned card clone and intermediate pixel
 files are removed after verification.
+
+`tools/audio_task_probe.py` runs the C1.70 synchronous audio configure, start
+and stop interfaces on an original task stack after full startup. It supplies
+two 16-byte buffers through a temporary resource-8 diagnostic callback; the
+firmware performs queue dispatch, event waits, DMA binding and refill. Pass
+`--qemu`, `--master`, `--slave`, `--controller`, `--sd-card`, `--destination`,
+and `--wsl` when launching the Linux build from Windows. `--channel 0` is the
+default; `--channel 1 --loop` checks repeated circular submission.
+
+The finite profile requires both buffers to drain and the final word to reach
+the monitor. The loop profile observes producer indices `0,1,0,1,0,1`; both
+profiles require successful requests, explicit output disable, restored native
+task stack, zero four-core fault fields and an unchanged source card. A stopped
+loop may retain queued words. The probe restores its callback and scratch memory
+after return, tears down its owned VM and store, and retains only the requested
+JSON report. It does not verify file playback, physical PCM or host sound.

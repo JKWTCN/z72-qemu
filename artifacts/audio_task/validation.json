@@ -1,0 +1,583 @@
+{
+  "probe": "tools/audio_task_probe.py",
+  "profiles": [
+    {
+      "passed": true,
+      "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scope": "Diagnostic caller on a native task; original queue, event and DMA execution. No file playback or host sound.",
+      "boot_status": {
+        "phase": "running",
+        "error": null,
+        "ready": true,
+        "menu_inhibited": false,
+        "uptime": 30,
+        "firmware": {
+          "source": "stock",
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "length": 38239098,
+          "version": "Ver.01.70.02",
+          "installed_at": "",
+          "note": "",
+          "store_error": null
+        },
+        "staged": null,
+        "update_ready": false,
+        "update_installed": false,
+        "execution": "running",
+        "index": 3,
+        "held": [],
+        "mode_position": 0,
+        "dial_pending": [
+          false,
+          false
+        ],
+        "booted_version": "Ver.01.70.02",
+        "auto_menu": "off",
+        "input_ready": true
+      },
+      "channel": 0,
+      "looping": false,
+      "events": [
+        {
+          "stage": "entry",
+          "pc": "0x13f01000",
+          "thread": 1,
+          "sp": "0xb5302fe8",
+          "result": 1107755009,
+          "buffer": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xb1805ba8",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x200",
+            "0x0",
+            "0x2000000",
+            "0x43030000",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        },
+        {
+          "stage": "configured",
+          "pc": "0x13f01026",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x4",
+            "0xb1805ba8",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x200",
+            "0x0",
+            "0x2000000",
+            "0x43030000",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        },
+        {
+          "stage": "started",
+          "pc": "0x13f0103c",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x4",
+            "0xb1805ba8",
+            "0x2c080104",
+            "0x0",
+            "0x2",
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45002000",
+            "0xe880000",
+            "0xe2000000",
+            "0xc3030000",
+            "0xf",
+            "0x6",
+            "0x6666"
+          ]
+        },
+        {
+          "stage": "observed",
+          "pc": "0x13f01044",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x4",
+            "0xb1805ba8",
+            "0x2c080104",
+            "0x0",
+            "0x2",
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45002200",
+            "0xe880000",
+            "0xe2020000",
+            "0xc3030000",
+            "0x0",
+            "0x8",
+            "0x8888"
+          ]
+        },
+        {
+          "stage": "stopped",
+          "pc": "0x13f0104e",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x4",
+            "0xb1805ba8",
+            "0x2c080104",
+            "0x0",
+            "0x2",
+            "0x1",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45000200",
+            "0xe880000",
+            "0xc2020000",
+            "0x43030000",
+            "0x0",
+            "0x8",
+            "0x8888"
+          ]
+        },
+        {
+          "stage": "return",
+          "pc": "0x103885d2",
+          "thread": 1,
+          "sp": "0xb5302fe8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x0",
+            "0x4",
+            "0xb1805ba8",
+            "0x2c080104",
+            "0x0",
+            "0x2",
+            "0x1",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45000200",
+            "0xe880000",
+            "0xc2020000",
+            "0x43030000",
+            "0x0",
+            "0x8",
+            "0x8888"
+          ]
+        }
+      ],
+      "producer_entries": [
+        0,
+        1
+      ],
+      "caller_sha256": "362ac8e8e31092a3149b42a36dc75a4c11a5acf30d75757e305675adaaa09cde",
+      "source_words": [
+        "0x11110001",
+        "0x22220002",
+        "0x33330003",
+        "0x44440004",
+        "0x55550005",
+        "0x66660006",
+        "0x77770007",
+        "0x88880008"
+      ],
+      "caller_returned": true,
+      "cores": [
+        {
+          "thread": 1,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "diagnostic_restored": true,
+      "source_card_unchanged": true
+    },
+    {
+      "passed": true,
+      "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+      "scope": "Diagnostic caller on a native task; original queue, event and DMA execution. No file playback or host sound.",
+      "boot_status": {
+        "phase": "running",
+        "error": null,
+        "ready": true,
+        "menu_inhibited": false,
+        "uptime": 31,
+        "firmware": {
+          "source": "stock",
+          "sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+          "length": 38239098,
+          "version": "Ver.01.70.02",
+          "installed_at": "",
+          "note": "",
+          "store_error": null
+        },
+        "staged": null,
+        "update_ready": false,
+        "update_installed": false,
+        "execution": "running",
+        "index": 3,
+        "held": [],
+        "mode_position": 0,
+        "dial_pending": [
+          false,
+          false
+        ],
+        "booted_version": "Ver.01.70.02",
+        "auto_menu": "off",
+        "input_ready": true
+      },
+      "channel": 1,
+      "looping": true,
+      "events": [
+        {
+          "stage": "entry",
+          "pc": "0x13f01000",
+          "thread": 1,
+          "sp": "0xb5302fe8",
+          "result": 1107755009,
+          "buffer": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xb1805bdc",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x200",
+            "0x0",
+            "0x2000000",
+            "0x43030000",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        },
+        {
+          "stage": "configured",
+          "pc": "0x13f01026",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x1",
+            "0x4",
+            "0xb1805bdc",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x200",
+            "0x0",
+            "0x2000000",
+            "0x43030000",
+            "0x0",
+            "0x0",
+            "0x0"
+          ]
+        },
+        {
+          "stage": "started",
+          "pc": "0x13f0103c",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x1",
+            "0x4",
+            "0xb1805bdc",
+            "0x2c080204",
+            "0x0",
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45002000",
+            "0xe880000",
+            "0xe0000000",
+            "0xc3030000",
+            "0x3ffffff",
+            "0x5",
+            "0x5555"
+          ]
+        },
+        {
+          "stage": "observed",
+          "pc": "0x13f01044",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x1",
+            "0x4",
+            "0xb1805bdc",
+            "0x2c080204",
+            "0x0",
+            "0x1",
+            "0x1",
+            "0x0",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45002000",
+            "0xe880000",
+            "0xe0000000",
+            "0xc3030000",
+            "0x3ffffff",
+            "0x5",
+            "0x5555"
+          ]
+        },
+        {
+          "stage": "stopped",
+          "pc": "0x13f0104e",
+          "thread": 1,
+          "sp": "0xb5302fc8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x1",
+            "0x4",
+            "0xb1805bdc",
+            "0x2c080204",
+            "0x0",
+            "0x1",
+            "0x1",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45000000",
+            "0xe880000",
+            "0xc0000000",
+            "0x43030000",
+            "0x3ffffff",
+            "0x6",
+            "0x6666"
+          ]
+        },
+        {
+          "stage": "return",
+          "pc": "0x103885d2",
+          "thread": 1,
+          "sp": "0xb5302fe8",
+          "result": 0,
+          "buffer": [
+            "0xb5f00000",
+            "0x10",
+            "0x2",
+            "0x0",
+            "0x1",
+            "0x4",
+            "0xb1805bdc",
+            "0x2c080204",
+            "0x0",
+            "0x1",
+            "0x1",
+            "0x1",
+            "0x0",
+            "0x0"
+          ],
+          "audio": [
+            "0x45000000",
+            "0xe880000",
+            "0xc0000000",
+            "0x43030000",
+            "0x3ffffff",
+            "0x6",
+            "0x6666"
+          ]
+        }
+      ],
+      "producer_entries": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "caller_sha256": "74a0d8f1a6db526cdd640d5c2053fa4d8df98b5267e91f1d0ada4e39d6c949cb",
+      "source_words": [
+        "0x11110001",
+        "0x22220002",
+        "0x33330003",
+        "0x44440004",
+        "0x55550005",
+        "0x66660006",
+        "0x77770007",
+        "0x88880008"
+      ],
+      "caller_returned": true,
+      "cores": [
+        {
+          "thread": 1,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 2,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 3,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        },
+        {
+          "thread": 4,
+          "faults": {
+            "DFAR_S": "0x0",
+            "IFAR_S": "0x0",
+            "DFSR_S": "0x0",
+            "IFSR_S": "0x0"
+          }
+        }
+      ],
+      "diagnostic_restored": true,
+      "source_card_unchanged": true
+    }
+  ]
+}
