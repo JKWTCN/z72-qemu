@@ -14,7 +14,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.qemu_display import Remote
-from tools.smp_boot_probe import reach
+from tools.smp_boot_probe import reach, stop_registers
 from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, Machine
 
 OUTPUT_BASE = 0x20140000
@@ -78,6 +78,12 @@ def snapshot(machine):
                 result['eye_detected'] = machine.eye_detected
                 result['eye_property'] = machine._words(EYE_STATE_C170, 1)[0]
                 result['shooting_output_selection'] = machine._words(0xb181b484, 1)[0]
+                context = machine._words(0xb180854c + 0x34, 1)[0]
+                if 0xb0000000 <= context < 0xe0000000 - 0x518:
+                    route = machine._bytes(context + 0x510, 3)
+                    result['display_task'] = dict(
+                        context=hex(context), route_fields=list(route),
+                        callback=hex(machine._words(context + 0x514, 1)[0]))
                 request = machine._words(0xb1fa6dd8, 5)
                 result['shooting_output_request'] = dict(selection=request[0], flags=request[1],
                                                          callback=hex(request[2]), status=request[3],
@@ -85,6 +91,59 @@ def snapshot(machine):
             return result
         finally:
             machine.qmp.command('cont')
+
+
+def trace_output_delivery(remote, request, descriptor):
+    """Observe delivery and the matching request callback in either order."""
+    returned, wait_done, callback = 0x1057bc1c, 0x1057bc54, 0x10631758
+    pending = set()
+    result = {}
+    try:
+        for pc in (returned, wait_done, callback):
+            remote.breakpoint(pc)
+            pending.add(pc)
+        deadline = time.monotonic() + 10
+        while pending:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            remote.sock.settimeout(remaining)
+            try:
+                packet = remote.command('vCont;c')
+            except TimeoutError:
+                remote.sock.settimeout(10)
+                remote.interrupt()
+                break
+            remote.sock.settimeout(10)
+            _, regs = stop_registers(remote, packet)
+            pc = remote.get(regs, 'pc')
+            if pc not in pending:
+                raise RuntimeError(f'Unexpected output observation at {pc:#x}')
+            matches = remote.get(regs, 'r1' if pc == callback else 'r4') == request
+            if matches:
+                if pc == returned:
+                    message = remote.get(regs, 'r0')
+                    result['message'] = hex(message)
+                    if message:
+                        result['event_id'] = hex(int.from_bytes(remote.read(message + 16, 4), 'little'))
+                elif pc == wait_done:
+                    result['wait_bits'] = hex(int.from_bytes(remote.read(descriptor + 40, 4), 'little'))
+                    result['handler_result'] = int.from_bytes(remote.read(descriptor + 32, 4), 'little')
+                else:
+                    result['callback_event'] = hex(remote.get(regs, 'r0'))
+                    result['callback_fields'] = [int.from_bytes(remote.read(request + n, 4), 'little')
+                                                 for n in (12, 16)]
+                pending.remove(pc)
+            remote.breakpoint(pc, False)
+            if not matches:
+                remote.command('s')
+                remote.breakpoint(pc)
+        result['unobserved'] = [hex(pc) for pc in sorted(pending)]
+        return result
+    finally:
+        remote.sock.settimeout(10)
+        for pc in pending:
+            remote.breakpoint(pc, False)
 
 
 def drive_and_trace_eye(machine, detected):
@@ -117,6 +176,8 @@ def drive_and_trace_eye(machine, detected):
                         argument=remote.get(regs, 'r1'), count=remote.get(regs, 'r2'),
                         channel=remote.read(descriptor, 1)[0],
                         request=hex(remote.get(regs, 'r4')))
+                    query['output_submit']['delivery'] = trace_output_delivery(
+                        remote, remote.get(regs, 'r4'), descriptor)
             return query
         finally:
             if remote is not None:
