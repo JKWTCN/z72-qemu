@@ -1,0 +1,21 @@
+{
+  "isr": "0x1036d686",
+  "before": {
+    "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "status_before": 2,
+    "status_after": 0,
+    "bus_after": 256,
+    "callback_reached": false,
+    "callback_status": null,
+    "scope": "Original ISR invoked directly after real held 16-byte TX; descriptor and callback breakpoint supplied by harness. No RTOS waiter or GIC dispatch."
+  },
+  "after": {
+    "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+    "status_before": 3,
+    "status_after": 0,
+    "bus_after": 256,
+    "callback_reached": true,
+    "callback_status": 3,
+    "scope": "Original ISR invoked directly after real held 16-byte TX; descriptor and callback breakpoint supplied by harness. No RTOS waiter or GIC dispatch."
+  }
+}

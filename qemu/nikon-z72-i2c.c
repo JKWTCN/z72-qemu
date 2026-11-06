@@ -60,7 +60,6 @@ static void complete(void *opaque)
         p->regs[4] |= (count ? 2 : 0) |
                       (count == DEPTH && (p->regs[0] & 0x10) ? 0 : 1);
     } else {
-        bool full = p->tx_count == DEPTH;
         for (unsigned i = 0; i < p->tx_count; i++) {
             if (i2c_send(p->bus, p->tx[i])) {
                 p->regs[4] |= 4;
@@ -72,7 +71,9 @@ static void complete(void *opaque)
             }
         }
         p->tx_count = 0;
-        p->regs[4] |= full && (p->regs[0] & 0x10) ? 2 : 3;
+        /* A drained TX batch is complete even under HOLD. The original ISR
+         * uses COMP to wake the waiter; HOLD independently retains the peer. */
+        p->regs[4] |= 3;
     }
     p->active = false;
     if (!(p->regs[0] & 0x10)) {

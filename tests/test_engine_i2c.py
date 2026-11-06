@@ -66,12 +66,18 @@ def check(qemu):
                     access(bus + 12, value)
                 access(bus, 0x3a)
                 access(bus + 8, 0x68)
+                require(not access(bus + 16, read=True) & 1,
+                        'Held write completed before its scheduled bytes')
                 advance()
-                require(access(bus + 16, read=True) == 2,
-                        'Full held FIFO reported premature transfer completion')
-                access(bus + 16, 2)
+                require(access(bus + 16, read=True) == 3,
+                        'Accepted full held TX batch did not report completion')
+                require(access(bus + 4, read=True) == 0x100,
+                        'TX batch completion released HOLD')
+                access(bus + 16, 3)
                 for value in range(16, 25):
                     access(bus + 12, value)
+                require(not access(bus + 16, read=True) & 1,
+                        'New TX batch inherited a completed batch status')
                 access(bus, 0x2a)
                 advance()
                 require(access(bus + 16, read=True) == 3,
