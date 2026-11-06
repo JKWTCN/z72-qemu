@@ -1,0 +1,61 @@
+{
+  "scope": "Original output initializer and its original configuration/submission callees execute end-to-end for both channels; fixture supplies bound DMA resources and two buffers. Only first-buffer submission and drain are verified, not task dispatch or automatic refill.",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "results": [
+    {
+      "channel": 0,
+      "return_code": 0,
+      "next_buffer": 1,
+      "control": "0x45002200",
+      "mode": "0xe880000",
+      "status": "0xe2000000",
+      "callback": "0x102deb99",
+      "dma_status": 5,
+      "dma_destination": "0x2c080104",
+      "monitor": [
+        4,
+        17476
+      ],
+      "occupancy": 0
+    },
+    {
+      "channel": 1,
+      "return_code": 0,
+      "next_buffer": 1,
+      "control": "0x45002200",
+      "mode": "0xe880000",
+      "status": "0xe2000000",
+      "callback": "0x102deb75",
+      "dma_status": 5,
+      "dma_destination": "0x2c080204",
+      "monitor": [
+        4,
+        17476
+      ],
+      "occupancy": 0
+    }
+  ],
+  "windows": [
+    {
+      "start": "0x102deaa6",
+      "end": "0x102deb2a",
+      "sha256": "b31ecfcf4cc1dd20409b97506571159078d8c88484a024dba107098b6b8af6ce"
+    },
+    {
+      "start": "0x102debaa",
+      "end": "0x102decb8",
+      "sha256": "c66fe53eed75acac60f30fc3c7417e749eb7cb6c8b38b1cd613708e611af4eaa"
+    },
+    {
+      "start": "0x1036e542",
+      "end": "0x1036e5cc",
+      "sha256": "63b2377885b7e5cc61460c099823ebf0169bb3c03cfeaece401a0551998af6cc"
+    }
+  ],
+  "assumptions": [
+    "Descriptors, buffer state, already-bound resource flag and DMA object pointers supplied in RAM.",
+    "DMA global enable and nominal audio clock enabled by harness.",
+    "CPU IRQs masked; project-authored polling waits for real DMA completion and FIFO drain.",
+    "Opaque data words; no physical PCM interpretation or host sound."
+  ]
+}
