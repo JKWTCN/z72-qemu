@@ -308,5 +308,118 @@
         "error": null
       }
     ]
+  },
+  "mode_event_comparison": {
+    "seconds_per_window": 6,
+    "maximum_windows_per_stage": 15,
+    "settle_seconds": 0,
+    "resource_header": true,
+    "sync_pulse_requested": true,
+    "counter_frequency": 48000000,
+    "runs": [
+      {
+        "package": "Z7_2_0101.bin",
+        "event_entry": "0x10245cb6",
+        "notification_site": "0x10245d6c",
+        "events": [],
+        "mode_calls": [
+          {
+            "pc": "0x1020d320",
+            "r1": 0,
+            "r2": 0,
+            "r3": 0,
+            "caller_return": "0x1020d48c",
+            "counter_ticks": 452917,
+            "kind": "select",
+            "current": 255
+          },
+          {
+            "pc": "0x1020d320",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x1024697a",
+            "counter_ticks": 43562641,
+            "kind": "select",
+            "current": 0
+          }
+        ],
+        "last_stage": "baseline",
+        "last_counter_ticks": 128019083,
+        "error": "baseline did not reach the expected state"
+      },
+      {
+        "package": "Z7_2_0170.bin",
+        "event_entry": "0x10246ee6",
+        "notification_site": "0x10246f9c",
+        "events": [
+          {
+            "pc": "0x10246ee6",
+            "r1": 3038666568,
+            "r2": 270823143,
+            "r3": 2,
+            "caller_return": "0x10204c6c",
+            "counter_ticks": 44413989,
+            "kind": "event",
+            "event_bytes": "0101"
+          },
+          {
+            "pc": "0x10246f9c",
+            "r1": 8,
+            "r2": 1,
+            "r3": 0,
+            "caller_return": "0x102a71e0",
+            "counter_ticks": 44413992,
+            "kind": "notify",
+            "callback": "0x10204bdb"
+          }
+        ],
+        "mode_calls": [
+          {
+            "pc": "0x1020d384",
+            "r1": 0,
+            "r2": 0,
+            "r3": 0,
+            "caller_return": "0x1020d4f0",
+            "counter_ticks": 456200,
+            "kind": "select",
+            "current": 255
+          },
+          {
+            "pc": "0x1020d384",
+            "r1": 1,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10247bfe",
+            "counter_ticks": 44413951,
+            "kind": "select",
+            "current": 0
+          },
+          {
+            "pc": "0x1020d384",
+            "r1": 2,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10246fa0",
+            "counter_ticks": 44414009,
+            "kind": "select",
+            "current": 1
+          },
+          {
+            "pc": "0x1020d384",
+            "r1": 4,
+            "r2": 0,
+            "r3": 1,
+            "caller_return": "0x10247e16",
+            "counter_ticks": 55978659,
+            "kind": "select",
+            "current": 2
+          }
+        ],
+        "last_stage": "menu-start",
+        "last_counter_ticks": 179090437,
+        "error": "menu-start did not reach the expected state"
+      }
+    ]
   }
 }

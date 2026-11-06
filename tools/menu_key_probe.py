@@ -66,6 +66,20 @@ def historical_mode(remote, layout):
                 deferred_target_mode=transition[20] if flags & 4 else None)
 
 
+def mode_event_sites(master):
+    entry = bytes.fromhex('70b50446006800260d463146d0f890209047')
+    setup = bytes.fromhex('2068002307220a21')
+    require(master.count(entry) == 1, 'Expected one mode event handler')
+    start = master.index(entry)
+    body = master[start:start + 0xc0]
+    require(body.count(setup) == 1, 'Expected one shared mode notification call')
+    site = body.index(setup) + len(setup)
+    first, second, resume = struct.unpack_from('<3H', body, site)
+    require(first & 0xf800 == 0xf000 and second & 0xd000 == 0xd000 and resume == 0xe7d5,
+            'Unexpected mode notification call or return path')
+    return BASE + start, BASE + start + site
+
+
 def linux(path):
     text = str(path)
     return re.sub(r'([A-Za-z]):[\\/][^,]*',
@@ -199,7 +213,9 @@ def run(args):
             gpios.sort(key=lambda item: int(re.search(r'\d+', item)[0]))
             if trace_modes:
                 report['mode_calls'] = []
-                for pc in layout[2:]:
+                event_entry, notify = mode_event_sites(master)
+                report['mode_events'] = []
+                for pc in (*layout[2:], event_entry, notify):
                     remote.breakpoint(pc)
             if args.sync_pulse:
                 configs = re.findall(
@@ -227,14 +243,23 @@ def run(args):
                     remote.sock.settimeout(10)
                     thread, registers = stop_registers(remote, response)
                     pc = remote.get(registers, 'pc')
-                    if trace_modes and pc in layout[2:]:
+                    if trace_modes and pc in (*layout[2:], event_entry, notify):
                         require(thread in (1, 2), 'Mode call stopped outside master')
                         ctx, r1, r2, r3 = (remote.get(registers, f'r{i}') for i in range(4))
-                        report['mode_calls'].append(dict(
-                            kind='select' if pc == layout[2] else 'defer', pc=hex(pc),
-                            current=remote.read(ctx + 0x158, 1)[0], r1=r1, r2=r2, r3=r3,
-                            caller_return=hex(remote.get(registers, 'lr') & ~1),
-                            counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little')))
+                        call = dict(pc=hex(pc), r1=r1, r2=r2, r3=r3,
+                                    caller_return=hex(remote.get(registers, 'lr') & ~1),
+                                    counter_ticks=int.from_bytes(remote.read(0x04266008, 8), 'little'))
+                        if pc in layout[2:]:
+                            call.update(kind='select' if pc == layout[2] else 'defer',
+                                        current=remote.read(ctx + 0x158, 1)[0])
+                            report['mode_calls'].append(call)
+                        else:
+                            call['kind'] = 'event' if pc == event_entry else 'notify'
+                            if pc == event_entry:
+                                call['event_bytes'] = remote.read(r1, 2).hex()
+                            else:
+                                call['callback'] = hex(int.from_bytes(remote.read(ctx + 0x88, 4), 'little'))
+                            report['mode_events'].append(call)
                         remote.breakpoint(pc, False)
                         stop_registers(remote, remote.command(f'vCont;s:{thread:x}'))
                         remote.breakpoint(pc)
@@ -397,7 +422,7 @@ def main():
     parser.add_argument('--resource-header', action='store_true',
                         help='Load an experimental group-32 header with a zero resource body')
     parser.add_argument('--trace-modes', action='store_true',
-                        help='Record mode selection and deferred-request calls as the master executes them')
+                        help='Record master mode events, notifications, selections and deferred requests')
     parser.add_argument('--sync-pulse', action='store_true',
                         help='Supply one external synchronization pulse at the original wait')
     arguments = parser.parse_args()
