@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import BASE, require
 from tools.boot_probe import reset_machine
 from tools.smp_boot_probe import reach
+from tools.web_console import QmpClient, free_port
 
 
 def check(qemu):
@@ -77,11 +78,21 @@ def check(qemu):
 
 
 def check_proximity(qemu):
+    with tempfile.TemporaryDirectory() as folder:
+        disk = Path(folder) / 'scratch.raw'
+        disk.write_bytes(bytes(512))
+        check_proximity_state(qemu, disk)
+
+
+def check_proximity_state(qemu, disk):
     bus = 0x2c01a000
-    with subprocess.Popen([qemu, '-M', 'nikon-z72-lab', '-accel', 'qtest',
-                           '-monitor', 'none', '-serial', 'none', '-display', 'none',
+    port = free_port()
+    with subprocess.Popen([qemu, '-M', 'nikon-z72-slave-lab', '-accel', 'qtest',
+                           '-drive', f'if=none,id=scratch,file={disk},format=raw,snapshot=on',
+                           '-qmp', f'tcp:127.0.0.1:{port},server=on,wait=off',
+                           '-serial', 'none', '-display', 'none',
                            '-qtest', 'stdio', '-qtest-log', '/dev/null', '-device',
-                           'nikon-z72-eye,bus=master-i2c2,address=56,proximity=2748'],
+                           'nikon-z72-eye,bus=slave-i2c2,address=56,proximity=2748'],
                           stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as process:
         def command(line):
             process.stdin.write(line + '\n')
@@ -90,13 +101,14 @@ def check_proximity(qemu):
             require(reply and reply[0] == 'OK', f'Failed qtest command {line}: {reply}')
             return int(reply[1], 0) if len(reply) > 1 else None
 
-        def transfer(payload=(), count=0):
+        def transfer(payload=(), count=0, hold=False):
             command(f'writel {bus} {0x63 if count else 0x62}')
             for byte in payload:
                 command(f'writel {bus + 12} {byte}')
             if count:
                 command(f'writel {bus + 20} {count}')
-            command(f'writel {bus} {0x2b if count else 0x2a}')
+            control = 0x2b if count else 0x2a
+            command(f'writel {bus} {control | (0x10 if hold else 0)}')
             command(f'writel {bus + 8} 0x38')
             command('clock_step 1000')
             require(command(f'readl {bus + 16}') == 3, 'Eye transaction did not complete')
@@ -119,9 +131,34 @@ def check_proximity(qemu):
             transfer((0x41, 0x01))
             command('clock_step 10000000')
             require(sample() == [0] * 6, 'Standby kept an interrupted conversion')
+            monitor = QmpClient(port)
+            try:
+                def snapshot(action):
+                    reply = monitor.command('human-monitor-command', {'command-line': action})
+                    require(not reply, f'{action}: {reply}')
+
+                transfer((0x41, 0x41))
+                command('clock_step 6000000')
+                transfer((0x53,), hold=True)
+                command(f'writel {bus + 16} 3')
+                command(f'writel {bus + 12} 0xa5')
+                require(command(f'readl {bus + 20}') == 1, 'Write already left the TX FIFO')
+                snapshot('savevm eye')
+                transfer((0x40, 0x80))
+                snapshot('loadvm eye')
+                require(command(f'readl {bus + 4}') & 0x100, 'Restored controller lost its held peer')
+                command('clock_step 1000')
+                require(command(f'readl {bus + 16}') == 3, 'Restored I2C transfer did not complete')
+                transfer((0x53,))
+                require(transfer(count=1) == [0xa5], 'Restored byte did not reach the selected register')
+                require(sample()[:2] == [0, 0], 'Pending sample was published early')
+                command('clock_step 4100000')
+                require(sample()[:2] == [0xbc, 0x0a], 'Restored conversion lost its deadline')
+            finally:
+                monitor.close()
         finally:
             process.terminate()
-    print('PASS eye proximity: conversion deadline, standby, ALS isolation and reset')
+    print('PASS eye proximity: conversion deadline, standby, ALS isolation, reset and state restore')
 
 
 if __name__ == '__main__':

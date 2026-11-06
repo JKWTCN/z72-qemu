@@ -5,6 +5,7 @@
 #include "hw/qdev-properties.h"
 #include "hw/resettable.h"
 #include "hw/i2c/i2c.h"
+#include "migration/vmstate.h"
 #include "qemu/timer.h"
 
 #define TYPE_Z72_I2C "nikon-z72-i2c"
@@ -17,7 +18,7 @@ typedef struct Z72I2CPort {
     unsigned index;
     uint32_t regs[12];
     uint8_t tx[DEPTH], rx[DEPTH];
-    unsigned tx_count, rx_count, rx_head;
+    uint32_t tx_count, rx_count, rx_head;
     bool active, bus_active;
     I2CBus *bus;
     QEMUTimer *timer;
@@ -244,10 +245,52 @@ static const Property i2c_properties[] = {
     DEFINE_PROP_STRING("bus-name", Z72I2C, bus_name),
 };
 
+static int port_post_load(void *opaque, int version)
+{
+    Z72I2CPort *p = opaque;
+
+    if (p->tx_count > DEPTH || p->rx_count > DEPTH || p->rx_head >= DEPTH ||
+        (p->active && !p->bus_active) || p->active != timer_pending(p->timer)) {
+        return -EINVAL;
+    }
+    update_irq(p);
+    return 0;
+}
+
+static const VMStateDescription port_state = {
+    .name = "nikon-z72-i2c-port",
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .post_load = port_post_load,
+    .fields = (const VMStateField[]) {
+        VMSTATE_UINT32_ARRAY(regs, Z72I2CPort, 12),
+        VMSTATE_UINT8_ARRAY(tx, Z72I2CPort, DEPTH),
+        VMSTATE_UINT8_ARRAY(rx, Z72I2CPort, DEPTH),
+        VMSTATE_UINT32(tx_count, Z72I2CPort),
+        VMSTATE_UINT32(rx_count, Z72I2CPort),
+        VMSTATE_UINT32(rx_head, Z72I2CPort),
+        VMSTATE_BOOL(active, Z72I2CPort),
+        VMSTATE_BOOL(bus_active, Z72I2CPort),
+        VMSTATE_TIMER_PTR(timer, Z72I2CPort),
+        VMSTATE_END_OF_LIST()
+    }
+};
+
+static const VMStateDescription i2c_state = {
+    .name = TYPE_Z72_I2C,
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .fields = (const VMStateField[]) {
+        VMSTATE_STRUCT_ARRAY(port, Z72I2C, PORTS, 0, port_state, Z72I2CPort),
+        VMSTATE_END_OF_LIST()
+    }
+};
+
 static void i2c_class_init(ObjectClass *klass, const void *data)
 {
     DeviceClass *dc = DEVICE_CLASS(klass);
     dc->realize = i2c_realize;
+    dc->vmsd = &i2c_state;
     device_class_set_props(dc, i2c_properties);
     RESETTABLE_CLASS(klass)->phases.hold = i2c_reset;
 }

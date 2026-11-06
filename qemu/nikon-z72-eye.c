@@ -4,6 +4,7 @@
 #include "hw/i2c/i2c.h"
 #include "hw/resettable.h"
 #include "hw/qdev-properties.h"
+#include "migration/vmstate.h"
 #include "qapi/error.h"
 #include "qemu/module.h"
 #include "qemu/timer.h"
@@ -14,7 +15,7 @@ OBJECT_DECLARE_SIMPLE_TYPE(Z72Eye, Z72_EYE)
 struct Z72Eye {
     I2CSlave parent_obj;
     uint8_t regs[0x15];
-    unsigned pointer;
+    uint8_t pointer;
     bool command;
     uint32_t proximity;
     QEMUTimer *ps_timer;
@@ -156,6 +157,21 @@ static const Property eye_properties[] = {
     DEFINE_PROP_UINT32("proximity", Z72Eye, proximity, 0),
 };
 
+static const VMStateDescription eye_vmstate = {
+    .name = TYPE_Z72_EYE,
+    .version_id = 1,
+    .minimum_version_id = 1,
+    .fields = (const VMStateField[]) {
+        VMSTATE_UINT32_EQUAL(proximity, Z72Eye, "Eye proximity input differs"),
+        VMSTATE_I2C_SLAVE(parent_obj, Z72Eye),
+        VMSTATE_UINT8_ARRAY(regs, Z72Eye, 0x15),
+        VMSTATE_UINT8(pointer, Z72Eye),
+        VMSTATE_BOOL(command, Z72Eye),
+        VMSTATE_TIMER_PTR(ps_timer, Z72Eye),
+        VMSTATE_END_OF_LIST()
+    },
+};
+
 static void eye_class_init(ObjectClass *klass, const void *data)
 {
     I2CSlaveClass *ic = I2C_SLAVE_CLASS(klass);
@@ -164,6 +180,7 @@ static void eye_class_init(ObjectClass *klass, const void *data)
     ic->recv = eye_recv;
     DEVICE_CLASS(klass)->desc = "Eye sensor with fixed raw proximity input";
     DEVICE_CLASS(klass)->realize = eye_realize;
+    DEVICE_CLASS(klass)->vmsd = &eye_vmstate;
     device_class_set_props(DEVICE_CLASS(klass), eye_properties);
     RESETTABLE_CLASS(klass)->phases.hold = eye_reset;
 }
