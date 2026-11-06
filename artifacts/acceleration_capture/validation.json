@@ -37,5 +37,16 @@
     "cal": "b1b7291ecfed3ab8eaf4e6af0d9df77b9668b6265aea8c0dff3248b576144620",
     "scene": "e492d8513d497b36da8495fe89ec7b3a45a665bd4f3890b891108bcdfed4162c"
   },
-  "explicit_preprocessing_skip": true
+  "explicit_preprocessing_skip": true,
+  "maker_note_comparison": {
+    "differing_file_bytes": 285,
+    "all_differences_in_nikon_tag": "0x0091",
+    "shot_info_version": "0803",
+    "decoder": "ExifTool 13.61",
+    "orientation_info_xyz_offsets": [12, 44, 76],
+    "samples_per_axis": 16,
+    "encoding": "little-endian signed 16-bit",
+    "all_samples_match_respective_capture_axes": true,
+    "roll_pitch_yaw_degrees_in_both_files": [0, 0, 0]
+  }
 }

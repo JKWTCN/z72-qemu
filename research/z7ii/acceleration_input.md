@@ -79,6 +79,19 @@ EXIF IFD0 方向标签（`0x0112`）均为 1，完整解码的 RGB 像素散列�
 和 JPEG 标签写入之间的调用关系仍待确认。
 [两次拍摄的输入和输出校验值](../../artifacts/acceleration_capture/validation.json)
 
+两张成片的 285 个不同字节都在 Nikon MakerNote 的 `0x0091`
+（ShotInfo 0803）内。解码后的 OrientationInfo 从偏移 `0x0c`、
+`0x2c`、`0x4c` 起各有 16 个小端有符号半字，对应 X、Y、Z。
+两张照片的 16 组数值分别全部等于各自的原始输入；两张照片的
+RollAngle、PitchAngle、YawAngle 字段均为零。这些固定样本验证了
+原始轴值从控制台到成片的数据路径，采样间隔和历史顺序尚待验证。
+
+安装 ExifTool 后，可用以下命令从一张成片读出标准方向值和 16 组原始轴值：
+
+```text
+python tools/read_capture_acceleration.py DSC_0003.JPG
+```
+
 ### 复测原厂读取函数
 
 可以用本地 1.70 主固件复测读取函数：
