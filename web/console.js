@@ -116,6 +116,7 @@ document.querySelectorAll('[data-dial]').forEach(button => {
 $('mode-position').onchange = () => {
   if (available) send('/mode', {position: Number($('mode-position').value)});
 };
+$('eye-detected').onchange = () => send('/eye', {detected: $('eye-detected').checked});
 const acceleration = $('acceleration');
 const axisInputs = [...acceleration.querySelectorAll('input')];
 acceleration.onsubmit = event => {
@@ -372,6 +373,11 @@ async function status() {
     running = state.phase === 'running' && state.execution === 'running';
     available = running && state.input_ready === true;
     restarting = state.phase === 'starting';
+    $('eye-control').hidden = typeof state.eye_detected !== 'boolean';
+    $('eye-detected').disabled = !running;
+    $('eye-detected').checked = state.eye_detected === true;
+    $('eye-reading').hidden = typeof state.eye_reported !== 'boolean';
+    $('eye-reported').textContent = state.eye_reported ? '靠近' : '移开';
     paintAcceleration(state.acceleration_sample);
     $('auto-menu').checked = state.auto_menu !== 'off';
     $('auto-menu').disabled = restarting;

@@ -34,6 +34,7 @@ from tools.lcd_preview import lcd_rgb
 
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
+EYE_STATE_C170 = 0xb23dca78
 MENU_PIN = 9
 SHUTTER_HALF = 24
 SHUTTER_FULL = 25
@@ -1041,6 +1042,12 @@ class Machine:
             state['booted_version'] = b''.join(word.to_bytes(4, 'little')
                                                for word in record).decode('ascii',
                                                                           'replace')
+            if self.eye_attached:
+                state['eye_detected'] = self.eye_detected
+                if state['ready'] and state['booted_version'] == 'Ver.01.70.02':
+                    value = self._words(EYE_STATE_C170, 1)[0]
+                    if value in (0, 1):
+                        state['eye_reported'] = bool(value)
             self.app_index = state['index']
             state['auto_menu'] = ('off' if not self.auto_menu else
                                   'pressed' if self.auto_menu_done else 'armed')

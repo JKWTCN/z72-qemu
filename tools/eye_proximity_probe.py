@@ -9,7 +9,7 @@ import tempfile
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analyze.decode_z72 import require
 from tools.smp_boot_probe import reach
-from tools.web_console import LIVE_VIEW_OPTIONS, Machine
+from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, Machine
 
 
 class BootProbe(Machine):
@@ -38,7 +38,16 @@ class BootProbe(Machine):
             _, regs = reach(remote, 0x103c488e)
             require(remote.get(regs, 'r0') == 0x43190001 and remote.get(regs, 'r1') == 1 - level,
                     f'Unexpected upper eye notification for GPIO level {level}')
+            _, regs = reach(remote, 0x10350ef4)
+            require(remote.get(regs, 'r0') == 1 - level, 'Eye subscriber received the wrong level')
+            _, regs = reach(remote, 0x102c9b22)
+            require(remote.get(regs, 'r0') == 0x40000116, 'Unexpected eye state property')
+            _, regs = reach(remote, 0x102c9b38)
+            address = remote.get(regs, 'r0')
             reach(remote, 0x103c48b4)
+            require(remote.read(address, 4) == struct.pack('<I', 1 - level),
+                    'Firmware did not store the detected eye state')
+            require(address == EYE_STATE_C170, 'Console eye state address differs from the firmware')
 
         check_event(1)
         reach(remote, 0x103ffc92)

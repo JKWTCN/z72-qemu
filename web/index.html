@@ -74,6 +74,10 @@
         </div>
         <p class="hint">按键可用后轻按 MENU 打开菜单，EXIT（输入 0）返回拍摄画面，随后可再次打开菜单。方向键移动高亮；画面按模拟时钟刷新，慢时钟下图标会逐个出现。</p>
         <button id="release" class="secondary" disabled>释放全部按键 <kbd>Esc</kbd></button>
+        <div id="eye-control" hidden>
+          <label class="toggle"><input id="eye-detected" type="checkbox" disabled>模拟眼睛靠近取景器</label>
+          <p class="hint" id="eye-reading" hidden>固件检测状态 · <output id="eye-reported"></output></p>
+        </div>
         <form id="acceleration" hidden>
           <fieldset disabled>
             <legend>加速度原始输入</legend>
