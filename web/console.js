@@ -356,7 +356,11 @@ async function lcd() {
     if (lcdUrl) URL.revokeObjectURL(lcdUrl);
     lcdUrl = url;
     $('lcd').hidden = false;
-    $('lcd-state').textContent = '实时 · 1024 × 682';
+    const route = response.headers.get('X-Display-Route');
+    const frame = response.headers.get('X-Frame-Size');
+    const output = response.headers.get('X-Output-Size');
+    $('lcd-state').textContent = `中断路由 ${route} · 合成 ${frame}` +
+      (output && output !== frame ? ` · 输出配置 ${output}` : '');
   } catch (error) {
     $('lcd-state').textContent = error.message;
   } finally { lcdBusy = false; }

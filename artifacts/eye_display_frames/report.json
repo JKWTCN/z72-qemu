@@ -1,0 +1,229 @@
+{
+  "firmware": "Ver.01.70.02",
+  "starting_processing_count": 30,
+  "samples": [
+    {
+      "eye_detected": false,
+      "eye_property": 0,
+      "shooting_output_selection": 1,
+      "display_task": {
+        "context": "0xb1d178dc",
+        "route_fields": [
+          3,
+          3,
+          6
+        ],
+        "callback": "0x0"
+      },
+      "output_settled_before_sample": true,
+      "shooting_eye_query": {
+        "observed": false,
+        "timeout_seconds": 10
+      },
+      "channel_0_size": [
+        0,
+        0
+      ],
+      "channel_1_size": [
+        1024,
+        682
+      ],
+      "channel_1_frame": {
+        "route": 1,
+        "slot": 0,
+        "output_width": 1024,
+        "output_height": 682,
+        "luminance_address": "0xdcb3c800",
+        "chroma_address": "0xdcc69c00",
+        "planes": {
+          "luminance": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "chroma": {
+            "bytes": 349184,
+            "stride": 1024,
+            "sha256": "044e43c1ed1bda30c965a5f4dd7f74ef902121fecdece0aaf7e72d1d25b1f28d",
+            "minimum": 128,
+            "maximum": 128
+          },
+          "overlay": {
+            "bytes": 1396736,
+            "stride": 2048,
+            "sha256": "58ea0f024b064e41b79d450eb40a36bda02817aae52990ab4d62db4ac59eed51",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "alpha": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "581d2588c8bde4d0ca3a926c327dbd072ba732f203a3b8fd406d2c6383a213e8",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "rgb_bytes": 2095104,
+        "rgb_sha256": "06ec733ee9719587f4c87c131206105edcf012ce0193ed54a2a47e5304bd467e"
+      }
+    },
+    {
+      "eye_detected": true,
+      "eye_property": 1,
+      "shooting_output_selection": 4,
+      "display_task": {
+        "context": "0xb1d178dc",
+        "route_fields": [
+          3,
+          3,
+          6
+        ],
+        "callback": "0x0"
+      },
+      "output_settled_before_sample": true,
+      "shooting_eye_query": {
+        "observed": true,
+        "result": 1,
+        "return_pc": "0x10540c32",
+        "output_submit": {
+          "observed": true,
+          "operation": 17,
+          "argument": 0,
+          "count": 1,
+          "channel": 2,
+          "request": "0xb1fa6dd8",
+          "delivery": {
+            "message": "0xb1d60e00",
+            "event_id": "0x42060014",
+            "wait_bits": "0xe2",
+            "handler_result": 1,
+            "callback_event": "0x430e0004",
+            "callback_elapsed_seconds": 54.55,
+            "callback_fields": [
+              0,
+              4
+            ],
+            "unobserved": []
+          }
+        }
+      },
+      "channel_0_size": [
+        0,
+        0
+      ],
+      "channel_1_size": [
+        1024,
+        682
+      ],
+      "channel_1_frame": {
+        "route": 3,
+        "slot": 0,
+        "output_width": 1280,
+        "output_height": 960,
+        "luminance_address": "0xdcb3c800",
+        "chroma_address": "0xdcc69c00",
+        "planes": {
+          "luminance": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "4b232e79bf373f7507485af7b82672a78bce21b676ab653b0a06b4f293219712",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "chroma": {
+            "bytes": 349184,
+            "stride": 1024,
+            "sha256": "044e43c1ed1bda30c965a5f4dd7f74ef902121fecdece0aaf7e72d1d25b1f28d",
+            "minimum": 128,
+            "maximum": 128
+          },
+          "overlay": {
+            "bytes": 1396736,
+            "stride": 2048,
+            "sha256": "58ea0f024b064e41b79d450eb40a36bda02817aae52990ab4d62db4ac59eed51",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "alpha": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "581d2588c8bde4d0ca3a926c327dbd072ba732f203a3b8fd406d2c6383a213e8",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "rgb_bytes": 2095104,
+        "rgb_sha256": "06ec733ee9719587f4c87c131206105edcf012ce0193ed54a2a47e5304bd467e"
+      }
+    },
+    {
+      "eye_detected": false,
+      "eye_property": 0,
+      "shooting_output_selection": 1,
+      "display_task": {
+        "context": "0xb1d178dc",
+        "route_fields": [
+          3,
+          3,
+          6
+        ],
+        "callback": "0x0"
+      },
+      "output_settled_before_sample": true,
+      "shooting_eye_query": {
+        "observed": false,
+        "timeout_seconds": 10
+      },
+      "channel_0_size": [
+        0,
+        0
+      ],
+      "channel_1_size": [
+        1024,
+        682
+      ],
+      "channel_1_frame": {
+        "route": 1,
+        "slot": 0,
+        "output_width": 1024,
+        "output_height": 682,
+        "luminance_address": "0xdcb3c800",
+        "chroma_address": "0xdcc69c00",
+        "planes": {
+          "luminance": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "7f60a673e6e9a83c74331b02646abead3512bc7b882e708e1ca62289ba58afb7",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "chroma": {
+            "bytes": 349184,
+            "stride": 1024,
+            "sha256": "044e43c1ed1bda30c965a5f4dd7f74ef902121fecdece0aaf7e72d1d25b1f28d",
+            "minimum": 128,
+            "maximum": 128
+          },
+          "overlay": {
+            "bytes": 1396736,
+            "stride": 2048,
+            "sha256": "2483db761aff5173e45aa98446bc19ffd0776f016f454d4287ed5907d085891a",
+            "minimum": 16,
+            "maximum": 235
+          },
+          "alpha": {
+            "bytes": 698368,
+            "stride": 1024,
+            "sha256": "5309bbbe8ea8c099b38e5b398be5f205e2e3963a0b658f51b34801e1c516e678",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "rgb_bytes": 2095104,
+        "rgb_sha256": "cd417e7fc62dde4c4f221df2699a1566124cdeae0e228df08c6ab5e3c0396d1c"
+      }
+    }
+  ]
+}

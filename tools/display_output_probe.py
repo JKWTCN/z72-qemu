@@ -14,6 +14,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.qemu_display import Remote
+from tools.lcd_preview import lcd_rgb, read_display_planes
 from tools.smp_boot_probe import reach, stop_registers
 from tools.web_console import EYE_STATE_C170, LIVE_VIEW_OPTIONS, SHOOTING_OUTPUT_C170, Machine
 
@@ -22,7 +23,43 @@ OUTPUT_BASE = 0x20140000
 OUTPUT_TIMEOUT = 120
 
 
-def snapshot(machine):
+def frame_summary(machine, base, word):
+    planes = read_display_planes(machine._words, machine._bytes, base)
+    rgb = lcd_rgb(**planes)
+    slot = (word(0x260) >> 16) & 3
+    summaries = {}
+    for name in ('luminance', 'chroma', 'overlay', 'alpha'):
+        if planes[name] is not None:
+            data, stride = planes[name]
+            summaries[name] = dict(bytes=len(data), stride=stride,
+                sha256=hashlib.sha256(data).hexdigest(),
+                minimum=min(data), maximum=max(data))
+    return dict(
+        route=word(0x1100) & 255, slot=slot,
+        output_width=word(0x132c), output_height=word(0x1328),
+        luminance_address=hex(word(0x210 + slot * 4)),
+        chroma_address=hex(word(0x220 + slot * 4)),
+        planes=summaries,
+        rgb_bytes=len(rgb), rgb_sha256=hashlib.sha256(rgb).hexdigest())
+
+
+def wait_eye_output(machine, detected):
+    selection, route = (4, 3) if detected else (1, 1)
+    deadline = time.monotonic() + OUTPUT_TIMEOUT
+    while time.monotonic() < deadline:
+        with machine.io:
+            if (machine._words(SHOOTING_OUTPUT_C170, 1)[0] == selection and
+                    machine._words(0x20145100, 1)[0] & 255 == route):
+                context = machine._words(0xb180854c + 0x34, 1)[0]
+                if 0xb0000000 <= context <= 0xe0000000 - 0x518:
+                    fields = machine._bytes(context + 0x510, 8)
+                    if fields[:3] == bytes((3, 3, 6)) and fields[4:] == bytes(4):
+                        return True
+        time.sleep(0.25)
+    return False
+
+
+def snapshot(machine, full_frames=False):
     """Stop all cores while correlating register fields and buffer samples."""
     with machine.io:
         machine.qmp.command('stop')
@@ -61,6 +98,8 @@ def snapshot(machine):
                     output_control=hex(word(0x1200)),
                     interrupt_mask=hex(word(0x1210)),
                     interrupt_status=hex(word(0x1214)), buffers=buffers))
+                if full_frames and size:
+                    pipelines[-1]['frame'] = frame_summary(machine, OUTPUT_BASE + offset, word)
             input_state = dict(
                 format=hex(machine._words(0x20068500, 1)[0]),
                 geometry=[hex(x) for x in machine._words(0x20069500, 13)],
@@ -225,6 +264,8 @@ def main():
                         help='Observe C1.70 live-view outputs with eye input far, near, then far')
     parser.add_argument('--trace-eye-query', action='store_true',
                         help='With --eye-sequence, record the native shooting-side query and caller')
+    parser.add_argument('--full-frames', action='store_true',
+                        help='Digest complete configured display planes and their composed RGB pixels')
     parser.add_argument('--interval', type=float, default=2)
     parser.add_argument('--events', type=int, nargs='+', default=[],
                         help='Pulse physical output-event lines once after the first snapshot')
@@ -252,6 +293,8 @@ def main():
     machine = Machine(args)
     report = dict(observation='native-display-registers-and-256-byte-samples',
                   events=args.events, samples=[])
+    if args.full_frames:
+        report['observation'] = 'native-display-registers-and-complete-frame-digests'
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         machine.restart()
@@ -268,6 +311,20 @@ def main():
         report['boot'] = state
         if args.eye_sequence and state.get('booted_version') != 'Ver.01.70.02':
             raise ValueError('Eye sequence requires C1.70')
+        if args.eye_sequence and args.full_frames:
+            # Let the processing pool supply live pixels before toggling the eye input.
+            deadline = time.monotonic() + 180
+            while time.monotonic() < deadline:
+                with machine.io:
+                    count = machine.qmp.command('qom-get', dict(
+                        path=f'/machine/unattached/{machine.config_names[0]}',
+                        property='processing-dma-count'))
+                if count >= 30:
+                    report['starting_processing_count'] = count
+                    break
+                time.sleep(0.25)
+            else:
+                raise TimeoutError('Live-view processing did not reach 30 transfers')
         for index in range(args.samples):
             if args.eye_sequence:
                 detected = index == 1
@@ -288,7 +345,11 @@ def main():
                                 machine._qtest('set_irq_in /machine/master-display '
                                                f'output-event {event} {level}')
                 time.sleep(args.interval)
-            report['samples'].append(snapshot(machine))
+            if args.eye_sequence and args.full_frames:
+                settled = wait_eye_output(machine, detected)
+            report['samples'].append(snapshot(machine, args.full_frames))
+            if args.eye_sequence and args.full_frames:
+                report['samples'][-1]['output_settled_before_sample'] = settled
             if args.trace_eye_query:
                 report['samples'][-1]['shooting_eye_query'] = query
             args.out.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')

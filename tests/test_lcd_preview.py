@@ -89,7 +89,7 @@ class LCDTests(unittest.TestCase):
                 return dict(status='running' if running else 'paused')
 
         machine.qmp = Monitor()
-        registers = {0x20144204: 0x20002, 0x20144200: 4,
+        registers = {0x20145100: 3, 0x20144204: 0x20002, 0x20144200: 4,
                      0x20144240: 2, 0x20144250: 2, 0x20146110: 0,
                      0x20144260: active_slot << 16 | ((active_slot + 1) % 4) << 8}
         for slot in range(4):
@@ -102,7 +102,8 @@ class LCDTests(unittest.TestCase):
                               0x201464c0: 0xb2100000})
             for slot in range(4):
                 registers[0x20146440 + slot * 4] = 0xb2000000 + slot * 0x1000
-        machine._words = lambda address, count: [registers[address]]
+        registers.update({0x20145328: 3, 0x2014532c: 4})
+        machine._words = lambda address, count: [registers[address + i * 4] for i in range(count)]
         reads = []
 
         def read(address, length):
@@ -139,6 +140,8 @@ class LCDTests(unittest.TestCase):
             self.assertEqual(frame.size, (2, 2))
             self.assertEqual(frame.tobytes(), bytes([255, 0, 0] * 4))
         self.assertEqual(machine.lcd_png(), image)
+        self.assertEqual(machine.lcd_frame(), (image, {
+            'X-Display-Route': 3, 'X-Frame-Size': '2x2', 'X-Output-Size': '4x3'}))
         self.assertEqual(calls, ['query-status', 'stop', 'cont'])
 
     def test_overlay_color_slot_is_independent_with_layout_zero_alpha(self):

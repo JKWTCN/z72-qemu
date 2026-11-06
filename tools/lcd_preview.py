@@ -57,3 +57,41 @@ def lcd_rgb(width, height, format_, luminance, chroma, overlay=None, alpha=None,
                 at = (row * width + x) * 3
                 output[at:at + 3] = bytes(color)
     return bytes(output)
+
+
+def read_display_planes(words, read_bytes, base):
+    """Read the selected planes of a paused display bank for RGB composition."""
+    geometry = words(base + 0x204, 1)[0]
+    width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
+    if not (0 < width <= 4096 and 0 < height <= 4096):
+        raise ValueError('Display output geometry is not configured')
+    format_ = words(base + 0x200, 1)[0] & 31
+    if format_ not in (0, 4) or width & 1 or format_ == 4 and height & 1:
+        raise ValueError('Unsupported display background format or geometry')
+
+    def plane(address_register, stride_register, minimum_stride, rows=height):
+        address = words(address_register, 1)[0]
+        stride = words(stride_register, 1)[0]
+        if not (minimum_stride <= stride <= 16384 and
+                0xb0000000 <= address <= 0xf0000000 - stride * rows):
+            raise ValueError('Display output plane is not configured')
+        return bytes(read_bytes(address, stride * rows)), stride
+
+    slot = (words(base + 0x260, 1)[0] >> 16) & 3
+    luminance = plane(base + 0x210 + slot * 4, base + 0x240, width)
+    chroma = plane(base + 0x220 + slot * 4, base + 0x250, width,
+                   height // 2 if format_ == 4 else height)
+    overlay = alpha = None
+    alpha_bits = 8
+    if words(base + 0x2110, 1)[0] & 1:
+        overlay_format = words(base + 0x2200, 1)[0] & 31
+        if (overlay_format not in (5, 6) or
+                words(base + 0x2400, 1)[0] != geometry or width & 1):
+            raise ValueError('Unsupported display overlay format or geometry')
+        alpha_bits = 4 if overlay_format == 5 else 8
+        overlay_slot = (words(base + 0x2214, 1)[0] >> 16) & 3
+        overlay = plane(base + 0x2440 + overlay_slot * 4, base + 0x2500, width * 2)
+        alpha = plane(base + 0x24c0, base + 0x2540,
+                      width // 2 if alpha_bits == 4 else width)
+    return dict(width=width, height=height, format_=format_, luminance=luminance,
+                chroma=chroma, overlay=overlay, alpha=alpha, alpha_bits=alpha_bits)

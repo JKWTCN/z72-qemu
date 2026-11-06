@@ -30,7 +30,7 @@ from analyze.qemu_display import Remote
 from tools.controller_core_probe import CONTROLLER_SHA256
 from tools.create_lab_parameters import parameter_images, resource_header_image, resource_timing_image, processing_resource_image
 from tools.dual_boot_probe import dual_machine
-from tools.lcd_preview import lcd_rgb
+from tools.lcd_preview import lcd_rgb, read_display_planes
 
 SYNC_WAIT = 0x102d949e
 APP_MANAGER = 0xb1811e40
@@ -961,57 +961,38 @@ class Machine:
         return encoded
 
     def lcd_png(self):
+        return self.lcd_frame()[0]
+
+    def lcd_frame(self):
         """Read coherent channel-1 Y/UV and format-5/6 YYUV+A4/A8 UI planes."""
         now = time.monotonic()
-        if self.lcd_cache and now - self.lcd_cache[0] < self.lcd_interval:
-            return self.lcd_cache[1]
+        cached_at, frame = self.lcd_cache
+        if frame and now - cached_at < self.lcd_interval:
+            return frame
         with self.io:
             self._ready()
             running = self.qmp.command('query-status')['status'] == 'running'
             if running:
                 self.qmp.command('stop')
             try:
-                geometry = self._words(0x20144204, 1)[0]
-                width, height = geometry & 0xffff, (geometry >> 16) & 0x3fff
-                if not (0 < width <= 4096 and 0 < height <= 4096):
-                    raise ValueError('Display output geometry is not configured')
-                format_ = self._words(0x20144200, 1)[0] & 31
-                if format_ not in (0, 4) or width & 1 or format_ == 4 and height & 1:
-                    raise ValueError('Unsupported display background format or geometry')
-
-                def plane(address_register, stride_register, minimum_stride, rows=height):
-                    address = self._words(address_register, 1)[0]
-                    stride = self._words(stride_register, 1)[0]
-                    if not (minimum_stride <= stride <= 16384 and
-                            0xb0000000 <= address <= 0xf0000000 - stride * rows):
-                        raise ValueError('Display output plane is not configured')
-                    return bytes(self._bytes(address, stride * rows)), stride
-
-                slot = (self._words(0x20144260, 1)[0] >> 16) & 3
-                luminance = plane(0x20144210 + slot * 4, 0x20144240, width)
-                chroma = plane(0x20144220 + slot * 4, 0x20144250, width,
-                               height // 2 if format_ == 4 else height)
-                overlay = alpha = None
-                alpha_bits = 8
-                if self._words(0x20146110, 1)[0] & 1:
-                    overlay_format = self._words(0x20146200, 1)[0] & 31
-                    if (overlay_format not in (5, 6) or
-                            self._words(0x20146400, 1)[0] != geometry or width & 1):
-                        raise ValueError('Unsupported display overlay format or geometry')
-                    alpha_bits = 4 if overlay_format == 5 else 8
-                    overlay_slot = (self._words(0x20146214, 1)[0] >> 16) & 3
-                    overlay = plane(0x20146440 + overlay_slot * 4, 0x20146500, width * 2)
-                    alpha = plane(0x201464c0, 0x20146540,
-                                  width // 2 if alpha_bits == 4 else width)
+                planes = read_display_planes(self._words, self._bytes, 0x20144000)
+                route = self._words(0x20145100, 1)[0] & 255
+                output_height, output_width = self._words(0x20145328, 2)
             finally:
                 if running:
                     self.qmp.command('cont')
-        rows = lcd_rgb(width, height, format_, luminance, chroma, overlay, alpha,
-                       alpha_bits=alpha_bits)
-        data = b'P6\n%d %d\n255\n' % (width, height) + rows
+        rows = lcd_rgb(**planes)
+        data = b'P6\n%d %d\n255\n' % (planes['width'], planes['height']) + rows
         encoded = ppm_to_png(data)
-        self.lcd_cache = (time.monotonic(), encoded)
-        return encoded
+        headers = {
+            'X-Display-Route': route,
+            'X-Frame-Size': f"{planes['width']}x{planes['height']}",
+        }
+        if output_width and output_height:
+            headers['X-Output-Size'] = f'{output_width}x{output_height}'
+        frame = encoded, headers
+        self.lcd_cache = (time.monotonic(), frame)
+        return frame
 
     def status(self):
         state = dict(phase=self.phase, error=self.error, ready=False,
@@ -1105,12 +1086,14 @@ def make_handler(machine):
         def log_message(self, *args):
             pass
 
-        def send(self, code, body, kind='application/json; charset=utf-8'):
+        def send(self, code, body, kind='application/json; charset=utf-8', headers=None):
             self.send_response(code)
             self.send_header('Content-Type', kind)
             self.send_header('Content-Length', str(len(body)))
             self.send_header('Cache-Control', 'no-store')
             self.send_header('X-Content-Type-Options', 'nosniff')
+            for name, value in (headers or {}).items():
+                self.send_header(name, str(value))
             self.end_headers()
             try:
                 self.wfile.write(body)
@@ -1138,7 +1121,8 @@ def make_handler(machine):
                 elif self.path == '/frame':
                     self.send(200, machine.frame_png(), 'image/png')
                 elif self.path == '/lcd':
-                    self.send(200, machine.lcd_png(), 'image/png')
+                    png, headers = machine.lcd_frame()
+                    self.send(200, png, 'image/png', headers)
                 elif self.path == '/shoulder':
                     self.send(200, json.dumps(machine.shoulder(),
                                               ensure_ascii=False).encode())
