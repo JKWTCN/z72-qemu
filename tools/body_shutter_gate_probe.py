@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from analyze.decode_z72 import require
 from analyze.qemu_display import Remote
-from tools.web_console import Machine, MODE_COUNTS
+from tools.web_console import Machine, MODE_COUNTS, add_acceleration_options
 
 ACTION = 0x1053ba0e
 ENGINE_ABORT_POINTS = {
@@ -4343,6 +4343,7 @@ def main():
                         help='Enable the experimental RAW12 checkerboard input DMA source')
     parser.add_argument('--sensor-image', type=Path,
                         help='Replace the RAW12 checkerboard with an 8-bit binary PGM/PPM scene')
+    add_acceleration_options(parser)
     parser.add_argument('--sensor-timing-profile', action='store_true',
                         help='Supply explicit nonzero experimental resource timing rows; not physical sensor calibration')
     parser.add_argument('--virtual-body-vr', action='store_true',
@@ -4638,6 +4639,8 @@ def main():
             time.sleep(1)
         else:
             report = dict(observation='shooting-startup-deadline', boot=state,
+                          acceleration_sample=args.acceleration_sample,
+                          acceleration_records_supplied=args.acceleration_records is not None,
                           boot_watch_seconds=args.boot_watch,
                           icount_shift=args.icount_shift,
                           sampling_feedback=args.sampling_feedback,
@@ -4709,6 +4712,8 @@ def main():
                             skip_still_preprocessing=args.skip_still_preprocessing)
         report = dict(observation=('native-playback-capture-stop' if args.playback else
                                   'native-full-release-application-gate'), boot=state,
+                      acceleration_sample=args.acceleration_sample,
+                      acceleration_records_supplied=args.acceleration_records is not None,
                       sd_attached=args.sd_card is not None,
                       sd_image_bytes=args.sd_card.stat().st_size if args.sd_card else None,
                       display_complete=args.display_complete, watch_seconds=args.watch,

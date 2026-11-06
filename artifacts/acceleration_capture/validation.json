@@ -1,0 +1,41 @@
+{
+  "firmware": "C1.70",
+  "dcf_path": "DCIM/100NZ7_2/DSC_0003.JPG",
+  "scene": "static color test pattern",
+  "captures": [
+    {
+      "axes": [
+        1024,
+        0,
+        0
+      ],
+      "jpeg_bytes": 1489370,
+      "jpeg_sha256": "e1b913848e8db565fc7d3fdb20387ae485dc6d639b17c0b43fd26fda90e3d6cd",
+      "rgb_sha256": "3bb2ea98e348840b46b4fc0d3d7c3c41702c0f0b17085c7a8426e9dd2d892e53",
+      "exif_orientation": 1,
+      "width": 8256,
+      "height": 5504,
+      "original_card_files_preserved": true
+    },
+    {
+      "axes": [
+        -23,
+        47,
+        1024
+      ],
+      "jpeg_bytes": 1489370,
+      "jpeg_sha256": "87485f36fe95bdfebcb4e46ca3b77e93deb6fea2e206d767a6e577bcf8ce14d2",
+      "rgb_sha256": "3bb2ea98e348840b46b4fc0d3d7c3c41702c0f0b17085c7a8426e9dd2d892e53",
+      "exif_orientation": 1,
+      "width": 8256,
+      "height": 5504,
+      "original_card_files_preserved": true
+    }
+  ],
+  "inputs_sha256": {
+    "config": "54277a6a0bb388ca90b2629d58d2d610d4ebaa691a8eaa010b238c6bb82658be",
+    "cal": "b1b7291ecfed3ab8eaf4e6af0d9df77b9668b6265aea8c0dff3248b576144620",
+    "scene": "e492d8513d497b36da8495fe89ec7b3a45a665bd4f3890b891108bcdfed4162c"
+  },
+  "explicit_preprocessing_skip": true
+}

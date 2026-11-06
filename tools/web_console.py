@@ -1150,6 +1150,19 @@ def make_handler(machine):
     return Handler
 
 
+def add_acceleration_options(parser):
+    def axis(value):
+        value = int(value)
+        if not -2048 <= value <= 2047:
+            raise argparse.ArgumentTypeError('each axis must be in -2048..2047')
+        return value
+
+    parser.add_argument('--acceleration-sample', nargs=3, type=axis, metavar=('X', 'Y', 'Z'),
+                        help='Attach a sensor with a fixed raw acceleration sample (-2048 through 2047 per axis)')
+    parser.add_argument('--acceleration-records', nargs=2, type=Path, metavar=('CONFIG', 'CALIBRATION'),
+                        help='Install local ACCELE records in boot parameter storage (256 and 192 bytes)')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
@@ -1180,10 +1193,7 @@ def main():
                         help='Attach body VR communication RAM; sensors and stabilization actuators remain absent')
     parser.add_argument('--eye-sensor', action='store_true',
                         help='Attach the optional eye sensor register profile without optical samples or measurement interrupts')
-    parser.add_argument('--acceleration-sample', nargs=3, type=int, metavar=('X', 'Y', 'Z'),
-                        help='Attach a sensor with a fixed raw acceleration sample (-2048 through 2047 per axis)')
-    parser.add_argument('--acceleration-records', nargs=2, type=Path, metavar=('CONFIG', 'CALIBRATION'),
-                        help='Install local ACCELE records in boot parameter storage (256 and 192 bytes)')
+    add_acceleration_options(parser)
     parser.add_argument('--nvme-card', type=Path,
                         help='Attach a raw image to the experimental master NVMe host with a temporary write overlay')
     parser.add_argument('--input-handshake', action='store_true',
@@ -1225,8 +1235,6 @@ def main():
                              'update and its manifest (survives restarts)')
     parser.add_argument('--open-browser', action='store_true')
     args = parser.parse_args()
-    if args.acceleration_sample and any(v < -2048 or v > 2047 for v in args.acceleration_sample):
-        parser.error('--acceleration-sample requires each axis to be in -2048..2047')
     require(1 <= args.port <= 65535, 'Invalid HTTP port')
     require(not args.wsl or os.name == 'nt', '--wsl requires Windows')
     if args.live_view:

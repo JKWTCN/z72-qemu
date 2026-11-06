@@ -67,6 +67,18 @@ python tools/acceleration_boot_probe.py --qemu <qemu-system-arm> --master <maste
 两次在 `0x10350dcc` 读到的聚合字 `0xb1868170` 均为 `0x2`。
 这是该回调返回途中的瞬时值。方向码与屏幕旋转角度的对应仍待验证。
 
+### 拍摄文件的方向标签
+
+机身快门探针也接受 `--acceleration-records CONFIG CALIBRATION` 和
+`--acceleration-sample X Y Z`。在 M 档彩色测试场景下，使用相同的
+测试记录和两份独立卡副本，分别以 `(1024,0,0)` 和 `(-23,47,1024)`
+拍摄一次。两张卡均新增 `DCIM/100NZ7_2/DSC_0003.JPG`，原有两张
+照片逐字节保留。两份新增文件的主图尺寸均为 8256×5504，
+EXIF IFD0 方向标签（`0x0112`）均为 1，完整解码的 RGB 像素散列相同。
+此结果适用于本次启用实验性预处理跳过的拍摄路径。应用方向回调
+和 JPEG 标签写入之间的调用关系仍待确认。
+[两次拍摄的输入和输出校验值](../../artifacts/acceleration_capture/validation.json)
+
 ### 复测原厂读取函数
 
 可以用本地 1.70 主固件复测读取函数：
