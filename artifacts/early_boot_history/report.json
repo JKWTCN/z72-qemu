@@ -136,7 +136,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272815546,
+            "switch_address": 2992440940,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272815546,
+            "switch_address": 2992440940,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272815546,
+            "switch_address": 2992440940,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -269,7 +295,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272818218,
+            "switch_address": 2992452124,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272818218,
+            "switch_address": 2992452124,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272818218,
+            "switch_address": 2992452124,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -402,7 +454,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272819518,
+            "switch_address": 2992458780,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272819518,
+            "switch_address": 2992458780,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272819518,
+            "switch_address": 2992458780,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -535,7 +613,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272820038,
+            "switch_address": 2992458780,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272820038,
+            "switch_address": 2992458780,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272820038,
+            "switch_address": 2992458780,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -668,7 +772,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272830042,
+            "switch_address": 2992473112,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272830042,
+            "switch_address": 2992473112,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272830042,
+            "switch_address": 2992473112,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -801,7 +931,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272830490,
+            "switch_address": 2992473112,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272830490,
+            "switch_address": 2992473112,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272830490,
+            "switch_address": 2992473112,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -934,7 +1090,33 @@
           "acceptance_offset": 2012950,
           "acknowledgement_offset": 215196,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272836074,
+            "switch_address": 2992521960,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272836074,
+            "switch_address": 2992521960,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416172,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272836074,
+            "switch_address": 2992521960,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -1067,7 +1249,33 @@
           "acceptance_offset": 2012950,
           "acknowledgement_offset": 215204,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272837686,
+            "switch_address": 2992523388,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272837686,
+            "switch_address": 2992523388,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272837686,
+            "switch_address": 2992523388,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -1200,7 +1408,33 @@
           "acceptance_offset": 2012950,
           "acknowledgement_offset": 215204,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -1333,7 +1567,33 @@
           "acceptance_offset": 2012950,
           "acknowledgement_offset": 215204,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272838654,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -1466,7 +1726,33 @@
           "acceptance_offset": 2012954,
           "acknowledgement_offset": 215204,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272839182,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272839182,
+            "switch_address": 2992538372,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272839182,
+            "switch_address": 2992538372,
+            "switch_word": 0
+          }
+        ]
       }
     },
     {
@@ -1599,7 +1885,33 @@
           "acceptance_offset": 2012958,
           "acknowledgement_offset": 215204,
           "exception": 39
-        }
+        },
+        "menu_samples": [
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272843022,
+            "switch_address": 2992549552,
+            "switch_word": 0
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "fffdff",
+            "master_pc": 272843022,
+            "switch_address": 2992549552,
+            "switch_word": 32768
+          },
+          {
+            "pc": 134416180,
+            "address": 537001811,
+            "ports": "ffffff",
+            "master_pc": 272843022,
+            "switch_address": 2992549552,
+            "switch_word": 0
+          }
+        ]
       }
     }
   ]

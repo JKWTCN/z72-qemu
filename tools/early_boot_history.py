@@ -18,7 +18,7 @@ from analyze.upgrade_signature import decode
 from tools.boot_probe import reset_machine
 from tools.dual_boot_probe import MASTER_MAGIC, MASTER_MSG, dual_machine
 from tools.early_boot_probe import trace_early
-from tools.smp_boot_probe import reach
+from tools.smp_boot_probe import reach, stop_registers
 
 
 def controller_callbacks(image):
@@ -93,6 +93,53 @@ def trace_receiver(images, signature, qemu):
                 process.wait()
 
 
+def trace_menu_samples(remote, controller, master):
+    # Both read paths finish by copying the three sampled ports into controller RAM.
+    sites = {}
+    for sequence, register in (('bdf80000a4f803009df802006071', 'r4'),
+                               ('bdf80010b638a0f803109df802104171', 'r0')):
+        code = bytes.fromhex(sequence)
+        require(controller.count(code) == 1, 'Expected one expander sample copy per read path')
+        sites[0x08000000 + controller.index(code) + len(code)] = register
+    decode_menu = bytes.fromhex('94f8431001b111460843c8f80400')
+    require(master.count(decode_menu) == 1, 'Expected one master menu decode site')
+    decoded = BASE + master.index(decode_menu) + len(decode_menu)
+    for pc in (*sites, decoded):
+        remote.breakpoint(pc)
+    samples = []
+    try:
+        for high in (True, False, True):
+            levels = 0xffffff if high else 0xfffdff
+            command = f'qom-set /machine/peripheral/keys input-levels {levels}'
+            require(remote.command('qRcmd,' + command.encode().hex()) == 'OK', 'Menu input failed')
+            sample = {}
+            for _ in range(512):
+                thread, regs = stop_registers(remote, remote.command('vCont;c'))
+                pc = remote.get(regs, 'pc')
+                if pc in sites and thread == 5:
+                    address = remote.get(regs, sites[pc]) + 3
+                    ports = remote.read(address, 3)
+                    if bool(ports[1] & 2) == high:
+                        sample.update(pc=pc, address=address, ports=ports.hex())
+                elif pc == decoded and thread in (1, 2):
+                    address = remote.get(regs, 'r8') + 4
+                    word = int.from_bytes(remote.read(address, 4), 'little')
+                    if bool(word & 0x8000) == (not high):
+                        sample.update(master_pc=pc, switch_address=address, switch_word=word)
+                else:
+                    raise ValueError('Menu sample stopped on an unexpected processor')
+                remote.command(f'vCont;s:{thread:x}')
+                if 'ports' in sample and 'switch_word' in sample:
+                    samples.append(sample)
+                    break
+            else:
+                raise ValueError(f'Menu input level {int(high)} did not propagate: {sample}')
+    finally:
+        for pc in (*sites, decoded):
+            remote.breakpoint(pc, False)
+    return samples
+
+
 def trace_controller_request(images, controller, qemu):
     # The checker sums 256 bytes through r2 and branches on a sum of 0xff.
     loop = bytes.fromhex('4ff48071491e12f8014b2044c0b2f9d1ff280dd0')
@@ -107,7 +154,8 @@ def trace_controller_request(images, controller, qemu):
         process, remote = dual_machine(qemu, directory, images['master'], images['slave'],
             directory / 'console.txt', icount='shift=4,sleep=off', trace=None,
             controller_firmware=firmware, controller_link=True,
-            devices=('nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',))
+            devices=('nikon-z72-controller-register-bank,bus=controller-i2c0,address=79',
+                     'nikon-z72-controller-expander,bus=controller-i2c0,address=34,id=keys'))
         try:
             remote.select_thread(5)
             regs = remote.regs()
@@ -152,6 +200,7 @@ def trace_controller_request(images, controller, qemu):
             return dict(sha256=digest(controller), reset_pc=reset & ~1, vector_table=0x20000000,
                         checker_offset=offset, buffer=buffer, frame_sha256=digest(frame),
                         payload_bytes=28, frame_bytes=len(frame), accepted=True,
+                        menu_samples=trace_menu_samples(remote, controller, master),
                         response=dict(frame_sha256=digest(response), master_buffer=rx,
                                       controller_dma_buffer=tx, acceptance_offset=accepted,
                                       acknowledgement_offset=ack, exception=exception))
@@ -202,7 +251,7 @@ def run_package(path, master, qemu, signature=None, controller_link=False):
         start = member['offset']
         result['controller_request'] = trace_controller_request(
             images, body[start:start + member['length']], qemu)
-        print(path.name, 'controller request, response and receive confirmation verified', flush=True)
+        print(path.name, 'controller exchange and master menu press/release verified', flush=True)
     return result
 
 
@@ -214,7 +263,7 @@ def main():
                         help='Original C 1.70 slave EG for the dual-engine receiver check')
     parser.add_argument('--qemu', required=True)
     parser.add_argument('--controller-link', action='store_true',
-                        help='Verify the first request and response between each packaged controller and its master')
+                        help='Verify the controller exchange and menu key decoding with each packaged master')
     parser.add_argument('--report', required=True, type=Path)
     args = parser.parse_args()
     paths = sorted(args.packages.glob('Z7_2_*.bin'))
