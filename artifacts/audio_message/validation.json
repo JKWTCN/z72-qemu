@@ -1,0 +1,160 @@
+{
+  "scope": "Isolated original message dispatcher for buffer configuration 0x42040708, both channels. Completion observed at callback entry; synchronous wrappers, queue dispatch and playback not executed.",
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "results": [
+    {
+      "channel": 0,
+      "payload": [
+        "0x0",
+        "0xb1900000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x1",
+        "0x4"
+      ],
+      "state": [
+        "0xb1900000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x1",
+        "0x4",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "completion_command": "0x42040708",
+      "completion_context": "0x56789abc",
+      "other_channel_unchanged": true
+    },
+    {
+      "channel": 1,
+      "payload": [
+        "0x1",
+        "0xb1901000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x1",
+        "0x4"
+      ],
+      "state": [
+        "0xb1901000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x1",
+        "0x4",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "completion_command": "0x42040708",
+      "completion_context": "0x56789abc",
+      "other_channel_unchanged": true
+    }
+  ],
+  "interfaces": {
+    "configure": "0x1036f99a",
+    "start": "0x1036f946",
+    "stop": "0x1036fa14",
+    "submit": "0x102dea96",
+    "dispatch": "0x102decba"
+  },
+  "dispatch_table": [
+    {
+      "command": "0x42040702",
+      "target": "0x102decde"
+    },
+    {
+      "command": "0x42040703",
+      "target": "0x102ded12"
+    },
+    {
+      "command": "0x42040704",
+      "target": "0x102ded24"
+    },
+    {
+      "command": "0x42040705",
+      "target": "0x102ded4c"
+    },
+    {
+      "command": "0x42040706",
+      "target": "0x102ded5e"
+    },
+    {
+      "command": "0x42040707",
+      "target": "0x102ded8c"
+    },
+    {
+      "command": "0x42040708",
+      "target": "0x102deda2"
+    },
+    {
+      "command": "0x42040709",
+      "target": "0x102dedda"
+    },
+    {
+      "command": "0x4204070a",
+      "target": "0x102dee84"
+    },
+    {
+      "command": "0x4204070b",
+      "target": "0x102dee02"
+    },
+    {
+      "command": "0x4204070c",
+      "target": "0x102dee18"
+    },
+    {
+      "command": "0x4204070d",
+      "target": "0x102dee30"
+    },
+    {
+      "command": "0x4204070e",
+      "target": "0x102dee42"
+    },
+    {
+      "command": "0x4204070f",
+      "target": "0x102dee64"
+    }
+  ],
+  "windows": [
+    {
+      "start": "0x1036f946",
+      "end": "0x1036f9e2",
+      "sha256": "02a71b9425d0876a46ba10115ae8549cd31baaad788a6792c7d423cc02e02603"
+    },
+    {
+      "start": "0x1036fa14",
+      "end": "0x1036fa46",
+      "sha256": "030bb25dcd005761b21c40da0d23097ff00e672dad1d9c55ed713a349eaab205"
+    },
+    {
+      "start": "0x102decba",
+      "end": "0x102dedda",
+      "sha256": "5252cca4ea1a53b4d724c9d94bda4a42df8dd8d2fd6ced9a3d8023eff27490bb"
+    },
+    {
+      "start": "0x102dea96",
+      "end": "0x102deaa6",
+      "sha256": "206470ed028f1c0636b64145ea86b4e4f44e82793810ec23758ca612287d109b"
+    },
+    {
+      "start": "0x102df9f8",
+      "end": "0x102dfa3c",
+      "sha256": "9212702e2030997796eb0b38ed844dc82e94b0eac9980fff6c52ff921d185f04"
+    }
+  ]
+}
