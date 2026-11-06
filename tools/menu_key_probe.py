@@ -15,8 +15,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from analyze.decode_z72 import BASE, digest, require
+from analyze.decode_z72 import BASE, digest, require, validate_master
 from analyze.firmware_structure import application_manager, PROFILES, thumb_literal
+from analyze.update_container import describe_container
+from analyze.upgrade_signature import decode
 from tools.graphics_boot_probe import (application_observation,
                                        capture_health_observation,
                                        controller_input_observation,
@@ -120,14 +122,40 @@ def linux(path):
                             m[0][3:].replace('\\', '/'), text)
 
 
+def firmware_inputs(args, history):
+    package = getattr(args, 'package', None)
+    decoder = getattr(args, 'decoder_master', None)
+    paths = (args.master, args.slave, args.controller)
+    if package is None:
+        require(all(paths) and decoder is None, 'Provide master, slave and controller images together')
+        return tuple(path.read_bytes() for path in paths)
+    require(decoder is not None and not any(paths),
+            'A package requires --decoder-master and excludes separate firmware members')
+    raw = package.read_bytes()
+    package_hash = digest(raw)
+    require(any(p['sha256'] == package_hash for p in history['packages']),
+            'Expected an original package from the firmware history')
+    reference = decoder.read_bytes()
+    validate_master(reference)
+    body = raw[32:64] + decode(reference, raw[64:], 32)
+    members = describe_container(body)['members']
+    images = []
+    for prefix in ('eg1840_mas_', 'eg1840_sla_', 'ex1840_'):
+        matches = [member for member in members if member['name'].startswith(prefix)]
+        require(len(matches) == 1, f'Expected one {prefix} member')
+        member = matches[0]
+        images.append(body[member['offset']:member['offset'] + member['length']])
+    return tuple(images)
+
+
 def run(args):
     require(0 < args.seconds <= 30, 'Window seconds must be in (0, 30]')
     require(0 < args.windows <= 24, 'Window count must be in (0, 24]')
     require(0 <= args.settle_seconds <= 10, 'Settling time must be in [0, 10]')
-    master, slave = args.master.read_bytes(), args.slave.read_bytes()
-    identities = dict(master=digest(master), slave=digest(slave))
-    controller_hash = digest(args.controller.read_bytes())
     history = json.loads((ROOT / 'artifacts/early_boot_history/report.json').read_text())
+    master, slave, controller = firmware_inputs(args, history)
+    identities = dict(master=digest(master), slave=digest(slave))
+    controller_hash = digest(controller)
     matches = [p for p in history['packages']
                if {e['role']: e['sha256'] for e in p['engines']} == identities and
                p['controller_request']['sha256'] == controller_hash]
@@ -154,6 +182,7 @@ def run(args):
         server.bind(('127.0.0.1', 0))
         qtest_port = server.getsockname()[1]
     args.destination.mkdir(parents=True, exist_ok=False)
+    (ROOT / '.local').mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='menu-key-', dir=ROOT / '.local') as folder:
         work = Path(folder)
 
@@ -199,6 +228,8 @@ def run(args):
                       sync_pulse_requested=args.sync_pulse, sync_pulse_supplied=False,
                       observations=[])
         try:
+            controller_path = work / 'controller.bin'
+            controller_path.write_bytes(controller)
             resident = bytearray(0xC000)
             resident[:4] = b'MAKE'
             (work / 'resident.bin').write_bytes(resident)
@@ -251,7 +282,7 @@ def run(args):
                 master, slave,
                 work / 'console.txt',
                 icount='shift=0,sleep=off', trace='guest_errors',
-                controller_firmware=args.controller,
+                controller_firmware=controller_path,
                 controller_link=True,
                 controller_flash_data=work / 'resident.bin',
                 devices=devices,
@@ -516,9 +547,12 @@ def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qemu', required=True)
-    parser.add_argument('--master', required=True, type=Path)
-    parser.add_argument('--slave', required=True, type=Path)
-    parser.add_argument('--controller', required=True, type=Path)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--master', type=Path)
+    source.add_argument('--package', type=Path, help='Boot the matched members of an original update')
+    parser.add_argument('--slave', type=Path)
+    parser.add_argument('--controller', type=Path)
+    parser.add_argument('--decoder-master', type=Path, help='C 1.70 master used to decode --package')
     parser.add_argument('--destination', required=True, type=Path)
     parser.add_argument('--seconds', type=int, default=15)
     parser.add_argument('--windows', type=int, default=24)

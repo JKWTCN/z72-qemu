@@ -132,6 +132,29 @@ C 1.01 用 `--tap-seconds 0.1` 复测。探针在观察到按下且经过指定�
 APPLV。逐次计时、按键解码值、前台索引及画面摘要见
 [菜单按键时机对照](../../artifacts/early_boot_history/menu_input_timing.json)。
 
+### 直接从更新包启动菜单实验
+
+`tools/menu_key_probe.py` 接受原厂包作为启动输入。提供的 C 1.70 master
+用于解码；实际执行的 master、slave 和机身控制器均取自选定包。
+探针先对照历史清单核对整包 SHA-256，再校验目录、CRC 和三个成员的
+身份。以 C 1.20 为例，下面的命令会创建新的结果目录，输出按键记录及
+松键后取得的菜单画面。
+
+```sh
+python3 -B tools/menu_key_probe.py --qemu .build/build/qemu-system-arm \
+  --package /path/to/Z7_2_0120.bin --decoder-master /path/to/eg1840_mas_01700.bin \
+  --destination .local/menu-0120 --resource-header --sync-pulse --interactive-inputs \
+  --acceleration-sample 0 0 1024 --seconds 10 --windows 24 --settle-seconds 0.5 --tap-seconds 0.1
+```
+
+按上述配置逐版运行，十二版都在 APPLV 中识别了 MENU 的按下与释放，
+随后切入 APPMENU，并在下一次松键状态采样时保持菜单前台。实际保持按键
+0.18–0.28 个虚拟秒，首次采到菜单在按下后 2.11–2.55 个虚拟秒。
+十二份 720×480 画面的 RGB 数据摘要相同，显示 `PLAYBACK MENU`，
+高亮项为 `Delete`。整包输入入口对全部十二包的 36 个成员均完成身份
+核对；1.01、1.10、1.70 从该入口启动，其余九版使用已提取的同包成员。
+各版的时间、包与像素摘要见[十二版菜单运行记录](../../artifacts/early_boot_history/menu_versions.json)。
+
 本轮没有取得真实 B8 或 K8，没有验证任何版本的头部摘要，也没有完成
 菜单整包刷机。结构校验、合成输入执行与真实整包认证分别记录。
 
