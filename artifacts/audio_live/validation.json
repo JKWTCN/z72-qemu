@@ -1,0 +1,305 @@
+{
+  "scope": "Diagnostic caller on original resource-8 task stack invokes stock synchronous audio configure/start/stop interfaces; not a user playback command.",
+  "events": [
+    {
+      "pc": "0x13f01000",
+      "thread": 1,
+      "sp": "0xb5302fe8",
+      "result": "0x42070001",
+      "buffer": [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0xb1805ba8",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x200",
+        "0x0",
+        "0x2000000",
+        "0x43030000",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "pc": "0x13f01024",
+      "thread": 1,
+      "sp": "0xb5302fc8",
+      "result": "0x0",
+      "buffer": [
+        "0xb5f00000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xb1805ba8",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x200",
+        "0x0",
+        "0x2000000",
+        "0x43030000",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "pc": "0x13f0103a",
+      "thread": 1,
+      "sp": "0xb5302fc8",
+      "result": "0x0",
+      "buffer": [
+        "0xb5f00000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xb1805ba8",
+        "0x2c080104",
+        "0x0",
+        "0x2",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x45002000",
+        "0xe880000",
+        "0xe2000000",
+        "0xc3030000",
+        "0x3ff",
+        "0x3",
+        "0x3333"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "pc": "0x13f01042",
+      "thread": 1,
+      "sp": "0xb5302fc8",
+      "result": "0x0",
+      "buffer": [
+        "0xb5f00000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xb1805ba8",
+        "0x2c080104",
+        "0x0",
+        "0x2",
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x45002200",
+        "0xe880000",
+        "0xe2020000",
+        "0xc3030000",
+        "0x0",
+        "0x8",
+        "0x8888"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "pc": "0x13f0104c",
+      "thread": 1,
+      "sp": "0xb5302fc8",
+      "result": "0x0",
+      "buffer": [
+        "0xb5f00000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xb1805ba8",
+        "0x2c080104",
+        "0x0",
+        "0x2",
+        "0x1",
+        "0x1",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x45000200",
+        "0xe880000",
+        "0xc2020000",
+        "0x43030000",
+        "0x0",
+        "0x8",
+        "0x8888"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "pc": "0x103885d2",
+      "thread": 1,
+      "sp": "0xb5302fe8",
+      "result": "0x0",
+      "buffer": [
+        "0xb5f00000",
+        "0x10",
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xb1805ba8",
+        "0x2c080104",
+        "0x0",
+        "0x2",
+        "0x1",
+        "0x1",
+        "0x0",
+        "0x0"
+      ],
+      "audio": [
+        "0x45000200",
+        "0xe880000",
+        "0xc2020000",
+        "0x43030000",
+        "0x0",
+        "0x8",
+        "0x8888"
+      ],
+      "results": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "labels": {
+    "configured": "0x13f01024",
+    "started": "0x13f0103a",
+    "drained": "0x13f01042",
+    "stopped": "0x13f0104c"
+  },
+  "caller_sha256": "1e00afb559a95025317e83d437bc0db145422e40a8cb34ab0ee6592c2fd2f41d",
+  "caller_returned": true,
+  "bindings": [
+    "0xb1805980",
+    "0xb18059a4",
+    "0xb18059c8",
+    "0xb18059ec",
+    "0x0",
+    "0x0"
+  ],
+  "cores": [
+    {
+      "thread": 1,
+      "pc": "0x103885d2",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 2,
+      "pc": "0x10107070",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 3,
+      "pc": "0x10038a48",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    },
+    {
+      "thread": 4,
+      "pc": "0x10038a4c",
+      "faults": {
+        "DFAR_S": "0x0",
+        "IFAR_S": "0x0",
+        "DFSR_S": "0x0",
+        "IFSR_S": "0x0"
+      }
+    }
+  ],
+  "firmware_sha256": "478caf02dba41fa9144c0c4b6e1a051dc556d40e51a79a308bdd1169efb9dbbe",
+  "channel": 0,
+  "source_words": [
+    "0x11110001",
+    "0x22220002",
+    "0x33330003",
+    "0x44440004",
+    "0x55550005",
+    "0x66660006",
+    "0x77770007",
+    "0x88880008"
+  ],
+  "checks": {
+    "configuration_start_stop_return_zero": true,
+    "both_blocks_submitted": true,
+    "queue_empty_and_last_word_consumed": true,
+    "output_disabled_after_stop": true,
+    "native_stack_restored": true,
+    "four_core_faults_zero": true,
+    "source_card_unchanged": true
+  },
+  "limitations": [
+    "Diagnostic caller and data supplied in unused guest memory through a temporary resource-8 callback; original firmware bytes unchanged.",
+    "Only channel 0, two non-looping blocks of 16 bytes; no file playback or host sound.",
+    "Underrun appears after buffers exhaust before explicit stop; it is not silently cleared."
+  ]
+}
